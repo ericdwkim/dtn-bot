@@ -1,14 +1,18 @@
-from pages import HomePage, LoginPage
-from utility import setup_driver, teardown_driver
+from ..pages import HomePage, LoginPage
+from ..pages.utility import setup_driver, teardown_driver
 
-driver = setup_driver()
+def user_journey():
+    driver = setup_driver()
 
-try:
-    home_page = HomePage(driver)
-    home_page.visit()
+    try:
+        # Go to login page and login
+        login_page = LoginPage(driver)
+        login_page.visit()
 
-    login_page = LoginPage(driver)
-    login_page.visit()
-    # perform actions on pages...
-finally:
-    teardown_driver(driver)
+        #
+        home_page = HomePage(driver)
+        home_page.visit()
+
+        # perform actions on pages...
+    finally:
+        teardown_driver(driver)
