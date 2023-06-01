@@ -1,5 +1,5 @@
-from ..pages import HomePage, LoginPage
-from ..pages.utility import setup_driver, teardown_driver
+from ..pages.basepage import HomePage, LoginPage
+from utility import setup_driver, teardown_driver
 
 def user_journey():
     driver = setup_driver()
