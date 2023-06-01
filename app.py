@@ -33,6 +33,13 @@ dc_tab_selector = driver.find_element(By.CSS_SELECTOR, '#header > table:nth-chil
 yesterday_date_selector = driver.find_element(By.CSS_SELECTOR, '#date > option:nth-child(2)')
 yesterday_date_selector.click()
 
+# Apply Translated filter
+translated_filter_wait = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')))
+translated_filter_selector = driver.find_element(By.CSS_SELECTOR, 'th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')
+translated_filter_selector.click()
+
+
+
 n = 8
 while n > 1:
     print('testing')
