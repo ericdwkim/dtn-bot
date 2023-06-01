@@ -7,12 +7,18 @@ def user_journey():
     try:
         # Go to login page and login
         login_page = LoginPage(driver)
+        print(f'LoginPage driver instance: {login_page}')
         login_page.visit()
+        login_page.login()
 
-        #
+        # Home Page -> DataConnect tab
         home_page = HomePage(driver)
-        home_page.visit()
+        print(f'HomePage driver instance: {home_page}')
+
 
         # perform actions on pages...
     finally:
         teardown_driver(driver)
+
+
+user_journey()
