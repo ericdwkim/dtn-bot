@@ -1,4 +1,6 @@
 from selenium import webdriver
+import undetected_chromedriver as uc
+
 
 def setup_driver():
     options = webdriver.ChromeOptions()
