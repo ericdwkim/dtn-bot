@@ -20,5 +20,5 @@ def user_journey():
     finally:
         teardown_driver(driver)
 
-
-user_journey()
+if __name__ == '__main__':
+    user_journey()
