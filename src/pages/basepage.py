@@ -1,3 +1,4 @@
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
@@ -10,8 +11,6 @@ class BasePage(object):
     def __init__(self, driver):
         self.driver = driver
         self.url = dtn_url
-        self.password = password
-        self.username = username
 
 class LoginPage(BasePage):
     def __init__(self, driver):
@@ -20,7 +19,7 @@ class LoginPage(BasePage):
     def visit(self):
         self.driver.get(self.url)
 
-    def login(self, username, password):
+    def login(self):
         self.username = username
         self.password = password
 
