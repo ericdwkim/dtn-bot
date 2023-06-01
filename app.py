@@ -12,7 +12,7 @@ dtn_url = os.getenv('DTN_URL')
 
 options = webdriver.ChromeOptions()
 # options.add_argument('--headless=new')
-# options.add_argument('--start-maximized')
+options.add_argument('--start-maximized')
 driver = uc.Chrome(use_subprocess=True, version_main=113, options=options)
 driver.get(dtn_url)
 
@@ -25,8 +25,18 @@ pw_txtbox_selector.click()
 pw_txtbox_selector.send_keys(password)
 login_btn_selector = driver.find_element(By.CSS_SELECTOR, '.confirmButton').click()
 
-# DataConnect tab
+# Switch to `DataConnect` tab
 dc_tab_wait = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#header > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(1)')))
 dc_tab_selector = driver.find_element(By.CSS_SELECTOR, '#header > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(1)').click()
 
+# Set date to_ yesterday
+# date_ddl_selector = driver.find_element(By.CSS_SELECTOR, '#date')
+yesterday_date_selector = driver.find_element(By.CSS_SELECTOR, '#date > option:nth-child(2)')
+yesterday_date_selector.click()
+# date_ddl_selector.click()
+print(f'should be 20230531: {yesterday_date_selector.value_of_css_property()}')
 
+n = 8
+while n > 1:
+    print('testing')
+    n = n - 1
