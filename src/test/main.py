@@ -7,14 +7,15 @@ def user_journey():
     try:
         # Go to login page and login
         login_page = LoginPage(driver)
-        print(f'LoginPage driver instance: {login_page}')
         login_page.visit()
         login_page.login()
 
         # Home Page -> DataConnect tab
         home_page = HomePage(driver)
-        print(f'HomePage driver instance: {home_page}')
 
+        # Memory allocation check for identical WebDriver instance being shared b/w pages
+        print(f'LoginPage driver instance: {login_page.driver}')
+        print(f'HomePage driver instance: {home_page.driver}')
 
         # perform actions on pages...
     finally:
