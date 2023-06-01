@@ -29,12 +29,9 @@ login_btn_selector = driver.find_element(By.CSS_SELECTOR, '.confirmButton').clic
 dc_tab_wait = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#header > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(1)')))
 dc_tab_selector = driver.find_element(By.CSS_SELECTOR, '#header > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(1)').click()
 
-# Set date to_ yesterday
-# date_ddl_selector = driver.find_element(By.CSS_SELECTOR, '#date')
+# Set date to yesterday
 yesterday_date_selector = driver.find_element(By.CSS_SELECTOR, '#date > option:nth-child(2)')
 yesterday_date_selector.click()
-# date_ddl_selector.click()
-print(f'should be 20230531: {yesterday_date_selector.value_of_css_property()}')
 
 n = 8
 while n > 1:
