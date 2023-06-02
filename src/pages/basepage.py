@@ -12,6 +12,18 @@ class BasePage(object):
         self.driver = driver
         self.url = dtn_url
 
+    # TODO: Abstracted function for WebDriverWait use cases
+    # def wait_for_page_to_load(self, timeout=10):
+    #     WebDriverWait(self.driver, timeout).until(
+    #         lambda driver: driver.execute_script("return document.readyState") == "complete"
+    #     )
+
+# def wait_for_element(self, locator, locator_type=By.ID, timeout=10):
+#     element = WebDriverWait(self.driver, timeout).until(
+#         EC.presence_of_element_located((locator_type, locator))
+#     )
+#     return element
+
 class LoginPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
@@ -27,6 +39,7 @@ class DataConnectPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
 
-    # def do_something(self):
-    #     # interacting with elements, etc.
-    #     pass
+    # def switch_tab(self):
+    #     self.driver
+# TODO: use abstracted wait function like so
+# element = DataConnectPage.wait_for_element("my_element_id")
