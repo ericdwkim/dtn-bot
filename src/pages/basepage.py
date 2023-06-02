@@ -23,7 +23,7 @@ class LoginPage(BasePage):
         self.username = username
         self.password = password
 
-class HomePage(BasePage):
+class DataConnectPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
 
