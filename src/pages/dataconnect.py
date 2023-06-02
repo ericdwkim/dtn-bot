@@ -15,7 +15,19 @@ class DataConnectPage(BasePage):
     def set_date_filter(self):
         yesterday_date_selector = self.driver.find_element(By.CSS_SELECTOR, '#date > option:nth-child(2)').click()
 
-    def set_translated_filter(self):
+    def set_translated_filter(self, driver):
         translated_filter_wait = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')))
 
+        # Opening translated pop-up modal
         translated_filter_selector = self.driver.find_element(By.CSS_SELECTOR, 'th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)').click()
+
+        # Wait for pop-up modal element
+        # div.ui-dialog:nth-child(15)
+
+        # Adjust translated to `No`
+        # li.ui-draggable:nth-child(1) > a:nth-child(2) > span:nth-child(1)
+
+    # def switch_tab_and_apply_filters(self, driver):
+    #     self.switch_tab(driver)
+    #     self.set_date_filter()
+    #     self.set_translated_filter(driver)
