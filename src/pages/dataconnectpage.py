@@ -19,17 +19,24 @@ class DataConnectPage(BasePage):
 
     def set_translated_filter(self):
 
-        # Translated filter on DOM
+        # Translated filter header column
         self.wait_for_find_then_click('th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')
 
-        # translated_filter_wait = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')))
-
-        # Opening translated pop-up modal
-        # translated_filter_selector = self.driver.find_element(By.CSS_SELECTOR, 'th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)').click()
-
         # Translated pop up widget's `No` filter
+        # iframe = self.driver.find_element(By.ID, 'LifeLine_iframe')
+
+        # iframe = self.driver.find_element(By.ID, 'cz-clean-room')
+        # iframe = self.driver.find_element(By.ID, 'cz_success_center_launcher_frame')
+        # iframe = self.driver.find_element(By.ID, 'cz_success_center_alert_flyout_frame')
+        # iframe = self.driver.find_element(By.ID, 'cz_success_center_frame')
+
+        self.driver.switch_to.frame("LifeLine_iframe")
+        # self.wait_for_find_then_click('li.ui-draggable:nth-child(1) > a:nth-child(2) > span:nth-child(1)')
+
+        # self.wait_for_element('li.ui-draggable:nth-child(1) > a:nth-child(2) > span:nth-child(1)')
         self.find_element_and_click('li.ui-draggable:nth-child(1) > a:nth-child(2) > span:nth-child(1)')
 
+        # self.find_element_and_click('ui-corner-all ui-icon ui-icon-plus', locator_type=By.CLASS_NAME)
 
     # def switch_tab_and_apply_filters(self, driver):
     #     self.switch_tab(driver)
