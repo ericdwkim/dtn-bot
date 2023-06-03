@@ -11,7 +11,6 @@ def user_journey():
     try:
         # Visit site and login
         login_page = LoginPage(driver)
-        # login_page.enter_username()
         login_page.visit()
         login_page.login(username, password)
 
