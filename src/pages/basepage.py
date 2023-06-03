@@ -7,6 +7,15 @@ class BasePage(object):
     def __init__(self, driver):
         self.driver = driver
 
+    def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
+        element_selector = self.driver.find_element(locator_type, locator)
+        element_selector.click()
+        return element_selector
+
+    def find_element_and_click_and_send_keys(self, locator, keys_to_send):
+        element_selector_clicked = self.find_element_and_click(locator)
+        element_selector_clicked.send_keys(keys_to_send)
+
     def wait_for_page_to_load(self, timeout=10):
         WebDriverWait(self.driver, timeout).until(
             lambda driver: driver.execute_script("return document.readyState") == "complete"
@@ -18,12 +27,12 @@ class BasePage(object):
         )
         return element_wait
 
-    def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
-        element_selector = self.driver.find_element(locator_type, locator)
-        element_selector.click()
-        return element_selector
-
-    def find_element_and_click_and_send_keys(self, locator, keys_to_send):
+    def wait_for_find_then_click(self, locator):
+        self.wait_for_element(locator)
         element_selector_clicked = self.find_element_and_click(locator)
-        element_selector_clicked.send_keys(keys_to_send)
+        return element_selector_clicked
 
+    def wait_for_find_click_then_send_keys(self, locator, keys_to_send):
+        element_selector_clicked = self.wait_for_find_then_click(locator)
+        # self.find_element_and_click_and_send_keys(locator, keys_to_send)
+        element_selector_clicked.send_keys(keys_to_send)
