@@ -24,6 +24,6 @@ class BasePage(object):
         return element_selector
 
     def find_element_and_click_and_send_keys(self, locator, keys_to_send):
-        element_selector_clicked = self.driver.find_element_and_click(locator)
+        element_selector_clicked = self.find_element_and_click(locator)
         element_selector_clicked.send_keys(keys_to_send)
 
