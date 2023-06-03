@@ -1,20 +1,11 @@
-import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-# Environmental variables
-username = os.getenv('DTN_EMAIL_ADDRESS')
-password = os.getenv('DTN_PASSWORD')
-dtn_url = os.getenv('DTN_URL')
-
 class BasePage(object):
     def __init__(self, driver):
         self.driver = driver
-        self.url = dtn_url
-        self.username = username
-        self.password = password
 
     # def wait_for_page_to_load(self, timeout=10):
     #     WebDriverWait(self.driver, timeout).until(
@@ -36,23 +27,3 @@ class BasePage(object):
     #     element_selector_clicked = self.driver.find_element_and_click(locator)
     #     element_selector_clicked.send_keys(keys_to_send)
 
-
-class LoginPage(BasePage):
-    def __init__(self, driver):
-        super().__init__(driver)
-
-    def visit(self):
-        self.driver.get(self.url)
-
-    def login(self):
-        self.username = username
-        self.password = password
-
-class DataConnectPage(BasePage):
-    def __init__(self, driver):
-        super().__init__(driver)
-
-    # def switch_tab(self):
-    #     self.driver
-# TODO: use abstracted wait function like so
-# element = DataConnectPage.wait_for_element("my_element_id")

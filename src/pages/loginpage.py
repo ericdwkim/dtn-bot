@@ -1,9 +1,16 @@
+import os
 from selenium.webdriver.common.by import By
 from .basepage import BasePage
+
+# Environmental variables
+dtn_url = os.getenv('DTN_URL')
 
 class LoginPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
+
+    def visit(self):
+        self.driver.get(dtn_url)
 
     def enter_username(self, username):
         username_field = self.driver.find_element(By.CSS_SELECTOR, '#username')
