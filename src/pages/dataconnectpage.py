@@ -27,12 +27,9 @@ class DataConnectPage(BasePage):
         # Opening translated pop-up modal
         # translated_filter_selector = self.driver.find_element(By.CSS_SELECTOR, 'th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)').click()
 
-        # Translated pop up widget
-        self.
-        # div.ui-dialog:nth-child(15)
+        # Translated pop up widget's `No` filter
+        self.find_element_and_click('li.ui-draggable:nth-child(1) > a:nth-child(2) > span:nth-child(1)')
 
-        # Adjust translated to `No`
-        # li.ui-draggable:nth-child(1) > a:nth-child(2) > span:nth-child(1)
 
     # def switch_tab_and_apply_filters(self, driver):
     #     self.switch_tab(driver)
