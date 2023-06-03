@@ -15,10 +15,11 @@ def user_journey():
         login_page.login(username, password)
 
         # DataConnect navigation
-        # data_connect = DataConnectPage(driver)
-        # data_connect.switch_tab()
+        data_connect = DataConnectPage(driver)
+        data_connect.switch_tab()
         # data_connect.set_date_filter()
         # data_connect.set_translated_filter(driver)
+        data_connect.set_filters()
 
         # perform actions on pages...
     finally:
