@@ -12,13 +12,18 @@ def user_journey():
         # Visit site and login
         login_page = LoginPage(driver)
         login_page.visit()
+        print('Launching browser and visiting site')
         login_page.login(username, password)
+        print('Logging in....')
 
         # DataConnect navigation
         data_connect = DataConnectPage(driver)
         data_connect.switch_tab()
+        print('Switching from home to DataConnect tab')
         # data_connect.set_date_filter()
+        # print('Setting date filter to yesterday')
         data_connect.set_translated_filter()
+        print('Translatied to No..........')
         # data_connect.set_filters()
 
         # perform actions on pages...
