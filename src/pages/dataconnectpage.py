@@ -22,8 +22,14 @@ class DataConnectPage(BasePage):
         # Translated funnel header
         self.wait_for_find_then_click('th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')
         # Translated widget pop up box
-        self.wait_for_element('div.ui-dialog:nth-child(13)')
-        self.find_element_and_click('div.ui-dialog:nth-child(13)') # widget found and clicked w/o issues
+        # self.wait_for_element('div.ui-dialog:nth-child(13)')
+        # Locate anchor element
+        anchor_elm = self.driver.find_element(By.XPATH,
+                                         '/html/body/div[8]/div[2]/div[2]/ul/li[1]/a')
+        span_elm = self.driver.find_element(By.CLASS_NAME, 'ui-icon-plus')
+
+        span_elm.click()
+
         # No plus icon
         # self.find_element_and_click('li.ui-draggable:nth-child(1) > a:nth-child(2) > span:nth-child(1)')
 
