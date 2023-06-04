@@ -21,17 +21,12 @@ class DataConnectPage(BasePage):
 
         # Translated funnel header
         self.wait_for_find_then_click('th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')
+        # Translated widget pop up box
+        self.wait_for_element('div.ui-dialog:nth-child(13)')
+        self.find_element_and_click('div.ui-dialog:nth-child(13)') # widget found and clicked w/o issues
+        # No plus icon
+        # self.find_element_and_click('li.ui-draggable:nth-child(1) > a:nth-child(2) > span:nth-child(1)')
 
-
-        # Switch to iframe
-        # self.driver.switch_to.frame('LifeLine_iframe')
-        self.driver.switch_to.frame('cz-clean-room')
-        # self.driver.switch_to.frame('LifeLine_iframe')
-        # self.driver.switch_to.frame('LifeLine_iframe')
-        # driver.switch_to.frame(driver.find_elements(By.TAG_NAME, "iframe")[0])
-        self.wait_for_find_then_click('li.ui-draggable:nth-child(1) > a:nth-child(2) > span:nth-child(1)')
-
-        # self.find_element_and_click('ui-corner-all ui-icon ui-icon-plus', locator_type=By.CLASS_NAME)
 
     # def switch_tab_and_apply_filters(self, driver):
     #     self.switch_tab(driver)
