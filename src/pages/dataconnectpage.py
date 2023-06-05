@@ -20,12 +20,15 @@ class DataConnectPage(BasePage):
         # Translated funnel header
         self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)")
 
-        no_drag_bar_wait = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")))
+        # Set Translated to `No`
+        no_drag_bar_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")))
         no_drag_bar= self.driver.find_element(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
+        action.double_click(no_drag_bar)
+        print("No drag bar double clicked!")
 
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
-        self.wait_for_element_clickable(By.XPATH, "/html/body/div[10]/div[3]/div/button[1][contains(., 'Filter')]")
-        self.find_element_and_click(By.XPATH, "/html/body/div[10]/div[3]/div/button[1][contains(., 'Filter')]")
+        self.wait_for_element_clickable(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span[contains(., 'Filter')]")
+        self.find_element_and_click(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span[contains(., 'Filter')]")
 
 
 
