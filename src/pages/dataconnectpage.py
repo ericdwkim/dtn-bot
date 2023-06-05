@@ -27,7 +27,7 @@ class DataConnectPage(BasePage):
         print("No drag bar double clicked!")
 
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
-        filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
+        # filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
         filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
 
         # Check if the element is displayed
