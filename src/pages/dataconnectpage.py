@@ -21,7 +21,7 @@ class DataConnectPage(BasePage):
         self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)")
 
         # Test clicking `Cancel` button on widget to see if any elm on widget can actually be interacted with
-        self.find_element_and_click("body > div:nth-child(15) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(2) > span")
+        self.find_element_and_click("body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > div > a")
 
         # Wait for list of draggable widget elements to be located
         # lst_drag_elms = WebDriverWait(self.driver, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable')))
