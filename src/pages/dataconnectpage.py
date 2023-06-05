@@ -27,8 +27,10 @@ class DataConnectPage(BasePage):
         print("No drag bar double clicked!")
 
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
-        self.wait_for_element_clickable(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span[contains(., 'Filter')]")
-        self.find_element_and_click(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span[contains(., 'Filter')]")
+        
+        self.wait_for_element_clickable(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]")
+        self.find_element_and_click(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]")
+
 
 
 
