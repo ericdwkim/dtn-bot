@@ -19,7 +19,7 @@ class DataConnectPage(BasePage):
         # Translated funnel header
         # self.wait_for_find_then_click('th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')
 
-        self.retry_wait_find_then_click(self.driver, "th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)", max_retries=5, retry_delay=2)
+        self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)")
 
         # No draggable bar; double click to set
         no_drag_bar_wait = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1]")))
