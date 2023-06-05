@@ -51,3 +51,11 @@ class BasePage(object):
         else:
             # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
             print("Maximum number of retries reached. Element not found.")
+
+
+    def check_element_visibility(driver, locator ,locator_type=By.CSS_SELECTOR):
+        element = driver.find_element(locator_type, locator)
+        if element.is_displayed():
+            print("Element is visible")
+        else:
+            print("Element is not visible")
