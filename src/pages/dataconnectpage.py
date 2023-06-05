@@ -20,6 +20,16 @@ class DataConnectPage(BasePage):
         # Translated funnel header
         self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)")
 
+        self.wait_for_element(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
+
+        # Execute JavaScript to set the property to 'No' value
+        script = """
+        var draggableBar = document.querySelector('.ui-state-default.ui-element.ui-draggable');
+        draggableBar.setAttribute('title', 'No');
+        """
+        self.driver.execute_script(script)
+
+
         # Check for widget visibility
         # self.check_element_visibility(By.CLASS_NAME, 'ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable')
 
