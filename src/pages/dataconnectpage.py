@@ -17,16 +17,18 @@ class DataConnectPage(BasePage):
     def set_translated_filter(self):
 
         # Translated funnel header
-        self.wait_for_find_then_click('th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')
+        # self.wait_for_find_then_click('th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')
+        
+        self.retry_wait_find_then_click(self.driver, "th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)", max_retries=5, retry_delay=2)
 
         # No draggable bar; double click to set
-        no_drag_bar_wait = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//li[@class='ui-state-default ui-element ui-draggable' and @title='No']")))
-        no_drag_bar= self.driver.find_element(By.XPATH, "//li[@class='ui-state-default ui-element ui-draggable' and @title='No']")
+        no_drag_bar_wait = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[2]")))
+        no_drag_bar= self.driver.find_element(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[2]")
 
 
         action = ActionChains(self.driver)
         action.double_click(no_drag_bar)
-        action.double_click(WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//li[@class='ui-state-default ui-element ui-draggable' and @title='No']")))).perform()
+        action.double_click(WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[2]")))).perform()
         # //li[@class='ui-state-default ui-element ui-draggable' and @title='No']
         # <li class="ui-state-default ui-element ui-draggable" title="No"><span class="ui-helper-hidden"></span>No<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li>
 
