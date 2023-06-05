@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import time
 class BasePage(object):
     def __init__(self, driver):
@@ -44,7 +44,7 @@ class BasePage(object):
             try:
                 element = self.wait_for_find_then_click(locator)
                 break  # Break out of the loop if element is found and clicked successfully
-            except NoSuchElementException:
+            except (NoSuchElementException, TimeoutException):
                 print(f"Element not found. Retrying... (Attempt {retries+1}/{max_retries})")
                 retries += 1
                 time.sleep(retry_delay)  # Delay before retrying
