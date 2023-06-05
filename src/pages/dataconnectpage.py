@@ -20,13 +20,21 @@ class DataConnectPage(BasePage):
         self.wait_for_find_then_click('th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)')
 
         # No draggable bar; double click to set
-        no_drag_bar= self.driver.find_element(By.XPATH, '/html/body/div[8]/div[2]/div[2]/ul/li[1]')
+        no_drag_bar_wait = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//li[@class='ui-state-default ui-element ui-draggable' and @title='No']")))
+        no_drag_bar= self.driver.find_element(By.XPATH, "//li[@class='ui-state-default ui-element ui-draggable' and @title='No']")
 
 
         action = ActionChains(self.driver)
         action.double_click(no_drag_bar)
-        action.double_click(WebDriverWait(self.driver, 20).until(
-            EC.element_to_be_clickable((By.XPATH, '/html/body/div[8]/div[2]/div[2]/ul/li[1]'))).perform())
+        action.double_click(WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//li[@class='ui-state-default ui-element ui-draggable' and @title='No']")))).perform()
+        # //li[@class='ui-state-default ui-element ui-draggable' and @title='No']
+        # <li class="ui-state-default ui-element ui-draggable" title="No"><span class="ui-helper-hidden"></span>No<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li>
+
+
+        # <p class="wrap button draggable" id="anonymous_element_1"><b class="icon" id="handler2"></b>Reports</p>
+
+        # ActionChains(driver).double_click(WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//p[@class='wrap button draggable' and @id='anonymous_element_1'][contains(., 'Reports')]")))).perform()
+
         # action.perform()
         print('no drag bar double clicked!')
 
