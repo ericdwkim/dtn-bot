@@ -54,7 +54,7 @@ class BasePage(object):
 
 
     def check_element_visibility(self, locator ,locator_type=By.CSS_SELECTOR):
-        element = self.find_element(locator_type, locator)
+        element = self.driver.find_element(locator_type, locator)
         if element.is_displayed():
             print("Element is visible")
         else:
