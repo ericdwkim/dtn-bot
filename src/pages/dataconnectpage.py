@@ -24,8 +24,8 @@ class DataConnectPage(BasePage):
         no_drag_bar= self.driver.find_element(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
 
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
-        self.wait_for_element_clickable("body > div:nth-child(15) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span")
-        self.find_element_and_click("body > div:nth-child(15) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span")
+        self.wait_for_element_clickable(By.XPATH, "/html/body/div[10]/div[3]/div/button[1][contains(., 'Filter')]")
+        self.find_element_and_click(By.XPATH, "/html/body/div[10]/div[3]/div/button[1][contains(., 'Filter')]")
 
 
 
