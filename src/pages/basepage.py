@@ -21,7 +21,7 @@ class BasePage(object):
             lambda driver: driver.execute_script("return document.readyState") == "complete"
         )
 
-    def wait_for_element(self, locator, locator_type=By.CSS_SELECTOR, timeout=10):
+    def wait_for_element(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
         element_wait = WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located((locator_type, locator))
         )

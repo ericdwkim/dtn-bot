@@ -23,7 +23,7 @@ def user_journey():
         # data_connect.set_date_filter()
         # print('Setting date filter to yesterday')
         data_connect.set_translated_filter()
-        print('Translatied to No..........')
+        print('Translated to No..........')
         # data_connect.set_filters()
 
         # perform actions on pages...
