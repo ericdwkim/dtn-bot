@@ -42,7 +42,7 @@ class DataConnectPage(BasePage):
         draggable_no = lst_drag_elms[0]
         self.check_element_visibility(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
         print(f'------draggable_no: {draggable_no}')
-        
+
         # no_drag_bar_test_wait = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")))
         # action.double_click(no_drag_bar_test).perform()
 
