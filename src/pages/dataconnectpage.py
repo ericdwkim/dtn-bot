@@ -19,6 +19,8 @@ class DataConnectPage(BasePage):
 
         # Translated funnel header
         self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)")
+        # Anchor elm for No ui plus ; if able
+        self.check_element_visibility(By.XPATH, '/html/body/div[8]/div[2]/div[2]/ul/li[1]/a')
 
         # self.wait_for_element(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
 
@@ -38,10 +40,10 @@ class DataConnectPage(BasePage):
 
 
         # Wait for list of draggable widget elements to be located
-        lst_drag_elms = WebDriverWait(self.driver, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'available connected-list')))
-        draggable_no = lst_drag_elms[0]
-        self.check_element_visibility(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
-        print(f'------draggable_no: {draggable_no}')
+        # lst_drag_elms = WebDriverWait(self.driver, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'available connected-list')))
+        # draggable_no = lst_drag_elms[0]
+        # self.check_element_visibility(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
+        # print(f'------draggable_no: {draggable_no}')
 
         # no_drag_bar_test_wait = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")))
         # action.double_click(no_drag_bar_test).perform()
@@ -57,10 +59,6 @@ class DataConnectPage(BasePage):
         # action.double_click(WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")))).perform()
         #
 
-        n = 3
-        while n > 0:
-            print('testing')
-            n = n - 1
         # //li[@class='ui-state-default ui-element ui-draggable' and @title='No']
         # <li class="ui-state-default ui-element ui-draggable" title="No"><span class="ui-helper-hidden"></span>No<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li>
 
@@ -70,7 +68,7 @@ class DataConnectPage(BasePage):
         # ActionChains(driver).double_click(WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//p[@class='wrap button draggable' and @id='anonymous_element_1'][contains(., 'Reports')]")))).perform()
 
         # action.perform()
-        print('no drag bar double clicked!')
+        # print('no drag bar double clicked!')
 
 
 
