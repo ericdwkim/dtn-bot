@@ -20,12 +20,15 @@ class DataConnectPage(BasePage):
         # Translated funnel header
         self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)")
 
+        # Test clicking `Cancel` button on widget to see if any elm on widget can actually be interacted with
+        self.find_element_and_click("body > div:nth-child(15) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(2) > span")
+
         # Wait for list of draggable widget elements to be located
-        lst_drag_elms = WebDriverWait(self.driver, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable')))
-        target_widget = lst_drag_elms[6]
-        no_drag_bar_test = target_widget.find_element(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
-        no_drag_bar_test_wait = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")))
-        action.double_click(no_drag_bar_test).perform()
+        # lst_drag_elms = WebDriverWait(self.driver, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable')))
+        # target_widget = lst_drag_elms[6]
+        # no_drag_bar_test = target_widget.find_element(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
+        # no_drag_bar_test_wait = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")))
+        # action.double_click(no_drag_bar_test).perform()
 
 
 
