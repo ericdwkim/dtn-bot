@@ -37,6 +37,7 @@ class DataConnectPage(BasePage):
         else:
             print("Element is disabled")
 
+        # Test - both check return True; displayed & enabled
 
 
     # def switch_tab_and_apply_filters(self, driver):
