@@ -43,7 +43,7 @@ class BasePage(object):
         # self.find_element_and_click_and_send_keys(locator, keys_to_send)
         element_selector_clicked.send_keys(keys_to_send)
 
-    def retry_wait_find_then_click(self, locator, max_retries=3, retry_delay=1):
+    def retry_wait_find_then_click(self, locator, max_retries=5, retry_delay=1):
         retries = 0
         while retries < max_retries:
             try:
