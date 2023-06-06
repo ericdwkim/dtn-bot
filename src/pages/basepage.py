@@ -21,7 +21,7 @@ class BasePage(object):
         element_selector_clicked.send_keys(keys_to_send)
 
 
-    def find_element_and_double_click(self, locator, locator_type=By.CSS_SELECTOR):
+    def find_element_and_double_click(self, locator, locator_type=By.XPATH):
         element = self.driver.find_element(locator_type, locator)
         self.action.double_click(element)
 
@@ -47,9 +47,9 @@ class BasePage(object):
         element_selector_clicked = self.find_element_and_click(locator)
         return element_selector_clicked
 
-    def wait_for_find_then_double_click(self, locator):
-        self.wait_for_element(locator)
-        element_selector_double_clicked = self.find_element_and_double_click(locator)
+    def wait_for_find_then_double_click(self, locator, locator_type=By.XPATH):
+        self.wait_for_element(locator, locator_type)
+        element_selector_double_clicked = self.find_element_and_double_click(locator, locator_type)
         return element_selector_double_clicked
 
     def wait_for_find_click_then_send_keys(self, locator, keys_to_send):
@@ -71,11 +71,11 @@ class BasePage(object):
             # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
             print("Maximum number of retries reached. Element not found.")
 
-    def retry_wait_find_then_double_click(self, locator, max_retries=5, retry_delay=1):
+    def retry_wait_find_then_double_click(self, locator, locator_type=By.XPATH , max_retries=5, retry_delay=1):
         retries = 0
         while retries < max_retries:
             try:
-                element = self.wait_for_find_then_double_click(locator)
+                element = self.wait_for_find_then_double_click(locator, locator_type)
                 break  # Break out of the loop if element is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
                 print(f"Element not found. Retrying... (Attempt {retries+1}/{max_retries})")

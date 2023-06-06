@@ -22,7 +22,7 @@ class DataConnectPage(BasePage):
         self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)")
 
         # Set Translated to `No`
-        self.retry_wait_find_then_double_click(By.XPATH, "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
+        self.retry_wait_find_then_double_click("/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
         print("No drag bar double clicked!")
 
         # Wait to see if UI updates
