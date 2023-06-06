@@ -26,6 +26,9 @@ class DataConnectPage(BasePage):
         """
         Setting Translated to `No` with drag & drop
         """
+        # source locators are the possible locator type, locator string
+        # specific to the `No` draggable bar
+        
         src_locators = {
             "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, [
                 "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"]),
@@ -34,7 +37,11 @@ class DataConnectPage(BasePage):
         }
 
         # `selected connected-list ui-sortable` class as target element to drop
+        # target locators is the one locator type, locator string specific to drop area for source element
+        # to add other locator types, just create new KEY w/ tup value
+
         target_locators = {
+
             'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
                                ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
         }
