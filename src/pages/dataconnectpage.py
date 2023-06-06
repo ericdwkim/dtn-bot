@@ -30,28 +30,32 @@ class DataConnectPage(BasePage):
         else:
             print("No drag bar NOT double clicked")
 
-        time.sleep(30) # Required to update UI 
+        time.sleep(30) # Required to update UI
 
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
-        # if self.retry_wait_find_then_double_click("/html/body/div[10]/div[3]/div/button[1]/span"):
-        #     print("Filter button clicked!")
+        # "/html/body/div[10]/div[3]/div/button[1]/span" XPATH
+        #
+        if self.retry_wait_find_then_double_click( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
+            print("Filter button clicked!")
+        else:
+            print("Filter button NOT clicked!")
+
+        time.sleep(30)
+
+        # filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
+        # filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
+        #
+        # # Check if the element is displayed
+        # if filter_btn.is_displayed():
+        #     print("Element is displayed")
         # else:
-        #     print("Filter button NOT clicked!")
-
-        filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
-        filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
-
-        # Check if the element is displayed
-        if filter_btn.is_displayed():
-            print("Element is displayed")
-        else:
-            print("Element is not displayed")
-
-        # Check if the element is enabled
-        if filter_btn.is_enabled():
-            print("Element is enabled")
-        else:
-            print("Element is disabled")
+        #     print("Element is not displayed")
+        #
+        # # Check if the element is enabled
+        # if filter_btn.is_enabled():
+        #     print("Element is enabled")
+        # else:
+        #     print("Element is disabled")
 
 
     # def switch_tab_and_apply_filters(self, driver):
