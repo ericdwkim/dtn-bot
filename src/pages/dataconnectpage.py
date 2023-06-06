@@ -23,14 +23,17 @@ class DataConnectPage(BasePage):
         else:
             print("Translated funnel NOT clicked!")
 
+        self.wait_for_page_to_load()
 
         # Set Translated to `No`
+        # TODO: Non-deterministic issue - need to find elm consistently w/o refreshing page
         if self.retry_wait_find_then_double_click("/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]"):
             print("No drag bar double clicked!")
+            time.sleep(30)
         else:
             print("No drag bar NOT double clicked")
 
-        time.sleep(30) # Required to update UI
+        # time.sleep(60) # Required to update UI
 
         # Confirm filter setting by clicking `Filter` button on widget
         # if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
