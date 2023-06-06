@@ -51,7 +51,13 @@ class DataConnectPage(BasePage):
             else:
                 print(f'Drag and drop failed with locator {src_locator_key}')
 
-        # TODO: Refactor current setup as drag & drop works!!!! 
+        # TODO: Refactor current setup as drag & drop works!!!!
+        """
+        FYI: 
+            Drag and drop failed with locator CSS_SELECTOR_KEY
+            Drag and drop successful with locator XPATH_KEY
+        might be worth just going w/ XPATH_KEY but redundancy code is still useful?
+        """
         # TODO: consider changing ds since locator key literals are identical both source and target; will have to remove unneeded dict_key and replace with By.locator_type ?
         # locator_keys = ['CSS_SELECTOR_KEY', 'XPATH_KEY']
         # for locator_key in locator_keys:  # Loop over locator keys
@@ -63,37 +69,13 @@ class DataConnectPage(BasePage):
         #         print(f'Drag and drop failed with locator {locator_key}')
         # -----------------------------------------------------------------------
 
-        """
-        Setting Translated to `No` with doubleclick
-        """
-        # locators as mapping
-        # locators = {
-        #     By.CSS_SELECTOR: "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)",
-        #     By.XPATH: ["/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]",
-        #                "/html/body/div[8]/div[2]/div[2]/ul/li[1]"],
-        # }
-
-        # for locator_type, locator_values in locators.items():
-        #     for locator in locator_values:
-        #         if self.retry_wait_find_then_double_click(locator, locator_type):
-        #             print(f' No drag bar double clicked using locator: {locator}')
-        #             break
-        #     else:
-        #         continue
-        #     break
-        # else:
-        #     print("No drag bar NOT double clicked")
-        #
-        # time.sleep(60)  # Required to update UI
-        #
-        #
         # Confirm filter setting by clicking `Filter` button on widget
-        # if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
-        #     print("Filter button clicked!")
-        # else:
-        #     print("Filter button NOT clicked!")
-        #
-        # time.sleep(30)
+        if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
+            print("Filter button clicked!")
+        else:
+            print("Filter button NOT clicked!")
+
+        time.sleep(30)
 
         # filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
         # filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
