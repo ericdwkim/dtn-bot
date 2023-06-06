@@ -23,29 +23,43 @@ class DataConnectPage(BasePage):
         else:
             print("Translated funnel NOT clicked!")
 
-        self.wait_for_page_to_load()
+        """
+        locators: locator types for `No` draggable bar in the following order CSS_SELECTOR, cust_XPATH, XPATH. 
+        Setting Translated to `No` with drag & drop
+        """
+        # Locator types for `No` draggable bar in the following order CSS_SELECTOR, cust_XPATH, XPATH.
+        locators = [
+            "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)",
+            "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]",
+            "/html/body/div[8]/div[2]/div[2]/ul/li[1]"
+        ]
+        # `selected connected-list ui-sortable` class
+        target_locator = "body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"
 
-        # Set Translated to `No`
-        # TODO:  NOTE - implement try conditional for following locator_types
-        css_selector = "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"
-        cust_xpath = "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]"
-        xpath = "/html/body/div[8]/div[2]/div[2]/ul/li[1]" ""
+        for locator in locators:
+            try:
+                self.find_element_drag_and_drop(locator_src=locator, locator_target=target_locator)
+                time.sleep(30) # Wait for UI update
+                # If the drag and drop was successful, you can break out of the loop.
+                break
+            except Exception as e:
+                print(f"Drag and drop failed with locator {locator}. Error: {e}")
+                # You may continue to next locator
 
 
-
-        # TODO: Non-deterministic issue - need to find elm consistently w/o refreshing page
-        # TODO: Consider wrapping this block into a conditional check for LHS element.text incl. `No` drag bar
-        if self.retry_wait_find_then_double_click(cust_xpath):
-            print(f' No drag bar double clicked using locator: {cust_xpath}')
-        elif self.retry_wait_find_then_double_click(css_selector):
-            print(f' No drag bar double clicked using locator: {css_selector}')
-        elif self.retry_wait_find_then_double_click(xpath):
-            print(f' No drag bar double clicked using locator: {xpath}')
+        """
+        Setting Translated to `No` with doubleclick
+        """
+        for locator in locators:
+            if self.retry_wait_find_then_double_click(locator):
+                print(f' No drag bar double clicked using locator: {locator}')
+                break
         else:
             print("No drag bar NOT double clicked")
 
-        time.sleep(60) # Required to update UI
-""
+        time.sleep(60)  # Required to update UI
+
+
         # Confirm filter setting by clicking `Filter` button on widget
         # if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
         #     print("Filter button clicked!")

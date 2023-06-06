@@ -11,10 +11,14 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    # def find_element_drag_and_drop(self, locator, locator_type=By.CSS_SELECTOR):
-    #     source_element = self.driver.find_element(locator_type, locator)
-    #     target_element = self.driver.find_element(locator_type, locator)
-    #     self.action.drag_and_drop(source_element, target_element)
+    """
+    source - elem to drag
+    target - elem to drop onto
+    """
+    def find_element_drag_and_drop(self, locator_src, locator_target, locator_type_target = By.CSS_SELECTOR, locator_type_src=By.CSS_SELECTOR):
+        source_element = self.driver.find_element(locator_type_src, locator_src)
+        target_element = self.driver.find_element(locator_type_target, locator_target)
+        self.action.drag_and_drop(source_element, target_element)
 
     """
     find_element_and_click() uses WebElement.click()
