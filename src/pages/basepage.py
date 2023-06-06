@@ -23,7 +23,7 @@ class BasePage(object):
 
     def find_element_and_double_click(self, locator, locator_type=By.XPATH):
         element = self.driver.find_element(locator_type, locator)
-        self.action.double_click(element)
+        self.action.move_to_element(element).double_click(element).perform()
 
 
     def wait_for_page_to_load(self, timeout=10):

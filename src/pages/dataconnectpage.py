@@ -25,25 +25,24 @@ class DataConnectPage(BasePage):
         self.retry_wait_find_then_double_click("/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
         print("No drag bar double clicked!")
 
-        # Wait to see if UI updates
-        time.sleep(10)
-
-
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
-        # filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
-        # filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
+        self.retry_wait_find_then_double_click("/html/body/div[10]/div[3]/div/button[1]/span")
 
-        # Check if the element is displayed
-        # if filter_btn.is_displayed():
-        #     print("Element is displayed")
-        # else:
-        #     print("Element is not displayed")
-        #
-        # # Check if the element is enabled
-        # if filter_btn.is_enabled():
-        #     print("Element is enabled")
-        # else:
-        #     print("Element is disabled")
+
+        filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
+        filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
+
+        Check if the element is displayed
+        if filter_btn.is_displayed():
+            print("Element is displayed")
+        else:
+            print("Element is not displayed")
+
+        # Check if the element is enabled
+        if filter_btn.is_enabled():
+            print("Element is enabled")
+        else:
+            print("Element is disabled")
 
 
         # self.wait_for_element_clickable(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]")
