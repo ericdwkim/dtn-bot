@@ -33,12 +33,12 @@ class DataConnectPage(BasePage):
         time.sleep(30) # Required to update UI
 
         # Confirm filter setting by clicking `Filter` button on widget
-        if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
-            print("Filter button clicked!")
-        else:
-            print("Filter button NOT clicked!")
-
-        time.sleep(30)
+        # if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
+        #     print("Filter button clicked!")
+        # else:
+        #     print("Filter button NOT clicked!")
+        #
+        # time.sleep(30)
 
         # filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
         # filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
