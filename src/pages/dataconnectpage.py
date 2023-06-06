@@ -26,15 +26,26 @@ class DataConnectPage(BasePage):
         self.wait_for_page_to_load()
 
         # Set Translated to `No`
+        # TODO:  NOTE - implement try conditional for following locator_types
+        css_selector = "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"
+        cust_xpath = "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]"
+        xpath = "/html/body/div[8]/div[2]/div[2]/ul/li[1]" ""
+
+
+
         # TODO: Non-deterministic issue - need to find elm consistently w/o refreshing page
         # TODO: Consider wrapping this block into a conditional check for LHS element.text incl. `No` drag bar
-        if self.retry_wait_find_then_double_click("/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]"):
-            print("No drag bar double clicked!")
+        if self.retry_wait_find_then_double_click(cust_xpath):
+            print(f' No drag bar double clicked using locator: {cust_xpath}')
+        elif self.retry_wait_find_then_double_click(css_selector):
+            print(f' No drag bar double clicked using locator: {css_selector}')
+        elif self.retry_wait_find_then_double_click(xpath):
+            print(f' No drag bar double clicked using locator: {xpath}')
         else:
             print("No drag bar NOT double clicked")
 
         time.sleep(60) # Required to update UI
-
+""
         # Confirm filter setting by clicking `Filter` button on widget
         # if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
         #     print("Filter button clicked!")
