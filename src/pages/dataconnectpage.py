@@ -32,7 +32,7 @@ class DataConnectPage(BasePage):
 
         time.sleep(30) # Required to update UI
 
-        # Click `filter` on widget to refresh current page to validate if Translated is all Nos
+        # Confirm filter setting by clicking `Filter` button on widget
         if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
             print("Filter button clicked!")
         else:
