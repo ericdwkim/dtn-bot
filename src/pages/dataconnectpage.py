@@ -51,7 +51,7 @@ class DataConnectPage(BasePage):
             else:
                 print(f'Drag and drop failed with locator {src_locator_key}')
 
-        # -----------------------------------------------------------------------
+        # TODO: Refactor current setup as drag & drop works!!!! 
         # TODO: consider changing ds since locator key literals are identical both source and target; will have to remove unneeded dict_key and replace with By.locator_type ?
         # locator_keys = ['CSS_SELECTOR_KEY', 'XPATH_KEY']
         # for locator_key in locator_keys:  # Loop over locator keys
