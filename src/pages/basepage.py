@@ -11,6 +11,11 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
+    """
+    find_element_and_click() uses WebElement.click()
+    NOTE: some fns require `element_selector` to be returned, such as WebElement.send_keys()
+    Will need to come back and refactor... 
+    """
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
         element_selector = self.driver.find_element(locator_type, locator)
         element_selector.click()
@@ -20,11 +25,16 @@ class BasePage(object):
         element_selector_clicked = self.find_element_and_click(locator)
         element_selector_clicked.send_keys(keys_to_send)
 
+    """
+    find_element_and_click_perform() uses ActionChains
+    """
+    def find_element_and_click_perform(self, locator, locator_type=By.CSS_SELECTOR):
+        element = self.driver.find_element(locator_type, locator)
+        self.action.move_to_element(element).click(element).perform()
 
     def find_element_and_double_click(self, locator, locator_type=By.XPATH):
         element = self.driver.find_element(locator_type, locator)
         self.action.move_to_element(element).double_click(element).perform()
-
 
     def wait_for_page_to_load(self, timeout=10):
         WebDriverWait(self.driver, timeout).until(
@@ -42,10 +52,22 @@ class BasePage(object):
         )
         return element_wait
 
+    """
+    wait_for_find_then_click() uses WebElement.click()
+    """
     def wait_for_find_then_click(self, locator):
         self.wait_for_element(locator)
         element_selector_clicked = self.find_element_and_click(locator)
         return element_selector_clicked
+
+    """
+    wait_for_find_then_single_click() uses ActionChains.click().perform()
+    """
+    def wait_for_find_then_single_click(self, locator, locator_type=By.CSS_SELECTOR):
+        self.wait_for_element(locator)
+        self.find_element_and_click_perform(locator, locator_type)
+
+
 
     def wait_for_find_then_double_click(self, locator, locator_type=By.XPATH):
         self.wait_for_element(locator, locator_type)
@@ -56,6 +78,31 @@ class BasePage(object):
         element_selector_clicked = self.wait_for_find_then_click(locator)
         # self.find_element_and_click_and_send_keys(locator, keys_to_send)
         element_selector_clicked.send_keys(keys_to_send)
+
+    """
+    retry_wait_for_single_click_perform() uses ActionChains.click()
+    
+    """
+    def retry_wait_for_single_click_perform(self, locator, locator_type=By.CSS_SELECTOR, max_retries=5, retry_delay=1 ):
+        retries = 0
+        while retries < max_retries:
+            try:
+                element = self.wait_for_find_then_single_click(locator, locator_type)
+                return True # Return True and exit fn if elm is found and clicked successfully
+            except (NoSuchElementException, TimeoutException):
+                print(f'Element (single ActionChains.click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
+                retries += 1
+                time.sleep(retry_delay) # Delay before retrying
+        else:
+            # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
+            print(f'Maximum number of retries reached. Element (single ActionChains.click) with locator: {locator}  not found.')
+            return False  # Return False if element was not found after max_retries
+
+
+    """
+    retry_wait_find_then_click() uses WebElement.click()
+
+    """
 
     def retry_wait_find_then_click(self, locator, max_retries=5, retry_delay=1):
         retries = 0

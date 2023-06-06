@@ -33,9 +33,7 @@ class DataConnectPage(BasePage):
         time.sleep(30) # Required to update UI
 
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
-        # "/html/body/div[10]/div[3]/div/button[1]/span" XPATH
-        #
-        if self.retry_wait_find_then_double_click( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
+        if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
             print("Filter button clicked!")
         else:
             print("Filter button NOT clicked!")
