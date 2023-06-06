@@ -15,7 +15,7 @@ def user_journey():
 
         # DataConnect navigation
         data_connect = DataConnectPage(driver)
-        data_connect.set_filters()
+        # data_connect.set_filters()
 
         # perform actions on pages...
     finally:

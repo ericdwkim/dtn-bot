@@ -64,10 +64,14 @@ class BasePage(object):
         )
 
     def wait_for_element(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
-        element_wait = WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located((locator_type, locator))
-        )
-        return element_wait
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.visibility_of_element_located((locator_type, locator))
+            )
+            return True # If element is found within `timeout`
+        except TimeoutException:
+            return False # If exception raised
+
     def wait_for_element_clickable(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
         element_wait = WebDriverWait(self.driver, timeout).until(
             EC.element_to_be_clickable((locator_type, locator))
@@ -78,9 +82,18 @@ class BasePage(object):
     wait_for_find_then_click() uses WebElement.click()
     """
     def wait_for_find_then_click(self, locator):
-        self.wait_for_element(locator)
-        element_selector_clicked = self.find_element_and_click(locator)
-        return element_selector_clicked
+        try:
+            is_element_present = self.wait_for_element(locator)
+            if is_element_present:
+                element = self.find_element_and_click(locator)
+                print(f'Successfully clicked on the element: {element}')
+                return True
+            else:
+                print(f'Element was not present using locator:  {locator}.')
+                return False
+        except NoSuchElementException:
+            print(f'NoSuchElementException: The element was not found using locator: {locator}.')
+            return False
 
     """
     wait_for_find_then_single_click() uses ActionChains.click().perform()
