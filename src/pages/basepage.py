@@ -62,28 +62,31 @@ class BasePage(object):
         while retries < max_retries:
             try:
                 element = self.wait_for_find_then_click(locator)
-                break  # Break out of the loop if element is found and clicked successfully
+                return True  # Return True and exit the function if element is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
-                print(f'Element - single click: {element} not found. Retrying... (Attempt {retries+1}/{max_retries})')
+                print(f'Element (single click): {element} with locator: {locator}not found. Retrying... (Attempt {retries+1}/{max_retries})')
                 retries += 1
                 time.sleep(retry_delay)  # Delay before retrying
         else:
             # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
-            print(f'Maximum number of retries reached. Element  - single click: {element}  not found.')
+            print(f'Maximum number of retries reached. Element (single click) with locator: {locator}  not found.')
+            return False  # Return False if element was not found after max_retries
 
     def retry_wait_find_then_double_click(self, locator, locator_type=By.XPATH , max_retries=5, retry_delay=1):
         retries = 0
         while retries < max_retries:
             try:
                 element = self.wait_for_find_then_double_click(locator, locator_type)
-                break  # Break out of the loop if element is found and clicked successfully
+                return True  # Return True and exit the function if element is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
-                print(f'Element - double click: {element} not found. Retrying... (Attempt {retries+1}/{max_retries})')
+                print(f'Element (single click): {element} with locator: {locator}not found. Retrying... (Attempt {retries+1}/{max_retries})')
                 retries += 1
                 time.sleep(retry_delay)  # Delay before retrying
         else:
             # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
-            print(f'Maximum number of retries reached. Element - double click: {element}  not found.')
+            print(f'Maximum number of retries reached. Element (single click) with locator: {locator}  not found.')
+            return False  # Return False if element was not found after max_retries
+
 
 
     def check_element_visibility(self, locator ,locator_type=By.CSS_SELECTOR):

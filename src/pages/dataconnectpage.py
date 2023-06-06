@@ -18,11 +18,17 @@ class DataConnectPage(BasePage):
     def set_translated_filter(self):
 
         # Translated funnel header
-        self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)")
+        if self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)"):
+            print("Translated funnel header clicked!")
+        else:
+            print("Translated funnel NOT clicked!")
+
 
         # Set Translated to `No`
-        self.retry_wait_find_then_double_click("/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]")
-        print("No drag bar double clicked!")
+        if self.retry_wait_find_then_double_click("/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]"):
+            print("No drag bar double clicked!")
+        else:
+            print("No drag bar NOT double clicked")
 
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
         # self.retry_wait_find_then_double_click("/html/body/div[10]/div[3]/div/button[1]/span")
