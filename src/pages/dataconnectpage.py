@@ -46,18 +46,18 @@ class DataConnectPage(BasePage):
                 print(f"Drag and drop failed with locator {locator}. Error: {e}")
                 # You may continue to next locator
 
-
-        """
-        Setting Translated to `No` with doubleclick
-        """
-        for locator in locators:
-            if self.retry_wait_find_then_double_click(locator):
-                print(f' No drag bar double clicked using locator: {locator}')
-                break
-        else:
-            print("No drag bar NOT double clicked")
-
-        time.sleep(60)  # Required to update UI
+        #
+        # """
+        # Setting Translated to `No` with doubleclick
+        # """
+        # for locator in locators:
+        #     if self.retry_wait_find_then_double_click(locator):
+        #         print(f' No drag bar double clicked using locator: {locator}')
+        #         break
+        # else:
+        #     print("No drag bar NOT double clicked")
+        #
+        # time.sleep(60)  # Required to update UI
 
 
         # Confirm filter setting by clicking `Filter` button on widget
