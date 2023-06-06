@@ -46,7 +46,7 @@ class BasePage(object):
             EC.visibility_of_element_located((locator_type, locator))
         )
         return element_wait
-    def wait_for_element_clickable(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
+    def wait_for_element_clickable(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
         element_wait = WebDriverWait(self.driver, timeout).until(
             EC.element_to_be_clickable((locator_type, locator))
         )
@@ -68,9 +68,8 @@ class BasePage(object):
         self.find_element_and_click_perform(locator, locator_type)
 
 
-
     def wait_for_find_then_double_click(self, locator, locator_type=By.XPATH):
-        self.wait_for_element(locator, locator_type)
+        self.wait_for_element_clickable(locator, locator_type)
         element_selector_double_clicked = self.find_element_and_double_click(locator, locator_type)
         return element_selector_double_clicked
 
