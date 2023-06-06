@@ -30,14 +30,14 @@ class DataConnectPage(BasePage):
         else:
             print("No drag bar NOT double clicked")
 
-        time.sleep(30)
+        time.sleep(30) # Required to update UI 
 
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
         # if self.retry_wait_find_then_double_click("/html/body/div[10]/div[3]/div/button[1]/span"):
         #     print("Filter button clicked!")
         # else:
         #     print("Filter button NOT clicked!")
-        
+
         filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
         filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
 
