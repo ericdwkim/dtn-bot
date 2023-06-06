@@ -15,10 +15,33 @@ class BasePage(object):
     source - elem to drag
     target - elem to drop onto
     """
-    def find_element_drag_and_drop(self, locator_src, locator_target, locator_type_target = By.CSS_SELECTOR, locator_type_src=By.CSS_SELECTOR):
-        source_element = self.driver.find_element(locator_type_src, locator_src)
-        target_element = self.driver.find_element(locator_type_target, locator_target)
-        self.action.drag_and_drop(source_element, target_element)
+
+    def find_element_drag_and_drop(self, locator_dict, locator_key_src, locator_key_target):
+        locator_type_src, locator_src_list = locator_dict[locator_key_src]
+        locator_type_target, locator_target = locator_dict[locator_key_target]
+        for locator_src in locator_src_list:
+            try:
+                source_element = self.driver.find_element(locator_type_src, locator_src)
+                target_element = self.driver.find_element(locator_type_target, locator_target)
+                self.action.drag_and_drop(source_element, target_element).perform()
+                break  # Break the loop if the action was successful
+            except NoSuchElementException:
+                continue  # Continue with the next locator_src in the list if the current one did not work
+
+    def find_element_drag_and_drop(self, src_locators, locator_key_src, target_locators, locator_key_target):
+        locator_type_src, locator_src_list = src_locators[locator_key_src]
+        locator_type_target, locator_target_list = target_locators[locator_key_target]
+
+        for locator_src in locator_src_list:
+            for locator_target in locator_target_list:
+                try:
+                    source_element = self.driver.find_element(locator_type_src, locator_src)
+                    target_element = self.driver.find_element(locator_type_target, locator_target)
+                    self.action.drag_and_drop(source_element, target_element).perform()
+                    return True  # Drag and drop successful
+                except Exception as e:
+                    print(f"Drag and drop failed with locator {locator_key_src}, {locator_src}. Error: {e}")
+        return False  # Drag and drop failed
 
     """
     find_element_and_click() uses WebElement.click()
