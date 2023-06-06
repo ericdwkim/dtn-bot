@@ -28,3 +28,7 @@ class LoginPage(BasePage):
         self.enter_password(password)
         self.click_login_button()
 
+    def visit_and_login(self, username, password):
+        print('Launching browser and visiting site')
+        self.visit()
+        self.login(username, password)
