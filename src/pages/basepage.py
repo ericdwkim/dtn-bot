@@ -64,7 +64,7 @@ class BasePage(object):
                 element = self.wait_for_find_then_click(locator)
                 return True  # Return True and exit the function if element is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
-                print(f'Element (single click): {element} with locator: {locator}not found. Retrying... (Attempt {retries+1}/{max_retries})')
+                print(f'Element (single click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
                 retries += 1
                 time.sleep(retry_delay)  # Delay before retrying
         else:
@@ -79,12 +79,12 @@ class BasePage(object):
                 element = self.wait_for_find_then_double_click(locator, locator_type)
                 return True  # Return True and exit the function if element is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
-                print(f'Element (single click): {element} with locator: {locator}not found. Retrying... (Attempt {retries+1}/{max_retries})')
+                print(f'Element (double click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
                 retries += 1
                 time.sleep(retry_delay)  # Delay before retrying
         else:
             # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
-            print(f'Maximum number of retries reached. Element (single click) with locator: {locator}  not found.')
+            print(f'Maximum number of retries reached. Element (double click) with locator: {locator}  not found.')
             return False  # Return False if element was not found after max_retries
 
 

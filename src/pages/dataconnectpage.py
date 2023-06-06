@@ -30,30 +30,28 @@ class DataConnectPage(BasePage):
         else:
             print("No drag bar NOT double clicked")
 
+        time.sleep(30)
+
         # Click `filter` on widget to refresh current page to validate if Translated is all Nos
-        # self.retry_wait_find_then_double_click("/html/body/div[10]/div[3]/div/button[1]/span")
-        #
-        #
-        # filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
-        # filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
-        #
+        # if self.retry_wait_find_then_double_click("/html/body/div[10]/div[3]/div/button[1]/span"):
+        #     print("Filter button clicked!")
+        # else:
+        #     print("Filter button NOT clicked!")
+        
+        filter_btn_wait = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")))
+        filter_btn= self.driver.find_element(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]/span")
+
         # Check if the element is displayed
-        # if filter_btn.is_displayed():
-        #     print("Element is displayed")
-        # else:
-        #     print("Element is not displayed")
-        #
-        # # Check if the element is enabled
-        # if filter_btn.is_enabled():
-        #     print("Element is enabled")
-        # else:
-        #     print("Element is disabled")
+        if filter_btn.is_displayed():
+            print("Element is displayed")
+        else:
+            print("Element is not displayed")
 
-
-        # self.wait_for_element_clickable(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]")
-        # self.find_element_and_click(By.XPATH, "/html/body/div[10]/div[3]/div/button[1]")
-        #
-
+        # Check if the element is enabled
+        if filter_btn.is_enabled():
+            print("Element is enabled")
+        else:
+            print("Element is disabled")
 
 
     # def switch_tab_and_apply_filters(self, driver):
