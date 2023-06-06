@@ -25,12 +25,12 @@ class BasePage(object):
         for src_locator in src_locators_list:
             for target_locator in target_locators_list:
                 try:
-                    source_element = self.driver.find_element(src_locator_type, locator_src)
-                    target_element = self.driver.find_element(target_locator_type, locator_target)
+                    source_element = self.driver.find_element(src_locator_type, src_locator)
+                    target_element = self.driver.find_element(target_locator_type, target_locator)
                     self.action.drag_and_drop(source_element, target_element).perform()
                     return True  # Drag and drop successful
                 except Exception as e:
-                    print(f"Drag and drop failed.\n Source locator key: {src_locator_key} | Source locator:  {src_locator}\nTarget locator key: {target_locator_key}, Target locator: {target_locator}.\n Error: {e}")
+                    print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}.\n Error: {e}")
         return False  # Drag and drop failed
 
     """
