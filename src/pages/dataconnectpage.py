@@ -1,9 +1,8 @@
+import time
 from .basepage import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
-import time
 
 class DataConnectPage(BasePage):
     def __init__(self, driver):
@@ -26,38 +25,43 @@ class DataConnectPage(BasePage):
         """
         Setting Translated to `No` with drag & drop
         """
-        # source locators are the possible locator type, locator string
-        # specific to the `No` draggable bar
-        
+        # source locators are the possible locator type, locator string combinations specific to the `No` draggable bar
         src_locators = {
             "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, [
                 "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"]),
-            "XPATH__KEY": (By.XPATH, ["/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]",
+            "XPATH_KEY": (By.XPATH, ["/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]",
                                  "/html/body/div[8]/div[2]/div[2]/ul/li[1]"]),
         }
 
-        # `selected connected-list ui-sortable` class as target element to drop
-        # target locators is the one locator type, locator string specific to drop area for source element
-        # to add other locator types, just create new KEY w/ tup value
+        # target locators is the are the possible locator type, locator string combinations specific to the droppable element
+        # NOTE: to add other locator types, just create new KEY w/ tup value
 
         target_locators = {
-
+            # `selected connected-list ui-sortable` class
             'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
                                ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
         }
-        for locator_key in src_locators:
-            try:
-                self.find_element_drag_and_drop(locator_dict=src_locators, locator_key_src= src_locator_key, )
 
-        for locator_key in locators:
-            try:
-                self.find_element_drag_and_drop(no_bar_locators, locator_key, target_locator_key)
+
+        for src_locator_key in ['CSS_SELECTOR_KEY', 'XPATH_KEY']:  # Loop over keys of source locators
+            if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR_KEY'):
+                print(f'Drag and drop successful with locator {src_locator_key}')
                 time.sleep(30)  # Wait for UI update
-                # If the drag and drop was successful, you can break out of the loop.
                 break
-            except Exception as e:
-                print(f"Drag and drop failed with locator {locator_key}. Error: {e}")
-                # You may continue to next locator
+            else:
+                print(f'Drag and drop failed with locator {src_locator_key}')
+
+        # -----------------------------------------------------------------------
+        # TODO: consider changing ds since locator key literals are identical both source and target; will have to remove unneeded dict_key and replace with By.locator_type ?
+        # locator_keys = ['CSS_SELECTOR_KEY', 'XPATH_KEY']
+        # for locator_key in locator_keys:  # Loop over locator keys
+        #     if self.find_element_drag_and_drop(src_locators, locator_key, target_locators, locator_key):
+        #         print(f'Drag and drop successful with locator {locator_key}')
+        #         time.sleep(30)  # Wait for UI update
+        #         break
+        #     else:
+        #         print(f'Drag and drop failed with locator {locator_key}')
+        # -----------------------------------------------------------------------
 
         """
         Setting Translated to `No` with doubleclick

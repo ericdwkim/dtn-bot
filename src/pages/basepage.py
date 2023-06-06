@@ -12,35 +12,25 @@ class BasePage(object):
         self.action = ActionChains(self.driver)
 
     """
-    source - elem to drag
-    target - elem to drop onto
+    src_locators - mapping for source elements
+    target_locators - mapping for target element(s)
+    source_element - elem to drag
+    target_element - elem to drop onto
     """
 
-    def find_element_drag_and_drop(self, locator_dict, locator_key_src, locator_key_target):
-        locator_type_src, locator_src_list = locator_dict[locator_key_src]
-        locator_type_target, locator_target = locator_dict[locator_key_target]
-        for locator_src in locator_src_list:
-            try:
-                source_element = self.driver.find_element(locator_type_src, locator_src)
-                target_element = self.driver.find_element(locator_type_target, locator_target)
-                self.action.drag_and_drop(source_element, target_element).perform()
-                break  # Break the loop if the action was successful
-            except NoSuchElementException:
-                continue  # Continue with the next locator_src in the list if the current one did not work
+    def find_element_drag_and_drop(self, src_locators, src_locator_key, target_locators, target_locator_key):
+        src_locator_type, src_locators_list = src_locators[src_locator_key]
+        target_locator_type, target_locators_list = target_locators[target_locator_key]
 
-    def find_element_drag_and_drop(self, src_locators, locator_key_src, target_locators, locator_key_target):
-        locator_type_src, locator_src_list = src_locators[locator_key_src]
-        locator_type_target, locator_target_list = target_locators[locator_key_target]
-
-        for locator_src in locator_src_list:
-            for locator_target in locator_target_list:
+        for src_locator in src_locators_list:
+            for target_locator in target_locators_list:
                 try:
-                    source_element = self.driver.find_element(locator_type_src, locator_src)
-                    target_element = self.driver.find_element(locator_type_target, locator_target)
+                    source_element = self.driver.find_element(src_locator_type, locator_src)
+                    target_element = self.driver.find_element(target_locator_type, locator_target)
                     self.action.drag_and_drop(source_element, target_element).perform()
                     return True  # Drag and drop successful
                 except Exception as e:
-                    print(f"Drag and drop failed with locator {locator_key_src}, {locator_src}. Error: {e}")
+                    print(f"Drag and drop failed.\n Source locator key: {src_locator_key} | Source locator:  {src_locator}\nTarget locator key: {target_locator_key}, Target locator: {target_locator}.\n Error: {e}")
         return False  # Drag and drop failed
 
     """
