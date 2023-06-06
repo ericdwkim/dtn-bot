@@ -71,12 +71,14 @@ class DataConnectPage(BasePage):
 
         time.sleep(30)
 
-    def set_group_filter(self):
+    def set_group_filter_to_invoice(self):
         print('Applying group filter to Invoice')
 
         """
          logic to set filter to `Invoice` only
         """
+
+    def set_group_filter_to_draft_notice(self):
 
         print('Applying group filter to Draft Notice')
 
