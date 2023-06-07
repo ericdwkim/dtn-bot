@@ -136,6 +136,6 @@ class DataConnectPage(BasePage):
     # TODO: if checks for each function call to ensure each fn is called successfully before running the next function --> this requires all nested function calls to also return bools.
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
-        # self.set_date_filter()
+        self.set_date_filter()
         # self.set_translated_filter()
         # self.set_group_filter_to_invoice()
