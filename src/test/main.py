@@ -14,8 +14,8 @@ def user_journey():
         login_page.visit_and_login(username, password)
 
         # DataConnect navigation
-        # data_connect = DataConnectPage(driver)
-        # data_connect.switch_tab_and_apply_filters()
+        data_connect = DataConnectPage(driver)
+        data_connect.switch_tab_and_apply_filters()
 
         # perform actions on pages...
     finally:

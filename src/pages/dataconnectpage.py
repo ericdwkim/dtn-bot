@@ -47,12 +47,12 @@ class DataConnectPage(BasePage):
         Clicks `Translated` filter funnel\n
         Drag and drops `No` draggable bar\n
         Click `Filter` button to confirm
-        :return: None
+        :return: bool
         """
-        print('Applying Translated filter to `No`')
-        # If filter found and clicked, return True
-        if self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)"):
-            try:
+
+        try:
+            # If filter found and clicked, return True
+            if self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)"):
                 # print("Translated funnel header clicked!")
 
                 # source locators are the possible (locator type, locator string) combinations specific to the `No` draggable bar
@@ -72,32 +72,44 @@ class DataConnectPage(BasePage):
                                              "body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
                 }
 
-                # Loop over keys of source locators
+                # Loop over keys of source locators; drag & drop for filtering
                 for src_locator_key in ['XPATH_KEY', 'CSS_SELECTOR_KEY']:
-                    if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR_KEY'):
-                        print(f'Drag and drop successful with locator {src_locator_key}')
-                        return True
-                        time.sleep(30)  # Wait for UI update
-                        break
-                    else:
-                        print(f'Drag and drop failed with locator {src_locator_key}')
+                    try:
+                        if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR_KEY'):
+                            print(f'Drag and drop successful with locator {src_locator_key}')
+                            return True
+                            time.sleep(30)  # Wait for UI update
+                            break # exit loop
+                        else:
+                            print(f'Drag and drop failed with locator {src_locator_key}')
+                            return False
+                    except Exception as e:
+                        print(f'An error occurred trying to find_element_drag_and_drop : {string(e)}')
                         return False
+                try:
+                    if self.retry_wait_for_single_click_perform(
+                            "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span",
+                            locator_type=By.CSS_SELECTOR):
+                        print("Filter button clicked!")
+                        return True
+                        time.sleep(30) # UI update
+                    else:
+                        print("Could not click Filter button")
+                        return False
+                except Exception as e:
+                    print(f'An error occurred trying to click Filter button: {string(e)}')
+                    return False
 
-                if self.retry_wait_for_single_click_perform(
-                        "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span",
-                        locator_type=By.CSS_SELECTOR):
-                    print("Filter button clicked!")
-                else:
-                    print("Filter button NOT clicked!")
+                print("Successfully applied Translated filter ")
+                return True
 
-                time.sleep(30)
-            except Excption as e:
-                print(f'Error occured')
+            else:
+                print("Could not apply Translated filter.")
                 return False
 
-        else:
-            print("Translated funnel NOT clicked!")
-
+        except Excption as e:
+            print(f'An error occurred when trying to apply Translated filter: {string(e)}')
+            return False
 
     def set_group_filter_to_invoice(self):
         print('Applying group filter to Invoice')
@@ -161,5 +173,5 @@ class DataConnectPage(BasePage):
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
         self.set_date_filter()
-        # self.set_translated_filter()
+        self.set_translated_filter()
         # self.set_group_filter_to_invoice()
