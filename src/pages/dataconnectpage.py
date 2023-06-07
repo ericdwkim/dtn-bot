@@ -48,9 +48,9 @@ class DataConnectPage(BasePage):
             "XPATH_KEY": (
                             By.XPATH,
                             [
-                            "//li[@class='ui-state-default ui-element ui-draggable' and @title='No']", # new xpath
-                            "/html/body/div[8]/div[2]/div[2]/ul/li[1]",
-                            "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]"
+                            "/html/body/div[10]/div[2]/div[2]/ul/li[1]",
+                            "/html/body/div[10]/div[2]/div[2]/ul/li[1][contains(., 'No')]",
+                            "//li[@class='ui-state-default ui-element ui-draggable' and @title='No']"  # new xpath
                             ]
                           ),
             "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, [
