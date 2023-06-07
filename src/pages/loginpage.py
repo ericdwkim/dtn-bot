@@ -14,12 +14,10 @@ class LoginPage(BasePage):
 
     # TODO: helper fn for entering fields
     def enter_username(self, username):
-        username_field = self.find_element_and_click('#username')
-        username_field_submitted = self.find_element_and_click_and_send_keys('#username', username)
+        self.find_element_and_click_and_send_keys('#username', username)
 
     def enter_password(self, password):
-        password_field = self.find_element_and_click('.loginContent > form:nth-child(3) > div:nth-child(2) > input:nth-child(1)')
-        password_field_submitted = self.find_element_and_click_and_send_keys('.loginContent > form:nth-child(3) > div:nth-child(2) > input:nth-child(1)', password)
+        self.find_element_and_click_and_send_keys('.loginContent > form:nth-child(3) > div:nth-child(2) > input:nth-child(1)', password)
 
     def click_login_button(self):
         self.find_element_and_click('.confirmButton')
