@@ -10,7 +10,7 @@ class BasePage(object):
     def __init__(self, driver):
         self.driver = driver
         self.action = ActionChains(self.driver)
-        
+
     def find_element_drag_and_drop(self, src_locators, src_locator_key, target_locators, target_locator_key):
         """
         finds `source_element` and `target_element` and left-clicks on `source_element` to drags onto `target_element` using `ActionChains`\n
@@ -98,10 +98,12 @@ class BasePage(object):
         )
         return element_wait
 
-    """
-        @dev: wait_for_find_then_click() uses WebElement.click()
-    """
     def wait_for_find_then_click(self, locator):
+        """
+        `wait_for_element()` + `find_element_and_click()`\n wrapper using `WebElement.click()`
+        :param locator:
+        :return: bool
+        """
         try:
             is_element_present = self.wait_for_element(locator)
             if is_element_present:
@@ -152,11 +154,14 @@ class BasePage(object):
             return False  # Return False if element was not found after max_retries
 
 
-    """
-        @dev: retry_wait_find_then_click() uses WebElement.click()
-    """
-
     def retry_wait_find_then_click(self, locator, max_retries=5, retry_delay=1):
+        """
+        Retry wrapper for `wait_for_find_then_click()`
+        :param locator:
+        :param max_retries:
+        :param retry_delay:
+        :return: bool
+        """
         retries = 0
         while retries < max_retries:
             try:

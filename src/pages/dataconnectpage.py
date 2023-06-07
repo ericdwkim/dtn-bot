@@ -19,18 +19,28 @@ class DataConnectPage(BasePage):
             if is_element_clicked:
                 return True
             else:
-                print('Failed to switch to DataConnect tab.')
+                # print('Failed to switch to DataConnect tab.')
                 return False
         except Exception as e:
-            print(f'An error occured while switching to DataConnect tab: ')
+            print(f'An error occurred: {e}')
+            return False
 
     def set_date_filter(self):
         """
         Sets `Date` filter to yesterday
-        :return: None
+        :return: bool
         """
-        print('Applying date filter to yesterday')
-        self.find_element_and_click('#date > option:nth-child(2)')
+        try:
+            was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(2)')
+            if was_clicked:
+                # print('Date filter set to yesterday')
+                return True
+            else:
+                # print('Date filter could not be set to yesterday')
+                return False
+        except Exception as e:
+            print(f'An error occurred: {e}')
+            return False
 
     def set_translated_filter(self):
         """
