@@ -57,8 +57,8 @@ class DataConnectPage(BasePage):
 
                 # source locators are the possible (locator type, locator string) combinations specific to the `No` draggable bar
                 src_locators = {
-                    "XPATH_KEY": (By.XPATH, ["/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]",
-                                             "/html/body/div[8]/div[2]/div[2]/ul/li[1]"]),
+                    "XPATH_KEY": (By.XPATH, ["/html/body/div[8]/div[2]/div[2]/ul/li[1]",
+                                             "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]"]),
                     "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, [
                         "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"])
                 }
@@ -86,7 +86,7 @@ class DataConnectPage(BasePage):
                                         locator_type=By.CSS_SELECTOR):
                                     print("Filter button clicked!")
                                     return True
-                                    time.sleep(30)  # UI update
+                                    # time.sleep(30)  # UI update
                                 else:
                                     print("Could not click Filter button")
                                     return False
