@@ -34,9 +34,7 @@ class BasePage(object):
         return False  # Drag and drop failed
 
     """
-    find_element_and_click() uses WebElement.click()
-    NOTE: some fns require `element_selector` to be returned, such as WebElement.send_keys()
-    Will need to come back and refactor... 
+        @dev: find_element_and_click() uses WebElement.click()
     """
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
         try:
@@ -64,7 +62,7 @@ class BasePage(object):
             return False
 
     """
-    find_element_and_click_perform() uses ActionChains
+        @dev: find_element_and_click_perform() uses ActionChains
     """
     def find_element_and_click_perform(self, locator, locator_type=By.CSS_SELECTOR):
         element = self.driver.find_element(locator_type, locator)
@@ -95,7 +93,7 @@ class BasePage(object):
         return element_wait
 
     """
-    wait_for_find_then_click() uses WebElement.click()
+        @dev: wait_for_find_then_click() uses WebElement.click()
     """
     def wait_for_find_then_click(self, locator):
         try:
@@ -112,7 +110,7 @@ class BasePage(object):
             return False
 
     """
-    wait_for_find_then_single_click() uses ActionChains.click().perform()
+        @dev: wait_for_find_then_single_click() uses ActionChains.click().perform()
     """
     def wait_for_find_then_single_click(self, locator, locator_type=By.CSS_SELECTOR):
         self.wait_for_element(locator)
@@ -130,8 +128,7 @@ class BasePage(object):
         element_selector_clicked.send_keys(keys_to_send)
 
     """
-    retry_wait_for_single_click_perform() uses ActionChains.click()
-    
+        @dev: retry_wait_for_single_click_perform() uses ActionChains.click()
     """
     def retry_wait_for_single_click_perform(self, locator, locator_type=By.CSS_SELECTOR, max_retries=5, retry_delay=1 ):
         retries = 0
@@ -150,8 +147,7 @@ class BasePage(object):
 
 
     """
-    retry_wait_find_then_click() uses WebElement.click()
-
+        @dev: retry_wait_find_then_click() uses WebElement.click()
     """
 
     def retry_wait_find_then_click(self, locator, max_retries=5, retry_delay=1):
