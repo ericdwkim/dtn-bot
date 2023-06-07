@@ -86,7 +86,7 @@ class BasePage(object):
             is_element_present = self.wait_for_element(locator)
             if is_element_present:
                 element = self.find_element_and_click(locator)
-                print(f'Successfully clicked on the element: {element}')
+                # print(f'Successfully clicked on the element: {element}')
                 return True
             else:
                 print(f'Element was not present using locator:  {locator}.')

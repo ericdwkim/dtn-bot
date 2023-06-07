@@ -9,8 +9,16 @@ class DataConnectPage(BasePage):
         super().__init__(driver)
 
     def switch_tab(self):
-        print('Switching to DataConnect tab')
-        self.wait_for_find_then_click('#header > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(1)')
+        try:
+            print('Switching to DataConnect tab')
+            is_element_clicked = self.wait_for_find_then_click('#header > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(1)')
+            if is_element_clicked:
+                return True
+            else:
+                print('Failed to switch to DataConnect tab.')
+                return False
+        except Exception as e:
+            print(f'An error occured while switching to DataConnect tab: ')
 
     def set_date_filter(self):
         print('Applying date filter to yesterday')
@@ -128,6 +136,6 @@ class DataConnectPage(BasePage):
     # TODO: if checks for each function call to ensure each fn is called successfully before running the next function --> this requires all nested function calls to also return bools.
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
-        self.set_date_filter()
-        self.set_translated_filter()
-        self.set_group_filter_to_invoice()
+        # self.set_date_filter()
+        # self.set_translated_filter()
+        # self.set_group_filter_to_invoice()
