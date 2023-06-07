@@ -14,9 +14,9 @@ class DataConnectPage(BasePage):
         :return: bool
         """
         try:
-            print('Switching to DataConnect tab')
             is_element_clicked = self.wait_for_find_then_click('#header > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(1)')
             if is_element_clicked:
+                print('Switched to DataConnect tab')
                 return True
             else:
                 # print('Failed to switch to DataConnect tab.')
