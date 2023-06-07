@@ -22,7 +22,7 @@ class DataConnectPage(BasePage):
                 # print('Failed to switch to DataConnect tab.')
                 return False
         except Exception as e:
-            print(f'An error occurred: {string(e)}')
+            print(f'An error occurred: {str(e)}')
             return False
 
     def set_date_filter(self):
@@ -39,7 +39,7 @@ class DataConnectPage(BasePage):
                 # print('Date filter could not be set to yesterday')
                 return False
         except Exception as e:
-            print(f'An error occurred: {string(e)}')
+            print(f'An error occurred: {str(e)}')
             return False
 
     def set_translated_filter(self):
@@ -84,7 +84,7 @@ class DataConnectPage(BasePage):
                             print(f'Drag and drop failed with locator {src_locator_key}')
                             return False
                     except Exception as e:
-                        print(f'An error occurred trying to find_element_drag_and_drop : {string(e)}')
+                        print(f'An error occurred trying to find_element_drag_and_drop : {str(e)}')
                         return False
                 try:
                     if self.retry_wait_for_single_click_perform(
@@ -97,7 +97,7 @@ class DataConnectPage(BasePage):
                         print("Could not click Filter button")
                         return False
                 except Exception as e:
-                    print(f'An error occurred trying to click Filter button: {string(e)}')
+                    print(f'An error occurred trying to click Filter button: {str(e)}')
                     return False
 
                 print("Successfully applied Translated filter ")
@@ -108,7 +108,7 @@ class DataConnectPage(BasePage):
                 return False
 
         except Exception as e:
-            print(f'An error occurred when trying to apply Translated filter: {string(e)}')
+            print(f'An error occurred when trying to apply Translated filter: {str(e)}')
             return False
 
     def set_group_filter_to_invoice(self):
