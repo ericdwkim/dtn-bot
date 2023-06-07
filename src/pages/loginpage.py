@@ -18,7 +18,7 @@ class LoginPage(BasePage):
             self.driver.get(dtn_url)
             return True
         except Exception as e:
-            print(f'An error occurred: {e}')
+            print(f'An error occurred: {string(e)}')
             return False
 
 
@@ -30,7 +30,7 @@ class LoginPage(BasePage):
             else:
                 return False
         except Exception as e:
-            print(f'An error occurred: {e}')
+            print(f'An error occurred: {string(e)}')
             return False
 
 
@@ -42,7 +42,7 @@ class LoginPage(BasePage):
             else:
                 return False
         except Exception as e:
-            print(f'An error occurred: {e}')
+            print(f'An error occurred: {string(e)}')
             return False
     def click_login_button(self):
         """
@@ -56,7 +56,7 @@ class LoginPage(BasePage):
             else:
                 return False
         except Exception as e:
-            print(f'An error ocurred: {e}')
+            print(f'An error ocurred: {string(e)}')
             return False
 
     def login(self, username, password):
@@ -69,7 +69,7 @@ class LoginPage(BasePage):
             else:
                 return False
         except Exception as e:
-            print(f'An error occurred: {e}')
+            print(f'An error occurred: {string(e)}')
             return False
 
     def visit_and_login(self, username, password):

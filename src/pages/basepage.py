@@ -33,7 +33,7 @@ class BasePage(object):
                     self.action.drag_and_drop(source_element, target_element).perform()
                     return True  # Drag and drop successful
                 except Exception as e:
-                    print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}.\n Error: {e}")
+                    print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}.\n Error: {string(e)}")
         return False  # Drag and drop failed
 
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
@@ -51,7 +51,7 @@ class BasePage(object):
             print(f'Element {locator} was not found.')
             return False, None
         except Exception as e:
-            print(f'Error occurred when trying to find and click element: {e}')
+            print(f'Error occurred when trying to find and click element: {string(e)}')
             return False, None
 
     def find_element_and_click_and_send_keys(self, locator, keys_to_send):
