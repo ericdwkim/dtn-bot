@@ -56,8 +56,7 @@ class DataConnectPage(BasePage):
         target_locators = {
             # `selected connected-list ui-sortable` class
             'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
-                                 [
-                                     "body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
+                                 ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
         }
 
         try:
