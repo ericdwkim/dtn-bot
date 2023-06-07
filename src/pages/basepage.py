@@ -19,6 +19,14 @@ class BasePage(object):
     """
 
     def find_element_drag_and_drop(self, src_locators, src_locator_key, target_locators, target_locator_key):
+        """
+        finds `source_element` and `target_element` and left-clicks on `source_element` and drags onto `target_element` using ActionChains
+        :param src_locators: map for source elements
+        :param src_locator_key: `locator_type` key from source mapping
+        :param target_locators: map for target elements
+        :param target_locator_key: `locator_type` key from target mapping
+        :return: bool
+        """
         src_locator_type, src_locators_list = src_locators[src_locator_key]
         target_locator_type, target_locators_list = target_locators[target_locator_key]
 

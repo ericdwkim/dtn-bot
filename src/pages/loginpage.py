@@ -12,7 +12,6 @@ class LoginPage(BasePage):
     def visit(self):
         self.driver.get(dtn_url)
 
-    # TODO: helper fn for entering fields
     def enter_username(self, username):
         self.find_element_and_click_and_send_keys('#username', username)
 

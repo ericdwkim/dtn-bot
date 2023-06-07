@@ -9,6 +9,10 @@ class DataConnectPage(BasePage):
         super().__init__(driver)
 
     def switch_tab(self):
+        """
+        Switches from default `Markets` to `DataConnect` tab
+        :return: bool
+        """
         try:
             print('Switching to DataConnect tab')
             is_element_clicked = self.wait_for_find_then_click('#header > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(1)')
@@ -21,24 +25,28 @@ class DataConnectPage(BasePage):
             print(f'An error occured while switching to DataConnect tab: ')
 
     def set_date_filter(self):
+        """
+        Sets `Date` filter to yesterday
+        :return: None
+        """
         print('Applying date filter to yesterday')
         self.find_element_and_click('#date > option:nth-child(2)')
 
     def set_translated_filter(self):
+        """
+        Clicks `Translated` filter funnel\n
+        Drag and drops `No` draggable bar\n
+        Click `Filter` button to confirm
+        :return: None
+        """
         print('Applying Translated filter to `No`')
 
-        """
-        1) Click `Translated` filter funnel column header
-        """
         if self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)"):
             print("Translated funnel header clicked!")
         else:
             print("Translated funnel NOT clicked!")
 
-        """
-        2) Drag and drop `No` bar to set 
-        """
-        # source locators are the possible locator type, locator string combinations specific to the `No` draggable bar
+        # source locators are the possible (locator type, locator string) combinations specific to the `No` draggable bar
         src_locators = {
             "XPATH_KEY": (By.XPATH, ["/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]",
                                  "/html/body/div[8]/div[2]/div[2]/ul/li[1]"]),
@@ -64,10 +72,6 @@ class DataConnectPage(BasePage):
             else:
                 print(f'Drag and drop failed with locator {src_locator_key}')
 
-
-        """
-        3) Click `Filter` button to confirm setting
-        """
         if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
             print("Filter button clicked!")
         else:
