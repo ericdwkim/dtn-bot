@@ -76,31 +76,28 @@ class DataConnectPage(BasePage):
                 for src_locator_key in ['XPATH_KEY', 'CSS_SELECTOR_KEY']:
                     try:
                         if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR_KEY'):
-                            # print(f'Drag and drop successful with locator {src_locator_key}')
+                            print(f'Drag and drop successful with locator {src_locator_key}')
                             time.sleep(30)  # Wait for UI update
-
-                            # Click `Filter` to confirm
-                            try:
-                                if self.retry_wait_for_single_click_perform(
-                                        "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span",
-                                        locator_type=By.CSS_SELECTOR):
-                                    print("Filter button clicked!")
-                                    return True
-                                    # time.sleep(30)  # UI update
-                                else:
-                                    print("Could not click Filter button")
-                                    return False
-                            except Exception as e:
-                                print(f'An error occurred trying to click Filter button: {str(e)}')
-                                return False
-
                             return True
                         else:
-                            # print(f'Drag and drop failed with locator {src_locator_key}')
+                            print(f'Drag and drop failed with locator {src_locator_key}')
                             return False
                     except Exception as e:
                         print(f'An error occurred trying to find_element_drag_and_drop : {str(e)}')
                         return False
+                try:
+                    if self.retry_wait_for_single_click_perform(
+                            "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span",
+                            locator_type=By.CSS_SELECTOR):
+                        print("Filter button clicked!")
+                        return True
+                        time.sleep(30) # UI update
+                    else:
+                        print("Could not click Filter button")
+                        return False
+                except Exception as e:
+                    print(f'An error occurred trying to click Filter button: {str(e)}')
+                    return False
 
                 print("Successfully applied Translated filter ")
                 return True
