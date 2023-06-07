@@ -107,7 +107,7 @@ class DataConnectPage(BasePage):
                 print("Could not apply Translated filter.")
                 return False
 
-        except Excption as e:
+        except Exception as e:
             print(f'An error occurred when trying to apply Translated filter: {string(e)}')
             return False
 
