@@ -1,9 +1,9 @@
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-import time
 from selenium.webdriver.common.action_chains import ActionChains
 
 class BasePage(object):
@@ -39,13 +39,29 @@ class BasePage(object):
     Will need to come back and refactor... 
     """
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
-        element_selector = self.driver.find_element(locator_type, locator)
-        element_selector.click()
-        return element_selector
+        try:
+            element = self.driver.find_element(locator_type, locator)
+            element.click()
+            return True, element
+        except NoSuchElementException:
+            print(f'Element {locator} was not found.')
+            return False, None
+        except Exception as e:
+            print(f'Error occurred when trying to find and click element: {e}')
+            return False, None
 
     def find_element_and_click_and_send_keys(self, locator, keys_to_send):
-        element_selector_clicked = self.find_element_and_click(locator)
-        element_selector_clicked.send_keys(keys_to_send)
+        try:
+            was_clicked, element_selector_clicked = self.find_element_and_click(locator)
+            if was_clicked:
+                element_selector_clicked.send_keys(keys_to_send)
+                return True
+            else:
+                print(f'Failed to send keys to element: {locator}')
+                return False
+        except Exception as e:
+            print(f'An error occurred: {str(e)}')
+            return False
 
     """
     find_element_and_click_perform() uses ActionChains
@@ -89,10 +105,10 @@ class BasePage(object):
                 # print(f'Successfully clicked on the element: {element}')
                 return True
             else:
-                print(f'Element was not present using locator:  {locator}.')
+                print(f'Element "{locator}" was not present.')
                 return False
         except NoSuchElementException:
-            print(f'NoSuchElementException: The element was not found using locator: {locator}.')
+            print(f'NoSuchElementException: The element "{locator}" was not found.')
             return False
 
     """
