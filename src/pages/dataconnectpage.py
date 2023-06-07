@@ -59,20 +59,24 @@ class DataConnectPage(BasePage):
         # target locators is are the possible (locator type, locator string) combinations specific to the droppable element
         # NOTE: to add other locator types, just create new KEY w/ tup value
         target_locators = {
+            "XPATH_KEY": (
+                By.XPATH,
+                ["/html/body/div[8]/div[2]/div[1]/ul"]
+            )
             # `selected connected-list ui-sortable` class
-            'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
-                                 ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
+            # 'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
+            #                      ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
         }
 
         try:
             # Loop over keys of source locators; drag & drop for filtering
             for src_locator_key in ['XPATH_KEY', 'CSS_SELECTOR_KEY']:
-                if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR_KEY'):
+                if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'XPATH_KEY'):
                     # print(f'Drag and drop successful with locator {src_locator_key}')
                     time.sleep(30)  # Wait for UI update
                     return True
                 else:
-                    print(f'Drag and drop failed with locator type {src_locator_key}')
+                    print(f'Drag and drop failed with source locator key: {src_locator_key} and target locator key: CSS_SELECTOR_KEY')
                     return False
         except Exception as e:
             print(f'An error occurred trying to drag and drop no bar: {str(e)}')
