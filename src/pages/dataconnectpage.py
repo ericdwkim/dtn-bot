@@ -22,7 +22,7 @@ class DataConnectPage(BasePage):
                 # print('Failed to switch to DataConnect tab.')
                 return False
         except Exception as e:
-            print(f'An error occurred: {str(e)}')
+            print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
 
     def set_date_filter(self):
@@ -39,75 +39,84 @@ class DataConnectPage(BasePage):
                 # print('Date filter could not be set to yesterday')
                 return False
         except Exception as e:
-            print(f'An error occurred: {str(e)}')
+            print(f'An error occurred trying to set date to yesterday: {str(e)}')
             return False
+
+    def drag_and_drop_no_bar(self):
+        # source locators are the possible (locator type, locator string) combinations specific to the `No` draggable bar
+        src_locators = {
+            "XPATH_KEY": (By.XPATH, ["/html/body/div[8]/div[2]/div[2]/ul/li[1]",
+                                     "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]"]),
+            "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, [
+                "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"])
+        }
+
+        # target locators is are the possible (locator type, locator string) combinations specific to the droppable element
+        # NOTE: to add other locator types, just create new KEY w/ tup value
+        target_locators = {
+            # `selected connected-list ui-sortable` class
+            'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
+                                 [
+                                     "body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
+        }
+
+        try:
+            # Loop over keys of source locators; drag & drop for filtering
+            for src_locator_key in ['XPATH_KEY', 'CSS_SELECTOR_KEY']:
+                if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR_KEY'):
+                    # print(f'Drag and drop successful with locator {src_locator_key}')
+                    time.sleep(30)  # Wait for UI update
+                    return True
+                else:
+                    print(f'Drag and drop failed with locator {src_locator_key}')
+                    return False
+        except Exception as e:
+            print(f'An error occurred trying to drag and drop no bar: {str(e)}')
+            return False
+
+
+    def click_filter_button(self):
+
+        try:
+            if self.retry_wait_for_single_click_perform(
+                    "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span",
+                    locator_type=By.CSS_SELECTOR):
+                # print("Filter button clicked!")
+                time.sleep(30) # update UI
+                return True
+            else:
+                print("Could not click the filter button")
+                return False
+        except Exception as e:
+            print(f'An error occurred trying to click filter button: {str(e)}')
+            return False
+
 
     def set_translated_filter(self):
         """
-        Clicks `Translated` filter funnel\n
-        Drag and drops `No` draggable bar\n
-        Click `Filter` button to confirm
+        Wrapper for clicking, drag/dropping, and confirming filter
+            Clicks `Translated` filter funnel\n
+            Drag and drops `No` draggable bar\n
+            Click `Filter` button to confirm
         :return: bool
         """
 
         try:
-            # If filter found and clicked, return True
+            # If Translated filter found and clicked, return True
             if self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)"):
                 # print("Translated funnel header clicked!")
-
-                # source locators are the possible (locator type, locator string) combinations specific to the `No` draggable bar
-                src_locators = {
-                    "XPATH_KEY": (By.XPATH, ["/html/body/div[8]/div[2]/div[2]/ul/li[1]",
-                                             "/html/body/div[8]/div[2]/div[2]/ul/li[1][contains(., 'No')]"]),
-                    "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, [
-                        "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"])
-                }
-
-                # target locators is the are the possible locator type, locator string combinations specific to the droppable element
-                # NOTE: to add other locator types, just create new KEY w/ tup value
-                target_locators = {
-                    # `selected connected-list ui-sortable` class
-                    'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
-                                         [
-                                             "body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
-                }
-
-                # Loop over keys of source locators; drag & drop for filtering
-                for src_locator_key in ['XPATH_KEY', 'CSS_SELECTOR_KEY']:
-                    try:
-                        if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR_KEY'):
-                            print(f'Drag and drop successful with locator {src_locator_key}')
-                            time.sleep(30)  # Wait for UI update
-                            return True
-                        else:
-                            print(f'Drag and drop failed with locator {src_locator_key}')
-                            return False
-                    except Exception as e:
-                        print(f'An error occurred trying to find_element_drag_and_drop : {str(e)}')
-                        return False
-                try:
-                    if self.retry_wait_for_single_click_perform(
-                            "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span",
-                            locator_type=By.CSS_SELECTOR):
-                        print("Filter button clicked!")
-                        return True
-                        time.sleep(30) # UI update
-                    else:
-                        print("Could not click Filter button")
-                        return False
-                except Exception as e:
-                    print(f'An error occurred trying to click Filter button: {str(e)}')
+                dragged_and_dropped_no_bar = self.drag_and_drop_no_bar()
+                if dragged_and_dropped_no_bar:
+                    self.click_filter_button()
+                    return True
+                else:
                     return False
-
-                print("Successfully applied Translated filter ")
-                return True
-
             else:
-                print("Could not apply Translated filter.")
+                print("Could not click Translated filter.")
                 return False
 
         except Exception as e:
-            print(f'An error occurred when trying to apply Translated filter: {str(e)}')
+            print(f'An error occurred trying to apply Translated filter: {str(e)}')
             return False
 
     def set_group_filter_to_invoice(self):
