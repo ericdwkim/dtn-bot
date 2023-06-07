@@ -11,6 +11,13 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
+    # def find_and_wait_for_src_and_target_elements_to_be_clickable(self, src_locator_type, src_locator, target_locator_type, target_locator):
+    #     source_element = self.driver.find_element(src_locator_type, src_locator)
+    #     target_element = self.driver.find_element(target_locator_type, target_locator)
+    #     source_element_clickable = self.wait_for_element_clickable(target_locator)
+    #     target_element_clickable = self.wait_for_element_clickable(src_locator)
+    #     # TODO: finish abstraction?
+    #
     def find_element_drag_and_drop(self, src_locators, src_locator_key, target_locators, target_locator_key):
         """
         finds `source_element` and `target_element` and left-clicks on `source_element` to drags onto `target_element` using `ActionChains`\n
@@ -30,8 +37,17 @@ class BasePage(object):
                 try:
                     source_element = self.driver.find_element(src_locator_type, src_locator)
                     target_element = self.driver.find_element(target_locator_type, target_locator)
-                    self.action.drag_and_drop(source_element, target_element).perform()
-                    return True  # Drag and drop successful
+                    # TODO: wait until source_elem and target_elem are interactable
+                    print('******************************************************************')
+                    source_element_clickable = self.wait_for_element_clickable(target_locator)
+                    target_element_clickable = self.wait_for_element_clickable(src_locator)
+                    if source_element_clickable and target_element_clickable:
+                        # if source and target elms are both clickable and located
+                        self.action.drag_and_drop(source_element, target_element).perform()
+                        return True  # Drag and drop successful
+                    else:
+                        print("Source and/or Target element was not clickable")
+                        return False
                 except Exception as e:
                     print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}.\n Error: {str(e)}")
         return False  # Drag and drop failed
@@ -93,10 +109,13 @@ class BasePage(object):
             return False # If exception raised
 
     def wait_for_element_clickable(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
-        element_wait = WebDriverWait(self.driver, timeout).until(
-            EC.element_to_be_clickable((locator_type, locator))
-        )
-        return element_wait
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable((locator_type, locator))
+            )
+            return True #If element is found within `timeout`
+        except TimeoutException:
+            return False
 
     def wait_for_find_then_click(self, locator):
         """
