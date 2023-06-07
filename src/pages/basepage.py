@@ -10,17 +10,12 @@ class BasePage(object):
     def __init__(self, driver):
         self.driver = driver
         self.action = ActionChains(self.driver)
-
-    """
-    src_locators - mapping for source elements
-    target_locators - mapping for target element(s)
-    source_element - elem to drag
-    target_element - elem to drop onto
-    """
-
+        
     def find_element_drag_and_drop(self, src_locators, src_locator_key, target_locators, target_locator_key):
         """
-        finds `source_element` and `target_element` and left-clicks on `source_element` and drags onto `target_element` using ActionChains
+        finds `source_element` and `target_element` and left-clicks on `source_element` to drags onto `target_element` using `ActionChains`\n
+        `source_element` - element to drag/drop\n
+        `target_element` - element to drop onto
         :param src_locators: map for source elements
         :param src_locator_key: `locator_type` key from source mapping
         :param target_locators: map for target elements
@@ -41,10 +36,13 @@ class BasePage(object):
                     print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}.\n Error: {e}")
         return False  # Drag and drop failed
 
-    """
-        @dev: find_element_and_click() uses WebElement.click()
-    """
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
+        """
+        Finds element and clicks it using `WebElement.click()`
+        :param locator:
+        :param locator_type:
+        :return: Tuple(bool, WebElement)
+        """
         try:
             element = self.driver.find_element(locator_type, locator)
             element.click()
