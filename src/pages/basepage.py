@@ -37,7 +37,7 @@ class BasePage(object):
                     self.action.drag_and_drop(source_element, target_element).perform()
                     return True
                 else:
-                    print("Source and/or Targert element was not found and/or clickable")
+                    print("Source and/or Target element was not found and/or clickable")
                     return False
         return False
 
@@ -211,6 +211,7 @@ class BasePage(object):
         while retries < max_retries:
             try:
                 element = self.wait_for_find_then_click(locator, locator_type)
+                print(f'Found element: {locator}-----')
                 return True  # Return True and exit the function if element is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
                 print(f'Element (single click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')

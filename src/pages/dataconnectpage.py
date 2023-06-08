@@ -57,6 +57,21 @@ class DataConnectPage(BasePage):
         }
         # TODO:
         # print([my_elem.text for my_elem in driver.find_elements(By.XPATH, "//td[@class='BookingCalendar-date--bookable ']//span[@class='BookingCalendar-day']")])
+
+        """
+        <ul class="selected connected-list ui-sortable" style="height: 172px;"></ul>
+        
+        //ul[@class='selected connected-list ui-sortable'] # four elements with identical class names --> target element
+        
+        """
+        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+
+
+        lst_of_target_sortable = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
+
+        # for target in lst_of_target_sortable:
+        #     print(f'{target} | {lst_of_target_sortable[3]}')
+
         # driver.find_element_by_xpath("(//div[@class='tableType value'])[position()=2]")
         # target locators is are the possible (locator type, locator string) combinations specific to the droppable element
         # NOTE: to add other locator types, just create new KEY w/ tup value
@@ -64,8 +79,8 @@ class DataConnectPage(BasePage):
             "XPATH_KEY": (
                 By.XPATH,
                 [
-                    "(//ul[contains(@style, '172px') and @class='selected connected-list ui-sortable'])[4]",
-                    "/html/body/div[8]/div[2]/div[1]/ul"
+                    # "/html/body/div[8]/div[2]/div[1]/ul"
+                    "//ul[@class='selected connected-list ui-sortable']"
 
                 ]
             ),
@@ -93,10 +108,10 @@ class DataConnectPage(BasePage):
 
     def click_filter_button(self):
 
+        filter_button_css_locator = "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span"
+
         try:
-            if self.retry_wait_for_single_click_perform(
-                    "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span",
-                    locator_type=By.CSS_SELECTOR):
+            if self.retry_wait_for_single_click_perform(filter_button_css_locator,                locator_type=By.CSS_SELECTOR):
                 # print("Filter button clicked!")
                 time.sleep(30) # update UI
                 return True
