@@ -120,16 +120,16 @@ class BasePage(object):
             print(f'locator: {locator} | locator_type: {locator_type}')
             return False
 
-    def wait_for_find_then_click(self, locator):
+    def wait_for_find_then_click(self, locator, locator_type=By.CSS_SELECTOR):
         """
         `wait_for_element()` + `find_element_and_click()`\n wrapper using `WebElement.click()`
         :param locator:
         :return: bool
         """
         try:
-            is_element_present = self.wait_for_element(locator)
+            is_element_present = self.wait_for_element(locator, locator_type)
             if is_element_present:
-                element = self.find_element_and_click(locator)
+                element = self.find_element_and_click(locator, locator_type)
                 # print(f'Successfully clicked on the element: {element}')
                 return True
             else:
@@ -176,7 +176,7 @@ class BasePage(object):
             return False  # Return False if element was not found after max_retries
 
 
-    def retry_wait_find_then_click(self, locator, max_retries=5, retry_delay=1):
+    def retry_wait_find_then_click(self, locator, locator_type=By.CSS_SELECTOR, max_retries=5, retry_delay=1):
         """
         Retry wrapper for `wait_for_find_then_click()`
         :param locator:
@@ -187,7 +187,7 @@ class BasePage(object):
         retries = 0
         while retries < max_retries:
             try:
-                element = self.wait_for_find_then_click(locator)
+                element = self.wait_for_find_then_click(locator, locator_type)
                 return True  # Return True and exit the function if element is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
                 print(f'Element (single click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')

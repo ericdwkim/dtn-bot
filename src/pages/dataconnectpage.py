@@ -112,10 +112,12 @@ class DataConnectPage(BasePage):
             Click `Filter` button to confirm
         :return: bool
         """
+        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
         try:
+            print('=================================================================')
             # If Translated filter found and clicked, return True
-            if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button'):
+            if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH):
                 # print("Translated funnel header clicked!")
                 dragged_and_dropped_no_bar = self.drag_and_drop_no_bar()
                 if dragged_and_dropped_no_bar:
