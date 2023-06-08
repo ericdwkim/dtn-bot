@@ -50,7 +50,7 @@ class BasePage(object):
                         print("Source and/or Target element was not clickable")
                         return False
                 except Exception as e:
-                    print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}.\n Error: {str(e)}")
+                    print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}\n Error: {str(e)}")
         return False  # Drag and drop failed
 
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
