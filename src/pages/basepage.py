@@ -261,7 +261,6 @@ class BasePage(object):
         # print(f'length: {len(src_avail_conn_lst)}')
         # print(f'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% {avail_conn_lst_cls}')
 
-"""ui-state-default ui-element ui-draggable"""
 
 
 
