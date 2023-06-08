@@ -74,7 +74,7 @@ class DataConnectPage(BasePage):
                 # print("Translated funnel header clicked!")
 
                 dragged_and_dropped_no_bar = self.find_element_drag_and_drop(src_locator="/html/body/div[10]/div[2]/div[2]/ul/li[1]", target_locator="//ul[@class='selected connected-list ui-sortable']")
-
+                # TODO: Figure out why this target_locator is returning False for `target_element_clickable`
                 if dragged_and_dropped_no_bar:
                     self.click_filter_to_confirm()
                     return True
