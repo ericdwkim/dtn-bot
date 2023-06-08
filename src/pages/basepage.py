@@ -11,48 +11,71 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    # def find_and_wait_for_src_and_target_elements_to_be_clickable(self, src_locator_type, src_locator, target_locator_type, target_locator):
-    #     source_element = self.driver.find_element(src_locator_type, src_locator)
-    #     target_element = self.driver.find_element(target_locator_type, target_locator)
-    #     source_element_clickable = self.wait_for_element_clickable(target_locator)
-    #     target_element_clickable = self.wait_for_element_clickable(src_locator)
-    #     # TODO: finish abstraction?
-    #
+    def find_and_wait_for_src_and_target_elements_to_be_clickable(self, src_locator_type, src_locator,
+                                                                  target_locator_type, target_locator):
+        try:
+            source_element = self.driver.find_element(src_locator_type, src_locator)
+            target_element = self.driver.find_element(target_locator_type, target_locator)
+            source_element_clickable = self.wait_for_element_clickable(src_locator, src_locator_type)
+            target_element_clickable = self.wait_for_element_clickable(target_locator, target_locator_type)
+            return source_element, source_element_clickable, target_element, target_element_clickable
+        except Exception as e:
+            print(
+                f"Error finding or waiting for source/target elements.\nSource locator key: {src_locator_type} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_type} |\nTarget locator: {target_locator}\nError: {str(e)}")
+            return None, False, None, False
+
     def find_element_drag_and_drop(self, src_locators, src_locator_key, target_locators, target_locator_key):
-        """
-        finds `source_element` and `target_element` and left-clicks on `source_element` to drags onto `target_element` using `ActionChains`\n
-        `source_element` - element to drag/drop\n
-        `target_element` - element to drop onto
-        :param src_locators: map for source elements
-        :param src_locator_key: `locator_type` key from source mapping
-        :param target_locators: map for target elements
-        :param target_locator_key: `locator_type` key from target mapping
-        :return: bool
-        """
         src_locator_type, src_locators_list = src_locators[src_locator_key]
         target_locator_type, target_locators_list = target_locators[target_locator_key]
 
         for src_locator in src_locators_list:
             for target_locator in target_locators_list:
-                try:
-                    print('-----------------------------------------------------------------®')
-                    source_element = self.driver.find_element(src_locator_type, src_locator)
-                    target_element = self.driver.find_element(target_locator_type, target_locator)
-                    # wait until source_elem and target_elem are clickable
-                    print('******************************************************************')
-                    source_element_clickable = self.wait_for_element_clickable(locator=src_locator, locator_type=src_locator_type)
-                    target_element_clickable = self.wait_for_element_clickable(locator=target_locator, locator_type=target_locator_type)
-                    print(f'source_element_clickable: {source_element_clickable}\ntarget_element_clickable: {target_element_clickable}')
-                    if source_element_clickable and target_element_clickable:
-                        # if source and target elms are both clickable and located
-                        self.action.drag_and_drop(source_element, target_element).perform()
-                        return True  # Drag and drop successful
-                    else:
-                        print("Source and/or Target element was not clickable")
-                        return False
-                except Exception as e:
-                    print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}\nError: {str(e)}")
-        return False  # Drag and drop failed
+                source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_and_target_elements_to_be_clickable(
+                    src_locator_type, src_locator, target_locator_type, target_locator)
+                print(f'source_element_clickable: {source_element_clickable}\ntarget_element_clickable: {target_element_clickable}')
+                if source_element and target_element and source_element_clickable and target_element_clickable:
+                    self.action.drag_and_drop(source_element, target_element).perform()
+                    return True
+                else:
+                    print("Source and/or Targert element was not found and/or clickable")
+                    return False
+        return False
+
+    # def find_element_drag_and_drop(self, src_locators, src_locator_key, target_locators, target_locator_key):
+    #     """
+    #     finds `source_element` and `target_element` and left-clicks on `source_element` to drags onto `target_element` using `ActionChains`\n
+    #     `source_element` - element to drag/drop\n
+    #     `target_element` - element to drop onto
+    #     :param src_locators: map for source elements
+    #     :param src_locator_key: `locator_type` key from source mapping
+    #     :param target_locators: map for target elements
+    #     :param target_locator_key: `locator_type` key from target mapping
+    #     :return: bool
+    #     """
+    #     src_locator_type, src_locators_list = src_locators[src_locator_key]
+    #     target_locator_type, target_locators_list = target_locators[target_locator_key]
+    #
+    #     for src_locator in src_locators_list:
+    #         for target_locator in target_locators_list:
+    #             try:
+    #                 print('-----------------------------------------------------------------®')
+    #                 source_element = self.driver.find_element(src_locator_type, src_locator)
+    #                 target_element = self.driver.find_element(target_locator_type, target_locator)
+    #                 # wait until source_elem and target_elem are clickable
+    #                 print('******************************************************************')
+    #                 source_element_clickable = self.wait_for_element_clickable(locator=src_locator, locator_type=src_locator_type)
+    #                 target_element_clickable = self.wait_for_element_clickable(locator=target_locator, locator_type=target_locator_type)
+    #                 print(f'source_element_clickable: {source_element_clickable}\ntarget_element_clickable: {target_element_clickable}')
+    #                 if source_element_clickable and target_element_clickable:
+    #                     # if source and target elms are both clickable and located
+    #                     self.action.drag_and_drop(source_element, target_element).perform()
+    #                     return True  # Drag and drop successful
+    #                 else:
+    #                     print("Source and/or Target element was not clickable")
+    #                     return False
+    #             except Exception as e:
+    #                 print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}\nError: {str(e)}")
+    #     return False  # Drag and drop failed
 
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
         """
