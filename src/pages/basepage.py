@@ -35,6 +35,7 @@ class BasePage(object):
         for src_locator in src_locators_list:
             for target_locator in target_locators_list:
                 try:
+                    print('-----------------------------------------------------------------®')
                     source_element = self.driver.find_element(src_locator_type, src_locator)
                     target_element = self.driver.find_element(target_locator_type, target_locator)
                     # wait until source_elem and target_elem are clickable
@@ -50,7 +51,7 @@ class BasePage(object):
                         print("Source and/or Target element was not clickable")
                         return False
                 except Exception as e:
-                    print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}\n Error: {str(e)}")
+                    print(f"Drag and drop failed.\nSource locator key: {src_locator_key} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_key} |\nTarget locator: {target_locator}\nError: {str(e)}")
         return False  # Drag and drop failed
 
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
@@ -116,6 +117,7 @@ class BasePage(object):
             )
             return True #If element is found within `timeout`
         except TimeoutException:
+            print(f'locator: {locator} | locator_type: {locator_type}')
             return False
 
     def wait_for_find_then_click(self, locator):

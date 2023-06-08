@@ -115,7 +115,7 @@ class DataConnectPage(BasePage):
 
         try:
             # If Translated filter found and clicked, return True
-            if self.retry_wait_find_then_click("th.sorting:nth-child(7) > button:nth-child(1) > span:nth-child(2)"):
+            if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button'):
                 # print("Translated funnel header clicked!")
                 dragged_and_dropped_no_bar = self.drag_and_drop_no_bar()
                 if dragged_and_dropped_no_bar:
