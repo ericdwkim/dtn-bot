@@ -30,7 +30,7 @@ class BasePage(object):
 
         source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_and_target_elements_to_be_clickable(src_locator, target_locator)
 
-        # print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
+        print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
 
         # Only if True, True, True, True, invoke drag_and_drop()
         if source_element and target_element and source_element_clickable and target_element_clickable:
@@ -104,7 +104,7 @@ class BasePage(object):
             )
             return True #If element is found within `timeout`
         except TimeoutException:
-            print(f'locator: {locator} | locator_type: {locator_type}')
+            print(f'Tried to wait for element: {locator} to be clickable using locator_type: {locator_type}')
             return False
 
     def wait_for_find_then_click(self, locator, locator_type=By.CSS_SELECTOR):
