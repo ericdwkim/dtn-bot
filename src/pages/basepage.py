@@ -11,6 +11,22 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
+
+    def test_list_drag_drop(self):
+        try:
+            source_element = self.driver.find_element(By.XPATH, "/html/body/div[10]/div[2]/div[2]/ul/li[1]")
+            target_elements = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
+            target_element = target_elements[3]
+            # element="3F6730F36185C9C1C046E8C876714350_element_370 aka sortable drop to
+            # source_element_clickable = self.wait_for_element_clickable(src_locator, src_locator_type)
+            # target_element_clickable = self.wait_for_element_clickable(target_locator, target_locator_type)
+            return source_element, True, target_element, True
+        except Exception as e:
+            print(
+                f"Error finding or waiting for source/target elements.\nSource locator key: {src_locator_type} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_type} |\nTarget locator: {target_locator}\nError: {str(e)}")
+            return None, False, None, False
+
+
     def find_and_wait_for_src_and_target_elements_to_be_clickable(self, src_locator_type, src_locator,
                                                                   target_locator_type, target_locator):
         try:

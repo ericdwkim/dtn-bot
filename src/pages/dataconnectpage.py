@@ -67,7 +67,7 @@ class DataConnectPage(BasePage):
         print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
 
-        lst_of_target_sortable = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
+        # lst_of_target_sortable = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
 
         # for target in lst_of_target_sortable:
         #     print(f'{target} | {lst_of_target_sortable[3]}')
