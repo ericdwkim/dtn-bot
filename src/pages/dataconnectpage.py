@@ -55,7 +55,9 @@ class DataConnectPage(BasePage):
             "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, [
                 "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"])
         }
-
+        # TODO:
+        # print([my_elem.text for my_elem in driver.find_elements(By.XPATH, "//td[@class='BookingCalendar-date--bookable ']//span[@class='BookingCalendar-day']")])
+        # driver.find_element_by_xpath("(//div[@class='tableType value'])[position()=2]")
         # target locators is are the possible (locator type, locator string) combinations specific to the droppable element
         # NOTE: to add other locator types, just create new KEY w/ tup value
         target_locators = {
