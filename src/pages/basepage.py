@@ -253,11 +253,20 @@ class BasePage(object):
         # Click filter
         self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
 
-        source_element = self.driver.find_element(By.XPATH, "/html/body/div[10]/div[2]/div[2]/ul/li[1]")
-        target_elements = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
-        target_element = target_elements[3]
+        avail_conn_lst_cls = self.driver.find_elements(By.XPATH, "//ul[@class='available connected-list']")
+        # print(f'length{len(source_elements)}') 4 elements w/ same class name
+        src_avail_conn_lst = avail_conn_lst_cls[3] # we want 3rd idx element of this class
+        print(f'src_avail_conn_lst: {src_avail_conn_lst}')
+        print(f'length: {len(src_avail_conn_lst)}')
 
-        self.action.drag_and_drop(source_element, target_element).perform()
-        # element="3F6730F36185C9C1C046E8C876714350_element_370 aka sortable drop to
 
-        print(f'source_element: {source_element}|target_element: {target_element} ***')
+
+
+        # target_elements = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
+        # target_element = target_elements[3]
+
+        # self.action.drag_and_drop(source_element, target_element).perform()
+
+        # print(f'source_element: {source_element}|target_element: {target_element} ***')
+
+        # time.sleep(60) # wait for UI to update®
