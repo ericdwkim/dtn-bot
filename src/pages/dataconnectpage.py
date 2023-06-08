@@ -89,68 +89,9 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to apply Translated filter: {str(e)}')
             return False
 
-    # def set_group_filter_to_invoice(self):
-    #     print('Applying group filter to Invoice')
-    #
-    #     """
-    #     1) Click `Group` filter funnel column header
-    #     """
-    #     if self.retry_wait_find_then_click("#messageTable > thead > tr > th:nth-child(5) > button > span.ui-button-text"):
-    #         print("Group funnel header clicked!")
-    #     else:
-    #         print("Group funnel NOT clicked!")
-    #
-    #     src_locators = {
-    #         "XPATH_KEY": (By.XPATH, ["/html/body/div[6]/div[2]/div[2]/ul/li[3][contains(., 'Invoice')]",
-    #                                  "/html/body/div[6]/div[2]/div[2]/ul/li[3]"]),
-    #         "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li.ui-state-default.ui-element.ui-draggable"])
-    #     }
-    #
-    #     target_locators = {
-    #         "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
-    #
-    #     }
-    #
-    #     """
-    #     2) Drag and drop `Invoice` bar to set
-    #     """
-    #     # Loop over keys of source locators
-    #     for src_locator_key in ['XPATH_KEY', 'CSS_SELECTOR_KEY']:
-    #         if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR_KEY'):
-    #             print(f'Drag and drop successful with locator {src_locator_key}')
-    #             time.sleep(30)  # Wait for UI update
-    #             break
-    #         else:
-    #             print(f'Drag and drop failed with locator {src_locator_key}')
-    #
-    #
-    #     """
-    #     3) Click `Filter` button to confirm setting
-    #     """
-    #     if self.retry_wait_for_single_click_perform( "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span", locator_type=By.CSS_SELECTOR):
-    #         print("Filter button clicked!")
-    #     else:
-    #         print("Filter button NOT clicked!")
-    #
-    #     time.sleep(30)
-
-
-    # def set_group_filter_to_draft_notice(self):
-    #     print('Applying group filter to Draft Notice')
-    #
-    #     """
-    #     1) Click `Group` filter funnel column header
-    #     """
-    #     if self.retry_wait_find_then_click(locator_string):
-    #         print("Group funnel header clicked!")
-    #     else:
-    #         print("Group funnel NOT clicked!")
-
-
     # TODO: if checks for each function call to ensure each fn is called successfully before running the next function --> this requires all nested function calls to also return bools.
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
         self.set_date_filter()
-        self.test_list_drag_drop()
-        # self.set_translated_filter()
+        self.set_translated_filter()
         # self.set_group_filter_to_invoice()
