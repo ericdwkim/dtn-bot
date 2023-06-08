@@ -61,8 +61,9 @@ class DataConnectPage(BasePage):
         target_locators = {
             "XPATH_KEY": (
                 By.XPATH,
-                ["/html/body/div[8]/div[2]/div[1]/ul",
-                 "/html/body/div[8]/div[2]/div[1]" # outer element test
+                [
+                    # "/html/body/div[8]/div[2]/div[1]/ul",
+                    "/html/body/div[8]/div[2]/div[1]" # outer element test
                  ]
             )
             # `selected connected-list ui-sortable` class
