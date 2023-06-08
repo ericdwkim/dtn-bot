@@ -42,30 +42,14 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to set date to yesterday: {str(e)}')
             return False
 
-
-
-    def drag_and_drop_no_bar(self):
-                if locator_key in src_locators and locator_key in target_locators:
-                    if self.find_element_drag_and_drop(src_locators, locator_key, target_locators, locator_key):
-                        time.sleep(30)  # Wait for UI update
-                        print(f'Drag and drop successful with locator key: {locator_key}')
-                        return True
-                    else:
-                        print(
-                            f'Drag and drop failed with source locator key: {locator_key} and target locator key: {locator_key}')
-                        return False
-        except Exception as e:
-            print(f'An error occurred trying to drag and drop no bar: {str(e)}')
-            return False
-
-    def click_filter_button(self):
+    def click_filter_to_confirm(self):
 
         filter_button_css_locator = "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span"
 
         try:
             if self.retry_wait_for_single_click_perform(filter_button_css_locator,                locator_type=By.CSS_SELECTOR):
                 # print("Filter button clicked!")
-                time.sleep(30) # update UI
+                time.sleep(10) # update UI
                 return True
             else:
                 print("Could not click the filter button")
@@ -80,23 +64,25 @@ class DataConnectPage(BasePage):
         Wrapper for clicking, drag/dropping, and confirming filter
             Clicks `Translated` filter funnel\n
             Drag and drops `No` draggable bar\n
-            Click `Filter` button to confirm
+            Clicks `Filter` button to confirm
         :return: bool
         """
 
         try:
             # If Translated filter found and clicked, return True
-            if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH): # button elm xpath
+            if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH):
                 # print("Translated funnel header clicked!")
 
                 dragged_and_dropped_no_bar = self.find_element_drag_and_drop(src_locator="/html/body/div[10]/div[2]/div[2]/ul/li[1]", target_locator="//ul[@class='selected connected-list ui-sortable']")
+
                 if dragged_and_dropped_no_bar:
-                    self.click_filter_button()
+                    self.click_filter_to_confirm()
                     return True
                 else:
+                    print("Could not drag and no drop bar")
                     return False
             else:
-                print("Could not click Translated filter.")
+                print("Could not wait, find, and click Translated filter.")
                 return False
 
         except Exception as e:
