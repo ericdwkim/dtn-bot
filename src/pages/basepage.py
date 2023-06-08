@@ -253,17 +253,7 @@ class BasePage(object):
         # Click filter
         self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
 
-        source_element = self.driver.find_element(By.XPATH, "//ul[@class='available connected-list']//li[@class='ui-state-default ui-element ui-draggable' and @title='No' and .//text()='No']")
-        # TODO: try with only @title
-        # print(f'length{len(source_elements)}') # 4 elements w/ same class name
-        # src_avail_conn_lst = avail_conn_lst_cls[3] # we want 3rd idx element of this class
-        # print(f'src_avail_conn_lst: {src_avail_conn_lst}')
-        # print(f'length: {len(src_avail_conn_lst)}')
-        # print(f'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% {avail_conn_lst_cls}')
-
-
-
-
+        source_element = self.driver.find_element(By.XPATH, "/html/body/div[10]/div[2]/div[2]/ul/li[1]")
         target_elements = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
         target_element = target_elements[3]
 
