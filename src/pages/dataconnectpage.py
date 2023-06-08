@@ -42,41 +42,9 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to set date to yesterday: {str(e)}')
             return False
 
+
+
     def drag_and_drop_no_bar(self):
-        # source locators are the possible (locator type, locator string) combinations specific to the `No` draggable bar
-        src_locators = {
-            "XPATH_KEY": (
-                            By.XPATH,
-                            [
-                            "/html/body/div[10]/div[2]/div[2]/ul/li[1]",
-                            "/html/body/div[10]/div[2]/div[2]/ul/li[1][contains(., 'No')]"
-                            ]
-                          ),
-            "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, [
-                "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"])
-        }
-
-
-        # target locators are the possible (locator type, locator string) combinations specific to the droppable element
-
-        target_locators = {
-            "XPATH_KEY": (
-                By.XPATH,
-                [
-                    # "/html/body/div[8]/div[2]/div[1]/ul"
-                    "//ul[@class='selected connected-list ui-sortable']"
-
-                ]
-            ),
-            # `selected connected-list ui-sortable` class
-            'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
-                                 ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
-
-        }
-
-        try:
-            # Loop over keys of source and target locators; drag & drop for filtering
-            for locator_key in ['XPATH_KEY', 'CSS_SELECTOR_KEY']:
                 if locator_key in src_locators and locator_key in target_locators:
                     if self.find_element_drag_and_drop(src_locators, locator_key, target_locators, locator_key):
                         time.sleep(30)  # Wait for UI update
@@ -115,14 +83,13 @@ class DataConnectPage(BasePage):
             Click `Filter` button to confirm
         :return: bool
         """
-        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
         try:
-            print('=================================================================')
             # If Translated filter found and clicked, return True
             if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH): # button elm xpath
                 # print("Translated funnel header clicked!")
-                dragged_and_dropped_no_bar = self.drag_and_drop_no_bar()
+
+                dragged_and_dropped_no_bar = self.find_element_drag_and_drop(src_locator="/html/body/div[10]/div[2]/div[2]/ul/li[1]", target_locator="//ul[@class='selected connected-list ui-sortable']")
                 if dragged_and_dropped_no_bar:
                     self.click_filter_button()
                     return True

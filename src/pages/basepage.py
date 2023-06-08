@@ -26,36 +26,33 @@ class BasePage(object):
         time.sleep(60) # wait for UI to update®
 
 
-
-    def find_and_wait_for_src_and_target_elements_to_be_clickable(self, src_locator_type, src_locator,
-                                                                  target_locator_type, target_locator):
+    def find_and_wait_for_src_and_target_elements_to_be_clickable(self, src_locator, target_locator, locator_type=By.XPATH ):
         try:
-            source_element = self.driver.find_element(src_locator_type, src_locator)
-            target_element = self.driver.find_element(target_locator_type, target_locator)
-            source_element_clickable = self.wait_for_element_clickable(src_locator, src_locator_type)
-            target_element_clickable = self.wait_for_element_clickable(target_locator, target_locator_type)
+
+            source_element = self.driver.find_element(locator_type, src_locator)
+            target_elements = self.driver.find_elements(locator_type, target_locator)
+            target_element = target_elements[3] # TODO: abstract idx as fn param for reusability
+            source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
+            target_element_clickable = self.wait_for_element_clickable(target_locator, locator_type)
             return source_element, source_element_clickable, target_element, target_element_clickable
         except Exception as e:
             print(
                 f"Error finding or waiting for source/target elements.\nSource locator key: {src_locator_type} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_type} |\nTarget locator: {target_locator}\nError: {str(e)}")
             return None, False, None, False
 
-    def find_element_drag_and_drop(self, src_locators, src_locator_key, target_locators, target_locator_key):
-        src_locator_type, src_locators_list = src_locators[src_locator_key]
-        target_locator_type, target_locators_list = target_locators[target_locator_key]
+    def find_element_drag_and_drop(self, src_locator, target_locator):
 
-        for src_locator in src_locators_list:
-            for target_locator in target_locators_list:
-                source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_and_target_elements_to_be_clickable(
-                    src_locator_type, src_locator, target_locator_type, target_locator)
-                print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
-                if source_element and target_element and source_element_clickable and target_element_clickable:
-                    self.action.drag_and_drop(source_element, target_element).perform()
-                    return True
-                else:
-                    print("Source and/or Target element was not found and/or clickable")
-                    return False
-        return False
+        source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_and_target_elements_to_be_clickable(src_locator, target_locator)
+
+        # print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
+
+        # Only if True, True, True, True, invoke drag_and_drop()
+        if source_element and target_element and source_element_clickable and target_element_clickable:
+            self.action.drag_and_drop(source_element, target_element).perform()
+            return True
+        else:
+            print("Source and/or Target element was not found and/or clickable")
+            return False
 
     # def find_element_drag_and_drop(self, src_locators, src_locator_key, target_locators, target_locator_key):
     #     """
