@@ -39,8 +39,9 @@ class BasePage(object):
                     target_element = self.driver.find_element(target_locator_type, target_locator)
                     # TODO: wait until source_elem and target_elem are interactable
                     print('******************************************************************')
-                    source_element_clickable = self.wait_for_element_clickable(target_locator)
-                    target_element_clickable = self.wait_for_element_clickable(src_locator)
+                    source_element_clickable = self.wait_for_element_clickable(src_locator)
+                    target_element_clickable = self.wait_for_element_clickable(target_locator)
+                    print(f'source_element_clickable: {source_element_clickable}\ntarget_element_clickable: {target_element_clickable}')
                     if source_element_clickable and target_element_clickable:
                         # if source and target elms are both clickable and located
                         self.action.drag_and_drop(source_element, target_element).perform()

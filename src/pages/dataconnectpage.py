@@ -76,7 +76,7 @@ class DataConnectPage(BasePage):
                     time.sleep(30)  # Wait for UI update
                     return True
                 else:
-                    print(f'Drag and drop failed with source locator key: {src_locator_key} and target locator key: CSS_SELECTOR_KEY')
+                    print(f'Drag and drop failed with source locator key: {src_locator_key} and target locator key: XPATH_KEY')
                     return False
         except Exception as e:
             print(f'An error occurred trying to drag and drop no bar: {str(e)}')
