@@ -32,7 +32,7 @@ class BasePage(object):
             for target_locator in target_locators_list:
                 source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_and_target_elements_to_be_clickable(
                     src_locator_type, src_locator, target_locator_type, target_locator)
-                print(f'source_element_clickable: {source_element_clickable}\ntarget_element_clickable: {target_element_clickable}')
+                print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
                 if source_element and target_element and source_element_clickable and target_element_clickable:
                     self.action.drag_and_drop(source_element, target_element).perform()
                     return True

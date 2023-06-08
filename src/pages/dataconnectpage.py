@@ -119,7 +119,7 @@ class DataConnectPage(BasePage):
         try:
             print('=================================================================')
             # If Translated filter found and clicked, return True
-            if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH):
+            if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH): # button elm xpath
                 # print("Translated funnel header clicked!")
                 dragged_and_dropped_no_bar = self.drag_and_drop_no_bar()
                 if dragged_and_dropped_no_bar:
