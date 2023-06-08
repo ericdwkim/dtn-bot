@@ -10,6 +10,20 @@ class BasePage(object):
     def __init__(self, driver):
         self.driver = driver
         self.action = ActionChains(self.driver)
+    def test_list_drag_drop(self):
+
+        # Click filter
+        self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
+
+        source_element = self.driver.find_element(By.XPATH, "/html/body/div[10]/div[2]/div[2]/ul/li[1]")
+        target_elements = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
+        target_element = target_elements[3]
+
+        self.action.drag_and_drop(source_element, target_element).perform()
+
+        # print(f'source_element: {source_element}|target_element: {target_element} ***')
+
+        time.sleep(60) # wait for UI to update®
 
 
 
@@ -240,7 +254,6 @@ class BasePage(object):
             return False  # Return False if element was not found after max_retries
 
 
-
     def check_element_visibility(self, locator ,locator_type=By.CSS_SELECTOR):
         element = self.driver.find_element(locator_type, locator)
         if element.is_displayed():
@@ -248,17 +261,3 @@ class BasePage(object):
         else:
             print("Element is not visible")
 
-    def test_list_drag_drop(self):
-
-        # Click filter
-        self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
-
-        source_element = self.driver.find_element(By.XPATH, "/html/body/div[10]/div[2]/div[2]/ul/li[1]")
-        target_elements = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
-        target_element = target_elements[3]
-
-        self.action.drag_and_drop(source_element, target_element).perform()
-
-        # print(f'source_element: {source_element}|target_element: {target_element} ***')
-
-        time.sleep(60) # wait for UI to update®

@@ -55,26 +55,10 @@ class DataConnectPage(BasePage):
             "CSS_SELECTOR_KEY": (By.CSS_SELECTOR, [
                 "body > div:nth-child(15) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.available.right-column > ul > li:nth-child(1)"])
         }
-        # TODO:
-        # print([my_elem.text for my_elem in driver.find_elements(By.XPATH, "//td[@class='BookingCalendar-date--bookable ']//span[@class='BookingCalendar-day']")])
-
-        """
-        <ul class="selected connected-list ui-sortable" style="height: 172px;"></ul>
-        
-        //ul[@class='selected connected-list ui-sortable'] # four elements with identical class names --> target element
-        
-        """
-        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
 
-        # lst_of_target_sortable = self.driver.find_elements(By.XPATH, "//ul[@class='selected connected-list ui-sortable']")
+        # target locators are the possible (locator type, locator string) combinations specific to the droppable element
 
-        # for target in lst_of_target_sortable:
-        #     print(f'{target} | {lst_of_target_sortable[3]}')
-
-        # driver.find_element_by_xpath("(//div[@class='tableType value'])[position()=2]")
-        # target locators is are the possible (locator type, locator string) combinations specific to the droppable element
-        # NOTE: to add other locator types, just create new KEY w/ tup value
         target_locators = {
             "XPATH_KEY": (
                 By.XPATH,
