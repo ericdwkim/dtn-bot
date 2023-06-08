@@ -76,7 +76,7 @@ class DataConnectPage(BasePage):
             # Loop over keys of source locators; drag & drop for filtering
             for src_locator_key in ['XPATH_KEY', 'CSS_SELECTOR_KEY']:
                 # TODO: refactor `target_locator_key` to be dynamic based on target locators mapping for debug purposes
-                if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR'):
+                if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR_KEY'):
                     # print(f'Drag and drop successful with locator {src_locator_key}')
                     time.sleep(30)  # Wait for UI update
                     return True
