@@ -59,27 +59,29 @@ class DataConnectPage(BasePage):
         # target locators is are the possible (locator type, locator string) combinations specific to the droppable element
         # NOTE: to add other locator types, just create new KEY w/ tup value
         target_locators = {
-            "XPATH_KEY": (
-                By.XPATH,
-                [
-                    # "/html/body/div[8]/div[2]/div[1]/ul",
-                    "/html/body/div[8]/div[2]/div[1]" # outer element test
-                 ]
-            )
+            # "XPATH_KEY": (
+            #     By.XPATH,
+            #     [
+            #         "/html/body/div[8]/div[2]/div[1]/ul",
+            #         "/html/body/div[8]/div[2]/div[1]" # outer element test
+            #      ]
+            # )
             # `selected connected-list ui-sortable` class
-            # 'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
-            #                      ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
+            'CSS_SELECTOR_KEY': (By.CSS_SELECTOR,
+                                 ["body > div:nth-child(13) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > ul"])
 
         }
 
         try:
             # Loop over keys of source locators; drag & drop for filtering
             for src_locator_key in ['XPATH_KEY', 'CSS_SELECTOR_KEY']:
-                if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'XPATH_KEY'):
+                # TODO: refactor `target_locator_key` to be dynamic based on target locators mapping for debug purposes
+                if self.find_element_drag_and_drop(src_locators, src_locator_key, target_locators, 'CSS_SELECTOR'):
                     # print(f'Drag and drop successful with locator {src_locator_key}')
                     time.sleep(30)  # Wait for UI update
                     return True
                 else:
+                    # TODO: once refactored, replace with {target_locator_key} for accurate logging
                     print(f'Drag and drop failed with source locator key: {src_locator_key} and target locator key: XPATH_KEY')
                     return False
         except Exception as e:
