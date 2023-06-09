@@ -73,8 +73,24 @@ class DataConnectPage(BasePage):
             if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH):
                 # print("Translated funnel header clicked!")
 
-                dragged_and_dropped_no_bar = self.find_element_drag_and_drop(src_locator="/html/body/div[10]/div[2]/div[2]/ul/li[1]", target_locator="//ul[@class='selected connected-list ui-sortable']")
-                # TODO: Figure out why this target_locator is returning False for `target_element_clickable`
+                dragged_and_dropped_no_bar = self.find_element_drag_and_drop(src_locator="//li[@title='No']",
+                                                                             target_locator="//ul[@class='selected connected-list ui-sortable']")
+
+                """
+                # ul draggable element copied
+                <ul class="available connected-list" style="height: 172px;"><li class="ui-state-default ui-element ui-draggable" title="No"><span class="ui-helper-hidden"></span>No<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li><li class="ui-state-default ui-element ui-draggable" title="Yes"><span class="ui-helper-hidden"></span>Yes<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li></ul>
+                
+                # draggable element copied
+                <li class="ui-state-default ui-element ui-draggable" title="No"><span class="ui-helper-hidden"></span>No<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li>
+                
+                # xpath syntax for drilling down to draggable No element
+                //ul[@class='available connected-list']//li[@class='ui-state-default ui-element ui-draggable']//span[@class='ui-helper-hidden']//[a[@class='action']//span[@class='ui-corner-all ui-icon ui-icon-plus'][contains(., 'No')]
+                
+                or
+                
+                # xpath syntax accessing draggable No element directly 
+                //li[@class='ui-state-default ui-element ui-draggable']
+                """
                 if dragged_and_dropped_no_bar:
                     self.click_filter_to_confirm()
                     return True

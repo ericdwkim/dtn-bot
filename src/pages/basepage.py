@@ -13,8 +13,9 @@ class BasePage(object):
 
     def find_and_wait_for_src_and_target_elements_to_be_clickable(self, src_locator, target_locator, locator_type=By.XPATH ):
         try:
-
+            print(f'$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
             source_element = self.driver.find_element(locator_type, src_locator)
+            print(f'source_element: {source_element}')
             target_elements = self.driver.find_elements(locator_type, target_locator)
             target_element = target_elements[3]
             # TODO: abstract idx as fn param for re-usability?
@@ -123,7 +124,6 @@ class BasePage(object):
         :param timeout:
         :return: list of WebElements
         """
-        # TODO: target_element_clickable returns false b/c locator for list of elements are being passed into `element_to_be_clickable` singular
 
         try:
             WebDriverWait(self.driver, timeout).until(
