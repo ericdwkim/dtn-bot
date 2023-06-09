@@ -19,8 +19,8 @@ class BasePage(object):
             target_element = target_elements[3]
             # TODO: abstract idx as fn param for re-usability?
             source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-            target_element_clickable = self.wait_for_element_clickable(target_locator, locator_type)
-            return source_element, source_element_clickable, target_element, target_element_clickable
+            target_elements_visible = self.wait_for_visibility_of_elements(target_locator, locator_type)
+            return source_element, source_element_clickable, target_element, target_elements_visible
         except Exception as e:
             print(
                 f"Error finding or waiting for source/target elements.\nSource locator key: {src_locator_type} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_type} |\nTarget locator: {target_locator}\nError: {str(e)}")
@@ -98,15 +98,41 @@ class BasePage(object):
             return False # If exception raised
 
     def wait_for_element_clickable(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
+        """
+        Checking for singular element to be intractable
+        :param locator:
+        :param locator_type:
+        :param timeout:
+        :return:
+        """
         try:
             WebDriverWait(self.driver, timeout).until(
                 EC.element_to_be_clickable((locator_type, locator))
             )
             return True #If element is found within `timeout`
         except TimeoutException:
-            print(f'Tried to wait for element: {locator} to be clickable using locator_type: {locator_type}')
+            print(f'Tried to wait for element: {locator} to be clickable using locator type: {locator_type}')
             return False
 
+    def wait_for_visibility_of_elements(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
+        """
+        Checking for multiple elements to be visible
+        will return list of WebElements to idx `WebElements[idx]`
+        :param locator:
+        :param locator_type:
+        :param timeout:
+        :return: list of WebElements
+        """
+        # TODO: target_element_clickable returns false b/c locator for list of elements are being passed into `element_to_be_clickable` singular
+
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.visibility_of_all_elements_located((locator_type, locator))
+            )
+            return True
+        except (NoSuchElementException, TimeoutException):
+            print(f'Tried to check visibility of all elements: {locator} using locator type: {locator_type}')
+            return False
     def wait_for_find_then_click(self, locator, locator_type=By.CSS_SELECTOR):
         """
         `wait_for_element()` + `find_element_and_click()`\n wrapper using `WebElement.click()`
