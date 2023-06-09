@@ -23,7 +23,7 @@ class BasePage(object):
             return source_element, source_element_clickable, target_element, target_elements_visible
         except Exception as e:
             print(
-                f"Error finding or waiting for source/target elements.\nSource locator key: {src_locator_type} |\nSource locator: {src_locator}\nTarget locator key: {target_locator_type} |\nTarget locator: {target_locator}\nError: {str(e)}")
+                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
             return None, False, None, False
 
     def find_element_drag_and_drop(self, src_locator, target_locator):
@@ -201,7 +201,7 @@ class BasePage(object):
         while retries < max_retries:
             try:
                 element = self.wait_for_find_then_click(locator, locator_type)
-                print(f'Found element: {locator}-----')
+                # print(f'Found element: {locator}')
                 return True  # Return True and exit the function if element is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
                 print(f'Element (single click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
