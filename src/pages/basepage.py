@@ -20,7 +20,7 @@ class BasePage(object):
             else:
                 print(f'source_element: {source_element} | target_element: {target_element}')
             source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-            target_elements_visible = self.wait_for_visibility_of_elements(target_locator, locator_type)
+            target_elements_visible = self.wait_for_visibility_of_elements(target_locator, locator_type) # TODO: still returning false 
             return source_element, source_element_clickable, target_element, target_elements_visible
         except Exception as e:
             print(
