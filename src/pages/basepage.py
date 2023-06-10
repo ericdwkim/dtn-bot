@@ -11,17 +11,14 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    def find_and_wait_for_src_and_target_elements_to_be_clickable(self, src_locator, target_locator, locator_type=By.XPATH ):
+    def find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(self, src_locator, target_locator, locator_type=By.XPATH ):
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
             if source_element:
                 target_elements = self.driver.find_elements(locator_type, target_locator)
-                target_element = target_elements[3]
+                target_element = target_elements[3] # TODO: need to abstract for other idx'd target elements; hardcoded only for No draggable, but could be the same elm
             else:
                 print(f'source_element: {source_element} | target_element: {target_element}')
-            # target_elements = self.driver.find_elements(locator_type, target_locator)
-            # target_element = target_elements[3]
-            # TODO: abstract idx as fn param for re-usability?
             source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
             target_elements_visible = self.wait_for_visibility_of_elements(target_locator, locator_type)
             return source_element, source_element_clickable, target_element, target_elements_visible
@@ -32,7 +29,7 @@ class BasePage(object):
 
     def find_element_drag_and_drop(self, src_locator, target_locator):
 
-        source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_and_target_elements_to_be_clickable(src_locator, target_locator)
+        source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(src_locator, target_locator)
 
         print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
 
