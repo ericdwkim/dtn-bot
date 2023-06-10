@@ -13,11 +13,14 @@ class BasePage(object):
 
     def find_and_wait_for_src_and_target_elements_to_be_clickable(self, src_locator, target_locator, locator_type=By.XPATH ):
         try:
-            print(f'$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
             source_element = self.driver.find_element(locator_type, src_locator)
-            print(f'source_element: {source_element}')
-            target_elements = self.driver.find_elements(locator_type, target_locator)
-            target_element = target_elements[3]
+            if source_element:
+                target_elements = self.driver.find_elements(locator_type, target_locator)
+                target_element = target_elements[3]
+            else:
+                print(f'source_element: {source_element} | target_element: {target_element}')
+            # target_elements = self.driver.find_elements(locator_type, target_locator)
+            # target_element = target_elements[3]
             # TODO: abstract idx as fn param for re-usability?
             source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
             target_elements_visible = self.wait_for_visibility_of_elements(target_locator, locator_type)
