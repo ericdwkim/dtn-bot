@@ -131,7 +131,7 @@ class BasePage(object):
             )
             return True
         except (NoSuchElementException, TimeoutException):
-            print(f'Tried to check visibility of all elements: {locator} using locator type: {locator_type}')
+            print(f'Tried to check visibility of list WebElements: {locator} using locator type: {locator_type}')
             return False
     def wait_for_find_then_click(self, locator, locator_type=By.CSS_SELECTOR):
         """
