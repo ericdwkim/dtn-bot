@@ -48,7 +48,14 @@ class DataConnectPage(BasePage):
 
         # Testing with filter button's XPATH using working syntax structure
         # todo: too generic, probably will need `contains` logic.
-        filter_button_xpath_locator = "//span[@class='ui-button-text']"
+        filter_button_xpath_locator = "//span[@class='ui-button-text'][contains(., 'Filter')]"
+
+        """
+        //span[@class='ui-button-text'][contains(., 'Filter')]
+        5 of 5 elements that matches this xpath; 1st being "Clear Filters" button. 
+        1) Check if it returns list of WebElements, if so access by idx [4] 
+
+        """
         try:
             if self.retry_wait_for_single_click_perform(filter_button_xpath_locator,                locator_type=By.XPATH):
                 # print("Filter button clicked!")
