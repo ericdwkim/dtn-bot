@@ -46,8 +46,11 @@ class DataConnectPage(BasePage):
 
         filter_button_css_locator = "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span"
 
+        # Testing with filter button's XPATH using working syntax structure
+        # todo: too generic, probably will need `contains` logic.
+        filter_button_xpath_locator = "//span[@class='ui-button-text']"
         try:
-            if self.retry_wait_for_single_click_perform(filter_button_css_locator,                locator_type=By.CSS_SELECTOR):
+            if self.retry_wait_for_single_click_perform(filter_button_xpath_locator,                locator_type=By.XPATH):
                 # print("Filter button clicked!")
                 time.sleep(10) # update UI
                 return True
