@@ -176,12 +176,10 @@ class BasePage(object):
     def retry_wait_for_single_click_perform(self, locator, locator_type=By.CSS_SELECTOR, max_retries=5, retry_delay=1 ):
         retries = 0
         while retries < max_retries:
-            # TODO: add wait_for_element_clickable; are double waits necessary? maybe new helper fn
-
             try:
-                #
+                # TODO: combine both functions into a single helper fn?
                 self.wait_for_element_clickable(locator, locator_type)
-                element = self.wait_for_find_then_single_click(locator, locator_type)
+                self.wait_for_find_then_single_click(locator, locator_type)
                 return True # Return True and exit fn if elm is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
                 print(f'Element (single ActionChains.click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
