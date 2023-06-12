@@ -116,6 +116,23 @@ class BasePage(object):
             print(f'Tried to wait for element: {locator} to be clickable using locator type: {locator_type}')
             return False
 
+    def wait_for_presence_of_elements_located_then_click(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
+        """
+        :param locator:
+        :param locator_type:
+        :param timeout:
+        :return: list of WebElements as `elements`
+        """
+        try:
+            elements = WebDriverWait(self.driver, timeout).until(
+                EC.presence_of_all_elements_located((locator_type, locator))
+            )
+            # print(f'Element: {locator} was found')
+            return elements
+        except Exception as e:
+            print(f'An error occurred trying to click filter button: {str(e)}')
+            return False
+
     def wait_for_presence_of_elements_located(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
         """
         Checking for multiple elements to be visible
