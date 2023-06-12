@@ -123,7 +123,8 @@ class BasePage(object):
         :param locator:
         :param locator_type:
         :param timeout:
-        :return: list of WebElements
+        :return: BOOL
+        TODO: NOTE,  presence_of_all_elements_located returns list of WebElements!!!!
         """
 
         try:

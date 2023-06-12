@@ -44,22 +44,23 @@ class DataConnectPage(BasePage):
 
     def click_filter_to_confirm(self):
 
+
         # filter_button_css_locator = "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span"
 
-        # Testing with filter button's XPATH using working syntax structure
-        # todo: too generic, probably will need `contains` logic.
         # filter_button_xpath_locator = "//span[@class='ui-button-text'][contains(., 'Filter')]" # invalid selector: An invalid or illegal selector was specified
+        filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
+
+        element = WebDriverWait(self.driver, timeout=15).until(
+            EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
+        )
+        print(f'element: {element}')
+        print(f' length element: {len(element)}')
+
         # filter_button_xpath_locator = "//span[@class='ui-button-text']" # invalid selector: An invalid or illegal selector was specified
-        filter_button_xpath_locator_copied = "/html/body/div[8]/div[3]/div/button[1]"
+        # filter_button_xpath_locator_copied = "/html/body/div[8]/div[3]/div/button[1]"
+        filter_btn_cls_locator = ""
 
         """
-        <div class="ui-dialog-buttonset">
-            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false">
-            <span class="ui-button-text">Filter</span></button>
-            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false">
-            <span class="ui-button-text">Cancel</span>
-        </button></div>
-        
         <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Filter</span></button>
         //span[@class='ui-button-text'][contains(., 'Filter')]
         5 of 5 elements that matches this xpath; 1st being "Clear Filters" button. 
