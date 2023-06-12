@@ -68,41 +68,6 @@ class DataConnectPage(BasePage):
             print("Could not click translated filter")
             return False
 
-# TODO: make this fn reusable for other filters (Group)
-
-
-    # def click_filter_to_confirm(self):
-    #     """
-    #         Clicks `Filter` button to confirm
-    #     :return:
-    #     """
-    #
-    #     if self.drag_and_drop_for_translated:
-    #
-    #         filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
-    #         elements = WebDriverWait(self.driver, timeout=30).until(
-    #             EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
-    #         )
-    #
-    #         if elements:
-    #             # print(f'elements: {elements}\nlength elements: {len(elements)}\nelements[3]: {elements[3]}')
-    #             # ensure desired filter button is clickable then click
-    #             is_clickable = WebDriverWait(self.driver, timeout=60).until(
-    #                 EC.element_to_be_clickable(elements[3]))
-    #             if is_clickable:
-    #                 # print("Trying to click filter button on [3]")
-    #                 self.driver.execute_script("$(arguments[0]).click();", elements[3])
-    #                 time.sleep(30) # Wait for UI update
-    #                 print("Filter button was clicked!")
-    #             else:
-    #                 print("Could not click Filter button")
-    #         else:
-    #             print("Filter buttons were not found!")
-    #
-    #     else:
-    #         print("Could not drag and drop from source to target elm")
-    #         return False
-
     def click_filter_at_index(self, idx, wait_time=30):
         """
             Clicks `Filter` button at a specific idx to confirm
@@ -135,16 +100,19 @@ class DataConnectPage(BasePage):
             print("Could not drag and drop from source to target elm")
             return False
 
+# TODO: make this reusable
     def set_translated_filter(self):
         # 1) click Translated filter head
         translated_is_clicked = self.click_translated_filter()
         # 2) drag and drop
         no_is_drag_dropped = self.drag_and_drop_for_translated()
         # 3) confirm
-        # translated_filter_is_confirmed = self.click_filter_to_confirm()
         translated_filter_is_confirmed = self.click_filter_at_index(3)
 
         return translated_is_clicked and no_is_drag_dropped and translated_filter_is_confirmed
+
+
+    def set_filter(self, filter_header_locator, src_locator, target_locator):
 
     # def click_group_filter(self):
     #     # If Group filter found and clicked, return True
