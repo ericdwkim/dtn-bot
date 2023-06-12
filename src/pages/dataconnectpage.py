@@ -68,7 +68,7 @@ class DataConnectPage(BasePage):
             print("Could not click translated filter")
             return False
 
-    def click_filter_at_index(self, idx, wait_time=30):
+    def click_filter_button_at_idx(self, idx, wait_time=30):
         """
             Clicks `Filter` button at a specific idx to confirm
         :param idx: The idx of the filter button to be clicked
@@ -113,12 +113,13 @@ class DataConnectPage(BasePage):
         target_elem_idx = 3
         """
         # 3) confirm
-        translated_filter_is_confirmed = self.click_filter_at_index(3)
+        translated_filter_is_confirmed = self.click_filter_button_at_idx(3)
 
         return translated_is_clicked and no_is_drag_dropped and translated_filter_is_confirmed
 
 
     def set_filter(self, filter_header_locator, src_locator, target_locator):
+        pass
 
     # def click_group_filter(self):
     #     # If Group filter found and clicked, return True
