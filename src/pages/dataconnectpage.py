@@ -61,6 +61,7 @@ class DataConnectPage(BasePage):
         """
         if self.click_translated_filter():
             self.find_element_drag_and_drop(src_locator="//li[@title='No']", target_locator="//ul[@class='selected connected-list ui-sortable']")
+            print("Element was dragged and dropped!")
             return True
         else:
             print("222222222")
@@ -73,6 +74,10 @@ class DataConnectPage(BasePage):
             elements = WebDriverWait(self.driver, timeout=15).until(
                 EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
             )
+            if elements:
+                print("Filter buttons were found!")
+            else:
+                print("Filter buttons were not found!")
             # ensure button is clickable then
             # loop through all filter buttons and click each one
             for element in elements:
@@ -83,6 +88,7 @@ class DataConnectPage(BasePage):
                     element.click()
                 else:
                     print("Could not click filter buttons")
+            print("Filter button was clicked for confirmation!")
             return True
         else:
             print("3333333333")
