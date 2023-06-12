@@ -89,11 +89,6 @@ class DataConnectPage(BasePage):
             else:
                 print("Filter buttons were not found!")
 
-                """
-                element.click() resulted in:
-                   Error occurred when trying to find and click element: Message: element click intercepted: Element <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" role="button" aria-disabled="false">...</button> is not clickable at point (1063, 401). Other element would receive the click: <li class="ui-state-default ui-element" title="Yes">...</li>
-                """
-
         else:
             print("3333333333")
             return False
