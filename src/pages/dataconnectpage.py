@@ -74,6 +74,10 @@ class DataConnectPage(BasePage):
             elements = WebDriverWait(self.driver, timeout=15).until(
                 EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
             )
+
+            print(f'elements: {elements}')
+            print(f'length elements: {len(elements)}')
+
             if elements:
                 print("Filter buttons were found!")
             else:
@@ -85,7 +89,13 @@ class DataConnectPage(BasePage):
                     EC.element_to_be_clickable(element))
                 if is_clickable:
                     print(f'Clicking filter button: {element}')
-                    element.click()
+                    # element.click()
+                    """
+                    element.click() resulted in:
+                       Error occurred when trying to find and click element: Message: element click intercepted: Element <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" role="button" aria-disabled="false">...</button> is not clickable at point (1063, 401). Other element would receive the click: <li class="ui-state-default ui-element" title="Yes">...</li>
+                    """
+
+                    self.driver.execute_script("arguments[0].click();", element)
                 else:
                     print("Could not click filter buttons")
             print("Filter button was clicked for confirmation!")
