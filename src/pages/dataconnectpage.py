@@ -46,21 +46,19 @@ class DataConnectPage(BasePage):
 
 
 
-        # filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
-        filter_button_xpath_locator = "body > div:nth-child(15) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span"
-        element = WebDriverWait(self.driver, timeout=15).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, filter_button_xpath_locator))
+        filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
+        elements = WebDriverWait(self.driver, timeout=15).until(
+            EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
         )
-        # print(f'elements: {elements}')
-        # print(f' length elements: {len(elements)}')
-        # element = elements[3]
-        # print(f'element: {element}')
-        # self.action.click(element).perform()
+        print(f'elements: {elements}')
+        print(f' length elements: {len(elements)}')
+        element = elements[3]
+        print(f'element: {element}')
 
-        is_clickable = self.wait_for_element_clickable(By.CSS_SELECTOR, filter_button_xpath_locator)
+        is_clickable = self.wait_for_element_clickable(By.XPATH, filter_button_xpath_locator)
         if is_clickable:
-            element.click()
-            # self.action.click(element).perform()
+            # element.click()
+            self.action.click(element).perform()
         else:
             print("Unable to interact")
 
