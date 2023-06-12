@@ -19,7 +19,7 @@ class BasePage(object):
                 target_element = target_elements[3] # TODO: need to abstract for other idx'd target elements; hardcoded only for No draggable, but could be the same elm
             else:
                 print(f'source_element: {source_element} | target_element: {target_element}')
-            source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
+            source_element_clickable = self.wait_for_element_clickable(src_locator)
             target_elements_visible = self.wait_for_presence_of_elements_located(target_locator, locator_type)
             return source_element, source_element_clickable, target_element, target_elements_visible
         except Exception as e:
@@ -98,7 +98,7 @@ class BasePage(object):
         except TimeoutException:
             return False # If exception raised
 
-    def wait_for_element_clickable(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
+    def wait_for_element_clickable(self, locator, timeout=30):
         """
         Checking for singular element to be intractable
         :param locator:
@@ -108,12 +108,12 @@ class BasePage(object):
         """
         try:
             WebDriverWait(self.driver, timeout).until(
-                EC.element_to_be_clickable((locator_type, locator))
+                EC.element_to_be_clickable((locator))
             )
             print(f'element: {locator} is clickable!')
             return True #If element is found within `timeout`
         except TimeoutException:
-            print(f'Tried to wait for element: {locator} to be clickable using locator type: {locator_type}')
+            print(f'Tried to wait for element: {locator} to be clickable but failed')
             return False
 
     def wait_for_presence_of_elements_located_then_click(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
@@ -180,7 +180,7 @@ class BasePage(object):
 
 
     def wait_for_find_then_double_click(self, locator, locator_type=By.XPATH):
-        self.wait_for_element_clickable(locator, locator_type)
+        self.wait_for_element_clickable(locator)
         element_selector_double_clicked = self.find_element_and_double_click(locator, locator_type)
         return element_selector_double_clicked
 
