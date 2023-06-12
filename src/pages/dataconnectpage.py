@@ -44,20 +44,38 @@ class DataConnectPage(BasePage):
 
     def click_filter_to_confirm(self):
 
-        filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']"
 
-        try:
-            filter_btns = self.wait_for_presence_of_elements_located_then_click(By.XPATH, filter_button_xpath_locator)
-            if filter_btns: # if filter button WebElements returned
-                filter_btn = filter_btns[3] # access 3rd idx filter button
-                filter_btn.click() # Confirm filter
-                return True
-            else:
-                print(f'Could not locate Filter buttons')
-                return False
-        except Exception as e:
-            print(f'An error occurred trying to locate presence of list WebElements: {e}')
-            return False
+
+        # filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
+        filter_button_xpath_locator = "body > div:nth-child(15) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span"
+        element = WebDriverWait(self.driver, timeout=15).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, filter_button_xpath_locator))
+        )
+        # print(f'elements: {elements}')
+        # print(f' length elements: {len(elements)}')
+        # element = elements[3]
+        # print(f'element: {element}')
+        # self.action.click(element).perform()
+
+        is_clickable = self.wait_for_element_clickable(By.CSS_SELECTOR, filter_button_xpath_locator)
+        if is_clickable:
+            element.click()
+            # self.action.click(element).perform()
+        else:
+            print("Unable to interact")
+
+        # try:
+        #     filter_btns = self.wait_for_presence_of_elements_located_then_click(By.XPATH, filter_button_xpath_locator)
+        #     if filter_btns: # if filter button WebElements returned
+        #         filter_btn = filter_btns[3] # access 3rd idx filter button
+        #         filter_btn.click() # Confirm filter
+        #         return True
+        #     else:
+        #         print(f'Could not locate Filter buttons')
+        #         return False
+        # except Exception as e:
+        #     print(f'An error occurred trying to locate presence of list WebElements: {e}')
+        #     return False
 
     def set_translated_filter(self):
         """
