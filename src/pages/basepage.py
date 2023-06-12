@@ -11,8 +11,7 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    def find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(self, src_locator, target_locators, idx,
-                                                                       locator_type=By.XPATH):
+    def find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(self, src_locator, target_elem_idx, target_locators="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
         source_element = None
         source_element_clickable = False
         target_element = None
@@ -22,10 +21,10 @@ class BasePage(object):
             source_element = self.driver.find_element(locator_type, src_locator)
             if source_element:
                 target_elements = self.driver.find_elements(locator_type, target_locators)
-                if target_elements and idx < len(target_elements):
-                    target_element = target_elements[idx]
+                if target_elements and target_elem_idx < len(target_elements):
+                    target_element = target_elements[target_elem_idx]
                 else:
-                    print(f"No target element found at idx {idx} or idx is out of range.")
+                    print(f"No target element found at idx {target_elem_idx} or target_elem_idx is out of range.")
 
             else:
                 print(f"No source element found with locator: {src_locator}")
@@ -39,9 +38,9 @@ class BasePage(object):
 
         return source_element, source_element_clickable, target_element, target_elements_visible
 
-    def find_element_drag_and_drop(self, src_locator, target_locator):
+    def find_element_drag_and_drop(self, src_locator, target_elem_idx):
 
-        source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(src_locator, target_locator)
+        source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(src_locator, target_elem_idx)
 
         # print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
 

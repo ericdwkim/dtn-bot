@@ -55,13 +55,13 @@ class DataConnectPage(BasePage):
             print("Could not wait, find, and then click Translated filter btn")
             return False
 
-    def drag_and_drop_for_translated(self):
+    def drag_and_drop_for_translated(self, src_locator, target_elem_idx):
         """
             Drag and drops `No` draggable bar\n
         :return: bool
         """
         if self.click_translated_filter:
-            self.find_element_drag_and_drop(src_locator="//li[@title='No']", target_locator="//ul[@class='selected connected-list ui-sortable']")
+            self.find_element_drag_and_drop(src_locator, target_elem_idx)
             print("Element was dragged and dropped!")
             return True
         else:
@@ -106,6 +106,12 @@ class DataConnectPage(BasePage):
         translated_is_clicked = self.click_translated_filter()
         # 2) drag and drop
         no_is_drag_dropped = self.drag_and_drop_for_translated()
+        """
+        TEST - REFACTORING OF FUNCTIONS
+        src_locator = "//li[@title='No']"
+        target_locator="//ul[@class='selected connected-list ui-sortable']"
+        target_elem_idx = 3
+        """
         # 3) confirm
         translated_filter_is_confirmed = self.click_filter_at_index(3)
 
