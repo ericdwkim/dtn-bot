@@ -59,7 +59,7 @@ class DataConnectPage(BasePage):
             Clicks `Filter` button to confirm
         :return: bool
         """
-        if find_element_drag_and_drop:
+        if self.click_translated_filter():
             self.find_element_drag_and_drop(src_locator="//li[@title='No']", target_locator="//ul[@class='selected connected-list ui-sortable']")
             return True
         else:
@@ -67,7 +67,7 @@ class DataConnectPage(BasePage):
             return False
     def click_filter_to_confirm(self):
 
-        if drag_and_drop_for_translated:
+        if self.drag_and_drop_for_translated():
 
             filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
             elements = WebDriverWait(self.driver, timeout=15).until(
@@ -98,10 +98,6 @@ class DataConnectPage(BasePage):
 
         return translated_is_clicked and no_is_drag_dropped and translated_filter_is_confirmed
 
-
-
-
-    # TODO: if checks for each function call to ensure each fn is called successfully before running the next function --> this requires all nested function calls to also return bools.
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
         self.set_date_filter()
