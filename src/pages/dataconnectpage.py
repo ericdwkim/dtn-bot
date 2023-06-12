@@ -81,9 +81,8 @@ class DataConnectPage(BasePage):
                 is_clickable = WebDriverWait(self.driver, timeout=60).until(
                     EC.element_to_be_clickable(elements[3]))
                 if is_clickable:
-                    elements[3].click()
-                    print("Successfully clicked filter button!")
-                    # self.driver.execute_script("arguments[0].click();", element)
+                    # elements[3].click()
+                    self.driver.execute_script("arguments[0].click();", elements[3])
                 else:
                     print("Could not click element[3]")
                 print("Filter buttons were found!")
