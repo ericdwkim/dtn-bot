@@ -131,7 +131,7 @@ class BasePage(object):
             return elements
         except Exception as e:
             print(f'An error occurred trying to click filter button: {str(e)}')
-            return False
+            return None
 
     def wait_for_presence_of_elements_located(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
         """
