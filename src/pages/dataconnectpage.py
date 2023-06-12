@@ -48,7 +48,7 @@ class DataConnectPage(BasePage):
             print("Translated funnel header clicked!")
             return True
         else:
-            print("1111111111")
+            print("Could not wait, find, and then click Translated filter btn")
             return False
 
     def drag_and_drop_for_translated(self):
@@ -64,7 +64,7 @@ class DataConnectPage(BasePage):
             print("Element was dragged and dropped!")
             return True
         else:
-            print("222222222")
+            print("Could not click translated filter")
             return False
 
     def click_filter_to_confirm(self):
@@ -92,7 +92,7 @@ class DataConnectPage(BasePage):
                 print("Filter buttons were not found!")
 
         else:
-            print("3333333333")
+            print("Could not drag and drop from source to target elm")
             return False
 
     def set_translated_filter(self):
@@ -107,5 +107,5 @@ class DataConnectPage(BasePage):
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
         self.set_date_filter()
-        self.set_translated_filter() # Test - Refactored function without mappings
+        self.set_translated_filter()
         # self.set_group_filter_to_invoice()
