@@ -48,11 +48,19 @@ class DataConnectPage(BasePage):
 
         # Testing with filter button's XPATH using working syntax structure
         # todo: too generic, probably will need `contains` logic.
-        # filter_button_xpath_locator = "//span[@class='ui-button-text'][contains(., 'Filter')]"
-        filter_button_xpath_locator = "//span[@class='ui-button-text']" # Test - see if this will return list of WebElements
-        # filter_button_xpath_locator_copied = "/html/body/div[8]/div[3]/div/button[1]"
+        # filter_button_xpath_locator = "//span[@class='ui-button-text'][contains(., 'Filter')]" # invalid selector: An invalid or illegal selector was specified
+        # filter_button_xpath_locator = "//span[@class='ui-button-text']" # invalid selector: An invalid or illegal selector was specified
+        filter_button_xpath_locator_copied = "/html/body/div[8]/div[3]/div/button[1]"
 
         """
+        <div class="ui-dialog-buttonset">
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false">
+            <span class="ui-button-text">Filter</span></button>
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false">
+            <span class="ui-button-text">Cancel</span>
+        </button></div>
+        
+        <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Filter</span></button>
         //span[@class='ui-button-text'][contains(., 'Filter')]
         5 of 5 elements that matches this xpath; 1st being "Clear Filters" button. 
         1) Check if it returns list of WebElements, if so access by idx [4] 
@@ -71,13 +79,13 @@ class DataConnectPage(BasePage):
         #     return False
 
         try:
-            is_clickable = self.wait_for_element_clickable(filter_button_xpath_locator)
+            is_clickable = self.wait_for_element_clickable(filter_button_xpath_locator_copied)
             print(f'is_clickable: {is_clickable}')
-            is_located = self.wait_for_presence_of_elements_located(filter_button_xpath_locator)
+            is_located = self.wait_for_presence_of_elements_located(filter_button_xpath_locator_copied)
             print(f'is_located: {is_located}')
-            was_clicked, filter_button_selector = self.find_element_and_click(filter_button_xpath_locator)
-            print(f'filter_button_xpath_locator: {filter_button_xpath_locator}')
-            print(f'length filter_button_xpath_locator: {len(filter_button_xpath_locator)}')
+            was_clicked, filter_button_selector = self.find_element_and_click(filter_button_xpath_locator_copied)
+            print(f'filter_button_xpath_locator_copied: {filter_button_xpath_locator_copied}')
+            print(f'length filter_button_xpath_locator_copied_copied: {len(filter_button_xpath_locator_copied)}')
             print(f'was_clicked: {was_clicked}')
             if was_clicked:
                 print("Filter button clicked!")
