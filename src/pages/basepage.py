@@ -11,21 +11,33 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    def find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(self, src_locator, target_locator, locator_type=By.XPATH ):
+    def find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(self, src_locator, target_locators, idx,
+                                                                       locator_type=By.XPATH):
+        source_element = None
+        source_element_clickable = False
+        target_element = None
+        target_elements_visible = False
+
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
             if source_element:
-                target_elements = self.driver.find_elements(locator_type, target_locator)
-                target_element = target_elements[3] # TODO: need to abstract for other idx'd target elements; hardcoded only for No draggable, but could be the same elm
+                target_elements = self.driver.find_elements(locator_type, target_locators)
+                if target_elements and idx < len(target_elements):
+                    target_element = target_elements[idx]
+                else:
+                    print(f"No target element found at idx {idx} or idx is out of range.")
+
             else:
-                print(f'source_element: {source_element} | target_element: {target_element}')
+                print(f"No source element found with locator: {src_locator}")
+
             source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-            target_elements_visible = self.wait_for_presence_of_elements_located(target_locator, locator_type)
-            return source_element, source_element_clickable, target_element, target_elements_visible
+            target_elements_visible = self.wait_for_presence_of_elements_located(target_locators, locator_type)
+
         except Exception as e:
             print(
-                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
-            return None, False, None, False
+                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locators: {target_locators}\nLocator type: {locator_type}\nError: {str(e)}")
+
+        return source_element, source_element_clickable, target_element, target_elements_visible
 
     def find_element_drag_and_drop(self, src_locator, target_locator):
 
