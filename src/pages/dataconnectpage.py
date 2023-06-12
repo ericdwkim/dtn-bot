@@ -67,35 +67,37 @@ class DataConnectPage(BasePage):
             print("222222222")
             return False
 
-    def basic_filter_click(self):
-        self.find_element_and_click("/html/body/div[10]/div[3]/div/button[1]/span", By.XPATH)
+    # def basic_filter_click(self):
+        # self.find_element_and_click("body > div:nth-child(15) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1)")
 
-    # def click_filter_to_confirm(self):
-    #
-    #     if self.drag_and_drop_for_translated:
-    #
-    #         filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
-    #         elements = WebDriverWait(self.driver, timeout=30).until(
-    #             EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
-    #         )
-    #
-    #         if elements:
-    #             print(f'elements: {elements}\nlength elements: {len(elements)}\nelements[3]: {elements[3]}')
-    #             # ensure desired filter button is clickable the try to click
-    #             is_clickable = WebDriverWait(self.driver, timeout=60).until(
-    #                 EC.element_to_be_clickable(elements[3]))
-    #             if is_clickable:
-    #                 # elements[3].click()
-    #                 print("Trying to click filter button on [3]")
-    #                 self.driver.execute_script("arguments[0].click();", elements[3])
-    #             else:
-    #                 print("Could not click element[3]")
-    #         else:
-    #             print("Filter buttons were not found!")
-    #
-    #     else:
-    #         print("3333333333")
-    #         return False
+
+    def click_filter_to_confirm(self):
+
+        if self.drag_and_drop_for_translated:
+
+            filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
+            elements = WebDriverWait(self.driver, timeout=30).until(
+                EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
+            )
+
+            if elements:
+                print(f'elements: {elements}\nlength elements: {len(elements)}\nelements[3]: {elements[3]}')
+                # ensure desired filter button is clickable the try to click
+                is_clickable = WebDriverWait(self.driver, timeout=60).until(
+                    EC.element_to_be_clickable(elements[3]))
+                if is_clickable:
+                    # elements[3].click()
+                    print("Trying to click filter button on [3]")
+                    self.driver.execute_script("$(arguments[0]).click();", elements[3])
+                    time.sleep(30)
+                else:
+                    print("Could not click element[3]")
+            else:
+                print("Filter buttons were not found!")
+
+        else:
+            print("3333333333")
+            return False
 
     def set_translated_filter(self):
         # 1) click Translated filter head
@@ -103,13 +105,13 @@ class DataConnectPage(BasePage):
         # 2) drag and drop
         no_is_drag_dropped = self.drag_and_drop_for_translated()
         # 3) confirm
-        # translated_filter_is_confirmed = self.click_filter_to_confirm()
-        self.basic_filter_click()
-        # return translated_is_clicked and no_is_drag_dropped and translated_filter_is_confirmed
-        return translated_is_clicked and no_is_drag_dropped
+        translated_filter_is_confirmed = self.click_filter_to_confirm()
+        # self.basic_filter_click()
+        return translated_is_clicked and no_is_drag_dropped and translated_filter_is_confirmed
+        # return translated_is_clicked and no_is_drag_dropped
 
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
-        self.set_date_filter()
+        # self.set_date_filter()
         self.set_translated_filter() # Test - Refactored function without mappings
         # self.set_group_filter_to_invoice()
