@@ -82,6 +82,7 @@ class DataConnectPage(BasePage):
                     EC.element_to_be_clickable(elements[3]))
                 if is_clickable:
                     elements[3].click()
+                    print("Successfully clicked filter button!")
                     # self.driver.execute_script("arguments[0].click();", element)
                 else:
                     print("Could not click element[3]")
