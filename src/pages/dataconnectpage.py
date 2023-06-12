@@ -44,62 +44,19 @@ class DataConnectPage(BasePage):
 
     def click_filter_to_confirm(self):
 
-
-        # filter_button_css_locator = "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span"
-
-        # filter_button_xpath_locator = "//span[@class='ui-button-text'][contains(., 'Filter')]" # invalid selector: An invalid or illegal selector was specified
         filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
 
-        element = WebDriverWait(self.driver, timeout=15).until(
-            EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
-        )
-        print(f'element: {element}')
-        print(f' length element: {len(element)}')
-
-        # filter_button_xpath_locator = "//span[@class='ui-button-text']" # invalid selector: An invalid or illegal selector was specified
-        # filter_button_xpath_locator_copied = "/html/body/div[8]/div[3]/div/button[1]"
-        filter_btn_cls_locator = ""
-
-        """
-        <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Filter</span></button>
-        //span[@class='ui-button-text'][contains(., 'Filter')]
-        5 of 5 elements that matches this xpath; 1st being "Clear Filters" button. 
-        1) Check if it returns list of WebElements, if so access by idx [4] 
-
-        """
-        # try:
-        #     if self.retry_wait_for_single_click_perform(filter_button_xpath_locator,                locator_type=By.XPATH):
-        #         print("Filter button clicked!")
-        #         time.sleep(10) # update UI
-        #         return True
-        #     else:
-        #         print("Could not click the filter button")
-        #         return False
-        # except Exception as e:
-        #     print(f'An error occurred trying to click filter button: {str(e)}')
-        #     return False
-
         try:
-            is_clickable = self.wait_for_element_clickable(filter_button_xpath_locator_copied)
-            print(f'is_clickable: {is_clickable}')
-            is_located = self.wait_for_presence_of_elements_located(filter_button_xpath_locator_copied)
-            print(f'is_located: {is_located}')
-            was_clicked, filter_button_selector = self.find_element_and_click(filter_button_xpath_locator_copied)
-            print(f'filter_button_xpath_locator_copied: {filter_button_xpath_locator_copied}')
-            print(f'length filter_button_xpath_locator_copied_copied: {len(filter_button_xpath_locator_copied)}')
-            print(f'was_clicked: {was_clicked}')
-            if was_clicked:
-                print("Filter button clicked!")
-                time.sleep(10)
-                return True
-            else:
-                print("Could not click filter button")
-                return False
-
+            element = WebDriverWait(self.driver, timeout=15).until(
+                EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
+            )
+            element = element[3] # Desired filter button idx
+            print("Filter button clicked!")
+            time.sleep(5) # UI update
+            return True
         except Exception as e:
             print(f'An error occurred trying to click filter button: {str(e)}')
             return False
-
 
     def set_translated_filter(self):
         """
