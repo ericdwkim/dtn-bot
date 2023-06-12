@@ -44,11 +44,13 @@ class DataConnectPage(BasePage):
 
     def click_filter_to_confirm(self):
 
-        filter_button_css_locator = "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span"
+        # filter_button_css_locator = "body > div:nth-child(13) > div.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix > div > button:nth-child(1) > span"
 
         # Testing with filter button's XPATH using working syntax structure
         # todo: too generic, probably will need `contains` logic.
-        filter_button_xpath_locator = "//span[@class='ui-button-text'][contains(., 'Filter')]"
+        # filter_button_xpath_locator = "//span[@class='ui-button-text'][contains(., 'Filter')]"
+        filter_button_xpath_locator = "//span[@class='ui-button-text']" # Test - see if this will return list of WebElements 
+        # filter_button_xpath_locator_copied = "/html/body/div[8]/div[3]/div/button[1]"
 
         """
         //span[@class='ui-button-text'][contains(., 'Filter')]
@@ -56,14 +58,31 @@ class DataConnectPage(BasePage):
         1) Check if it returns list of WebElements, if so access by idx [4] 
 
         """
+        # try:
+        #     if self.retry_wait_for_single_click_perform(filter_button_xpath_locator,                locator_type=By.XPATH):
+        #         print("Filter button clicked!")
+        #         time.sleep(10) # update UI
+        #         return True
+        #     else:
+        #         print("Could not click the filter button")
+        #         return False
+        # except Exception as e:
+        #     print(f'An error occurred trying to click filter button: {str(e)}')
+        #     return False
+
         try:
-            if self.retry_wait_for_single_click_perform(filter_button_xpath_locator,                locator_type=By.XPATH):
-                # print("Filter button clicked!")
-                time.sleep(10) # update UI
+            was_clicked, filter_button_selector = self.find_element_and_click(filter_button_css_locator)
+            print(f'filter_button_selector: {filter_button_selector}')
+            print(f'length filter_button_selector: {len(filter_button_selector)}')
+            print(f'was_clicked: {was_clicked}')
+            if was_clicked:
+                print("Filter button clicked!")
+                time.sleep(10)
                 return True
             else:
-                print("Could not click the filter button")
+                print("Could not click filter button")
                 return False
+
         except Exception as e:
             print(f'An error occurred trying to click filter button: {str(e)}')
             return False

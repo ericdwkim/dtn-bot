@@ -110,6 +110,7 @@ class BasePage(object):
             WebDriverWait(self.driver, timeout).until(
                 EC.element_to_be_clickable((locator_type, locator))
             )
+            print(f'element: {locator} is clickable!')
             return True #If element is found within `timeout`
         except TimeoutException:
             print(f'Tried to wait for element: {locator} to be clickable using locator type: {locator_type}')
@@ -178,7 +179,9 @@ class BasePage(object):
         while retries < max_retries:
             try:
                 # TODO: combine both functions into a single helper fn?
+                print("Going to wait for it to be clickable")
                 self.wait_for_element_clickable(locator, locator_type)
+                print("Going to wait for it and then single click")
                 self.wait_for_find_then_single_click(locator, locator_type)
                 return True # Return True and exit fn if elm is found and clicked successfully
             except (NoSuchElementException, TimeoutException):
