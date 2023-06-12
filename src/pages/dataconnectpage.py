@@ -49,7 +49,7 @@ class DataConnectPage(BasePage):
         # Testing with filter button's XPATH using working syntax structure
         # todo: too generic, probably will need `contains` logic.
         # filter_button_xpath_locator = "//span[@class='ui-button-text'][contains(., 'Filter')]"
-        filter_button_xpath_locator = "//span[@class='ui-button-text']" # Test - see if this will return list of WebElements 
+        filter_button_xpath_locator = "//span[@class='ui-button-text']" # Test - see if this will return list of WebElements
         # filter_button_xpath_locator_copied = "/html/body/div[8]/div[3]/div/button[1]"
 
         """
@@ -71,9 +71,13 @@ class DataConnectPage(BasePage):
         #     return False
 
         try:
-            was_clicked, filter_button_selector = self.find_element_and_click(filter_button_css_locator)
-            print(f'filter_button_selector: {filter_button_selector}')
-            print(f'length filter_button_selector: {len(filter_button_selector)}')
+            is_clickable = self.wait_for_element_clickable(filter_button_xpath_locator)
+            print(f'is_clickable: {is_clickable}')
+            is_located = self.wait_for_presence_of_elements_located(filter_button_xpath_locator)
+            print(f'is_located: {is_located}')
+            was_clicked, filter_button_selector = self.find_element_and_click(filter_button_xpath_locator)
+            print(f'filter_button_xpath_locator: {filter_button_xpath_locator}')
+            print(f'length filter_button_xpath_locator: {len(filter_button_xpath_locator)}')
             print(f'was_clicked: {was_clicked}')
             if was_clicked:
                 print("Filter button clicked!")
