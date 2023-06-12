@@ -52,6 +52,8 @@ class DataConnectPage(BasePage):
         )
         # loop through all filter buttons and click each one
         for element in elements:
+            self.wait_for_element_clickable(By.XPATH, filter_button_xpath_locator)
+            print(f'Clicking filter button: {element}')
             element.click()
 
         # print(f'elements: {elements}')
