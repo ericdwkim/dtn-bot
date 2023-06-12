@@ -50,9 +50,11 @@ class DataConnectPage(BasePage):
         elements = WebDriverWait(self.driver, timeout=15).until(
             EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
         )
+        # ensure button is clickable then
         # loop through all filter buttons and click each one
         for element in elements:
-            is_clickable = self.wait_for_element_clickable(By.XPATH, filter_button_xpath_locator)
+            is_clickable = WebDriverWait(self.driver, timeout=15).until(
+                EC.element_to_be_clickable(element))
             if is_clickable:
                 print(f'Clicking filter button: {element}')
                 element.click()
