@@ -44,18 +44,19 @@ class DataConnectPage(BasePage):
 
     def click_filter_to_confirm(self):
 
-        filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']" # fetch 3rd idx
+        filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']"
 
         try:
-            element = WebDriverWait(self.driver, timeout=15).until(
-                EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
-            )
-            element = element[3] # Desired filter button idx
-            print("Filter button clicked!")
-            time.sleep(5) # UI update
-            return True
+            filter_btns = self.wait_for_presence_of_elements_located_then_click(By.XPATH, filter_button_xpath_locator)
+            if filter_btns: # if filter button WebElements returned
+                filter_btn = filter_btns[3] # access 3rd idx filter button
+                filter_btn.click() # Confirm filter
+                return True
+            else:
+                print(f'Could not locate Filter buttons')
+                return False
         except Exception as e:
-            print(f'An error occurred trying to click filter button: {str(e)}')
+            print(f'An error occurred trying to locate presence of list WebElements: {e}')
             return False
 
     def set_translated_filter(self):
