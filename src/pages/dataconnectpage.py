@@ -44,7 +44,7 @@ class DataConnectPage(BasePage):
 
     def click_translated_filter(self):
         # If Translated filter found and clicked, return True
-        if self.retry_wait_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH):
+        if self.wait_for_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH):
             print("Translated funnel header clicked!")
             return True
         else:
