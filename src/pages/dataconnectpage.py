@@ -117,7 +117,7 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to drag and drop from source to target element: {e}')
             return False
 
-    def set_filter(self, filter_header_locator, src_locator, target_elem_idx, filter_btn_elem_idx):
+    def set_filter(self, filter_header_locator, target_elem_idx, filter_btn_elem_idx, src_elem_idx=None, src_locator=None):
         """
         Click filter head @ `filter_header_locator`\n
         Drag `src_locator` elem and drop to `target_elements[target_elem_idx]` elem\n
@@ -133,10 +133,14 @@ class DataConnectPage(BasePage):
             print("Filter header could not be clicked")
             return False, False, False
 
-        src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_locator, target_elem_idx)
-        if not src_elem_dragged_and_dropped_to_target_elem:
-            print("Source element could not be dragged and dropped to target element")
-            return True, False, False
+        if src_elem_idx is None:
+            src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_locator, target_elem_idx, src_elem_idx=None)
+            if not src_elem_dragged_and_dropped_to_target_elem:
+                print("Source element could not be dragged and dropped to target element")
+                return True, False, False
+        elif src_locator:
+            src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, target_elem_idx, src_locator=None)
+
 
         filter_button_is_clicked = self.click_filter_button_at_idx(filter_btn_elem_idx)
         if not filter_button_is_clicked:
@@ -155,6 +159,7 @@ class DataConnectPage(BasePage):
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[7]/button',
             src_locator="//li[@title='No']",
+            src_elem_idx=None,
             target_elem_idx=3,
             filter_btn_elem_idx=3
         )
@@ -187,4 +192,4 @@ class DataConnectPage(BasePage):
         self.switch_tab()
         # self.set_date_filter()
         self.set_translated_filter_to_no()
-        # self.set_group_filter_to_invoice()
+        self.set_group_filter_to_invoice()

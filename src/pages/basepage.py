@@ -102,6 +102,9 @@ class BasePage(object):
 
 
         if src_elem_idx is None:
+            print('--------------------------------------------------------------')
+            print(f'source_element: {source_element} | source_element_present: {source_element_present} | target_element: {target_element} | target_elements_present: {target_elements_present} | src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
+            print('--------------------------------------------------------------')
             source_element, source_element_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
                 src_locator, target_elem_idx)
 
@@ -118,6 +121,7 @@ class BasePage(object):
             return True
         else:
             print("Source and/or Target element was not found and/or not present")
+            print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
             return False
 
 
