@@ -222,28 +222,28 @@ class BasePage(object):
             return False  # Return False if element was not found after max_retries
 
 
-    def retry_wait_find_then_click(self, locator, locator_type=By.CSS_SELECTOR, max_retries=5, retry_delay=1):
-        """
-        Retry wrapper for `wait_for_find_then_click()`
-        :param locator:
-        :param max_retries:
-        :param retry_delay:
-        :return: bool
-        """
-        retries = 0
-        while retries < max_retries:
-            try:
-                element = self.wait_for_find_then_click(locator, locator_type)
-                # print(f'Found element: {locator}')
-                return True  # Return True and exit the function if element is found and clicked successfully
-            except (NoSuchElementException, TimeoutException):
-                print(f'Element (single click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
-                retries += 1
-                time.sleep(retry_delay)  # Delay before retrying
-        else:
-            # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
-            print(f'Maximum number of retries reached. Element (single click) with locator: {locator}  not found.')
-            return False  # Return False if element was not found after max_retries
+    # def retry_wait_find_then_click(self, locator, locator_type=By.CSS_SELECTOR, max_retries=5, retry_delay=1):
+    #     """
+    #     Retry wrapper for `wait_for_find_then_click()`
+    #     :param locator:
+    #     :param max_retries:
+    #     :param retry_delay:
+    #     :return: bool
+    #     """
+    #     retries = 0
+    #     while retries < max_retries:
+    #         try:
+    #             element = self.wait_for_find_then_click(locator, locator_type)
+    #             # print(f'Found element: {locator}')
+    #             return True  # Return True and exit the function if element is found and clicked successfully
+    #         except (NoSuchElementException, TimeoutException):
+    #             print(f'Element (single click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
+    #             retries += 1
+    #             time.sleep(retry_delay)  # Delay before retrying
+    #     else:
+    #         # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
+    #         print(f'Maximum number of retries reached. Element (single click) with locator: {locator}  not found.')
+    #         return False  # Return False if element was not found after max_retries
 
     def retry_wait_find_then_double_click(self, locator, locator_type=By.XPATH , max_retries=5, retry_delay=1):
         retries = 0
