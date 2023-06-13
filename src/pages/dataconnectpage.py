@@ -42,113 +42,128 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to set date to yesterday: {str(e)}')
             return False
 
-    def click_translated_filter(self):
-        """
-            Clicks `Translated` filter funnel\n
-        :return:
-        """
-        # If Translated filter found and clicked, return True
-        if self.wait_for_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH):
-            print("Translated funnel header clicked!")
-            return True
-        else:
-            print("Could not wait, find, and then click Translated filter btn")
-            return False
 
-    def drag_and_drop_for_translated(self, src_locator, target_elem_idx):
+    def click_filter_header(self, filter_header_locator, locator_type=By.XPATH):
         """
-            Drag and drops `No` draggable bar\n
+            Clicks filter header at `filter_header_locator`\n
         :return: bool
         """
-        if self.click_translated_filter:
-            self.find_element_drag_and_drop(src_locator, target_elem_idx)
-            print("Element was dragged and dropped!")
+        # If filter header found and clicked, return True
+        if self.wait_for_find_then_click(filter_header_locator, locator_type):
+            print(f'Filter header: {filter_header_locator} was clicked!')
             return True
         else:
-            print("Could not click translated filter")
+            print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
             return False
 
-    def click_filter_button_at_idx(self, idx, wait_time=30):
+    def drag_src_elem_and_drop_to_target_elem(self, filter_header_locator, src_locator, target_elem_idx):
         """
-            Clicks `Filter` button at a specific idx to confirm
-        :param idx: The idx of the filter button to be clicked
+            Drags `src_locator` element and drops to `target_elements[target_elem_idx]`\n
+        :return: bool
+        """
+        filter_header_is_clicked = self.click_filter_header(filter_header_locator)
+        if filter_header_is_clicked:
+            self.find_element_drag_and_drop(src_locator, target_elem_idx)
+            print(f'Element: {src_locator} was dragged and dropped to target_elements[{target_elem_idx}]')
+            return True
+        else:
+            print(f'Could not click filter header at {filter_header_locator}')
+            return False
+
+    def click_filter_button_at_idx(self, filter_header_locator, src_locator, target_elem_idx, filter_btn_elem_idx, wait_time=30):
+        """
+            Clicks `Filter` button at a specific filter_btn_elem_idx to confirm
+        :param filter_btn_elem_idx: The idx of the filter button to be clicked
         :param wait_time: The time to wait for the element to be clickable
         :return:
         """
+        src_dragged_and_dropped_to_target_elem = self.drag_src_elem_and_drop_to_target_elem(filter_header_locator, src_locator, target_elem_idx)
 
-        if self.drag_and_drop_for_translated:
-
+        if src_dragged_and_dropped_to_target_elem:
             filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']"
-            elements = WebDriverWait(self.driver, timeout=30).until(
+            filter_button_elements = WebDriverWait(self.driver, timeout=30).until(
                 EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
             )
 
-            if elements and idx < len(elements):
+            if filter_button_elements and filter_btn_elem_idx < len(filter_button_elements):
                 # ensure desired filter button is clickable then click
                 is_clickable = WebDriverWait(self.driver, timeout=60).until(
-                    EC.element_to_be_clickable(elements[idx]))
+                    EC.element_to_be_clickable(filter_button_elements[filter_btn_elem_idx]))
                 if is_clickable:
-                    self.driver.execute_script("$(arguments[0]).click();", elements[idx])
+                    self.driver.execute_script("$(arguments[0]).click();", filter_button_elements[filter_btn_elem_idx])
                     time.sleep(wait_time)  # Wait for UI update
-                    print(f"Filter button at idx {idx} was clicked!")
+                    print(f"Filter button at idx {filter_btn_elem_idx} was clicked!")
                 else:
-                    print(f"Could not click Filter button at idx {idx}")
+                    print(f"Could not click Filter button at idx {filter_btn_elem_idx}")
             else:
-                print(f"Filter buttons were not found or idx {idx} is out of range!")
+                print(f"Filter buttons were not found or idx {filter_btn_elem_idx} is out of range!")
 
         else:
             print("Could not drag and drop from source to target elm")
             return False
 
-# TODO: make this reusable
-    def set_translated_filter(self):
-        # 1) click Translated filter head
-        translated_is_clicked = self.click_translated_filter()
-        # 2) drag and drop
-        no_is_drag_dropped = self.drag_and_drop_for_translated()
+
+    def set_filter(self, filter_header_locator, src_locator, target_elem_idx, filter_btn_elem_idx):
         """
-        TEST - REFACTORING OF FUNCTIONS
-        src_locator = "//li[@title='No']"
-        target_locator="//ul[@class='selected connected-list ui-sortable']"
-        target_elem_idx = 3
+        Click filter head @ `filter_header_locator`\n
+        Drag `src_locator` elem and drop to `target_elements[target_elem_idx]` elem\n
+        Click `Filter` button @ `filter_button_elements[filter_btn_elem_idx]` elem
+        :param filter_header_locator:
+        :param src_locator:
+        :param target_elem_idx:
+        :param filter_btn_elem_idx:
+        :return:
         """
-        # 3) confirm
-        translated_filter_is_confirmed = self.click_filter_button_at_idx(3)
 
-        return translated_is_clicked and no_is_drag_dropped and translated_filter_is_confirmed
+        # TODO: Extract conditional logic from within the helper fns onto set_filter instead
+        filter_header_is_clicked = self.click_filter_header(filter_header_locator)
+
+        src_elm_drag_dropped = self.drag_src_elem_and_drop_to_target_elem(filter_header_locator, src_locator, target_elem_idx)
+
+        filter_btn_is_clicked = self.click_filter_button_at_idx(filter_header_locator, src_locator, target_elem_idx, filter_btn_elem_idx)
+
+        return filter_header_is_clicked and src_elm_drag_dropped and filter_btn_is_clicked
 
 
-    def set_filter(self, filter_header_locator, src_locator, target_locator):
-        pass
+"""
+def set_filter(params, etc...)
+      filter_clicked = self.click_filter_header(params, etc...)
+      if filter_clicked:
+                     src_elm_drag_dropped = self.drag_src_to_target_element(params, etc....)
+                                  if src_elm_drag_dropped:
+                                             self.click_filter_button_at_idx(params, etc...)
+                                 else:
+                                        print("helpful error log when src element was not successfully dragged and dropped to target element.")
+       else:
+        print("some helpful logs if filter header not clicked") 
+"""
 
-    # def click_group_filter(self):
-    #     # If Group filter found and clicked, return True
-    #     if self.wait_for_find_then_click(r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]', locator_type=By.XPATH):
-    #         print("Group filter clicked!")
-    #         return True
-    #     else:
-    #         print("Could not wait, find, and then click Group filter btn")
-    #         return False
-    #
-    # def drag_and_drop_for_group(self):
-    #     """
-    #     Wrapper for clicking, drag/dropping, and confirming filter
-    #         Clicks `Group` filter funnel\n
-    #         Drag and drops `No` draggable bar\n
-    #         Clicks `Filter` button to confirm
-    #     :return: bool
-    #     """
-    #     if self.click_translated_filter:
-    #         self.find_element_drag_and_drop(src_locator="//li[@title='No']", target_locator="//ul[@class='selected connected-list ui-sortable']")
-    #         print("Element was dragged and dropped!")
-    #         return True
-    #     else:
-    #         print("Could not click translated filter")
-    #         return False
+
+    def set_translated_filter_to_no(self):
+
+        self.set_filter(
+            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[7]/button',
+            src_locator="//li[@title='No']",
+            target_elem_idx=3,
+            filter_btn_elem_idx=3
+        )
+
+    # def set_group_filter_to_invoice(self):
+    #     self.set_filter(
+    #         filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
+    #         src_locator= "TODO",
+    #         target_elem_idx=2,
+    #         filter_btn_elem_idx=2
+    #     )
+    # """
+    #     src_locator = invoice draggable bar
+    # """
 
 
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
         self.set_date_filter()
-        self.set_translated_filter()
-        # self.set_group_filter_to_invoice()
+        """
+        TEST - Refactor of set_translated_filter() --> set_translated_filter_to_no()
+        """
+        self.set_translated_filter_to_no()
