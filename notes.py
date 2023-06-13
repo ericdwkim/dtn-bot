@@ -17,6 +17,7 @@
     
     @dev: above is the full copied element of the unordered list for *all* existing draggable bars for the `Group` filter
     1) get XPATH syntax down for this ul element so that it returns a <List>WebElements
+                # desired element at idx 1
                 //ul[@class='available connected-list']
     2) access desired idx from list (Credit Card, Draft Notice, Invoice, Price, Rack Report)
     3) this will allow this new helper fn to be reusable for all `Group` filter setting use cases and NOT just for Invoice

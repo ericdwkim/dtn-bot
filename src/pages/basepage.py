@@ -108,7 +108,7 @@ class BasePage(object):
             source_element, source_element_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
                 src_locator, target_elem_idx)
 
-        elif src_elem_idx is not None and target_elem_idx is not None:
+        elif src_locator is None and src_elem_idx is not None and target_elem_idx is not None:
             source_element, source_element_present, target_element, target_elements_present = self.find_and_wait_for_src_and_target_elems_to_be_present(
                 src_elem_idx, target_elem_idx)
 
