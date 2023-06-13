@@ -11,7 +11,16 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    def find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(self, src_locator, target_elem_idx, target_locators="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
+    def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locators="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
+        """
+        Find and wait for single source WebElement to be clickable\n
+        Find and wait for multiple target WebElements to be present on DOM
+        :param src_locator:
+        :param target_elem_idx:
+        :param target_locators:
+        :param locator_type:
+        :return:
+        """
         source_element = None
         source_element_clickable = False
         target_element = None
