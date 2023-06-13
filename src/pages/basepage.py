@@ -47,8 +47,6 @@ class BasePage(object):
         return source_element, source_element_clickable, target_element, target_elements_present
 
     # TODO: src_locator specific for `Invoice` draggable bar; need to abstract. See below
-
-
     def find_and_wait_for_src_and_target_elems_to_be_present(
         self,
         src_elem_idx,
