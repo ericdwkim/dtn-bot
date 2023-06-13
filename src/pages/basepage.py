@@ -24,7 +24,7 @@ class BasePage(object):
         source_element = None
         source_element_clickable = False
         target_element = None
-        target_elements_visible = False #TODO: change to _present
+        target_elements_present = False
 
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
@@ -39,14 +39,13 @@ class BasePage(object):
                 print(f"No source element found with locator: {src_locator}")
 
             source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-            # TODO: change to _present
-            target_elements_visible =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
+            target_elements_present =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
 
         except Exception as e:
             print(
                 f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
 
-        return source_element, source_element_clickable, target_element, target_elements_visible #TODO: change to _present
+        return source_element, source_element_clickable, target_element, target_elements_present
 
     # TODO: src_locator specific for `Invoice` draggable bar; need to abstract. See below
     """
@@ -93,7 +92,7 @@ class BasePage(object):
         source_element = None
         source_element_present = False
         target_element = None
-        target_elements_visible = False #TODO: change to _present
+        target_elements_present = False
 
         try:
             source_elements = self.driver.find_elements(locator_type, src_locator)
@@ -110,26 +109,27 @@ class BasePage(object):
 
             if target_elements and target_elem_idx < len(target_elements):
                 target_element = target_elements[target_elem_idx]
-                # TODO: change to _present
-                target_elements_visible = self.wait_for_presence_of_elements_located(target_locator, locator_type)
+                target_elements_present = self.wait_for_presence_of_elements_located(target_locator, locator_type)
             else:
                 print(f'No target element found at idx "{target_elem_idx}" or target_elem_idx is out of range.')
 
         except Exception as e:
             print(f'An error occurred trying to find and wait for source and target elements\nError: {str(e)}')
 
-        return source_element, source_element_present, target_element, target_elements_visible #TODO: change to _present
+        return source_element, source_element_present, target_element, target_elements_present
 
     def find_element_drag_and_drop(self, src_elem_idx=None, src_locator=None, target_elem_idx=None):
+        source_element = None
+        source_element_
         if src_elem_idx is None:
-            source_element, source_element_present, target_element, target_elements_visible = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
+            source_element, source_element_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
                 src_locator, target_elem_idx)
 
         elif src_elem_idx is not None and target_elem_idx is not None:
-            source_element, source_element_present, target_element, target_elements_visible = self.find_and_wait_for_src_and_target_elems_to_be_present(
+            source_element, source_element_present, target_element, target_elements_present = self.find_and_wait_for_src_and_target_elems_to_be_present(
                 src_elem_idx, target_elem_idx)
         # TODO: left off here. unbound issue.
-        if source_element_present and target_elements_visible:
+        if source_element_present and target_elements_present:
             self.action.drag_and_drop(source_element, target_element).perform()
             time.sleep(10)  # Wait for UI to update
             return True
