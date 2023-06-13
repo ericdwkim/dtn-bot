@@ -57,19 +57,20 @@ class DataConnectPage(BasePage):
             print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
             return False
 
-    def drag_src_elem_and_drop_to_target_elem(self, target_elem_idx, src_locator=None,  src_elem_idx=None):
-        try:
-            if src_elem_idx is None:
-                self.find_element_drag_and_drop(src_locator, target_elem_idx)
-            # elif src_elem_idx is not None and target_elem_idx is not None
-                # TODO: just apply these conditional checks in here instead of down the chain?
-            else:
-                self.find_element_drag_and_drop(src_elem_idx, target_elem_idx)
-            print(f'Element: {src_locator} was dragged and dropped to target_elements[{target_elem_idx}]')
-            return True
-        except Exception as e:
-            print(f'An error occurred trying to click filter header: {str(e)}')
-            return False
+    # TODO: should not be here. just use find_element_drag_and_drop from basepage.py
+    # def drag_src_elem_and_drop_to_target_elem(self, target_elem_idx, src_locator=None,  src_elem_idx=None):
+    #     try:
+    #         if src_elem_idx is None:
+    #             self.find_element_drag_and_drop(src_locator, target_elem_idx)
+    #         # elif src_elem_idx is not None and target_elem_idx is not None
+    #             # TODO: just apply these conditional checks in here instead of down the chain?
+    #         else:
+    #             self.find_element_drag_and_drop(src_elem_idx, target_elem_idx)
+    #         print(f'Element: {src_locator} was dragged and dropped to target_elements[{target_elem_idx}]')
+    #         return True
+    #     except Exception as e:
+    #         print(f'An error occurred trying to click filter header: {str(e)}')
+    #         return False
 
     # def drag_src_elem_and_drop_to_target_elem(self, src_locator, target_elem_idx):
     #     """
@@ -132,7 +133,7 @@ class DataConnectPage(BasePage):
             print("Filter header could not be clicked")
             return False, False, False
 
-        src_elem_dragged_and_dropped_to_target_elem = self.drag_src_elem_and_drop_to_target_elem(src_locator, target_elem_idx)
+        src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_locator, target_elem_idx)
         if not src_elem_dragged_and_dropped_to_target_elem:
             print("Source element could not be dragged and dropped to target element")
             return True, False, False
@@ -186,4 +187,4 @@ class DataConnectPage(BasePage):
         self.switch_tab()
         self.set_date_filter()
         self.set_translated_filter_to_no()
-        self.set_group_filter_to_invoice()
+        # self.set_group_filter_to_invoice()
