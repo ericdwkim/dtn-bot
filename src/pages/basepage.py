@@ -47,6 +47,36 @@ class BasePage(object):
 
         return source_element, source_element_clickable, target_element, target_elements_visible
 
+    # TODO: need to add src_elem_idx param b/c src_locator is list WebElements
+    def find_and_wait_for_src_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locators="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
+
+        source_element = None
+        source_element_clickable = False
+        target_element = None
+        target_elements_visible = False
+
+        try:
+            source_elements = self.driver.find_elements(locator_type, src_locators)
+            if source_elements:
+                target_elements = self.driver.find_elements(locator_type, target_locators)
+                if target_elements and target_elem_idx < len(target_elements):
+                    target_element = target_elements[target_elem_idx]
+                else:
+                    print(f"No target element found at idx {target_elem_idx} or target_elem_idx is out of range.")
+
+            else:
+                print(f"No source element found with locator: {src_locator}")
+
+            source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
+            target_elements_visible = self.wait_for_presence_of_elements_located(target_locators, locator_type)
+
+        except Exception as e:
+            print(
+                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locators: {target_locators}\nLocator type: {locator_type}\nError: {str(e)}")
+
+        return source_element, source_element_clickable, target_element, target_elements_visible
+
+
     def find_element_drag_and_drop(self, src_locator, target_elem_idx):
 
         source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(src_locator, target_elem_idx)
