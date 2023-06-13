@@ -151,8 +151,7 @@ class BasePage(object):
         :param locator:
         :param locator_type:
         :param timeout:
-        :return: BOOL
-        TODO: NOTE,  presence_of_all_elements_located returns list of WebElements!!!!
+        :return: bool
         """
 
         try:
@@ -207,7 +206,7 @@ class BasePage(object):
         retries = 0
         while retries < max_retries:
             try:
-                # TODO: combine both functions into a single helper fn?
+                # TODO: combine both functions into a single helper fn? and also only need a single wait logic to reduce execution time
                 print("Going to wait for it to be clickable")
                 self.wait_for_element_clickable(locator, locator_type)
                 print("Going to wait for it and then single click")
