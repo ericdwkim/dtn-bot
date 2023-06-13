@@ -174,4 +174,4 @@ class DataConnectPage(BasePage):
         self.switch_tab()
         self.set_date_filter()
         self.set_translated_filter_to_no()
-        self.set_group_filter_to_invoice()
+        # self.set_group_filter_to_invoice()
