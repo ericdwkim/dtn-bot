@@ -56,30 +56,29 @@ class DataConnectPage(BasePage):
             print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
             return False
 
-    def drag_src_elem_and_drop_to_target_elem(self, filter_header_locator, src_locator, target_elem_idx):
+    def drag_src_elem_and_drop_to_target_elem(self, src_locator, target_elem_idx):
         """
             Drags `src_locator` element and drops to `target_elements[target_elem_idx]`\n
         :return: bool
         """
-        filter_header_is_clicked = self.click_filter_header(filter_header_locator)
-        if filter_header_is_clicked:
+        try:
             self.find_element_drag_and_drop(src_locator, target_elem_idx)
             print(f'Element: {src_locator} was dragged and dropped to target_elements[{target_elem_idx}]')
             return True
-        else:
-            print(f'Could not click filter header at {filter_header_locator}')
+        # else:
+        except Exception as e:
+            print(f'An error occurred trying to click filter header: {e}')
             return False
 
-    def click_filter_button_at_idx(self, filter_header_locator, src_locator, target_elem_idx, filter_btn_elem_idx, wait_time=30):
+    def click_filter_button_at_idx(self, filter_btn_elem_idx, wait_time=30):
         """
             Clicks `Filter` button at a specific filter_btn_elem_idx to confirm
         :param filter_btn_elem_idx: The idx of the filter button to be clicked
         :param wait_time: The time to wait for the element to be clickable
         :return:
         """
-        src_dragged_and_dropped_to_target_elem = self.drag_src_elem_and_drop_to_target_elem(filter_header_locator, src_locator, target_elem_idx)
+        try:
 
-        if src_dragged_and_dropped_to_target_elem:
             filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']"
             filter_button_elements = WebDriverWait(self.driver, timeout=30).until(
                 EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
@@ -97,11 +96,11 @@ class DataConnectPage(BasePage):
                     print(f"Could not click Filter button at idx {filter_btn_elem_idx}")
             else:
                 print(f"Filter buttons were not found or idx {filter_btn_elem_idx} is out of range!")
+            return True
 
-        else:
-            print("Could not drag and drop from source to target elm")
+        except Exception as e:
+            print(f'An error occurred trying to drag and drop from source to target element: {e}')
             return False
-
 
     def set_filter(self, filter_header_locator, src_locator, target_elem_idx, filter_btn_elem_idx):
         """
@@ -112,53 +111,63 @@ class DataConnectPage(BasePage):
         :param src_locator:
         :param target_elem_idx:
         :param filter_btn_elem_idx:
-        :return:
+        :return: Tuple[bool, bool, bool]
         """
-
-        # TODO: Extract conditional logic from within the helper fns onto set_filter instead
         filter_header_is_clicked = self.click_filter_header(filter_header_locator)
+        if not filter_header_is_clicked:
+            print("Filter header could not be clicked")
+            return False, False, False
 
-        src_elm_drag_dropped = self.drag_src_elem_and_drop_to_target_elem(filter_header_locator, src_locator, target_elem_idx)
+        src_elem_dragged_and_dropped_to_target_elem = self.drag_src_elem_and_drop_to_target_elem(src_locator, target_elem_idx)
+        if not src_elem_dragged_and_dropped_to_target_elem:
+            print("Source element could not be dragged and dropped to target element")
+            return True, False, False
 
-        filter_btn_is_clicked = self.click_filter_button_at_idx(filter_header_locator, src_locator, target_elem_idx, filter_btn_elem_idx)
+        filter_button_is_clicked = self.click_filter_button_at_idx(filter_btn_elem_idx)
+        if not filter_button_is_clicked:
+            print("Filter button could not be clicked")
+            return True, True, False
 
-        return filter_header_is_clicked and src_elm_drag_dropped and filter_btn_is_clicked
+        return True, True, True
 
-
-"""
-def set_filter(params, etc...)
-      filter_clicked = self.click_filter_header(params, etc...)
-      if filter_clicked:
-                     src_elm_drag_dropped = self.drag_src_to_target_element(params, etc....)
-                                  if src_elm_drag_dropped:
-                                             self.click_filter_button_at_idx(params, etc...)
-                                 else:
-                                        print("helpful error log when src element was not successfully dragged and dropped to target element.")
-       else:
-        print("some helpful logs if filter header not clicked") 
-"""
 
 
     def set_translated_filter_to_no(self):
+        """
+        set_filter wrapper specific to Translated filter to `No`
+        :return: bool
+        """
 
-        self.set_filter(
+        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[7]/button',
             src_locator="//li[@title='No']",
             target_elem_idx=3,
             filter_btn_elem_idx=3
         )
+        if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
+            return True
+        else:
+            print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+            return False
+
 
     # def set_group_filter_to_invoice(self):
-    #     self.set_filter(
+    #     """
+    #     set_filter wrapper specific to Group filter to `Invoice`
+    #     :return: bool
+    #     """
+    #
+    #     filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
     #         filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
-    #         src_locator= "TODO",
+    #         src_locator="TODO",
     #         target_elem_idx=2,
     #         filter_btn_elem_idx=2
     #     )
-    # """
-    #     src_locator = invoice draggable bar
-    # """
-
+    #     if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
+    #         return True
+    #     else:
+    #         print(
+    #             f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
 
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
