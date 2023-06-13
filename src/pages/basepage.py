@@ -24,7 +24,7 @@ class BasePage(object):
         source_element = None
         source_element_clickable = False
         target_element = None
-        target_elements_visible = False
+        target_elements_visible = False #TODO: change to _present
 
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
@@ -39,67 +39,119 @@ class BasePage(object):
                 print(f"No source element found with locator: {src_locator}")
 
             source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-            target_elements_visible = self.wait_for_presence_of_elements_located(target_locator, locator_type)
+            # TODO: change to _present
+            target_elements_visible =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
 
         except Exception as e:
             print(
                 f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
 
-        return source_element, source_element_clickable, target_element, target_elements_visible
+        return source_element, source_element_clickable, target_element, target_elements_visible #TODO: change to _present
 
     # TODO: src_locator specific for `Invoice` draggable bar; need to abstract. See below
     """
-    <ul class="available connected-list" style="height: 172px;"><li class="ui-state-default ui-element ui-draggable" title="Credit Card"><span class="ui-helper-hidden"></span>Credit Card<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li><li class="ui-state-default ui-element ui-draggable" title="Draft Notice"><span class="ui-helper-hidden"></span>Draft Notice<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li><li class="ui-state-default ui-element ui-draggable" title="Invoice"><span class="ui-helper-hidden"></span>Invoice<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li><li class="ui-state-default ui-element ui-draggable" title="Price"><span class="ui-helper-hidden"></span>Price<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li><li class="ui-state-default ui-element ui-draggable" title="Rack Report"><span class="ui-helper-hidden"></span>Rack Report<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li></ul>
+    <ul class="available connected-list" style="height: 172px;">
+        <li class="ui-state-default ui-element ui-draggable" title="Credit Card">
+        <span class="ui-helper-hidden">
+        </span>Credit Card<a href="#" class="action">
+        <span class="ui-corner-all ui-icon ui-icon-plus">
+        </span>
+        </a>
+        </li>
+    <li class="ui-state-default ui-element ui-draggable" title="Draft Notice">
+    <span class="ui-helper-hidden"></span>Draft Notice<a href="#" class="action">
+    <span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li><li class="ui-state-default ui-element ui-draggable" title="Invoice">
+    <span class="ui-helper-hidden"></span>Invoice<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li>
+    <li class="ui-state-default ui-element ui-draggable" title="Price"><span class="ui-helper-hidden"></span>Price<a href="#" class="action">
+    <span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li><li class="ui-state-default ui-element ui-draggable" title="Rack Report">
+    <span class="ui-helper-hidden"></span>Rack Report<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li></ul>
     
     @dev: above is the full copied element of the unordered list for *all* existing draggable bars for the `Group` filter
     1) get XPATH syntax down for this ul element so that it returns a <List>WebElements
+                //ul[@class='available connected-list']
     2) access desired idx from list (Credit Card, Draft Notice, Invoice, Price, Rack Report)
     3) this will allow this new helper fn to be reusable for all `Group` filter setting use cases and NOT just for Invoice
     """
-    def find_and_wait_for_src_and_target_elems_to_be_present(self, src_elem_idx, target_elem_idx, src_locator="//li[@title='Invoice']", target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
 
+    def find_and_wait_for_src_and_target_elems_to_be_present(
+        self,
+        src_elem_idx,
+        target_elem_idx,
+        src_locator="//ul[@class='available connected-list']",
+        target_locator="//ul[@class='selected connected-list ui-sortable']",
+        locator_type=By.XPATH
+    ):
+        """
+        Finds and waits for multiple source & target WebElements to be present on DOM
+        :param src_elem_idx:
+        :param target_elem_idx:
+        :param src_locator:
+        :param target_locator:
+        :param locator_type:
+        :return:
+        """
         source_element = None
-        source_element_clickable = False
+        source_element_present = False
         target_element = None
-        target_elements_visible = False
+        target_elements_visible = False #TODO: change to _present
 
         try:
-            source_elements = self.driver.find_elements(locator_type, src_locators)
-            print(f'****************** LENGTH: {len(source_elements)}')
-            if source_elements[src_elem_idx]: # if desired src_elm specific idx exists
-                target_elements = self.driver.find_elements(locator_type, target_locator)
-                if target_elements and target_elem_idx < len(target_elements):
-                    target_element = target_elements[target_elem_idx]
-                else:
-                    print(f"No target element found at idx {target_elem_idx} or target_elem_idx is out of range.")
+            source_elements = self.driver.find_elements(locator_type, src_locator)
+            target_elements = self.driver.find_elements(locator_type, target_locator)
 
+            print(f'--------------------- length: {len(src_locator)}')
+            print(f'--------------------- src_locator: {src_locator}')
+
+            if source_elements and src_elem_idx < len(source_elements):
+                source_element = source_elements[src_elem_idx]
+                source_element_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
             else:
-                print(f"No source element found with locator: {src_locator}")
+                print(f'No source element found at idx "{src_elem_idx}" or src_elem_idx is out of range.')
 
-            source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-            target_elements_visible = self.wait_for_presence_of_elements_located(target_locator, locator_type)
+            if target_elements and target_elem_idx < len(target_elements):
+                target_element = target_elements[target_elem_idx]
+                # TODO: change to _present
+                target_elements_visible = self.wait_for_presence_of_elements_located(target_locator, locator_type)
+            else:
+                print(f'No target element found at idx "{target_elem_idx}" or target_elem_idx is out of range.')
 
         except Exception as e:
-            print(
-                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
+            print(f'An error occurred trying to find and wait for source and target elements\nError: {str(e)}')
 
-        return source_element, source_element_clickable, target_element, target_elements_visible
+        return source_element, source_element_present, target_element, target_elements_visible #TODO: change to _present
 
+    def find_element_drag_and_drop(self, src_elem_idx=None, src_locator=None, target_elem_idx=None):
+        if src_elem_idx is None:
+            source_element, source_element_present, target_element, target_elements_visible = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
+                src_locator, target_elem_idx)
 
-    def find_element_drag_and_drop(self, src_locator, target_elem_idx):
-
-        source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(src_locator, target_elem_idx)
-
-        # print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
-
-        # Only if True, True, True, True, invoke drag_and_drop()
-        if source_element and target_element and source_element_clickable and target_element_clickable:
+        elif src_elem_idx is not None and target_elem_idx is not None:
+            source_element, source_element_present, target_element, target_elements_visible = self.find_and_wait_for_src_and_target_elems_to_be_present(
+                src_elem_idx, target_elem_idx)
+        # TODO: left off here. unbound issue.
+        if source_element_present and target_elements_visible:
             self.action.drag_and_drop(source_element, target_element).perform()
-            time.sleep(10) # Wait for UI to update
+            time.sleep(10)  # Wait for UI to update
             return True
         else:
             print("Source and/or Target element was not found and/or clickable")
             return False
+
+    # def find_element_drag_and_drop(self, src_locator, target_elem_idx):
+    #     # TODO: conditional wrapper, so if someConditionA run functionA, if someConditionB run functionB
+    #     source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(src_locator, target_elem_idx)
+    #
+    #     # print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
+    #
+    #     # Only if True, True, True, True, invoke drag_and_drop()
+    #     if source_element and target_element and source_element_clickable and target_element_clickable:
+    #         self.action.drag_and_drop(source_element, target_element).perform()
+    #         time.sleep(10) # Wait for UI to update
+    #         return True
+    #     else:
+    #         print("Source and/or Target element was not found and/or clickable")
+    #         return False
+
 
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
         """
