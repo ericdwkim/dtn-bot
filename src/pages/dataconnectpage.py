@@ -151,28 +151,27 @@ class DataConnectPage(BasePage):
             return False
 
 
-    # def set_group_filter_to_invoice(self):
-    #     """
-    #     set_filter wrapper specific to Group filter to `Invoice`
-    #     :return: bool
-    #     """
-    #
-    #     filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
-    #         filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
-    #         src_locator="TODO",
-    #         target_elem_idx=2,
-    #         filter_btn_elem_idx=2
-    #     )
-    #     if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
-    #         return True
-    #     else:
-    #         print(
-    #             f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+    def set_group_filter_to_invoice(self):
+        """
+        set_filter wrapper specific to Group filter to `Invoice`
+        :return: bool
+        """
+
+        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
+            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
+            src_locator="//li[@title='Invoice']",
+            # TODO: "//li[@title='Invoice']" returns 2/2 with first instance being the desired element
+            target_elem_idx=2,
+            filter_btn_elem_idx=2
+        )
+        if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
+            return True
+        else:
+            print(
+                f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
 
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
         self.set_date_filter()
-        """
-        TEST - Refactor of set_translated_filter() --> set_translated_filter_to_no()
-        """
         self.set_translated_filter_to_no()
+        self.
