@@ -11,13 +11,13 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locators="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
+    def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
         """
         Find and wait for single source WebElement to be clickable\n
         Find and wait for multiple target WebElements to be present on DOM
         :param src_locator:
         :param target_elem_idx:
-        :param target_locators:
+        :param target_locator:
         :param locator_type:
         :return:
         """
@@ -29,7 +29,7 @@ class BasePage(object):
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
             if source_element:
-                target_elements = self.driver.find_elements(locator_type, target_locators)
+                target_elements = self.driver.find_elements(locator_type, target_locator)
                 if target_elements and target_elem_idx < len(target_elements):
                     target_element = target_elements[target_elem_idx]
                 else:
@@ -39,42 +39,42 @@ class BasePage(object):
                 print(f"No source element found with locator: {src_locator}")
 
             source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-            target_elements_visible = self.wait_for_presence_of_elements_located(target_locators, locator_type)
+            target_elements_visible = self.wait_for_presence_of_elements_located(target_locator, locator_type)
 
         except Exception as e:
             print(
-                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locators: {target_locators}\nLocator type: {locator_type}\nError: {str(e)}")
+                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
 
         return source_element, source_element_clickable, target_element, target_elements_visible
 
     # TODO: need to add src_elem_idx param b/c src_locator is list WebElements
-    def find_and_wait_for_src_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locators="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
-
-        source_element = None
-        source_element_clickable = False
-        target_element = None
-        target_elements_visible = False
-
-        try:
-            source_elements = self.driver.find_elements(locator_type, src_locators)
-            if source_elements:
-                target_elements = self.driver.find_elements(locator_type, target_locators)
-                if target_elements and target_elem_idx < len(target_elements):
-                    target_element = target_elements[target_elem_idx]
-                else:
-                    print(f"No target element found at idx {target_elem_idx} or target_elem_idx is out of range.")
-
-            else:
-                print(f"No source element found with locator: {src_locator}")
-
-            source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-            target_elements_visible = self.wait_for_presence_of_elements_located(target_locators, locator_type)
-
-        except Exception as e:
-            print(
-                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locators: {target_locators}\nLocator type: {locator_type}\nError: {str(e)}")
-
-        return source_element, source_element_clickable, target_element, target_elements_visible
+    # def find_and_wait_for_src_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
+    #
+    #     source_element = None
+    #     source_element_clickable = False
+    #     target_element = None
+    #     target_elements_visible = False
+    #
+    #     try:
+    #         source_elements = self.driver.find_elements(locator_type, src_locators)
+    #         if source_elements:
+    #             target_elements = self.driver.find_elements(locator_type, target_locator)
+    #             if target_elements and target_elem_idx < len(target_elements):
+    #                 target_element = target_elements[target_elem_idx]
+    #             else:
+    #                 print(f"No target element found at idx {target_elem_idx} or target_elem_idx is out of range.")
+    #
+    #         else:
+    #             print(f"No source element found with locator: {src_locator}")
+    #
+    #         source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
+    #         target_elements_visible = self.wait_for_presence_of_elements_located(target_locator, locator_type)
+    #
+    #     except Exception as e:
+    #         print(
+    #             f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
+    #
+    #     return source_element, source_element_clickable, target_element, target_elements_visible
 
 
     def find_element_drag_and_drop(self, src_locator, target_elem_idx):
