@@ -68,7 +68,7 @@ class DataConnectPage(BasePage):
             return True
         # else:
         except Exception as e:
-            print(f'An error occurred trying to click filter header: {e}')
+            print(f'An error occurred trying to click filter header: {str(e)}')
             return False
 
     def click_filter_button_at_idx(self, filter_btn_elem_idx, wait_time=30):
