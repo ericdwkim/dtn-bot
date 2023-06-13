@@ -28,15 +28,14 @@ class BasePage(object):
 
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
-            if source_element:
-                target_elements = self.driver.find_elements(locator_type, target_locator)
-                if target_elements and target_elem_idx < len(target_elements):
-                    target_element = target_elements[target_elem_idx]
-                else:
-                    print(f"No target element found at idx {target_elem_idx} or target_elem_idx is out of range.")
-
+            target_elements = self.driver.find_elements(locator_type, target_locator)
+            # if a single WebElement from source_locator was found and a list of WebElements
+            # from target_locator were found, and if the idx for target element is less than the total length of the list of WebElements from target_locator, then assign
+            # that specific WebElement to `target_element` per `target_elem_idx`
+            if source_element and target_elements and target_elem_idx < len(target_elements):
+                target_element = target_elements[target_elem_idx]
             else:
-                print(f"No source element found with locator: {src_locator}")
+                print(f'Could not find source WebElement: {src_locator}\nand/or target WebElements: target_locator[{target_elem_idx}]')
 
             source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
             target_elements_present =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
@@ -120,7 +119,12 @@ class BasePage(object):
 
     def find_element_drag_and_drop(self, src_elem_idx=None, src_locator=None, target_elem_idx=None):
         source_element = None
-        source_element_
+        source_element_present = False
+        # TODO: source_elementS_present = False -> to indicate <List>WebElements
+        target_element = None
+        target_elements_present = False
+
+
         if src_elem_idx is None:
             source_element, source_element_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
                 src_locator, target_elem_idx)
@@ -128,29 +132,18 @@ class BasePage(object):
         elif src_elem_idx is not None and target_elem_idx is not None:
             source_element, source_element_present, target_element, target_elements_present = self.find_and_wait_for_src_and_target_elems_to_be_present(
                 src_elem_idx, target_elem_idx)
-        # TODO: left off here. unbound issue.
-        if source_element_present and target_elements_present:
+
+        # Third condition if necessary
+        # else:
+
+        if source_element and target_element and source_element_present and target_elements_present:
             self.action.drag_and_drop(source_element, target_element).perform()
             time.sleep(10)  # Wait for UI to update
             return True
         else:
-            print("Source and/or Target element was not found and/or clickable")
+            print("Source and/or Target element was not found and/or not present")
             return False
 
-    # def find_element_drag_and_drop(self, src_locator, target_elem_idx):
-    #     # TODO: conditional wrapper, so if someConditionA run functionA, if someConditionB run functionB
-    #     source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(src_locator, target_elem_idx)
-    #
-    #     # print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
-    #
-    #     # Only if True, True, True, True, invoke drag_and_drop()
-    #     if source_element and target_element and source_element_clickable and target_element_clickable:
-    #         self.action.drag_and_drop(source_element, target_element).perform()
-    #         time.sleep(10) # Wait for UI to update
-    #         return True
-    #     else:
-    #         print("Source and/or Target element was not found and/or clickable")
-    #         return False
 
 
     def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
