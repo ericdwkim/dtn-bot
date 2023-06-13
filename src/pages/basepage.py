@@ -49,7 +49,7 @@ class BasePage(object):
 
     def find_element_drag_and_drop(self, src_locator, target_elem_idx):
 
-        source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_to_be_clickable_and_target_to_be_visible(src_locator, target_elem_idx)
+        source_element, source_element_clickable, target_element, target_element_clickable = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(src_locator, target_elem_idx)
 
         # print(f'source_element: {source_element}\nsource_element_clickable: {source_element_clickable}\ntarget_element: {target_element}\ntarget_element_clickable: {target_element_clickable}')
 
