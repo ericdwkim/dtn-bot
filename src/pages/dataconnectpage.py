@@ -160,7 +160,7 @@ class DataConnectPage(BasePage):
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
             src_locator="//li[@title='Invoice']",
-            # TODO: "//li[@title='Invoice']" returns 2/2 with first instance being the desired element
+            # TODO: "//li[@title='Invoice']" List WebElement - inferred by error "object HTMLUListElement..."
             target_elem_idx=2,
             filter_btn_elem_idx=2
         )
