@@ -57,34 +57,6 @@ class DataConnectPage(BasePage):
             print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
             return False
 
-    # TODO: should not be here. just use find_element_drag_and_drop from basepage.py
-    # def drag_src_elem_and_drop_to_target_elem(self, target_elem_idx, src_locator=None,  src_elem_idx=None):
-    #     try:
-    #         if src_elem_idx is None:
-    #             self.find_element_drag_and_drop(src_locator, target_elem_idx)
-    #         # elif src_elem_idx is not None and target_elem_idx is not None
-    #         else:
-    #             self.find_element_drag_and_drop(src_elem_idx, target_elem_idx)
-    #         print(f'Element: {src_locator} was dragged and dropped to target_elements[{target_elem_idx}]')
-    #         return True
-    #     except Exception as e:
-    #         print(f'An error occurred trying to click filter header: {str(e)}')
-    #         return False
-
-    # def drag_src_elem_and_drop_to_target_elem(self, src_locator, target_elem_idx):
-    #     """
-    #         Drags `src_locator` element and drops to `target_elements[target_elem_idx]`\n
-    #     :return: bool
-    #     """
-    #     try:
-    #         self.find_element_drag_and_drop(src_locator, target_elem_idx)
-    #         print(f'Element: {src_locator} was dragged and dropped to target_elements[{target_elem_idx}]')
-    #         return True
-    #     except Exception as e:
-    #         print(f'An error occurred trying to click filter header: {str(e)}')
-    #         return False
-    # TODO: ^^^___________________ remove after successful test with find_element_drag_and_drop in set_filter _____________________________^^^
-
     def click_filter_button_at_idx(self, filter_btn_elem_idx, wait_time=30):
         """
             Clicks `Filter` button at a specific filter_btn_elem_idx to confirm
