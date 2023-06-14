@@ -29,15 +29,19 @@ class BasePage(object):
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
             target_elements = self.driver.find_elements(locator_type, target_locator)
+            print('11111')
             # if a single WebElement from source_locator was found and a list of WebElements
             # from target_locator were found, and if the idx for target element is less than the total length of the list of WebElements from target_locator, then assign
             # that specific WebElement to `target_element` per `target_elem_idx`
             if source_element and target_elements and target_elem_idx < len(target_elements):
                 target_element = target_elements[target_elem_idx]
+                print('222222')
+
             else:
                 print(f'Could not find source WebElement: {src_locator}\nand/or target WebElements: target_locator[{target_elem_idx}]')
 
-            src_element_is_clickable = self.wait_for_element_clickable(src_locator)
+            print('33333')
+            src_element_is_clickable = self.wait_for_element_clickable(src_locator, locator_type)
             print(f'******************************** {src_element_is_clickable}')
             src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
             src_element_is_clickable_and_present = src_element_is_clickable and src_element_is_present
@@ -188,8 +192,7 @@ class BasePage(object):
         except TimeoutException:
             return False # If exception raised
 
-    # TODO: need to refactor to be conditional unless...
-    def wait_for_element_clickable(self, mark, timeout=30):
+    def wait_for_element_clickable(self, mark, locator_type=None, timeout=30):
         """
         Checking for singular element to be intractable
         :param mark:
@@ -198,14 +201,20 @@ class BasePage(object):
         :return: bool
         """
 
-        # @devL=renamed argument to 'mark', to indicate that both locator
-        # and WebElement args are valid
         try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.element_to_be_clickable((mark))
-            )
+            # Check if 'mark' is a WebElement
+            if isinstance(mark, WebElement):
+                WebDriverWait(self.driver, timeout).until(
+                    EC.element_to_be_clickable(mark)
+                )
+            # If 'mark' is not a WebElement, then it is assumed to be a locator
+            else:
+                WebDriverWait(self.driver, timeout).until(
+                    EC.element_to_be_clickable((locator_type, mark))
+                )
+
             print(f'element: {mark} is clickable!')
-            return True #If element is found within `timeout`
+            return True  # If element is found within `timeout`
         except TimeoutException:
             print(f'Tried to wait for element: {mark} to be clickable')
             return False
