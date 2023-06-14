@@ -29,20 +29,16 @@ class BasePage(object):
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
             target_elements = self.driver.find_elements(locator_type, target_locator)
-            print('11111')
             # if a single WebElement from source_locator was found and a list of WebElements
             # from target_locator were found, and if the idx for target element is less than the total length of the list of WebElements from target_locator, then assign
             # that specific WebElement to `target_element` per `target_elem_idx`
             if source_element and target_elements and target_elem_idx < len(target_elements):
                 target_element = target_elements[target_elem_idx]
-                print('222222')
 
             else:
                 print(f'Could not find source WebElement: {src_locator}\nand/or target WebElements: target_locator[{target_elem_idx}]')
 
-            print('33333')
             src_element_is_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-            print(f'******************************** {src_element_is_clickable}')
             src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
             src_element_is_clickable_and_present = src_element_is_clickable and src_element_is_present
             target_elements_present =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
@@ -73,7 +69,7 @@ class BasePage(object):
         source_element = None
         src_element_is_clickable_and_present = False
         target_element = None
-        target_element_is_clickable_and_present = False
+        target_elements_present = False
 
         try:
             source_elements = self.driver.find_elements(locator_type, src_locator)
@@ -101,7 +97,7 @@ class BasePage(object):
         except Exception as e:
             print(f'An error occurred trying to find and wait for source and target elements\nError: {str(e)}')
 
-        return source_element, src_element_is_clickable_and_present, target_element, target_element_is_clickable_and_present
+        return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
 
     def find_element_drag_and_drop(self, src_elem_idx=None, src_locator=None, target_elem_idx=None):
         source_element = None
@@ -194,7 +190,7 @@ class BasePage(object):
 
     def wait_for_element_clickable(self, mark, locator_type=None, timeout=30):
         """
-        Checking for singular element to be intractable
+        Checking for singular element to be interactable
         :param mark:
         :param locator_type:
         :param timeout:
@@ -203,7 +199,7 @@ class BasePage(object):
 
         try:
             # Check if 'mark' is a WebElement
-            if isinstance(mark, WebElement):
+            if self.is_web_element(mark):
                 WebDriverWait(self.driver, timeout).until(
                     EC.element_to_be_clickable(mark)
                 )
@@ -218,6 +214,11 @@ class BasePage(object):
         except TimeoutException:
             print(f'Tried to wait for element: {mark} to be clickable')
             return False
+
+    # checking for one of the common attributes/methods a WebElement instance has, like tag_name workaround as
+    # `WebElement` is not a directly importable class in the selenium module.It's a type of object returned when a web element is found by a driver. There's no direct way to check if an object is a WebElement via isinstance().
+    def is_web_element(self, obj):
+        return hasattr(obj, "tag_name")
 
     # def wait_for_presence_of_elements_located_then_click(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
     #     """
