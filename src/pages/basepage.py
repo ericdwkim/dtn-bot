@@ -11,15 +11,21 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    def wait_for_src_element_to_be_clickable_and_present(self, src_locator, locator_type):
-
-        src_element_is_clickable = self.wait_for_element_clickable(src_locator, locator_type)
-        src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
+    # TODO: current issue may be due to locator_type defaulting to CSS and not xpath
+    # TODO: or b/c ec.element_to_be_clickable is only for single not list. but SOF suggested that EC.presence is the equivalent for list webelems....
+    def wait_for_src_element_to_be_clickable_and_present(self, src_mark, locator_type):
+        # NOTE: `src_mark` indicates arg can be a `src_locator` or a `src_element`
+        # this only applies to `EC.element_to_be_clickable(mark)`
+        # `EC.presence_of_all_elements_located(locator)` can only take `src_locator`
+        src_element_is_clickable = self.wait_for_element_clickable(src_mark, locator_type)
+        print(f'----------------- src_element_is_clickable: {src_element_is_clickable} ')
+        src_element_is_present = self.wait_for_presence_of_elements_located(src_mark, locator_type)
+        print(f'----------------- src_element_is_present: {src_element_is_present} ')
         if src_element_is_clickable and src_element_is_present:
-            print(f'Source element: {src_locator} was clickable and present')
+            print(f'Source element: {src_mark} was clickable and present')
             return True
         else:
-            print(f'Source element: {src_locator} was not clickable and/or present')
+            print(f'Source element: {src_mark} was not clickable and/or present')
             return False
 
     def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
@@ -86,7 +92,8 @@ class BasePage(object):
 
             if source_elements and src_elem_idx < len(source_elements):
                 source_element = source_elements[src_elem_idx]
-                src_element_is_clickable_and_present = self.wait_for_src_element_to_be_clickable_and_present(src_locator, locator_type)
+                # NOTE: single WebElement is passed for EC.element_to_be_clickable
+                src_element_is_clickable_and_present = self.wait_for_src_element_to_be_clickable_and_present(source_element, locator_type)
             else:
                 print(f'No source element found at idx "{src_elem_idx}" or src_elem_idx is out of range.')
 
@@ -115,8 +122,10 @@ class BasePage(object):
 
         elif src_locator is None and src_elem_idx is not None and target_elem_idx is not None:
             print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
+
             source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_and_target_elems_to_be_present(
                 src_elem_idx, target_elem_idx)
+
             print(f'source_element: {source_element} | src_element_is_clickable_and_present: {src_element_is_clickable_and_present} | target_element: {target_element} | target_elements_present: {target_elements_present}')
 
         # Third condition if necessary
@@ -188,22 +197,25 @@ class BasePage(object):
         except TimeoutException:
             return False # If exception raised
 
-    def wait_for_element_clickable(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
+    def wait_for_element_clickable(self, mark, locator_type=By.CSS_SELECTOR, timeout=30):
         """
         Checking for singular element to be intractable
-        :param locator:
+        :param mark:
         :param locator_type:
         :param timeout:
         :return: bool
         """
+
+        # @devL=renamed argument to 'mark', to indicate that both locator
+        # and WebElement args are valid
         try:
             WebDriverWait(self.driver, timeout).until(
-                EC.element_to_be_clickable((locator_type, locator))
+                EC.element_to_be_clickable((locator_type, mark))
             )
-            # print(f'element: {locator} is clickable!')
+            print(f'element: {mark} is clickable!')
             return True #If element is found within `timeout`
         except TimeoutException:
-            print(f'Tried to wait for element: {locator} to be clickable using locator type: {locator_type}')
+            print(f'Tried to wait for element: {mark} to be clickable using locator type: {locator_type}')
             return False
 
     # def wait_for_presence_of_elements_located_then_click(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
@@ -237,6 +249,7 @@ class BasePage(object):
             WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_all_elements_located((locator_type, locator))
             )
+            print(f'element {locator} is present!')
             return True
         except (NoSuchElementException, TimeoutException):
             print(f'Tried to check visibility of list WebElements: {locator} using locator type: {locator_type}')
