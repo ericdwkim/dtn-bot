@@ -74,8 +74,8 @@ class BasePage(object):
 
 
 
-            # print(f'--------------------- type source_elements: {type(source_elements)}') # list (WebElements)
-            # print(f'--------------------- length source_elements: {len(source_elements)}') # 4
+            print(f'--------------------- type source_elements: {type(source_elements)}') # list (WebElements)
+            print(f'--------------------- length source_elements: {len(source_elements)}') # 4
 
             if source_elements and src_elem_idx < len(source_elements):
                 source_element = source_elements[src_elem_idx]

@@ -185,8 +185,8 @@ class DataConnectPage(BasePage):
             filter_btn_elem_idx=2,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
             target_elem_idx=2,
-            src_elem_idx=1, # todo: double check
-            src_locator=None, # TODO: set to ul WebElements XPATH default and NOT Invoice XPATH
+            src_elem_idx=1,
+            src_locator=None,
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
