@@ -78,7 +78,7 @@ class BasePage(object):
             if source_elements and src_elem_idx < len(source_elements):
                 source_element = source_elements[src_elem_idx]
                 # NOTE: single WebElement is passed for EC.element_to_be_clickable due to unknown src_locator XPATH at idx 1
-                src_element_is_clickable = self.wait_for_element_clickable(source_element, locator_type)
+                src_element_is_clickable = self.wait_for_element_clickable(source_element)
                 src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
                 src_element_is_clickable_and_present = src_element_is_clickable and src_element_is_present
             else:
@@ -184,7 +184,7 @@ class BasePage(object):
         except TimeoutException:
             return False # If exception raised
 
-    def wait_for_element_clickable(self, mark, locator_type=By.CSS_SELECTOR, timeout=30):
+    def wait_for_element_clickable(self, mark, timeout=30):
         """
         Checking for singular element to be intractable
         :param mark:
@@ -197,12 +197,12 @@ class BasePage(object):
         # and WebElement args are valid
         try:
             WebDriverWait(self.driver, timeout).until(
-                EC.element_to_be_clickable((locator_type, mark))
+                EC.element_to_be_clickable((mark))
             )
             print(f'element: {mark} is clickable!')
             return True #If element is found within `timeout`
         except TimeoutException:
-            print(f'Tried to wait for element: {mark} to be clickable using locator type: {locator_type}')
+            print(f'Tried to wait for element: {mark} to be clickable')
             return False
 
     # def wait_for_presence_of_elements_located_then_click(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
