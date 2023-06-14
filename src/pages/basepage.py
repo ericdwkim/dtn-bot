@@ -73,8 +73,10 @@ class BasePage(object):
             source_elements = self.driver.find_elements(locator_type, src_locator)
             target_elements = self.driver.find_elements(locator_type, target_locator)
 
-            print(f'--------------------- length: {len(src_locator)}')
-            print(f'--------------------- src_locator: {src_locator}')
+
+
+            # print(f'--------------------- type source_elements: {type(source_elements)}') # list (WebElements)
+            # print(f'--------------------- length source_elements: {len(source_elements)}') # 4
 
             if source_elements and src_elem_idx < len(source_elements):
                 source_element = source_elements[src_elem_idx]
