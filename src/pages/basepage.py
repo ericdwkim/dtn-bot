@@ -37,7 +37,8 @@ class BasePage(object):
             else:
                 print(f'Could not find source WebElement: {src_locator}\nand/or target WebElements: target_locator[{target_elem_idx}]')
 
-            src_element_is_clickable = self.wait_for_element_clickable(src_locator, locator_type)
+            src_element_is_clickable = self.wait_for_element_clickable(src_locator)
+            print(f'******************************** {src_element_is_clickable}')
             src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
             src_element_is_clickable_and_present = src_element_is_clickable and src_element_is_present
             target_elements_present =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
@@ -68,7 +69,7 @@ class BasePage(object):
         source_element = None
         src_element_is_clickable_and_present = False
         target_element = None
-        target_elements_present = False
+        target_element_is_clickable_and_present = False
 
         try:
             source_elements = self.driver.find_elements(locator_type, src_locator)
@@ -86,14 +87,17 @@ class BasePage(object):
 
             if target_elements and target_elem_idx < len(target_elements):
                 target_element = target_elements[target_elem_idx]
+                # TODO: should fix HTMLUListElement not interactable issue as only other UL elm not checked is target elms
+                # target_element_is_clickable = self.wait_for_element_clickable(target_element)
                 target_elements_present = self.wait_for_presence_of_elements_located(target_locator, locator_type)
+                # target_element_is_clickable_and_present = target_element_is_clickable and target_elements_present
             else:
                 print(f'No target element found at idx "{target_elem_idx}" or target_elem_idx is out of range.')
 
         except Exception as e:
             print(f'An error occurred trying to find and wait for source and target elements\nError: {str(e)}')
 
-        return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
+        return source_element, src_element_is_clickable_and_present, target_element, target_element_is_clickable_and_present
 
     def find_element_drag_and_drop(self, src_elem_idx=None, src_locator=None, target_elem_idx=None):
         source_element = None
@@ -184,6 +188,7 @@ class BasePage(object):
         except TimeoutException:
             return False # If exception raised
 
+    # TODO: need to refactor to be conditional unless...
     def wait_for_element_clickable(self, mark, timeout=30):
         """
         Checking for singular element to be intractable
