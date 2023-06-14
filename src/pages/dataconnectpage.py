@@ -171,11 +171,3 @@ class DataConnectPage(BasePage):
         # self.set_date_filter()
         # self.set_translated_filter_to_no()
         self.set_group_filter_to_invoice()
-        """
-        # TODO: 
-        dry run results
-        Filter header: //*[@id="messageTable"]/thead/tr/th[5]/button/span[2] was clicked!
-
-        --------------------- length: 39
---------------------- src_locator: //ul[@class='available connected-list']
-        """

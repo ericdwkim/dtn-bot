@@ -114,8 +114,10 @@ class BasePage(object):
                 src_locator, target_elem_idx)
 
         elif src_locator is None and src_elem_idx is not None and target_elem_idx is not None:
+            print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
             source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_and_target_elems_to_be_present(
                 src_elem_idx, target_elem_idx)
+            print(f'source_element: {source_element} | src_element_is_clickable_and_present: {src_element_is_clickable_and_present} | target_element: {target_element} | target_elements_present: {target_elements_present}')
 
         # Third condition if necessary
         # else:
@@ -125,8 +127,7 @@ class BasePage(object):
             time.sleep(10)  # Wait for UI to update
             return True
         else:
-            print("Source and/or Target element was not found and/or not present")
-            print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
+            print(f'Source and/or Target element was not found and/or not present\nsrc_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
             return False
 
 
