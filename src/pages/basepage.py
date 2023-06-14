@@ -11,6 +11,17 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
+    def wait_for_src_element_to_be_clickable_and_present(self, src_locator, locator_type):
+
+        src_element_is_clickable = self.wait_for_element_clickable(src_locator, locator_type)
+        src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
+        if src_element_is_clickable and src_element_is_present:
+            print(f'Source element: {src_locator} was clickable and present')
+            return True
+        else:
+            print(f'Source element: {src_locator} was not clickable and/or present')
+            return False
+
     def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
         """
         Find and wait for single source WebElement to be clickable\n
@@ -22,7 +33,7 @@ class BasePage(object):
         :return:
         """
         source_element = None
-        source_element_clickable = False
+        src_element_is_clickable_and_present = False
         target_element = None
         target_elements_present = False
 
@@ -37,14 +48,14 @@ class BasePage(object):
             else:
                 print(f'Could not find source WebElement: {src_locator}\nand/or target WebElements: target_locator[{target_elem_idx}]')
 
-            source_element_clickable = self.wait_for_element_clickable(src_locator, locator_type)
+            src_element_is_clickable_and_present = self.wait_for_src_element_to_be_clickable_and_present(src_locator, locator_type)
             target_elements_present =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
 
         except Exception as e:
             print(
                 f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
 
-        return source_element, source_element_clickable, target_element, target_elements_present
+        return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
 
     def find_and_wait_for_src_and_target_elems_to_be_present(
         self,
@@ -64,7 +75,7 @@ class BasePage(object):
         :return:
         """
         source_element = None
-        source_element_present = False
+        src_element_is_clickable_and_present = False
         target_element = None
         target_elements_present = False
 
@@ -73,13 +84,9 @@ class BasePage(object):
             target_elements = self.driver.find_elements(locator_type, target_locator)
 
 
-
-            print(f'--------------------- type source_elements: {type(source_elements)}') # list (WebElements)
-            print(f'--------------------- length source_elements: {len(source_elements)}') # 4
-
             if source_elements and src_elem_idx < len(source_elements):
                 source_element = source_elements[src_elem_idx]
-                source_element_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
+                src_element_is_clickable_and_present = self.wait_for_src_element_to_be_clickable_and_present(src_locator, locator_type)
             else:
                 print(f'No source element found at idx "{src_elem_idx}" or src_elem_idx is out of range.')
 
@@ -92,29 +99,28 @@ class BasePage(object):
         except Exception as e:
             print(f'An error occurred trying to find and wait for source and target elements\nError: {str(e)}')
 
-        return source_element, source_element_present, target_element, target_elements_present
+        return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
 
     def find_element_drag_and_drop(self, src_elem_idx=None, src_locator=None, target_elem_idx=None):
         source_element = None
-        source_element_present = False
-        # TODO: source_elementS_present = False -> to indicate <List>WebElements
+        src_element_is_clickable_and_present = False
         target_element = None
         target_elements_present = False
 
 
         if src_elem_idx is None:
             # print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
-            source_element, source_element_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
+            source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
                 src_locator, target_elem_idx)
 
         elif src_locator is None and src_elem_idx is not None and target_elem_idx is not None:
-            source_element, source_element_present, target_element, target_elements_present = self.find_and_wait_for_src_and_target_elems_to_be_present(
+            source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_and_target_elems_to_be_present(
                 src_elem_idx, target_elem_idx)
 
         # Third condition if necessary
         # else:
 
-        if source_element and target_element and source_element_present and target_elements_present:
+        if source_element and target_element and src_element_is_clickable_and_present and target_elements_present:
             self.action.drag_and_drop(source_element, target_element).perform()
             time.sleep(10)  # Wait for UI to update
             return True
