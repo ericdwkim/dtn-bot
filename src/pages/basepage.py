@@ -25,6 +25,7 @@ class BasePage(object):
         src_element_is_clickable_and_present = False
         target_element = None
         target_elements_present = False
+        # TODO: target_element_is_clickable_and_present
 
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
@@ -41,6 +42,7 @@ class BasePage(object):
             src_element_is_clickable = self.wait_for_element_clickable(src_locator, locator_type)
             src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
             src_element_is_clickable_and_present = src_element_is_clickable and src_element_is_present
+            # TODO: target_element_is_clickable_and_present
             target_elements_present =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
 
         except Exception as e:
@@ -48,6 +50,8 @@ class BasePage(object):
                 f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
 
         return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
+
+    # TODO: target_element_is_clickable_and_present
 
     def find_and_wait_for_src_and_target_elems_to_be_present(
         self,
@@ -69,7 +73,7 @@ class BasePage(object):
         source_element = None
         src_element_is_clickable_and_present = False
         target_element = None
-        target_element_is_clickable_and_present = False
+        target_elements_present = False
 
         try:
             source_elements = self.driver.find_elements(locator_type, src_locator)
@@ -87,7 +91,7 @@ class BasePage(object):
             if target_elements and target_elem_idx < len(target_elements):
                 target_element = target_elements[target_elem_idx]
                 # TODO: should fix HTMLUListElement not interactable issue as only other UL elm not checked is target elms
-                target_element_is_clickable = self.wait_for_element_clickable(target_element)
+                target_element_is_clickable = self.wait_for_element_clickable(target_locator, locator_type)
                 target_elements_present = self.wait_for_presence_of_elements_located(target_locator, locator_type)
                 target_element_is_clickable_and_present = target_element_is_clickable and target_elements_present
             else:
@@ -103,24 +107,27 @@ class BasePage(object):
         src_element_is_clickable_and_present = False
         target_element = None
         target_elements_present = False
+        # TODO
+        # target_element_is_clickable_and_present = False
 
 
         if src_elem_idx is None:
             # print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
+            # TODO: target_element_is_clickable_and_present
             source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
                 src_locator, target_elem_idx)
 
         elif src_locator is None and src_elem_idx is not None and target_elem_idx is not None:
             print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
 
+            # TODO: target_element_is_clickable_and_present
             source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_and_target_elems_to_be_present(
                 src_elem_idx, target_elem_idx)
 
             print(f'source_element: {source_element} | src_element_is_clickable_and_present: {src_element_is_clickable_and_present} | target_element: {target_element} | target_elements_present: {target_elements_present}')
+            # TODO: target_element_is_clickable_and_present
 
-        # Third condition if necessary
-        # else:
-
+        # TODO: target_element_is_clickable_and_present
         if source_element and target_element and src_element_is_clickable_and_present and target_elements_present:
             self.action.drag_and_drop(source_element, target_element).perform()
             time.sleep(10)  # Wait for UI to update
