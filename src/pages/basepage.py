@@ -11,7 +11,6 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    # TODO: current issue may be due to locator_type defaulting to CSS and not xpath
     # TODO: or b/c ec.element_to_be_clickable is only for single not list. but SOF suggested that EC.presence is the equivalent for list webelems....
     def wait_for_src_element_to_be_clickable_and_present(self, src_mark, locator_type):
         # NOTE: `src_mark` indicates arg can be a `src_locator` or a `src_element`
@@ -92,7 +91,7 @@ class BasePage(object):
 
             if source_elements and src_elem_idx < len(source_elements):
                 source_element = source_elements[src_elem_idx]
-                # NOTE: single WebElement is passed for EC.element_to_be_clickable
+                # NOTE: single WebElement is passed for EC.element_to_be_clickable due to unknown src_locator XPATH at idx 1
                 src_element_is_clickable_and_present = self.wait_for_src_element_to_be_clickable_and_present(source_element, locator_type)
             else:
                 print(f'No source element found at idx "{src_elem_idx}" or src_elem_idx is out of range.')

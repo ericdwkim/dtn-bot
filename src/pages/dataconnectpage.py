@@ -111,6 +111,7 @@ class DataConnectPage(BasePage):
             if not src_elem_dragged_and_dropped_to_target_elem:
                 print("Source element could not be dragged and dropped to target element")
                 return True, False, False
+
         # Group `Invoice` case
         elif src_locator is None:
             src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
@@ -169,5 +170,5 @@ class DataConnectPage(BasePage):
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
         # self.set_date_filter()
-        self.set_translated_filter_to_no()
-        # self.set_group_filter_to_invoice()
+        # self.set_translated_filter_to_no()
+        self.set_group_filter_to_invoice()
