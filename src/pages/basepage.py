@@ -11,22 +11,6 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    # TODO: or b/c ec.element_to_be_clickable is only for single not list. but SOF suggested that EC.presence is the equivalent for list webelems....
-    def wait_for_src_element_to_be_clickable_and_present(self, src_mark, locator_type):
-        # NOTE: `src_mark` indicates arg can be a `src_locator` or a `src_element`
-        # this only applies to `EC.element_to_be_clickable(mark)`
-        # `EC.presence_of_all_elements_located(locator)` can only take `src_locator`
-        src_element_is_clickable = self.wait_for_element_clickable(src_mark, locator_type)
-        print(f'----------------- src_element_is_clickable: {src_element_is_clickable} ')
-        src_element_is_present = self.wait_for_presence_of_elements_located(src_mark, locator_type)
-        print(f'----------------- src_element_is_present: {src_element_is_present} ')
-        if src_element_is_clickable and src_element_is_present:
-            print(f'Source element: {src_mark} was clickable and present')
-            return True
-        else:
-            print(f'Source element: {src_mark} was not clickable and/or present')
-            return False
-
     def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
         """
         Find and wait for single source WebElement to be clickable\n
@@ -53,7 +37,9 @@ class BasePage(object):
             else:
                 print(f'Could not find source WebElement: {src_locator}\nand/or target WebElements: target_locator[{target_elem_idx}]')
 
-            src_element_is_clickable_and_present = self.wait_for_src_element_to_be_clickable_and_present(src_locator, locator_type)
+            src_element_is_clickable = self.wait_for_element_clickable(src_locator, locator_type)
+            src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
+            src_element_is_clickable_and_present = src_element_is_clickable and src_element_is_present
             target_elements_present =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
 
         except Exception as e:
@@ -92,7 +78,9 @@ class BasePage(object):
             if source_elements and src_elem_idx < len(source_elements):
                 source_element = source_elements[src_elem_idx]
                 # NOTE: single WebElement is passed for EC.element_to_be_clickable due to unknown src_locator XPATH at idx 1
-                src_element_is_clickable_and_present = self.wait_for_src_element_to_be_clickable_and_present(source_element, locator_type)
+                src_element_is_clickable = self.wait_for_element_clickable(source_element, locator_type)
+                src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
+                src_element_is_clickable_and_present = src_element_is_clickable and src_element_is_present
             else:
                 print(f'No source element found at idx "{src_elem_idx}" or src_elem_idx is out of range.')
 
