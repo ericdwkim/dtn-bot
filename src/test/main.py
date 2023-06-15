@@ -28,6 +28,7 @@ def user_journey():
 
         # DataConnect 2nd Flow - Draft Notice
         data_connect.click_checkbox() # Uncheck checkbox
+        data_connect.set_group_filter_to_draft_notice()
 
 
 

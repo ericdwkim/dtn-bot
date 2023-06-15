@@ -11,7 +11,7 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
-    def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
+    def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator=None, locator_type=By.XPATH):
         """
         Find and wait for single source WebElement to be clickable\n
         Find and wait for multiple target WebElements to be present on DOM
@@ -25,6 +25,11 @@ class BasePage(object):
         src_element_is_clickable_and_present = False
         target_element = None
         target_elements_present = False
+
+        # Temp workaround; needs refactoring
+        if target_locator is None:
+            target_locator = "//ul[@class='selected connected-list ui-sortable']"
+            print(f'target_locator %%%%%%%%%%%%%%%%%: {target_locator}')
 
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
@@ -49,7 +54,7 @@ class BasePage(object):
 
         return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
 
-
+    # TODO: remove
     def find_and_wait_for_src_and_target_elems_to_be_present(
         self,
         src_elem_idx,
@@ -98,7 +103,7 @@ class BasePage(object):
 
         return source_element, src_element_is_clickable_and_present, target_element, target_element_is_clickable_and_present
 
-    def find_element_drag_and_drop(self, src_elem_idx=None, src_locator=None, target_elem_idx=None):
+    def find_element_drag_and_drop(self, src_elem_idx=None, src_locator=None, target_elem_idx=None, target_locator=None):
         source_element = None
         src_element_is_clickable_and_present = False
         target_element = None
@@ -108,8 +113,9 @@ class BasePage(object):
         if src_elem_idx is None:
             # print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
             source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
-                src_locator, target_elem_idx)
+                src_locator, target_elem_idx, target_locator)
 
+        # TODO: remove
         elif src_locator is None and src_elem_idx is not None and target_elem_idx is not None:
             print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
 

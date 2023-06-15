@@ -120,7 +120,7 @@ class DataConnectPage(BasePage):
             return False
 
 
-    def set_filter(self, filter_btn_elem_idx, filter_header_locator,  target_elem_idx, src_elem_idx=None, src_locator=None):
+    def set_filter(self, filter_btn_elem_idx, filter_header_locator,  target_elem_idx, target_locator=None, src_elem_idx=None, src_locator=None):
         """
         Click filter head @ `filter_header_locator`\n
         Drag `src_locator` elem and drop to `target_elements[target_elem_idx]` elem\n
@@ -138,12 +138,12 @@ class DataConnectPage(BasePage):
 
         # Translated `No` case
         if src_elem_idx is None:
-            src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
+            src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx, target_locator)
             if not src_elem_dragged_and_dropped_to_target_elem:
                 print("Source element could not be dragged and dropped to target element")
                 return True, False, False
 
-        # Group `Invoice` case
+        # TODO: remove
         elif src_locator is None:
             src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
             if not src_elem_dragged_and_dropped_to_target_elem:
@@ -158,6 +158,7 @@ class DataConnectPage(BasePage):
 
         return True, True, True
 
+    # TODO: no and invoice setting may need target_locator="//ul[@class='selected connected-list ui-sortable']" as its default down the chain will not be set due to making it optional for draft notice reusing fns
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_translated_filter_to_no(self):
         """
@@ -169,6 +170,7 @@ class DataConnectPage(BasePage):
             filter_btn_elem_idx=3,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[7]/button',
             target_elem_idx=3,
+            target_locator=None,
             src_elem_idx=None,
             src_locator="//li[@title='No']"
         )
@@ -189,6 +191,7 @@ class DataConnectPage(BasePage):
             filter_btn_elem_idx=1,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
             target_elem_idx=1,
+            target_locator=None,
             src_elem_idx=None,
             src_locator="//li[@title='Invoice']",
         )
@@ -197,6 +200,30 @@ class DataConnectPage(BasePage):
         else:
             print(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+
+    # TODO: can reuse same fn with same params; only target_locator needs to be overridden to `//ul[@class='available connected-list']`
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    def set_group_filter_to_draft_notice(self):
+        """
+        set_filter wrapper specific to Group filter to `Draft Notice``
+        :return: bool
+        """
+
+        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
+            filter_btn_elem_idx=1,
+            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
+            target_elem_idx=1,
+            target_locator="//ul[@class='available connected-list']",
+            src_elem_idx=None,
+            src_locator="//li[@title='Invoice']",
+        )
+        if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
+            return True
+        else:
+            print(
+                f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+
+
 
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
