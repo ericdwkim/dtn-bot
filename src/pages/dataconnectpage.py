@@ -57,27 +57,27 @@ class DataConnectPage(BasePage):
             print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
             return False
 
-    def click_filter_button_at_idx(self, filter_btn_elem_idx, wait_time=30):
+    def click_filter_button_at_idx(self, filter_btn_elem_idx, timeout=10):
         """
             Clicks `Filter` button at a specific filter_btn_elem_idx to confirm
         :param filter_btn_elem_idx: The idx of the filter button to be clicked
-        :param wait_time: The time to wait for the element to be clickable
+        :param timeout: The time to wait for the element to be clickable
         :return:
         """
         try:
 
             filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']"
-            filter_button_elements = WebDriverWait(self.driver, timeout=10).until(
+            filter_button_elements = WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
             )
 
             if filter_button_elements and filter_btn_elem_idx < len(filter_button_elements):
                 # ensure desired filter button is clickable then click
-                is_clickable = WebDriverWait(self.driver, timeout=10).until(
+                is_clickable = WebDriverWait(self.driver, timeout).until(
                     EC.element_to_be_clickable(filter_button_elements[filter_btn_elem_idx]))
                 if is_clickable:
                     self.driver.execute_script("$(arguments[0]).click();", filter_button_elements[filter_btn_elem_idx])
-                    time.sleep(wait_time)  # Wait for UI update
+                    time.sleep(timeout)  # Wait for UI update
                     print(f"Filter button at idx {filter_btn_elem_idx} was clicked!")
                 else:
                     print(f"Could not click Filter button at idx {filter_btn_elem_idx}")
