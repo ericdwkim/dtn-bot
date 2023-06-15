@@ -89,6 +89,18 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to drag and drop from source to target element: {e}')
             return False
 
+    def click_checkbox(self):
+
+        found_and_clicked = self.find_element_and_click_perform("//*[@id='prMasterCheckbox2']", By.XPATH)
+        if found_and_clicked:
+            print(f'element was found and clicked!')
+            return True
+        else:
+            print(f'Element could not be found and clicked')
+            return False
+
+
+
     def set_filter(self, filter_btn_elem_idx, filter_header_locator,  target_elem_idx, src_elem_idx=None, src_locator=None):
         """
         Click filter head @ `filter_header_locator`\n
@@ -172,3 +184,4 @@ class DataConnectPage(BasePage):
         self.set_date_filter()
         self.set_translated_filter_to_no()
         self.set_group_filter_to_invoice()
+        self.click_checkbox()

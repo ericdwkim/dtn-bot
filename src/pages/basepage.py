@@ -162,10 +162,15 @@ class BasePage(object):
     """
         @dev: find_element_and_click_perform() uses ActionChains
     """
-    # def find_element_and_click_perform(self, locator, locator_type=By.CSS_SELECTOR):
-    #     element = self.driver.find_element(locator_type, locator)
-    #     self.action.move_to_element(element).click(element).perform()
-    #
+    def find_element_and_click_perform(self, locator, locator_type=By.CSS_SELECTOR):
+        element = self.driver.find_element(locator_type, locator)
+        if element:
+            self.action.move_to_element(element).click(element).perform()
+            return True
+        else:
+            print(f'Could not locate element: {locator}')
+            return False
+
     # def find_element_and_double_click(self, locator, locator_type=By.XPATH):
     #     element = self.driver.find_element(locator_type, locator)
     #     self.action.move_to_element(element).double_click(element).perform()
