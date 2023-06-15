@@ -155,7 +155,7 @@ class DataConnectPage(BasePage):
         """
 
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
-            filter_btn_elem_idx=2,
+            filter_btn_elem_idx=1,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
             target_elem_idx=1,
             src_elem_idx=None,
