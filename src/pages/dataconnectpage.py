@@ -67,13 +67,13 @@ class DataConnectPage(BasePage):
         try:
 
             filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']"
-            filter_button_elements = WebDriverWait(self.driver, timeout=30).until(
+            filter_button_elements = WebDriverWait(self.driver, timeout=10).until(
                 EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
             )
 
             if filter_button_elements and filter_btn_elem_idx < len(filter_button_elements):
                 # ensure desired filter button is clickable then click
-                is_clickable = WebDriverWait(self.driver, timeout=60).until(
+                is_clickable = WebDriverWait(self.driver, timeout=10).until(
                     EC.element_to_be_clickable(filter_button_elements[filter_btn_elem_idx]))
                 if is_clickable:
                     self.driver.execute_script("$(arguments[0]).click();", filter_button_elements[filter_btn_elem_idx])
