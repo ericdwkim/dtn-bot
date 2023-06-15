@@ -3,7 +3,6 @@ from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
 from pdf_handler import rename_and_move_pdf
-import time
 
 username = os.getenv('DTN_EMAIL_ADDRESS')
 password = os.getenv('DTN_PASSWORD')
@@ -29,8 +28,6 @@ def user_journey():
 
         # DataConnect 2nd Flow - Draft Notice
         data_connect.click_checkbox() # Uncheck checkbox
-        data_connect.set_group_filter_to_draft_notice()
-        time.sleep(60) # Wait for UI to update
 
 
 
