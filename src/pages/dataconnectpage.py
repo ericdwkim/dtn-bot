@@ -57,7 +57,7 @@ class DataConnectPage(BasePage):
             print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
             return False
 
-    def click_filter_button_at_idx(self, filter_btn_elem_idx, wait_time=15):
+    def click_filter_button_at_idx(self, filter_btn_elem_idx, wait_time=30):
         """
             Clicks `Filter` button at a specific filter_btn_elem_idx to confirm
         :param filter_btn_elem_idx: The idx of the filter button to be clicked
@@ -67,13 +67,13 @@ class DataConnectPage(BasePage):
         try:
 
             filter_button_xpath_locator = "//span[@class='ui-button-text' and text()='Filter']"
-            filter_button_elements = WebDriverWait(self.driver, wait_time).until(
+            filter_button_elements = WebDriverWait(self.driver, timeout=10).until(
                 EC.presence_of_all_elements_located((By.XPATH, filter_button_xpath_locator))
             )
 
             if filter_button_elements and filter_btn_elem_idx < len(filter_button_elements):
                 # ensure desired filter button is clickable then click
-                is_clickable = WebDriverWait(self.driver, wait_time).until(
+                is_clickable = WebDriverWait(self.driver, timeout=10).until(
                     EC.element_to_be_clickable(filter_button_elements[filter_btn_elem_idx]))
                 if is_clickable:
                     self.driver.execute_script("$(arguments[0]).click();", filter_button_elements[filter_btn_elem_idx])
@@ -93,23 +93,13 @@ class DataConnectPage(BasePage):
 
         found_and_clicked = self.find_element_and_click("//*[@id='prMasterCheckbox2']", By.XPATH)
         if found_and_clicked:
-            # print(f'element was found and clicked!')
-            time.sleep(15) # wait for UI to update
-            return True
-        else:
-            # print(f'Element could not be found and clicked')
-            return False
-
-    def click_print_button(self):
-
-        found_and_clicked = self.find_element_and_click("//*[@id='print_button']/span[2]", By.XPATH)
-        if found_and_clicked:
             print(f'element was found and clicked!')
-            time.sleep(15)
+            time.sleep(30) # wait for UI to update
             return True
         else:
             print(f'Element could not be found and clicked')
             return False
+
 
 
     def set_filter(self, filter_btn_elem_idx, filter_header_locator,  target_elem_idx, src_elem_idx=None, src_locator=None):
@@ -196,4 +186,3 @@ class DataConnectPage(BasePage):
         self.set_translated_filter_to_no()
         self.set_group_filter_to_invoice()
         self.click_checkbox()
-        self.click_print_button()

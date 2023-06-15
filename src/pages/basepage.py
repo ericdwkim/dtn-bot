@@ -189,7 +189,7 @@ class BasePage(object):
         except TimeoutException:
             return False # If exception raised
 
-    def wait_for_element_clickable(self, mark, locator_type=None, timeout=15):
+    def wait_for_element_clickable(self, mark, locator_type=None, timeout=30):
         """
         Checking for singular element to be interactable
         :param mark:
@@ -238,7 +238,7 @@ class BasePage(object):
     #         print(f'An error occurred trying to click filter button: {str(e)}')
     #         return None
 
-    def wait_for_presence_of_elements_located(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
+    def wait_for_presence_of_elements_located(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
         """
         Checking for multiple elements to be visible
         will return list of WebElements to idx `WebElements[idx]`
