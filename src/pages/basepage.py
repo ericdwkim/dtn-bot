@@ -45,7 +45,7 @@ class BasePage(object):
 
         except Exception as e:
             print(
-                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError: {str(e)}")
+                f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError {str(e)}")
 
         return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
 
