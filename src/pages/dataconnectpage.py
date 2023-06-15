@@ -93,12 +93,24 @@ class DataConnectPage(BasePage):
 
         found_and_clicked = self.find_element_and_click("//*[@id='prMasterCheckbox2']", By.XPATH)
         if found_and_clicked:
-            print(f'element was found and clicked!')
+            print(f'Checkbox was found and clicked!')
             time.sleep(30) # wait for UI to update
             return True
         else:
-            print(f'Element could not be found and clicked')
+            print(f'Checkbox could not be found and clicked')
             return False
+
+    def click_print_button(self):
+
+        found_and_clicked = self.find_element_and_click("//*[@id='print_button']/span[2]", By.XPATH)
+        if found_and_clicked:
+            print(f'Print button was found and clicked!')
+            time.sleep(30) # wait for UI to update
+            return True
+        else:
+            print(f'Print button could not be found and clicked')
+            return False
+
 
 
 
@@ -186,3 +198,4 @@ class DataConnectPage(BasePage):
         self.set_translated_filter_to_no()
         self.set_group_filter_to_invoice()
         self.click_checkbox()
+        self.click_print_button()
