@@ -20,10 +20,15 @@ def user_journey():
         login_page = LoginPage(driver)
         login_page.visit_and_login(username, password)
 
-        # DataConnect navigation
+        # DataConnect 1st Flow - Invoices
         data_connect = DataConnectPage(driver)
         data_connect.switch_tab_and_apply_filters()
         rename_and_move_pdf(file_name, dl_dir, dest_dir)
+
+        # DataConnect 2nd Flow - Draft Notice
+        data_connect.click_checkbox() # Uncheck checkbox
+
+
 
         # perform actions on pages...
     finally:
