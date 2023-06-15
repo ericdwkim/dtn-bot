@@ -120,7 +120,7 @@ class DataConnectPage(BasePage):
             return False
 
 
-    def set_filter(self, filter_btn_elem_idx, filter_header_locator,  target_elem_idx, src_elem_idx=None, src_locator=None):
+    def set_filter(self, filter_btn_elem_idx, filter_header_locator,  target_elem_idx, src_elem_idx=None, src_locator=None, reset_selected=False):
         """
         Click filter head @ `filter_header_locator`\n
         Drag `src_locator` elem and drop to `target_elements[target_elem_idx]` elem\n
@@ -136,14 +136,19 @@ class DataConnectPage(BasePage):
             print("Filter header could not be clicked")
             return False, False, False
 
-        # Translated `No` case
+        # Group `Draft Notice` case requires reset of selected list to remove `Invoice` before selecting `Draft Notice`
+        if reset_selected is True:
+            remove_all_found_and_clicked, remove_all_element = self.find_element_and_click("//a[@class='remove-all']", By.XPATH)
+            # TODO: continue with find_element_drag_and_drop only if selected list was reset
+            # if remove_all_found_and_clicked and remove_all_element:
+
         if src_elem_idx is None:
             src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
             if not src_elem_dragged_and_dropped_to_target_elem:
                 print("Source element could not be dragged and dropped to target element")
                 return True, False, False
 
-        # Group `Invoice` case
+        # TODO: remove
         elif src_locator is None:
             src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
             if not src_elem_dragged_and_dropped_to_target_elem:
@@ -191,6 +196,26 @@ class DataConnectPage(BasePage):
             target_elem_idx=1,
             src_elem_idx=None,
             src_locator="//li[@title='Invoice']",
+        )
+        if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
+            return True
+        else:
+            print(
+                f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    def set_group_filter_to_draft_notice(self, reset_selected=True):
+        """
+        set_filter wrapper specific to Group filter to Draft Notice
+        :return: bool
+        """
+
+        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
+            filter_btn_elem_idx=1,
+            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
+            target_elem_idx=1,
+            src_elem_idx=None,
+            src_locator="//li[@title='Draft Notice']",
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
