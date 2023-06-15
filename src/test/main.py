@@ -12,8 +12,8 @@ def user_journey():
 
     # Env vars for file hanlding
     file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf`
-    dl_dir = r'/Users/ekim/Downloads'
-    dest_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
+    dl_dir = os.getenv('DOWNLOAD_DIR_MAC')
+    dest_dir = os.getenv('DESTINATION_DIR_MAC')
 
     try:
         # Visit site and login

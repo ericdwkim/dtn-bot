@@ -16,6 +16,3 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             print(f'Moving {destination_file} to {target_dir}.....')
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
-
-        else:
-            print(f'Could not locate file: {file_name}')
