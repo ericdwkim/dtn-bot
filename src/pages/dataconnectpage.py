@@ -157,9 +157,9 @@ class DataConnectPage(BasePage):
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
             filter_btn_elem_idx=2,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
-            target_elem_idx=2,
-            src_elem_idx=1,
-            src_locator=None,
+            target_elem_idx=1,
+            src_elem_idx=None,
+            src_locator="//li[@title='Invoice']",
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
@@ -170,5 +170,5 @@ class DataConnectPage(BasePage):
     def switch_tab_and_apply_filters(self):
         self.switch_tab()
         # self.set_date_filter()
-        # self.set_translated_filter_to_no()
-        self.set_group_filter_to_invoice()
+        self.set_translated_filter_to_no()
+        # self.set_group_filter_to_invoice()
