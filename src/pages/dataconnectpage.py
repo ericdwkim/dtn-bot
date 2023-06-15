@@ -111,7 +111,13 @@ class DataConnectPage(BasePage):
             print(f'Print button could not be found and clicked')
             return False
 
-
+    def check_all_then_click_print(self):
+        is_clicked = self.click_checkbox()
+        if is_clicked:
+            self.click_print_button()
+            return True
+        else:
+            return False
 
 
     def set_filter(self, filter_btn_elem_idx, filter_header_locator,  target_elem_idx, src_elem_idx=None, src_locator=None):
@@ -197,5 +203,4 @@ class DataConnectPage(BasePage):
         self.set_date_filter()
         self.set_translated_filter_to_no()
         self.set_group_filter_to_invoice()
-        self.click_checkbox()
-        self.click_print_button()
+        self.check_all_then_click_print()
