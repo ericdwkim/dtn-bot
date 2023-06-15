@@ -1,24 +1,63 @@
- """
-    <ul class="available connected-list" style="height: 172px;">
-        <li class="ui-state-default ui-element ui-draggable" title="Credit Card">
-        <span class="ui-helper-hidden">
-        </span>Credit Card<a href="#" class="action">
-        <span class="ui-corner-all ui-icon ui-icon-plus">
-        </span>
-        </a>
-        </li>
-    <li class="ui-state-default ui-element ui-draggable" title="Draft Notice">
-    <span class="ui-helper-hidden"></span>Draft Notice<a href="#" class="action">
-    <span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li><li class="ui-state-default ui-element ui-draggable" title="Invoice">
-    <span class="ui-helper-hidden"></span>Invoice<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li>
-    <li class="ui-state-default ui-element ui-draggable" title="Price"><span class="ui-helper-hidden"></span>Price<a href="#" class="action">
-    <span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li><li class="ui-state-default ui-element ui-draggable" title="Rack Report">
-    <span class="ui-helper-hidden"></span>Rack Report<a href="#" class="action"><span class="ui-corner-all ui-icon ui-icon-plus"></span></a></li></ul>
-    
-    @dev: above is the full copied element of the unordered list for *all* existing draggable bars for the `Group` filter
-    1) get XPATH syntax down for this ul element so that it returns a <List>WebElements
-                # desired element at idx 1
-                //ul[@class='available connected-list']
-    2) access desired idx from list (Credit Card, Draft Notice, Invoice, Price, Rack Report)
-    3) this will allow this new helper fn to be reusable for all `Group` filter setting use cases and NOT just for Invoice
-    """
+# Print button saves to:
+# C:/Users/cgonzales/Downloads/messages%20-%202023-05-17T063646.793.pdf
+
+# misc path
+#  This PC / nt1data (\\fileserver\data) (K:) / DTN Reports / Credit Cards / First Data
+
+# 1st flow (Translated = No ; Group = Invoice) File system PATH to save to
+#  This PC / nt1data (\\fileserver\data) (K:) / DTN Reports / Fuel Invoices / 5-May
+
+
+
+"""
+"""
+"""
+File system structure:
+
+This PC
+|_ nt1data (\\fileserver\data) (K:)
+  |______________ DTN Reports
+                |______________ Credit Cards         
+                |______________ Fuel Drafts                                
+                |______________ Fuel Invoices
+                                |______________ 5-May
+                                |______________ 2020
+                                |______________ 2021
+                                |______________ 2022
+                                |______________ 2023
+                                                
+"""
+
+"""
+chat jippity prompt copypasta
+_______________________________
+Given the following file system structure:
+
+File system structure:
+
+This PC
+|_ nt1data (\\fileserver\data) (K:)
+  |______________ DTN Reports
+                |______________ Credit Cards         
+                |______________ Fuel Drafts                                
+                |______________ Fuel Invoices
+                                |______________ 5-May
+                                |______________ 2020
+                                |______________ 2021
+                                |______________ 2022
+                                |______________ 2023
+              
+
+And the default download directory path:
+
+ C:/Users/cgonzales/Downloads/messages%20-%202023-05-17T063646.793.pdf
+
+Using python, how to do the following:
+
+1) Find the downloaded PDF in default download directory
+2) Rename file as just today's date in `MM-DD-YY.pdf` format
+3) Move the file from the downloads directory into appropriate subdirectory:
+`This PC / nt1data (\\fileserver\data) (K:) / DTN Reports / Fuel Invoices / 5-May`
+
+
+"""
