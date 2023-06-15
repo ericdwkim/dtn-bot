@@ -91,9 +91,10 @@ class DataConnectPage(BasePage):
 
     def click_checkbox(self):
 
-        found_and_clicked = self.find_element_and_click_perform("//*[@id='prMasterCheckbox2']", By.XPATH)
+        found_and_clicked = self.find_element_and_click("//*[@id='prMasterCheckbox2']", By.XPATH)
         if found_and_clicked:
             print(f'element was found and clicked!')
+            time.sleep(30) # wait for UI to update
             return True
         else:
             print(f'Element could not be found and clicked')
