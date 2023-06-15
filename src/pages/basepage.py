@@ -33,12 +33,16 @@ class BasePage(object):
 
         try:
             source_element = self.driver.find_element(locator_type, src_locator)
+            print(f'source_element-------------------------------------: {source_element}')
             target_elements = self.driver.find_elements(locator_type, target_locator)
+            print(f'target_elements-------------------------------------: {target_elements}')
+
             # if a single WebElement from source_locator was found and a list of WebElements
             # from target_locator were found, and if the idx for target element is less than the total length of the list of WebElements from target_locator, then assign
             # that specific WebElement to `target_element` per `target_elem_idx`
             if source_element and target_elements and target_elem_idx < len(target_elements):
                 target_element = target_elements[target_elem_idx]
+                print(f'target_element idxd ---------------------------------------------: {target_element}')
 
             else:
                 print(f'Could not find source WebElement: {src_locator}\nand/or target WebElements: target_locator[{target_elem_idx}]')
