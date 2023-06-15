@@ -136,11 +136,17 @@ class DataConnectPage(BasePage):
             print("Filter header could not be clicked")
             return False, False, False
 
+        print('1111111111111111111111111')
         # Group `Draft Notice` case requires reset of selected list to remove `Invoice` before selecting `Draft Notice`
         if reset_selected is True:
             remove_all_found_and_clicked, remove_all_element = self.find_element_and_click("//a[@class='remove-all']", By.XPATH)
+            print('2222222222222222')
             # TODO: continue with find_element_drag_and_drop only if selected list was reset
-            # if remove_all_found_and_clicked and remove_all_element:
+            if remove_all_found_and_clicked and remove_all_element:
+                print("Selected filter list was reset!")
+
+        print('3333333333333333333333333')
+
 
         if src_elem_idx is None:
             src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
