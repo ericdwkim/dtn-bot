@@ -149,12 +149,12 @@ class DataConnectPage(BasePage):
             # TODO: 3) click Filter button to confirm selection
 
             # TODO 4) with widget now closed (no more overlay element), perform double click of checkbox, click print button, etc... 
-            # @dev: first checkbox click req'd
-            checkbox_is_clicked = self.click_checkbox()
-            checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
-            if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
-                print("Downloading Draft Notice PDF")
-                time.sleep(60) # wait for UI to update
+            # # @dev: first checkbox click req'd
+            # checkbox_is_clicked = self.click_checkbox()
+            # checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
+            # if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
+            #     print("Downloading Draft Notice PDF")
+            #     time.sleep(60) # wait for UI to update
             # TODO: 5) self.pdf_handler() with appropriate params specific to Draft Notice
             # TODO: ^^^^^^^^^^______________________________________ wrap into function ______________________________________^^^^^^^^^^
 
@@ -187,6 +187,15 @@ class DataConnectPage(BasePage):
         if not filter_button_is_clicked:
             print("Filter button could not be clicked")
             return True, True, False
+
+
+        if filter_button_is_clicked and reset_selected is True:
+            # @dev: first checkbox click req'd
+            checkbox_is_clicked = self.click_checkbox()
+            checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
+            if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
+                print("Downloading Draft Notice PDF")
+                time.sleep(60) # wait for UI to update
 
         return True, True, True
 
