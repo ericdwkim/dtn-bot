@@ -16,3 +16,39 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             print(f'Moving {destination_file} to {target_dir}')
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
+
+
+# TODO: 5) self.pdf_handler() with appropriate params specific to Draft Notice
+"""
+Creating new helper function specific to handling pdf saving, moving, renaming, etc.. for EFT/Draft Notices
+
+Testing CVR Supply for file naming convention using `Total Draft` amount as part of filename as follows:
+
+`EFT-1575-061623-23952.13`
+
+1) read downloaded Draft Notice PDF file (aka EFT files)
+    1a) use `dl_dir` path to open and read all of EFT files
+
+2) search for "CVR SUPPLY & TRADING, LLC" -OR- just search for "Total Draft" and find value
+    and turn it into a variable `tot_draft_amt` = 23952.13
+
+            *** NEED CLARIFICATION ON THIS ***
+                EDGE CASE HANDLING:  
+                - what if "Total Draft" doesn't exist in any of the downloaded EFT files?
+                - do we just skip? or just omit the Total Draft value as part of filename? 
+                - does that file name convention above ONLY apply to "CVR SUPPLY & TRADING, LLC" files?
+            *** NEED CLARIFICATION ON THIS ***
+
+3) ONLY WITHIN THE PAGE THAT CONTAINS "Total Draft" string, search for EFT number at header section
+and turn it into a variable; probably search for string "EFT-" including hyphen within the page
+                `eft_num_that_contains_tot_draft_amt` = 1575
+        OR just use the whole string as a variable "EFT-####" --> `eft_num`
+                
+
+4) string concat for filenaming convention:
+    filename = `eft_num` + `-`todays_date` + '-' + `tot_draft_amt`.pdf
+    
+5) move `filename` to appropriate subdirectory from `dl_dir` to `dest_dir_draft_notices` according to convention
+
+"""
+
