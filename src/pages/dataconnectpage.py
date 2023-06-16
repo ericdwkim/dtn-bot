@@ -155,7 +155,7 @@ class DataConnectPage(BasePage):
             if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
                 print("Downloading Draft Notice PDF")
                 time.sleep(60) # wait for UI to update
-            # TODO: self.pdf_handler() with appropriate params
+            # TODO: 5) self.pdf_handler() with appropriate params specific to Draft Notice
             # TODO: ^^^^^^^^^^______________________________________ wrap into function ______________________________________^^^^^^^^^^
 
 
