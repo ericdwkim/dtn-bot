@@ -1,6 +1,7 @@
 import os
 import shutil
 import datetime
+import PyPDF2
 
 def rename_and_move_pdf(file_name, source_dir, target_dir):
     # Get today's date and format it as MM-DD-YY
@@ -52,3 +53,44 @@ and turn it into a variable; probably search for string "EFT-" including hyphen 
 
 """
 
+def rename_and_move_eft(file_name, source_dir, target_dir):
+    today = datetime.date.today().strftime('%m-%d-%y')
+    for file in os.listdir(source_dir):
+        if file.endswith('.pdf') and file_name in file:
+            source_file = os.path.join(source_dir, file)
+
+            # Read the PDF file
+            with open(source_file, 'rb') as f:
+                reader = PyPDF2.PdfFileReader(f)
+
+                # Iterate through all the pages in the PDF
+                for i in range(reader.getNumPages()):
+                    page = reader.getPage(i)
+                    text = page.extract_text()
+
+                    # Check if the page contains the specific company name
+                    if 'CVR SUPPLY & TRADING, LLC' in text:
+                        # Extract the EFT number and the Total Draft Amount
+                        eft_num = extract_eft_number(text)  # This function needs to be defined according to your needs
+                        tot_draft_amt = extract_total_draft_amount(text)  # This function needs to be defined according to your needs
+
+                        # Rename the file
+                        new_file_name = f'{eft_num}-{today}-{tot_draft_amt}.pdf'
+                        destination_file = os.path.join(target_dir, new_file_name)
+
+                        # Move the file
+                        print(f'Moving {source_file} to {destination_file}')
+                        shutil.move(source_file, destination_file)
+                        break
+
+def extract_eft_number(text):
+    # This function needs to be defined to extract the EFT number from the text
+    # For example, if the EFT number is always at the start of the line and followed by a space:
+    return text.split(' ')[0]
+
+def extract_total_draft_amount(text):
+    # This function needs to be defined to extract the Total Draft Amount from the text
+    # For example, if the Total Draft Amount is always on a line that starts with "Total Draft Amount: ":
+    for line in text.split('\n'):
+        if line.startswith('Total Draft Amount: '):
+            return line.split(': ')[1]
