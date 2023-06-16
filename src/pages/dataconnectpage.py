@@ -149,6 +149,7 @@ class DataConnectPage(BasePage):
             checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
             if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
                 print("Downloading Draft Notice PDF")
+                time.sleep(60) # wait for UI to update
             # TODO: self.pdf_handler() with appropriate params
             # TODO: ^^^^^^^^^^______________________________________ wrap into function ______________________________________^^^^^^^^^^
 
@@ -245,8 +246,19 @@ class DataConnectPage(BasePage):
                 f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
 
     def switch_tab_and_apply_filters(self):
-        self.switch_tab()
-        self.set_date_filter()
-        self.set_translated_filter_to_no()
-        self.set_group_filter_to_invoice()
-        self.check_all_then_click_print()
+        if not self.switch_tab():
+            return False
+
+        if not self.set_date_filter():
+            return False
+
+        if not self.set_translated_filter_to_no():
+            return False
+
+        if not self.set_group_filter_to_invoice():
+            return False
+
+        if not self.check_all_then_click_print():
+            return False
+
+        return True

@@ -14,7 +14,9 @@ def user_journey():
     # TODO: test on Windows with prod file paths
     file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf`
     dl_dir = r'/Users/ekim/Downloads'
-    dest_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
+    dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
+    dest_dir_draft_notices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Training 12351'
+
 
 
     try:
@@ -25,11 +27,13 @@ def user_journey():
         # DataConnect 1st Flow - Invoices
         data_connect = DataConnectPage(driver)
         data_connect.switch_tab_and_apply_filters()
-        rename_and_move_pdf(file_name, dl_dir, dest_dir)
+        rename_and_move_pdf(file_name, dl_dir, dest_dir_invoices)
 
         # DataConnect 2nd Flow - Draft Notice
         # data_connect.click_checkbox() # Uncheck all checkboxes
         data_connect.set_group_filter_to_draft_notice()
+        rename_and_move_pdf(file_name, dl_dir, dest_dir_draft_notices)
+
 
     finally:
         teardown_driver(driver)
