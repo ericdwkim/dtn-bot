@@ -136,17 +136,16 @@ class DataConnectPage(BasePage):
             print("Filter header could not be clicked")
             return False, False, False
 
-        print('1111111111111111111111111')
         # Group `Draft Notice` case requires reset of selected list to remove `Invoice` before selecting `Draft Notice`
         if reset_selected is True:
-            remove_all_found_and_clicked, remove_all_element = self.find_element_and_click("//a[@class='remove-all']", By.XPATH)
-            print('2222222222222222')
-            # TODO: continue with find_element_drag_and_drop only if selected list was reset
-            if remove_all_found_and_clicked and remove_all_element:
-                print("Selected filter list was reset!")
 
-        print('3333333333333333333333333')
+            remove_all_elements = self.driver.find_elements("//a[@class='remove-all']", By.XPATH) # list of webelements
 
+            remove_all_elements_present = self.wait_for_presence_of_elements_located("//a[@class='remove-all']", By.XPATH)
+
+            if remove_all_elements and remove_all_elements_present:
+                remove_all_element = remove_all_elements[1] # desired at 1st idx
+                remove_all_element.click()
 
         if src_elem_idx is None:
             src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
@@ -210,18 +209,18 @@ class DataConnectPage(BasePage):
                 f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def set_group_filter_to_draft_notice(self, reset_selected=True):
+    def set_group_filter_to_draft_notice(self):
         """
         set_filter wrapper specific to Group filter to Draft Notice
         :return: bool
         """
-
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
             filter_btn_elem_idx=1,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
             target_elem_idx=1,
             src_elem_idx=None,
             src_locator="//li[@title='Draft Notice']",
+            reset_selected=True
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
