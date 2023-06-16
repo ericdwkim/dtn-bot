@@ -139,11 +139,16 @@ class DataConnectPage(BasePage):
         # Group `Draft Notice` case requires reset of selected list to remove `Invoice` before selecting `Draft Notice`
         if filter_header_is_clicked and reset_selected is True:
 
-            # TODO: vvvvvvvvvv______________________________________ wrap into function ______________________________________vvvvvvvvvvv
+            # TODO: 1st) find Remove all and click to reset selected list on widget
             remove_all_elements = self.driver.find_elements(By.XPATH, "//a[@class='remove-all' and text()='Remove all']") # list of webelements
             remove_all_element = remove_all_elements[1]  # desired remove all elem idx
             remove_all_element.click() # remove Notice
 
+            # TODO: 2nd) drag and drop Draft Notice to selected list
+
+            # TODO: 3) click Filter button to confirm selection
+
+            # TODO 4) with widget now closed (no more overlay element), perform double click of checkbox, click print button, etc... 
             # @dev: first checkbox click req'd
             checkbox_is_clicked = self.click_checkbox()
             checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
