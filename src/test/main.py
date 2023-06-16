@@ -28,7 +28,7 @@ def user_journey():
         rename_and_move_pdf(file_name, dl_dir, dest_dir)
 
         # DataConnect 2nd Flow - Draft Notice
-        data_connect.click_checkbox() # Uncheck all checkboxes
+        # data_connect.click_checkbox() # Uncheck all checkboxes
         data_connect.set_group_filter_to_draft_notice()
 
     finally:

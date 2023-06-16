@@ -141,7 +141,14 @@ class DataConnectPage(BasePage):
 
             remove_all_elements = self.driver.find_elements(By.XPATH, "//a[@class='remove-all' and text()='Remove all']") # list of webelements
             remove_all_element = remove_all_elements[1]  # desired remove all elem idx
-            remove_all_element.click()
+            remove_all_element.click() # remove Notice
+
+            # @dev: first checkbox click req'd
+            checkbox_is_clicked = self.click_checkbox()
+            checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
+            if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
+                print("Downloading Draft Notice PDF")
+
 
 
 
