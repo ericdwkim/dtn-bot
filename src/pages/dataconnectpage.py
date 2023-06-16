@@ -89,6 +89,17 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to drag and drop from source to target element: {e}')
             return False
 
+
+    def reset_selected_group_filter(self):
+        # list of webelements (4 total)
+        remove_all_elements = self.driver.find_elements(By.XPATH, "//a[@class='remove-all' and text()='Remove all']")
+        remove_all_element = remove_all_elements[1] # desired `remove all` elem idx
+        if remove_all_element:
+            remove_all_element.click()  # remove `Notice` filter
+            return True
+        else:
+            return False
+
     def click_checkbox(self):
 
         found_and_clicked = self.find_element_and_click("//*[@id='prMasterCheckbox2']", By.XPATH)
@@ -139,35 +150,9 @@ class DataConnectPage(BasePage):
         # Group `Draft Notice` case requires reset of selected list to remove `Invoice` before selecting `Draft Notice`
         if filter_header_is_clicked and reset_selected is True:
 
-            # TODO: 1st) find Remove all and click to reset selected list on widget
-            remove_all_elements = self.driver.find_elements(By.XPATH, "//a[@class='remove-all' and text()='Remove all']") # list of webelements
-            remove_all_element = remove_all_elements[1]  # desired remove all elem idx
-            remove_all_element.click() # remove Notice
+            # Find Remove all and click to reset selected list on widget
+            selected_group_filter_is_reset = self.reset_selected_group_filter
 
-            # TODO: 2nd) drag and drop Draft Notice to selected list
-
-            # TODO: 3) click Filter button to confirm selection
-
-            # TODO 4) with widget now closed (no more overlay element), perform double click of checkbox, click print button, etc... 
-            # # @dev: first checkbox click req'd
-            # checkbox_is_clicked = self.click_checkbox()
-            # checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
-            # if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
-            #     print("Downloading Draft Notice PDF")
-            #     time.sleep(60) # wait for UI to update
-            # TODO: 5) self.pdf_handler() with appropriate params specific to Draft Notice
-            # TODO: ^^^^^^^^^^______________________________________ wrap into function ______________________________________^^^^^^^^^^
-
-
-
-
-
-
-            # remove_all_elements_present = self.wait_for_presence_of_elements_located("//a[@class='remove-all']", By.XPATH)
-            #
-            # if remove_all_elements and remove_all_elements_present:
-            #     remove_all_element = remove_all_elements[1] # desired at 1st idx
-            #     remove_all_element.click()
 
         if src_elem_idx is None:
             src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
@@ -263,8 +248,8 @@ class DataConnectPage(BasePage):
         if not self.switch_tab():
             return False
 
-        if not self.set_date_filter():
-            return False
+        # if not self.set_date_filter():
+        #     return False
 
         if not self.set_translated_filter_to_no():
             return False
