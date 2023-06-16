@@ -140,8 +140,8 @@ class DataConnectPage(BasePage):
         if filter_header_is_clicked and reset_selected is True:
 
             remove_all_elements = self.driver.find_elements(By.XPATH, "//a[@class='remove-all' and text()='Remove all']") # list of webelements
-            print(f'remove_all_elements: {remove_all_elements}')
-            print(f'length: {len(remove_all_elements)}')
+            remove_all_element = remove_all_elements[1]  # desired remove all elem idx
+            remove_all_element.click()
 
 
 
