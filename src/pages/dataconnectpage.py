@@ -139,6 +139,7 @@ class DataConnectPage(BasePage):
         # Group `Draft Notice` case requires reset of selected list to remove `Invoice` before selecting `Draft Notice`
         if filter_header_is_clicked and reset_selected is True:
 
+            # TODO: vvvvvvvvvv______________________________________ wrap into function ______________________________________vvvvvvvvvvv
             remove_all_elements = self.driver.find_elements(By.XPATH, "//a[@class='remove-all' and text()='Remove all']") # list of webelements
             remove_all_element = remove_all_elements[1]  # desired remove all elem idx
             remove_all_element.click() # remove Notice
@@ -148,6 +149,10 @@ class DataConnectPage(BasePage):
             checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
             if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
                 print("Downloading Draft Notice PDF")
+            # TODO: self.pdf_handler() with appropriate params
+            # TODO: ^^^^^^^^^^______________________________________ wrap into function ______________________________________^^^^^^^^^^
+
+
 
 
 
