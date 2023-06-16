@@ -139,13 +139,17 @@ class DataConnectPage(BasePage):
         # Group `Draft Notice` case requires reset of selected list to remove `Invoice` before selecting `Draft Notice`
         if reset_selected is True:
 
-            remove_all_elements = self.driver.find_elements("//a[@class='remove-all']", By.XPATH) # list of webelements
+            remove_all_elements = self.driver.find_elements("body > div:nth-child(11) > div.ui-multiselect.ui-helper-clearfix.ui-widget.ui-dialog-content.ui-widget-content > div.selected > div > a") # list of webelements
+            print(f'remove_all_elements: {remove_all_elements}')
+            print(f'length: {len(remove_all_elements)}')
+ 
 
-            remove_all_elements_present = self.wait_for_presence_of_elements_located("//a[@class='remove-all']", By.XPATH)
 
-            if remove_all_elements and remove_all_elements_present:
-                remove_all_element = remove_all_elements[1] # desired at 1st idx
-                remove_all_element.click()
+            # remove_all_elements_present = self.wait_for_presence_of_elements_located("//a[@class='remove-all']", By.XPATH)
+            #
+            # if remove_all_elements and remove_all_elements_present:
+            #     remove_all_element = remove_all_elements[1] # desired at 1st idx
+            #     remove_all_element.click()
 
         if src_elem_idx is None:
             src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
@@ -208,7 +212,7 @@ class DataConnectPage(BasePage):
             print(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_group_filter_to_draft_notice(self):
         """
         set_filter wrapper specific to Group filter to Draft Notice
