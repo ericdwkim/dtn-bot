@@ -139,7 +139,7 @@ class DataConnectPage(BasePage):
         # Group `Draft Notice` case requires reset of selected list to remove `Invoice` before selecting `Draft Notice`
         if filter_header_is_clicked and reset_selected is True:
 
-            remove_all_elements = self.driver.find_elements("//a[@class='remove-all' and text()='Remove all']", By.XPATH) # list of webelements
+            remove_all_elements = self.driver.find_elements(By.XPATH, "//a[@class='remove-all' and text()='Remove all']") # list of webelements
             print(f'remove_all_elements: {remove_all_elements}')
             print(f'length: {len(remove_all_elements)}')
 
