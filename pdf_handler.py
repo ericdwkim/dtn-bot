@@ -22,27 +22,7 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
-# EFT Draft Notices
-
-""" 
-            *** Draft Notice - Notes ***
-
-    - keyword string search in pdfs
-        "Total Draft" for EXXON files only
-        "TOTALS" for U.S. OIL COMPANY files only
-        etc... 
-    
-    Questions for clarification:
-    - does this naming convention ONLY apply to EFT/Draft Notice files?
-    - is the () or not for values only convention for values that end with `-`?
-    - why were the last three ETF files skipped and not saved in the recording? is this important or is it alright to just also save them in their respective dirs as well?
-    
-    - NEED: under "Draft Notice" directory, I need the list of all company names and their company id numbers
-        - create mapping of company_id: company_name (or just company names as an array
-        - use mapping or array to search ETF files for company_name as string instead of having each company name variable initalized in main.py
-    
-
-"""
+# EFT Draft Notices - currently hardcoded for CVR EFT files only
 def extract_content_from_pdf(file_path, target_company):
     """Read a PDF and return its content if it contains the target company"""
     with open(file_path, 'rb') as f:
@@ -76,6 +56,7 @@ def rename_and_move_eft(file_name, source_dir, target_dir, target_company):
             source_file = os.path.join(source_dir, file)
 
             text = extract_content_from_pdf(source_file, target_company)
+            print(f'------------------------------- text: {text}------------------------------\n')
             if text:
                 eft_num, today, total_draft = extract_info(text)
                 new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'

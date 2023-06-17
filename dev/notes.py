@@ -61,3 +61,32 @@ Using python, how to do the following:
 
 
 """
+
+# TODO: improvement functionality idea; this prevents having to hard code each and every `target_company`
+"""
+1) extract target company from first line that preceeds after `text` (typically the first "word" of each `text` (aka pdf file). 
+2) turn target company name into variable for each respective file (ETF-#### for company X --> `company_name_etf`)
+3) use company_name_etf to search through filesystem one level up, that is, a method to search all subdirs within `/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts` since all company names with their company id are listed in this directory 
+4) 
+
+"""
+
+""" 
+            *** Draft Notice - Notes ***
+
+    - keyword string search in pdfs
+        "Total Draft" for EXXON files only
+        "TOTALS" for U.S. OIL COMPANY files only
+        etc... 
+
+    Questions for clarification:
+    - does this naming convention ONLY apply to EFT/Draft Notice files?
+    - is the () or not for values only convention for values that end with `-`?
+    - why were the last three ETF files skipped and not saved in the recording? is this important or is it alright to just also save them in their respective dirs as well?
+
+    - NEED: under "Draft Notice" directory, I need the list of all company names and their company id numbers
+        - create mapping of company_id: company_name (or just company names as an array
+        - use mapping or array to search ETF files for company_name as string instead of having each company name variable initalized in main.py
+
+
+"""
