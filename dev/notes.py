@@ -89,4 +89,36 @@ Using python, how to do the following:
         - use mapping or array to search ETF files for company_name as string instead of having each company name variable initalized in main.py
 
 
+Refactoring rename_and_move_etf() to be reuseable for all ETF files:
+
+ note: exxonmobil filenames' etf_num values will be wrapped in (); can add logic by `if eft_num[:-1] == '-'` as they all end in a hyphen 
+    Key - the company_name
+    Value - the keywords to search in document to extract eft_num
+    
+    
+    eft_companies = ['CVR SUPPLY & TRADING, LLC', 'EXXONMOBIL']
+    
+    OR 
+    
+    total_draft_amount_mapping: 
+    [
+    { 'CVR SUPPLY & TRADING, LLC': 'Total Draft' }, 
+    { 'EXXONMOBIL': 'TOTAL AMOUNT OF FUNDS TRANSFER' },
+    { 'U.S. OIL COMPANY': 'TOTALS' },
+    { 'VALERO': '*** Net Amount ***' },
+    
+    ]
+
+    { 'VALERO': '*** Net Amount ***' },
+
+
+
+need to add if current month directory doesn't exist in filesystem, then create directory and place file in directory; also create additional appropriate new subdirs if necessary (ie: new companies, etc..)
+
+
+
+
+
+
+
 """
