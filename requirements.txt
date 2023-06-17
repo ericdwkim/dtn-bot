@@ -9,6 +9,7 @@ async-generator==1.10
 attrs==22.1.0
 backcall==0.2.0
 beautifulsoup4==4.12.2
+bitarray==2.7.5
 bleach==6.0.0
 certifi @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_0ek9yztvu3/croot/certifi_1665076692562/work/certifi
 cffi==1.15.1
@@ -57,8 +58,10 @@ overrides==7.3.1
 packaging==23.1
 pandocfilters==1.5.0
 parso==0.8.3
+pdfreader==0.1.12
 pexpect==4.8.0
 pickleshare==0.7.5
+Pillow==9.5.0
 platformdirs==3.5.1
 pluggy==1.0.0
 prometheus-client==0.17.0
@@ -67,6 +70,7 @@ psutil==5.9.5
 ptyprocess==0.7.0
 pure-eval==0.2.2
 pycparser==2.21
+pycryptodome==3.18.0
 Pygments==2.15.1
 PyPDF2==3.0.1
 pyrsistent==0.19.3

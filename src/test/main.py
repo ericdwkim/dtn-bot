@@ -2,7 +2,7 @@ import os
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
-from pdf_handler import rename_and_move_pdf
+from pdf_handler import rename_and_move_pdf, rename_and_move_eft
 
 username = os.getenv('DTN_EMAIL_ADDRESS')
 password = os.getenv('DTN_PASSWORD')
@@ -31,7 +31,10 @@ def user_journey():
 
         # DataConnect 2nd Flow - Draft Notice
         data_connect.set_group_filter_to_draft_notice()
-        rename_and_move_pdf(file_name, dl_dir, dest_dir_draft_notices)
+        # rename_and_move_pdf(file_name, dl_dir, dest_dir_draft_notices)
+
+        rename_and_move_eft(file_name, dl_dir)
+
 
 
     finally:
