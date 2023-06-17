@@ -56,7 +56,6 @@ def rename_and_move_eft(file_name, source_dir, target_dir, target_company):
             source_file = os.path.join(source_dir, file)
 
             text = extract_content_from_pdf(source_file, target_company)
-            print(f'------------------------------- text: {text}------------------------------\n')
             if text:
                 eft_num, today, total_draft = extract_info(text)
                 new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'

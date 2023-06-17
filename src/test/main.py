@@ -30,7 +30,7 @@ def user_journey():
 
         # DataConnect 2nd Flow - Draft Notice
         data_connect.set_group_filter_to_draft_notice()
-        rename_and_move_eft(file_name, dl_dir, dest_dir_invoices, cvr_supply_trading_company)
+        rename_and_move_eft(file_name, dl_dir, dest_dir_draft_notices, cvr_supply_trading_company)
 
 
 

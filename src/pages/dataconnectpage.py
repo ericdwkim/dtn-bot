@@ -96,6 +96,7 @@ class DataConnectPage(BasePage):
         remove_all_element = remove_all_elements[1] # desired `remove all` elem idx
         if remove_all_element:
             remove_all_element.click()  # remove `Notice` filter
+            print(f'Reset selected Group filter list')
             return True
         else:
             return False
