@@ -15,7 +15,7 @@ def user_journey():
     # TODO: test on Windows with prod file paths
     file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf`
     dl_dir = r'/Users/ekim/Downloads'
-    # dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
+    dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
     # dest_dir_draft_notices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Training 12351'
     # cvr_supply_trading_company = 'CVR SUPPLY & TRADING, LLC'
 
