@@ -151,7 +151,7 @@ class DataConnectPage(BasePage):
         if filter_header_is_clicked and reset_selected is True:
 
             # Find Remove all and click to reset selected list on widget
-            selected_group_filter_is_reset = self.reset_selected_group_filter
+            selected_group_filter_is_reset = self.reset_selected_group_filter()
 
 
         if src_elem_idx is None:
