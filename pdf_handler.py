@@ -4,6 +4,7 @@ import shutil
 import datetime
 from PyPDF2 import PdfReader
 
+# TODO: need to add if current month directory doesn't exist in filesystem, then create directory and place file in directory; also create additional appropriate new subdirs if necessary (ie: new companies, etc..)
 
 # Invoices
 def rename_and_move_pdf(file_name, source_dir, target_dir):
