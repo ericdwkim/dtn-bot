@@ -16,8 +16,7 @@ def user_journey():
     dl_dir = r'/Users/ekim/Downloads'
     dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
     dest_dir_draft_notices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Training 12351'
-
-
+    cvr_supply_trading_company = 'CVR SUPPLY & TRADING, LLC'
 
     try:
         # Visit site and login
@@ -33,7 +32,7 @@ def user_journey():
         data_connect.set_group_filter_to_draft_notice()
         # rename_and_move_pdf(file_name, dl_dir, dest_dir_draft_notices)
 
-        rename_and_move_eft(file_name, dl_dir)
+        rename_and_move_eft(file_name, dl_dir, dest_dir_invoices, cvr_supply_trading_company)
 
 
 
