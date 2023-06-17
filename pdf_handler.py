@@ -2,7 +2,9 @@ import os
 import re
 import shutil
 import datetime
-from PyPDF2 import PdfReader
+# from PyPDF2 import PdfReader
+from PyPDF2 import PdfFileReader, PdfFileWriter
+
 
 # Invoices
 def rename_and_move_pdf(file_name, source_dir, target_dir):
