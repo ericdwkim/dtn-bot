@@ -2,7 +2,8 @@ import os
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
-from pdf_handler import rename_and_move_pdf, rename_and_move_eft
+# from pdf_handler import rename_and_move_pdf, rename_and_move_eft
+from pdf_handler import rename_and_move_pdf, process_pdf, get_target_directories
 
 username = os.getenv('DTN_EMAIL_ADDRESS')
 password = os.getenv('DTN_PASSWORD')
@@ -14,9 +15,20 @@ def user_journey():
     # TODO: test on Windows with prod file paths
     file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf`
     dl_dir = r'/Users/ekim/Downloads'
-    dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
-    dest_dir_draft_notices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Training 12351'
-    cvr_supply_trading_company = 'CVR SUPPLY & TRADING, LLC'
+    # dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
+    # dest_dir_draft_notices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Training 12351'
+    # cvr_supply_trading_company = 'CVR SUPPLY & TRADING, LLC'
+
+
+    # The mapping dictionary
+    company_name_target_keyword_mapping = {
+        'CVR SUPPLY & TRADING, LLC': 'Total Draft',
+        'EXXONMOBIL': 'TOTAL AMOUNT OF FUNDS TRANSFER',
+        'U.S. OIL COMPANY': 'TOTALS',
+        'VALERO': '*** Net Amount ***',
+    }
+    # Parent directory to Draft Notices companies
+    draft_notices_parent_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts'
 
     try:
         # Visit site and login
@@ -30,7 +42,14 @@ def user_journey():
 
         # DataConnect 2nd Flow - Draft Notice
         data_connect.set_group_filter_to_draft_notice()
-        rename_and_move_eft(file_name, dl_dir, dest_dir_draft_notices, cvr_supply_trading_company)
+        # rename_and_move_eft(file_name, dl_dir, dest_dir_draft_notices, cvr_supply_trading_company)
+
+        # Get full path to each companies' subdirectory
+        company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_target_keyword_mapping)
+
+        process_pdf(file_name, dl_dir, company_subdir_mapping, company_name_target_keyword_mapping)
+
+
 
 
 
