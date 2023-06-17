@@ -248,8 +248,8 @@ class DataConnectPage(BasePage):
         if not self.switch_tab():
             return False
 
-        # if not self.set_date_filter():
-        #     return False
+        if not self.set_date_filter():
+            return False
 
         if not self.set_translated_filter_to_no():
             return False
