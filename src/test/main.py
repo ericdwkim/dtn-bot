@@ -18,6 +18,12 @@ def user_journey():
     dest_dir_draft_notices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Training 12351'
     cvr_supply_trading_company = 'CVR SUPPLY & TRADING, LLC'
 
+    """
+    eft_companies = ['CVR SUPPLY & TRADING, LLC', 'EXXONMOBIL']
+    
+    """
+
+
     try:
         # Visit site and login
         login_page = LoginPage(driver)

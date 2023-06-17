@@ -42,6 +42,19 @@ def extract_info(text):
     # date = eft_num_line.split()[3]
     today = datetime.date.today().strftime('%m-%d-%y')
 
+    """
+    note: exxonmobil filenames' etf_num values will be wrapped in (); can add logic by `if eft_num[:-1] == '-'` as they all end in a hyphen 
+    Key - the company_name
+    Value - the keywords to search in document to extract eft_num
+    total_draft_amount_mapping: 
+    [
+    { 'CVR SUPPLY & TRADING, LLC': 'Total Draft' }, 
+    { 'EXXONMOBIL': 'TOTAL AMOUNT OF FUNDS TRANSFER' },
+    { 'U.S. OIL COMPANY': 'TOTALS' },
+    { 'VALERO': '*** Net Amount ***' },
+    
+    ]
+    """
 
     total_draft_line = [line for line in lines if 'Total Draft' in line][0]
     total_draft = re.findall(r'(\d+\.\d+)', total_draft_line)[0]
