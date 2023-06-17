@@ -117,6 +117,10 @@ need to add if current month directory doesn't exist in filesystem, then create 
 
 
 
+Improvement / feature idea:
+- download Invoice, Draft Notice, etc... and instead of leaving it to be saved as default `messages.pdf`
+ (at least on mac), rename the defaults to concat what type of file `messages_invoice.pdf` which can be another check to ensure
+ a `messages_invoice.pdf` does not get moved to a draft notice directory.
 
 
 
