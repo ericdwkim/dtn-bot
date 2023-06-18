@@ -75,7 +75,7 @@ def get_target_directories(parent_dir, company_keyword_mapping):
                 target_directories[company] = full_path
     return target_directories
 
-def extract_info_from_page(page, target_keyword):
+def extract_info_from_text(text, target_keyword):
     """Extract the specific information from a page"""
     text = page.extract_text()
     lines = text.splitlines()
