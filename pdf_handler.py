@@ -85,25 +85,27 @@ def extract_info_from_text(text, target_keyword):
     """Extract the specific information from a page"""
     lines = text.split('\n')
     print(f'lines: {lines}')
-    eft_num_line = lines[1]
+    eft_num_line = lines[1] # EFT-#### typically on 2nd line
     print(f'eft_num_line: {eft_num_line}')
-    eft_num = eft_num_line.split()[2]
+    eft_num = eft_num_line.split()[2] # EFT-#### typically third word
     print(f'eft_num: {eft_num}')
     today = datetime.date.today().strftime('%m-%d-%y')
 
+    #  goes through each line in the text and if the target_keyword is in that line, that line is added to the total_draft_lines list.
     total_draft_lines = [line for line in lines if target_keyword in line]
     print(f'total_draft_lines: {total_draft_lines}')
     if not total_draft_lines:
         print(f"No lines found with keyword: {target_keyword}")
         return None, None, None
-
+    # from list of lines with matching target_keyword, grab the first instance (line) and assign it to this variable
     total_draft_line = total_draft_lines[0]
     prit(f'total_draft_line: {total_draft_line}')
+    # from first line with matching target_keyword, find all occurrences of floats (amount values) and return a list of matches
     total_draft_matches = re.findall(r'(\d+\.\d+)', total_draft_line)
     if not total_draft_matches:
         print(f"No matches for regular expression in line: {total_draft_line}")
         return None, None, None
-
+    # from list of floats, grab the first instance
     total_draft = total_draft_matches[0]
     print(f'total_draft: {total_draft}')
 
