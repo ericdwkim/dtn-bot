@@ -82,13 +82,23 @@ def get_target_directories(parent_dir, company_keyword_mapping):
 
 def extract_info_from_text(text, target_keyword):
     """Extract the specific information from a page"""
-    lines = text.splitlines()
+    lines = text.split('\n')
     eft_num_line = lines[1]
     eft_num = eft_num_line.split()[2]
     today = datetime.date.today().strftime('%m-%d-%y')
 
-    total_draft_line = [line for line in lines if target_keyword in line][0]
-    total_draft = re.findall(r'(\d+\.\d+)', total_draft_line)[0]
+    total_draft_lines = [line for line in lines if target_keyword in line]
+    if not total_draft_lines:
+        print(f"No lines found with keyword: {target_keyword}")
+        return None, None, None
+
+    total_draft_line = total_draft_lines[0]
+    total_draft_matches = re.findall(r'(\d+\.\d+)', total_draft_line)
+    if not total_draft_matches:
+        print(f"No matches for regular expression in line: {total_draft_line}")
+        return None, None, None
+
+    total_draft = total_draft_matches[0]
 
     return eft_num, today, total_draft
 
@@ -109,6 +119,8 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
 
             # Iterate through each page
             for page_num, page in enumerate(viewer.doc.pages()):
+                print(f'page_num: {page_num}')
+                print(f'page: {page}')
                 viewer.navigate(page_num + 1)
                 viewer.render()
 
