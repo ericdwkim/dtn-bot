@@ -111,7 +111,7 @@ def get_matching_pdf_files(keyword_in_dl_file_name, download_dir):
 
 
 def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
-    viewer.navigate(page_num)
+    viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
     viewer.render()
 
     # Get page content as text
@@ -120,7 +120,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
     # Check each company
     for company_name, keyword in company_name_to_search_keyword_mapping.items():
         if company_name in text:
-            print(f'Processing page {page_num} for {company_name}')
+            print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
             eft_num, today, total_draft = extract_info_from_text(text, keyword)
 
             # If any of the extracted values is None, continue to next company
@@ -139,11 +139,11 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
             # Save the page to a new PDF
             with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
                 writer = SimplePDFViewer(f)
-                writer.navigate(page_num)
+                writer.navigate(page_num + 1)  # navigating starts from 1, not 0
                 writer.render()
                 output_pdf.write(writer.canvas.container.raw_content)
 
-            print(f'Moved page {page_num} to {destination_dir}')
+            print(f'Moved page {page_num + 1} to {destination_dir}')  # page number starts from 1 for user's perspective
 
 def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
     """
