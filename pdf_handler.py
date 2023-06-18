@@ -107,10 +107,8 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         with open(full_file_path_to_downloaded_pdf, 'rb') as f:
             viewer = SimplePDFViewer(f)
 
-            total_pages = len(viewer.pages)
-            print(f'total_pages: {total_pages}')
-
-            for page_num in range(total_pages):
+            # Iterate through each page
+            for page_num, page in enumerate(viewer.doc.pages()):
                 viewer.navigate(page_num + 1)
                 viewer.render()
 
