@@ -84,22 +84,28 @@ def get_target_directories(parent_dir, company_keyword_mapping):
 def extract_info_from_text(text, target_keyword):
     """Extract the specific information from a page"""
     lines = text.split('\n')
+    print(f'lines: {lines}')
     eft_num_line = lines[1]
+    print(f'eft_num_line: {eft_num_line}')
     eft_num = eft_num_line.split()[2]
+    print(f'eft_num: {eft_num}')
     today = datetime.date.today().strftime('%m-%d-%y')
 
     total_draft_lines = [line for line in lines if target_keyword in line]
+    print(f'total_draft_lines: {total_draft_lines}')
     if not total_draft_lines:
         print(f"No lines found with keyword: {target_keyword}")
         return None, None, None
 
     total_draft_line = total_draft_lines[0]
+    prit(f'total_draft_line: {total_draft_line}')
     total_draft_matches = re.findall(r'(\d+\.\d+)', total_draft_line)
     if not total_draft_matches:
         print(f"No matches for regular expression in line: {total_draft_line}")
         return None, None, None
 
     total_draft = total_draft_matches[0]
+    print(f'total_draft: {total_draft}')
 
     return eft_num, today, total_draft
 
@@ -107,6 +113,7 @@ def extract_info_from_text(text, target_keyword):
 def get_matching_pdf_files(keyword_in_dl_file_name, download_dir):
     # Get a list of all files that match the pattern
     matching_files = glob.glob(os.path.join(download_dir, f"{keyword_in_dl_file_name}*.pdf"))
+    print(f'matching_files: {matching_files}')
     return matching_files
 
 
@@ -118,6 +125,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
     # Get page content as text
     text = ' '.join(viewer.canvas.strings)
+    print(f'text: {text}')
 
     # Check each company
     for company_name, keyword in company_name_to_search_keyword_mapping.items():
