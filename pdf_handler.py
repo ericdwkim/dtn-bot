@@ -108,8 +108,8 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
     # ~/Downloads/messages.pdf
 
     # open ~/Downloads/message.pdf
-    with open(full_file_path_to_downloaded_pdf, 'rb') as fd:
-        viewer = SimplePDFViewer(fd)
+    with open(full_file_path_to_downloaded_pdf, 'rb') as f:
+        viewer = SimplePDFViewer(f)
 
         # Get total number of pages in the PDF
         total_pages = len(viewer.pages)
@@ -131,14 +131,15 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
                         new_file_name = f'{eft_num}-{today}-({total_draft}).pdf'
                     else:
                         new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
-                    # TODO: we don't need full destination_file path; we need `dest_dir` for each company to then render output pdf into
-                    destination_file = os.path.join(company_name_to_company_subdir_mapping[company_name], new_file_name)
+                    # use subdir mapping by searching company_name to get full dir
+                    # path to recently moved PDF
+                    destination_dir = company_name_to_company_subdir_mapping[company_name]
 
                     # Save the page to a new PDF
-                    # writer = SimplePDFViewer(fd)
-                    # writer.navigate(page_num + 1)
-                    # writer.render()
-                    #
+                    writer = SimplePDFViewer(f)
+                    writer.navigate(page_num + 1)
+                    writer.render()
+
                     # with open(destination_file, 'wb') as output_pdf:
                     #     output_pdf.write(writer.canvas.container.raw_content)
                     #
