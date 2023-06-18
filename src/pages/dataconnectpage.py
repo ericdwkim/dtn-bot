@@ -84,7 +84,7 @@ class DataConnectPage(BasePage):
                     time.sleep(timeout)  # Wait for UI update
                     # print(f"Filter button at idx {filter_btn_elem_idx} was clicked!")
                 else:
-                    # print(f"Could not click Filter button at idx {filter_btn_elem_idx}")
+                    print(f"Could not click Filter button at idx {filter_btn_elem_idx}")
             else:
                 print(f"Filter buttons were not found or idx {filter_btn_elem_idx} is out of range!")
             return True
