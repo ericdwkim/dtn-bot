@@ -93,18 +93,18 @@ def extract_info_from_text(text, target_keyword):
     return eft_num, today, total_draft
 
 
-def process_pdf(keyword_in_dl_file_name, company_name_to_target_subdir_mapping, dl_dir, company_name_to_search_keyword_mapping):
+def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
     """
 
     :param keyword_in_dl_file_name: substring keyword that is contained in the original downloaded EFT/draft notices PDF for all companies; 'messages' in messages.pdf
-    :param company_name_to_target_subdir_mapping: eg: {company_name: company_subdirectory}
-    :param dl_dir: downloads directory folder (~/Downloads)
+    :param company_name_to_company_subdir_mapping: eg: {company_name: company_subdirectory}
+    :param download_dir: downloads directory folder (~/Downloads)
     :param company_name_to_search_keyword_mapping: eg: { 'CVR SUPPLY & TRADING, LLC': 'Total Draft' }
     :return:
     """
 
-    # Create full file path where it gets downloaded; replaces the need to pass `dl_dir` param
-    full_file_path_to_downloaded_pdf = os.path.join(dl_dir, f"{keyword_in_dl_file_name}.pdf")
+    # Create full file path where it gets downloaded; replaces the need to pass `download_dir` param
+    full_file_path_to_downloaded_pdf = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
     # ~/Downloads/messages.pdf
 
     # open ~/Downloads/message.pdf
@@ -132,7 +132,7 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_target_subdir_mapping, 
                     else:
                         new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
                     # TODO: we don't need full destination_file path; we need `dest_dir` for each company to then render output pdf into
-                    destination_file = os.path.join(company_name_to_target_subdir_mapping[company_name], new_file_name)
+                    destination_file = os.path.join(company_name_to_company_subdir_mapping[company_name], new_file_name)
 
                     # Save the page to a new PDF
                     # writer = SimplePDFViewer(fd)

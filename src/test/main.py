@@ -19,9 +19,13 @@ def user_journey():
     # dest_dir_draft_notices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Training 12351'
     # cvr_supply_trading_company = 'CVR SUPPLY & TRADING, LLC'
 
+    # ------------------------------------- TEST ------------------------------------------------------
+    keyword_in_dl_file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf`
+    download_dir = r'/Users/ekim/Downloads'
+
 
     # The mapping dictionary
-    company_name_target_keyword_mapping = {
+    company_name_to_search_keyword_mapping = {
         'CVR SUPPLY & TRADING, LLC': 'Total Draft',
         'EXXONMOBIL': 'TOTAL AMOUNT OF FUNDS TRANSFER',
         'U.S. OIL COMPANY': 'TOTALS',
@@ -46,9 +50,9 @@ def user_journey():
 
         # Get full path to each companies' subdirectory as mapping
         # where {company_name: company_subdirectory}
-        company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_target_keyword_mapping)
+        company_name_to_company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_to_search_keyword_mapping)
 
-        process_pdf(file_name, company_subdir_mapping, company_name_target_keyword_mapping)
+        process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping)
 
 
 
