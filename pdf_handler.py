@@ -77,7 +77,6 @@ def get_target_directories(parent_dir, company_keyword_mapping):
 
 def extract_info_from_text(text, target_keyword):
     """Extract the specific information from a page"""
-    text = page.extract_text()
     lines = text.splitlines()
     eft_num_line = lines[1]
     eft_num = eft_num_line.split()[2]
@@ -120,7 +119,7 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_target_subdir_mapping, 
             # Check each company
             for company_name, keyword in company_name_to_search_keyword_mapping.items():
                 if company_name in text:
-                    eft_num, today, total_draft = extract_info_from_page(text, keyword)
+                    eft_num, today, total_draft = extract_info_from_text(text, keyword)
                     if company_name == 'EXXONMOBIL':
                         new_file_name = f'{eft_num}-{today}-({total_draft}).pdf'
                     else:
