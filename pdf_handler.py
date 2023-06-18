@@ -2,8 +2,8 @@ import os
 import re
 import shutil
 import datetime
-# from PyPDF2 import PdfReader
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyPDF2 import PdfReader
+from pdfreader import SimplePDFViewer
 
 
 # Invoices
@@ -53,14 +53,14 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
 #         if file.endswith('.pdf') and file_name in file:
 #             source_file = os.path.join(source_dir, file)
 
-            text = extract_content_from_pdf(source_file, target_company)
-            if text:
-                eft_num, today, total_draft = extract_info(text)
-                new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
-                destination_file = os.path.join(target_dir, new_file_name)
-
-                print(f'Moving {source_file} to {destination_file}')
-                shutil.move(source_file, destination_file)
+            # text = extract_content_from_pdf(source_file, target_company)
+            # if text:
+            #     eft_num, today, total_draft = extract_info(text)
+            #     new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
+            #     destination_file = os.path.join(target_dir, new_file_name)
+            #
+            #     print(f'Moving {source_file} to {destination_file}')
+            #     shutil.move(source_file, destination_file)
 
 
 # --------------- TEST ------------------------------
@@ -89,37 +89,43 @@ def extract_info_from_page(page, target_keyword):
     return eft_num, today, total_draft
 
 
-def process_pdf(file_name, source_dir, company_subdir_mapping, mapping):
-    """Process a PDF file, extract info from pages that contain target company and move to target dir"""
+from pdfreader import SimplePDFViewer
+
+def process_pdf(file_name, target_mapping, source_dir):
     # Create full file path where it gets downloaded
-    file_path = os.path.join(source_dir, f"{file_name}.pdf")  # ~Downloads/messages.pdf
+    file_path = os.path.join(source_dir, f"{file_name}.pdf")
 
-    with open(file_path, 'rb') as f:
-        reader = PdfFileReader(f)
+    with open(file_path, 'rb') as fd:
+        viewer = SimplePDFViewer(fd)
 
-        for page_num in range(len(reader.pages)):
-            page = reader.pages[page_num]
-            text = page.extract_text()
+        # Get total number of pages in the PDF
+        total_pages = len(viewer.pages)
+
+        # Check each page
+        for page_num in range(total_pages):
+            viewer.navigate(page_num + 1)
+            viewer.render()
+
+            # Get page content as text
+            text = ' '.join(viewer.canvas.strings)
 
             # Check each company
             for company, keyword in mapping.items():
                 if company in text:
-                    eft_num, today, total_draft = extract_info_from_page(page, keyword)
+                    eft_num, today, total_draft = extract_info_from_page(text, keyword)
                     if company == 'EXXONMOBIL':
-                        new_file_name = f'{eft_num}-{today}-({total_draft}).pdf'  # adds () to value
+                        new_file_name = f'{eft_num}-{today}-({total_draft}).pdf'
                     else:
                         new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
-
-                    # Use the company_subdir_mapping to get the correct target_dir for this company
-                    target_dir = company_subdir_mapping[company]
-                    destination_file = os.path.join(target_dir, new_file_name)
+                    destination_file = os.path.join(target_mapping[company], new_file_name)
 
                     # Save the page to a new PDF
-                    writer = PdfFileWriter()
-                    writer.addPage(page)
+                    writer = SimplePDFViewer(fd)
+                    writer.navigate(page_num + 1)
+                    writer.render()
+
                     with open(destination_file, 'wb') as output_pdf:
-                        writer.write(output_pdf)
+                        output_pdf.write(writer.canvas.container.raw_content)
 
                     print(f'Moved page {page_num} to {destination_file}')
                     break  # If we found a match, no need to check the other companies
-
