@@ -134,14 +134,15 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
                     # use subdir mapping by searching company_name to get full dir
                     # path to recently moved PDF
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
+                    full_path_to_renamed_company_file = os.path.join(destination_dir, new_file_name)
 
                     # Save the page to a new PDF
                     writer = SimplePDFViewer(f)
                     writer.navigate(page_num + 1)
                     writer.render()
 
-                    # with open(destination_file, 'wb') as output_pdf:
-                    #     output_pdf.write(writer.canvas.container.raw_content)
-                    #
-                    # print(f'Moved page {page_num} to {destination_file}')
-                    # break  # If we found a match, no need to check the other companies
+                    with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
+                        output_pdf.write(writer.canvas.container.raw_content)
+
+                    print(f'Moved page {page_num} to {destination_dir} with new file name: {new_file_name}')
+                    break  # If we found a match, no need to check the other companies
