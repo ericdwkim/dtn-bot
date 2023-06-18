@@ -32,13 +32,17 @@ class DataConnectPage(BasePage):
         :return: bool
         """
         try:
-            was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(2)')
+            # was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(2)') # yesterday's date
+            was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(3)') # two days ago; temp. workaround for when `draft notice` bar unavailable.
             if was_clicked:
                 # print('Date filter set to yesterday')
                 return True
             else:
                 # print('Date filter could not be set to yesterday')
                 return False
+
+
+
         except Exception as e:
             print(f'An error occurred trying to set date to yesterday: {str(e)}')
             return False
@@ -78,9 +82,9 @@ class DataConnectPage(BasePage):
                 if is_clickable:
                     self.driver.execute_script("$(arguments[0]).click();", filter_button_elements[filter_btn_elem_idx])
                     time.sleep(timeout)  # Wait for UI update
-                    print(f"Filter button at idx {filter_btn_elem_idx} was clicked!")
+                    # print(f"Filter button at idx {filter_btn_elem_idx} was clicked!")
                 else:
-                    print(f"Could not click Filter button at idx {filter_btn_elem_idx}")
+                    # print(f"Could not click Filter button at idx {filter_btn_elem_idx}")
             else:
                 print(f"Filter buttons were not found or idx {filter_btn_elem_idx} is out of range!")
             return True
