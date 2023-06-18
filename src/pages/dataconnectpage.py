@@ -51,7 +51,7 @@ class DataConnectPage(BasePage):
         """
         # If filter header found and clicked, return True
         if self.wait_for_find_then_click(filter_header_locator, locator_type):
-            print(f'Filter header: {filter_header_locator} was clicked!')
+            # print(f'Filter header: {filter_header_locator} was clicked!')
             return True
         else:
             print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
@@ -96,16 +96,17 @@ class DataConnectPage(BasePage):
         remove_all_element = remove_all_elements[1] # desired `remove all` elem idx
         if remove_all_element:
             remove_all_element.click()  # remove `Notice` filter
-            print(f'Reset selected Group filter list')
+            # print(f'Reset selected Group filter list')
             return True
         else:
+            # print(f'Could not reset selected Group filter list')
             return False
 
     def click_checkbox(self):
 
         found_and_clicked = self.find_element_and_click("//*[@id='prMasterCheckbox2']", By.XPATH)
         if found_and_clicked:
-            print(f'Checkbox was found and clicked!')
+            # print(f'Checkbox was found and clicked!')
             time.sleep(15) # wait for UI to update
             return True
         else:
@@ -116,7 +117,7 @@ class DataConnectPage(BasePage):
 
         found_and_clicked = self.find_element_and_click("//*[@id='print_button']/span[2]", By.XPATH)
         if found_and_clicked:
-            print(f'Print button was found and clicked!')
+            # print(f'Print button was found and clicked!')
             time.sleep(15) # wait for UI to update
             return True
         else:

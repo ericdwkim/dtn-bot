@@ -212,7 +212,7 @@ class BasePage(object):
                     EC.element_to_be_clickable((locator_type, mark))
                 )
 
-            print(f'element: {mark} is clickable!')
+            # print(f'element: {mark} is clickable!')
             return True  # If element is found within `timeout`
         except TimeoutException:
             print(f'Tried to wait for element: {mark} to be clickable')
@@ -254,7 +254,7 @@ class BasePage(object):
             WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_all_elements_located((locator_type, locator))
             )
-            print(f'element {locator} is present!')
+            # print(f'element {locator} is present!')
             return True
         except (NoSuchElementException, TimeoutException):
             print(f'Tried to check visibility of list WebElements: {locator} using locator type: {locator_type}')
