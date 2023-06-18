@@ -119,7 +119,7 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         with open(full_file_path_to_downloaded_pdf, 'rb') as f:
             viewer = SimplePDFViewer(f)
 
-            for page_num in viewer.doc.pages():
+            for page_num, page in enumerate(viewer.doc.pages()):
                 viewer.navigate(page_num)
                 viewer.render()
 
