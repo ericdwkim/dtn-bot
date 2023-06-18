@@ -48,8 +48,6 @@ def user_journey():
         # where {company_name: company_subdirectory}
         company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_target_keyword_mapping)
 
-        print(f'-----------------:\n{company_subdir_mapping}')
-
         process_pdf(file_name, company_subdir_mapping, company_name_target_keyword_mapping)
 
 
