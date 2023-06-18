@@ -95,54 +95,47 @@ def extract_info_from_text(text, target_keyword):
 
 def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
     """
-
     :param keyword_in_dl_file_name: substring keyword that is contained in the original downloaded EFT/draft notices PDF for all companies; 'messages' in messages.pdf
     :param company_name_to_company_subdir_mapping: eg: {company_name: company_subdirectory}
     :param download_dir: downloads directory folder (~/Downloads)
     :param company_name_to_search_keyword_mapping: eg: { 'CVR SUPPLY & TRADING, LLC': 'Total Draft' }
-    :return:
+    :return: boolean indicating success or failure
     """
+    try:
+        # Create full file path where it gets downloaded
+        full_file_path_to_downloaded_pdf = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
+        with open(full_file_path_to_downloaded_pdf, 'rb') as f:
+            viewer = SimplePDFViewer(f)
 
-    # Create full file path where it gets downloaded; replaces the need to pass `download_dir` param
-    full_file_path_to_downloaded_pdf = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
-    # ~/Downloads/messages.pdf
+            total_pages = len(viewer.pages)
+            print(f'total_pages: {total_pages}')
 
-    # open ~/Downloads/message.pdf
-    with open(full_file_path_to_downloaded_pdf, 'rb') as f:
-        viewer = SimplePDFViewer(f)
+            for page_num in range(total_pages):
+                viewer.navigate(page_num + 1)
+                viewer.render()
 
-        # Get total number of pages in the PDF
-        total_pages = len(viewer.pages)
-        print(f'total_pages: {total_pages}')
+                text = ' '.join(viewer.canvas.strings)
 
-        # Check each page
-        for page_num in range(total_pages):
-            viewer.navigate(page_num + 1)
-            viewer.render()
+                for company_name, keyword in company_name_to_search_keyword_mapping.items():
+                    if company_name in text:
+                        eft_num, today, total_draft = extract_info_from_text(text, keyword)
+                        if company_name == 'EXXONMOBIL':
+                            new_file_name = f'{eft_num}-{today}-({total_draft}).pdf'
+                        else:
+                            new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
 
-            # Get page content as text
-            text = ' '.join(viewer.canvas.strings)
+                        destination_dir = company_name_to_company_subdir_mapping[company_name]
+                        full_path_to_renamed_company_file = os.path.join(destination_dir, new_file_name)
 
-            # Check each company
-            for company_name, keyword in company_name_to_search_keyword_mapping.items():
-                if company_name in text:
-                    eft_num, today, total_draft = extract_info_from_text(text, keyword)
-                    if company_name == 'EXXONMOBIL':
-                        new_file_name = f'{eft_num}-{today}-({total_draft}).pdf'
-                    else:
-                        new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
-                    # use subdir mapping by searching company_name to get full dir
-                    # path to recently moved PDF
-                    destination_dir = company_name_to_company_subdir_mapping[company_name]
-                    full_path_to_renamed_company_file = os.path.join(destination_dir, new_file_name)
+                        with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
+                            output_pdf.write(viewer.canvas.container.raw_content)
 
-                    # Save the page to a new PDF
-                    writer = SimplePDFViewer(f)
-                    writer.navigate(page_num + 1)
-                    writer.render()
+                        print(f'Moved page {page_num} to {destination_dir}')
+        return True
 
-                    with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
-                        output_pdf.write(writer.canvas.container.raw_content)
-
-                    print(f'Moved page {page_num} to {destination_dir} with new file name: {new_file_name}')
-                    break  # If we found a match, no need to check the other companies
+    except FileNotFoundError as fnf_error:
+        print(f"File not found error: {fnf_error}")
+        return False
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return False
