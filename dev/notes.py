@@ -124,5 +124,12 @@ Improvement / feature idea:
 
 
 
+keyword_in_dl_file_name --> 'messages` = substring that is contained in originally downloaded PDF (invoice, draft notices, credit cards, etc...)
+company_name_to_target_subdir_mapping --> `company_subdir_mapping` = {company_name: company_subdirectory} 
+    allows us to search for each companies' respective subdir in (~/DTN Reports/Fuel Drafts)
+    to then turn each companies' full subdir path into a variable as `destination_dir` (or previously as `dest_dir` for short. 
+
+
+
 
 """

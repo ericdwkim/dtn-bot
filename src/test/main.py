@@ -44,10 +44,12 @@ def user_journey():
         data_connect.set_group_filter_to_draft_notice()
         # rename_and_move_eft(file_name, dl_dir, dest_dir_draft_notices, cvr_supply_trading_company)
 
-        # Get full path to each companies' subdirectory
+        # Get full path to each companies' subdirectory as mapping
+        # where {company_name: company_subdirectory}
         company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_target_keyword_mapping)
 
         process_pdf(file_name, company_subdir_mapping, company_name_target_keyword_mapping)
+
 
 
 
