@@ -102,11 +102,13 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_target_subdir_mapping, 
     full_file_path_to_downloaded_pdf = os.path.join(dl_dir, f"{keyword_in_dl_file_name}.pdf")
     # ~/Downloads/messages.pdf
 
+    # open ~/Downloads/message.pdf
     with open(full_file_path_to_downloaded_pdf, 'rb') as fd:
         viewer = SimplePDFViewer(fd)
 
         # Get total number of pages in the PDF
         total_pages = len(viewer.pages)
+        print(f'total_pages: {total_pages}')
 
         # Check each page
         for page_num in range(total_pages):
