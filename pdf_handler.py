@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import datetime
+import glob
 from PyPDF2 import PdfReader
 from pdfreader import SimplePDFViewer
 
@@ -103,8 +104,48 @@ def extract_info_from_text(text, target_keyword):
     return eft_num, today, total_draft
 
 
-def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir,
-                company_name_to_search_keyword_mapping):
+def get_matching_pdf_files(keyword_in_dl_file_name, download_dir):
+    # Get a list of all files that match the pattern
+    matching_files = glob.glob(os.path.join(download_dir, f"{keyword_in_dl_file_name}*.pdf"))
+    return matching_files
+
+
+def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
+    viewer.navigate(page_num)
+    viewer.render()
+
+    # Get page content as text
+    text = ' '.join(viewer.canvas.strings)
+
+    # Check each company
+    for company_name, keyword in company_name_to_search_keyword_mapping.items():
+        if company_name in text:
+            print(f'Processing page {page_num} for {company_name}')
+            eft_num, today, total_draft = extract_info_from_text(text, keyword)
+
+            # If any of the extracted values is None, continue to next company
+            if eft_num is None or today is None or total_draft is None:
+                continue
+
+            if company_name == 'EXXONMOBIL':
+                new_file_name = f'{eft_num}-{today}-({total_draft}).pdf'
+            else:
+                new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
+
+            # Use subdir mapping by searching company_name to get full dir
+            destination_dir = company_name_to_company_subdir_mapping[company_name]
+            full_path_to_renamed_company_file = os.path.join(destination_dir, new_file_name)
+
+            # Save the page to a new PDF
+            with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
+                writer = SimplePDFViewer(f)
+                writer.navigate(page_num)
+                writer.render()
+                output_pdf.write(writer.canvas.container.raw_content)
+
+            print(f'Moved page {page_num} to {destination_dir}')
+
+def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
     """
     :param keyword_in_dl_file_name: substring keyword that is contained in the original downloaded EFT/draft notices PDF for all companies; 'messages' in messages.pdf
     :param company_name_to_company_subdir_mapping: eg: {company_name: company_subdirectory}
@@ -113,46 +154,16 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
     :return: boolean indicating success or failure
     """
     try:
-        # Create full file path where it gets downloaded
-        full_file_path_to_downloaded_pdf = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
+        # Get all matching files
+        matching_files = get_matching_pdf_files(keyword_in_dl_file_name, download_dir)
 
-        with open(full_file_path_to_downloaded_pdf, 'rb') as f:
-            viewer = SimplePDFViewer(f)
+        for full_file_path_to_downloaded_pdf in matching_files:
+            print(f'Processing file: {full_file_path_to_downloaded_pdf}')
+            with open(full_file_path_to_downloaded_pdf, 'rb') as f:
+                viewer = SimplePDFViewer(f)
 
-            for page_num, page in enumerate(viewer.doc.pages()):
-                viewer.navigate(page_num)
-                viewer.render()
-
-                # Get page content as text
-                text = ' '.join(viewer.canvas.strings)
-
-                # Check each company
-                for company_name, keyword in company_name_to_search_keyword_mapping.items():
-                    if company_name in text:
-                        eft_num, today, total_draft = extract_info_from_text(text, keyword)
-
-                        # If any of the extracted values is None, continue to next company
-                        if eft_num is None or today is None or total_draft is None:
-                            continue
-
-                        if company_name == 'EXXONMOBIL':
-                            new_file_name = f'{eft_num}-{today}-({total_draft}).pdf'
-                        else:
-                            new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
-
-                        # Use subdir mapping by searching company_name to get full dir
-                        destination_dir = company_name_to_company_subdir_mapping[company_name]
-                        full_path_to_renamed_company_file = os.path.join(destination_dir, new_file_name)
-
-                        # Save the page to a new PDF
-                        with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
-                            writer = SimplePDFViewer(f)
-                            writer.navigate(page_num)
-                            writer.render()
-                            output_pdf.write(writer.canvas.container.raw_content)
-
-                        print(f'Moved page {page_num} to {destination_dir}')
-                        break
+                for page_num, page in enumerate(viewer.doc.pages()):
+                    process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
 
         # If all pages processed without errors, return True
         return True
