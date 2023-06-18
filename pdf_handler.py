@@ -92,7 +92,7 @@ def extract_info_from_page(page, target_keyword):
 from pdfreader import SimplePDFViewer
 
 def process_pdf(file_name, target_mapping, source_dir):
-    # Create full file path where it gets downloaded
+    # Create full file path where it gets downloaded; replaces the need to pass `source_dir` param
     file_path = os.path.join(source_dir, f"{file_name}.pdf")
 
     with open(file_path, 'rb') as fd:

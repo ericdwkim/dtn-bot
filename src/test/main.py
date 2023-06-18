@@ -47,7 +47,7 @@ def user_journey():
         # Get full path to each companies' subdirectory
         company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_target_keyword_mapping)
 
-        process_pdf(file_name, dl_dir, company_subdir_mapping, company_name_target_keyword_mapping)
+        process_pdf(file_name, company_subdir_mapping, company_name_target_keyword_mapping)
 
 
 
