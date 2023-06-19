@@ -106,11 +106,10 @@ def extract_info_from_text(text, target_keywords):
     return eft_num, today, total_draft_amt
 
 
-def get_matching_pdf_files(keyword_in_dl_file_name, download_dir):
-    # Get a list of all files that match the pattern
-    matching_files = glob.glob(os.path.join(download_dir, f"{keyword_in_dl_file_name}*.pdf"))
-    print(f'matching_files: {matching_files}')
-    return matching_files
+def get_matching_pdf_file(keyword_in_dl_file_name, download_dir):
+    matching_file = os.path.join(download_dir, f"{keyword_in_dl_file_name}*.pdf")
+    print(f'matching_file: {matching_file}')
+    return matching_file
 
 
 
@@ -128,6 +127,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
         if company_name in text:
             print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
             eft_num, today, total_draft_amt = extract_info_from_text(text, keywords)
+            print(f'-----------------eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
 
             # If any of the extracted values is None, continue to next company
             if eft_num is None or today is None or total_draft_amt is None:
@@ -135,8 +135,10 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
             if company_name == 'EXXONMOBIL':
                 new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
+                print(f'new_file_name: {new_file_name}')
             else:
                 new_file_name = f'{eft_num}-{today}-{total_draft_amt}.pdf'
+                print(f'new_file_name: {new_file_name}')
 
             # Use subdir mapping by searching company_name to get full dir
             destination_dir = company_name_to_company_subdir_mapping[company_name]
@@ -161,18 +163,17 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
     """
     try:
         # Get all matching files
-        matching_files = get_matching_pdf_files(keyword_in_dl_file_name, download_dir)
+        matching_file = get_matching_pdf_file(keyword_in_dl_file_name, download_dir)
 
-        for full_file_path_to_downloaded_pdf in matching_files:
-            print(f'Processing file: {full_file_path_to_downloaded_pdf}')
-            with open(full_file_path_to_downloaded_pdf, 'rb') as f:
-                viewer = SimplePDFViewer(f)
+        print(f'Processing file: {matching_file}')
+        with open(matching_file, 'rb') as f:
+            viewer = SimplePDFViewer(f)
 
-                for page_num, page in enumerate(viewer.doc.pages()):
-                    process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
+            for page_num, page in enumerate(viewer.doc.pages()):
+                process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
 
-        # If all pages processed without errors, return True
-        return True
+            # If all pages processed without errors, return True
+            return True
     except Exception as e:
         # If any error occurred, print it and return False
         print(f'An unexpected error occurred: {str(e)}')
