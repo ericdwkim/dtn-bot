@@ -127,7 +127,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
         if company_name in text:
             print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
             eft_num, today, total_draft_amt = extract_info_from_text(text, keywords)
-            print(f'-----------------eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
+            # print(f'-----------------eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
 
             # If any of the extracted values is None, continue to next company
             if eft_num is None or today is None or total_draft_amt is None:
@@ -135,17 +135,20 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
             if company_name == 'EXXONMOBIL':
                 new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
-                print(f'new_file_name: {new_file_name}')
+                # print(f'new_file_name: {new_file_name}')
             else:
                 new_file_name = f'{eft_num}-{today}-{total_draft_amt}.pdf'
-                print(f'new_file_name: {new_file_name}')
+                # print(f'new_file_name: {new_file_name}')
 
-            # Use subdir mapping by searching company_name to get full dir
+            # Use subdir mapping to search company_name to get full subdir path for newly renamed eft file
             destination_dir = company_name_to_company_subdir_mapping[company_name]
+            print(f'destination_dir: {destination_dir}')
             full_path_to_renamed_company_file = os.path.join(destination_dir, new_file_name)
+            print(f'full_path_to_renamed_company_file: {full_path_to_renamed_company_file}')
 
             # Save the page to a new PDF
             with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
+                print(f' writing new pdf in correct subdir--------')
                 writer = SimplePDFViewer(f)
                 writer.navigate(page_num + 1)  # navigating starts from 1, not 0
                 writer.render()

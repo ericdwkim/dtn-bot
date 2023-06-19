@@ -52,6 +52,8 @@ def user_journey():
         # Get full path to each companies' subdirectory as mapping
         # where {company_name: company_subdirectory}
         company_name_to_company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_to_search_keyword_mapping)
+        print(f'company_name_to_company_subdir_mapping: {company_name_to_company_subdir_mapping}')
+
 
         process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping)
 
