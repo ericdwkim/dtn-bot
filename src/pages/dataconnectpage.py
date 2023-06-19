@@ -32,8 +32,9 @@ class DataConnectPage(BasePage):
         :return: bool
         """
         try:
+            # TODO: revert to nth-child(2) for yesterdays date
             # was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(2)') # yesterday's date
-            was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(3)') # two days ago; temp. workaround for when `draft notice` bar unavailable.
+            was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(4)') # three days ago; temp. workaround for when `draft notice` bar unavailable; using Fri 6/16/23 b/c it is the latest with Draft Notices
             if was_clicked:
                 # print('Date filter set to yesterday')
                 return True
