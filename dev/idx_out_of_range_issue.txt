@@ -1,0 +1,28 @@
+/Users/ekim/opt/anaconda3/envs/bots/bin/python -m src.test.main
+Browser launched
+Loading site...
+Logging in with provided credentials...
+Switched to DataConnect tab
+Moving /Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May/06-18-23.pdf to /Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May
+Downloading Draft Notice PDF
+matching_files: ['/Users/ekim/Downloads/messages.pdf']
+Processing file: /Users/ekim/Downloads/messages.pdf
+
+text:
+
+CVR SUPPLY & TRADING, LLC CRR1  0296  EFT-1575  06-16-23  START MSG                            CVR Supply & Trading, LLC                                Tel: 281-207-3512                 FEI: 88-1987264                                Fax: 281-207-3421                              Billing@CVREnergy.com                           2277 Plaza Drive, Suite 500                               Sugar Land TX 77479                                  EFT DRAFT NOTICE                                 ================       To: McCraw Oil Company                             Draft Due Date: 06/20/23          ATTN: Accounts Payable                            Notice Date: 06/16/23          PO Box 220            Bonham TX 75418     Fax:   Invoice    Invoice   Amount   Number     Date      Due ---------- -------- ----------    4265503 06/12/23   23952.13                     ---------- Total Draft           23952.13                    ===========  CRR1  0296  EFT-1575  06-16-23  END MSG
+
+
+
+
+Processing page 1 for CVR SUPPLY & TRADING, LLC
+
+
+lines:
+
+['CVR SUPPLY & TRADING, LLC CRR1  0296  EFT-1575  06-16-23  START MSG                            CVR Supply & Trading, LLC                                Tel: 281-207-3512                 FEI: 88-1987264                                Fax: 281-207-3421                              Billing@CVREnergy.com                           2277 Plaza Drive, Suite 500                               Sugar Land TX 77479                                  EFT DRAFT NOTICE                                 ================       To: McCraw Oil Company                             Draft Due Date: 06/20/23          ATTN: Accounts Payable                            Notice Date: 06/16/23          PO Box 220            Bonham TX 75418     Fax:   Invoice    Invoice   Amount   Number     Date      Due ---------- -------- ----------    4265503 06/12/23   23952.13                     ---------- Total Draft           23952.13                    ===========  CRR1  0296  EFT-1575  06-16-23  END MSG']
+
+
+An unexpected error occurred: list index out of range
+
+Process finished with exit code 0
