@@ -3,7 +3,7 @@ from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
 # from pdf_handler import rename_and_move_pdf, rename_and_move_eft
-from pdf_handler import rename_and_move_pdf, process_pdf, get_target_directories
+from pdf_handler import rename_and_move_pdf, process_pdf
 
 username = os.getenv('DTN_EMAIL_ADDRESS')
 password = os.getenv('DTN_PASSWORD')
@@ -24,7 +24,7 @@ def user_journey():
     download_dir = r'/Users/ekim/Downloads'
 
 
-    # The mapping dictionary
+    # The mapping dictionary for company name to list of keywords for tot_draft_amt, eft_num vars
     company_name_to_search_keyword_mapping = {
         'CVR SUPPLY & TRADING, LLC': ['Total Draft', 'EFT-\d+'],
         'EXXONMOBIL': ['TOTAL AMOUNT OF FUNDS TRANSFER', 'EFT-\d+'],
@@ -32,8 +32,19 @@ def user_journey():
         'VALERO': ['*** Net Amount ***', 'EFT-\d+'],
     }
 
+    # Mapping for company name to subdir full path
+    company_name_to_subdir_full_path_mapping = {
+        'CVR SUPPLY & TRADING, LLC': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351',
+
+        'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/EXXONMOBIL [10005]',
+
+        'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/U S VENTURE - U S OIL COMPANY [12262]',
+
+        'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]'
+    }
+
     # Parent directory to Draft Notices companies
-    draft_notices_parent_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts'
+    # draft_notices_parent_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts'
 
     try:
         # Visit site and login
@@ -51,12 +62,12 @@ def user_journey():
 
         # Get full path to each companies' subdirectory as mapping
         # where {company_name: company_subdirectory}
-        # TODO: fix helper fn as CVR and US OIL not being mapped
-        company_name_to_company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_to_search_keyword_mapping)
-        print(f'company_name_to_company_subdir_mapping: {company_name_to_company_subdir_mapping}')
+        # # TODO: fix helper fn as CVR and US OIL not being mapped
+        # company_name_to_company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_to_search_keyword_mapping)
+        # print(f'company_name_to_company_subdir_mapping: {company_name_to_company_subdir_mapping}')
 
 
-        process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping)
+        process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping, download_dir, company_name_to_search_keyword_mapping)
 
 
 
