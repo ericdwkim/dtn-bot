@@ -46,11 +46,11 @@ def extract_info_from_text(text, target_keywords):
 
 
 # TODO: reimplement into process_pdf to account for default filename of dl'd PDF
-def get_matching_pdf_file(keyword_in_dl_file_name, download_dir):
-    matching_file = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
-    print(f'matching_file: {matching_file}')
-    return matching_file
-
+# def get_matching_pdf_file(keyword_in_dl_file_name, download_dir):
+#     matching_file = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
+#     print(f'matching_file: {matching_file}')
+#     return matching_file
+#
 
 
 def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
