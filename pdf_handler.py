@@ -65,15 +65,15 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
 
 
 # --------------- TEST ------------------------------
-def get_target_directories(parent_dir, company_keyword_mapping):
+def get_target_directories(parent_dir, company_keywords_mapping):
     """
-    :param parent_dir:
-    :param company_keyword_mapping:
-    :return: mapping of company_name to company_full_subdir
+    :param parent_dir: The parent directory path where the subdirectories are located.
+    :param company_keywords_mapping: A mapping of company names to their respective search keywords.
+    :return: A mapping of company names to the full paths of their respective subdirectories.
     """
     target_directories = {}
     subdirs = os.listdir(parent_dir)
-    for company, keyword in company_keyword_mapping.items():
+    for company in company_keywords_mapping.keys():
         company_lower = company.lower()
         for subdir in subdirs:
             if company_lower in subdir.lower():
