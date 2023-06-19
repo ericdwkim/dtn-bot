@@ -116,7 +116,7 @@ def get_matching_pdf_file(keyword_in_dl_file_name, download_dir):
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
-def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
+def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, f):
     viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
     viewer.render()
 
@@ -175,7 +175,7 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
             viewer = SimplePDFViewer(f)
 
             for page_num, page in enumerate(viewer.doc.pages()):
-                process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
+                process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, f)
 
             # If all pages processed without errors, return True
             return True
