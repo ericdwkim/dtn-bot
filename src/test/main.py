@@ -67,7 +67,9 @@ def user_journey():
         # print(f'company_name_to_company_subdir_mapping: {company_name_to_company_subdir_mapping}')
 
 
-        process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping, download_dir, company_name_to_search_keyword_mapping)
+        # process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping, download_dir, company_name_to_search_keyword_mapping)
+
+        process_pdf(company_name_to_subdir_full_path_mapping,  company_name_to_search_keyword_mapping)
 
 
 

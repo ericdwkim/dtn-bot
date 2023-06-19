@@ -116,7 +116,7 @@ def get_matching_pdf_file(keyword_in_dl_file_name, download_dir):
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
-def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, f):
+def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
     viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
     viewer.render()
 
@@ -129,7 +129,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
         if company_name in text:
             print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
             eft_num, today, total_draft_amt = extract_info_from_text(text, keywords)
-            # print(f'-----------------eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
+            print(f'-----------------eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
 
             # If any of the extracted values is None, continue to next company
             if eft_num is None or today is None or total_draft_amt is None:
@@ -137,10 +137,10 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
             if company_name == 'EXXONMOBIL':
                 new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
-                # print(f'new_file_name: {new_file_name}')
+                print(f'new_file_name: {new_file_name}')
             else:
                 new_file_name = f'{eft_num}-{today}-{total_draft_amt}.pdf'
-                # print(f'new_file_name: {new_file_name}')
+                print(f'new_file_name: {new_file_name}')
 
             # Use subdir mapping to search company_name to get full subdir path for newly renamed eft file
             destination_dir = company_name_to_company_subdir_mapping[company_name]
@@ -158,7 +158,34 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
             print(f'Moved page {page_num + 1} to {destination_dir}')  # page number starts from 1 for user's perspective
 
-def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
+# def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
+#     """
+#     :param keyword_in_dl_file_name: substring keyword that is contained in the original downloaded EFT/draft notices PDF for all companies; 'messages' in messages.pdf
+#     :param company_name_to_company_subdir_mapping: eg: {company_name: company_subdirectory}
+#     :param download_dir: downloads directory folder (~/Downloads)
+#     :param company_name_to_search_keyword_mapping: eg: { 'CVR SUPPLY & TRADING, LLC': 'Total Draft' }
+#     :return: boolean indicating success or failure
+#     """
+#     try:
+#         # Get all matching files
+#         matching_file = get_matching_pdf_file(keyword_in_dl_file_name, download_dir)
+#
+#         print(f'Processing file: {matching_file}')
+#         with open(matching_file, 'rb') as f:
+#             viewer = SimplePDFViewer(f)
+#
+#             for page_num, page in enumerate(viewer.doc.pages()):
+#                 process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, f)
+#
+#             # If all pages processed without errors, return True
+#             return True
+#     except Exception as e:
+#         # If any error occurred, print it and return False
+#         print(f'An unexpected error occurred: {str(e)}')
+#         return False
+
+
+def process_pdf(company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping):
     """
     :param keyword_in_dl_file_name: substring keyword that is contained in the original downloaded EFT/draft notices PDF for all companies; 'messages' in messages.pdf
     :param company_name_to_company_subdir_mapping: eg: {company_name: company_subdirectory}
@@ -167,10 +194,8 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
     :return: boolean indicating success or failure
     """
     try:
-        # Get all matching files
-        matching_file = get_matching_pdf_file(keyword_in_dl_file_name, download_dir)
+        matching_file = r'/Users/ekim/Downloads/messages.pdf'
 
-        print(f'Processing file: {matching_file}')
         with open(matching_file, 'rb') as f:
             viewer = SimplePDFViewer(f)
 
