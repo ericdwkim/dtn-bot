@@ -107,7 +107,7 @@ def extract_info_from_text(text, target_keywords):
 
 
 def get_matching_pdf_file(keyword_in_dl_file_name, download_dir):
-    matching_file = os.path.join(download_dir, f"{keyword_in_dl_file_name}*.pdf")
+    matching_file = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
     print(f'matching_file: {matching_file}')
     return matching_file
 
