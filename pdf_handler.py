@@ -176,7 +176,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
             for page_num_pike, page_obj in pdf_and_pages(pdf):
                 if page_num_pike == page_num:
                     save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
-                    print(f'Saving page {page_num_pike} to {destination_dir} with new file name: {new_file_name}')
+                    print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
             # ------------------------------------------------------------------#
 
             # # Save the page to a new PDF
