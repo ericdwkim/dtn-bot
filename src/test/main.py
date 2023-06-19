@@ -71,9 +71,6 @@ def user_journey():
 
 
 
-
-
-
     finally:
         teardown_driver(driver)
 
