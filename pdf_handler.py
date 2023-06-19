@@ -3,8 +3,30 @@ import re
 import shutil
 import datetime
 import glob
+import pikepdf
 from PyPDF2 import PdfReader
 from pdfreader import SimplePDFViewer
+
+
+pdf = pikepdf.Pdf.open(r'/Users/ekim/Downloads/messages.pdf')
+
+def save_pdf_page_as_new_file(page, new_file_name, destination_dir):
+    # Create new Pdf object
+    new_pdf = pikepdf.Pdf.new()
+
+    # Append the page to the new Pdf object
+    new_pdf.pages.append(page)
+
+    # Construct the full path for the new PDF file
+    full_path_to_new_file = os.path.join(destination_dir, new_file_name)
+
+    # Save the new Pdf object as a file at the specified path
+    new_pdf.save(full_path_to_new_file)
+
+def pdf_and_pages(pdf):
+    for page_num in range(len(pdf.pages)):
+        yield page_num, pdf.pages[page_num]
+
 
 
 # Invoices
@@ -129,7 +151,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
         if company_name in text:
             print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
             eft_num, today, total_draft_amt = extract_info_from_text(text, keywords)
-            # print(f'-----------------eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
+            print(f'-----------------eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
 
             # If any of the extracted values is None, continue to next company
             if eft_num is None or today is None or total_draft_amt is None:
@@ -137,26 +159,35 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
             if company_name == 'EXXONMOBIL':
                 new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
-                # print(f'new_file_name: {new_file_name}')
+                print(f'new_file_name: {new_file_name}')
             else:
                 new_file_name = f'{eft_num}-{today}-{total_draft_amt}.pdf'
-                # print(f'new_file_name: {new_file_name}')
+                print(f'new_file_name: {new_file_name}')
 
             # Use subdir mapping to search company_name to get full subdir path for newly renamed eft file
             destination_dir = company_name_to_company_subdir_mapping[company_name]
             print(f'destination_dir: {destination_dir}')
-            full_path_to_renamed_company_file = os.path.join(destination_dir, new_file_name)
-            print(f'full_path_to_renamed_company_file: {full_path_to_renamed_company_file}')
 
-            # Save the page to a new PDF
-            with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
-                print(f' writing new pdf in correct subdir--------')
-                writer = SimplePDFViewer(f)
-                writer.navigate(page_num + 1)  # navigating starts from 1, not 0
-                writer.render()
-                output_pdf.write(writer.canvas.container.raw_content)
+            # ALREADY HANDLED BY save_pdf_page_as_new_file() which also does the saving
+            # full_path_to_renamed_company_file = os.path.join(destination_dir, new_file_name)
+            # print(f'full_path_to_renamed_company_file: {full_path_to_renamed_company_file}')
 
-            print(f'Moved page {page_num + 1} to {destination_dir}')  # page number starts from 1 for user's perspective
+            # ------------------------------------------------------------------#
+            for page_num_pike, page_obj in pdf_and_pages(pdf):
+                if page_num_pike == page_num:
+                    save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
+                    print(f'Saving page {page_num_pike} to {destination_dir} with new file name: {new_file_name}')
+            # ------------------------------------------------------------------#
+
+            # # Save the page to a new PDF
+            # with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
+            #     print(f' writing new pdf in correct subdir--------')
+            #     writer = SimplePDFViewer(f)
+            #     writer.navigate(page_num + 1)  # navigating starts from 1, not 0
+            #     writer.render()
+            #     output_pdf.write(writer.canvas.container.raw_content)
+
+            # print(f'Moved page {page_num + 1} to {destination_dir}')  # page number starts from 1 for user's perspective
 
 def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
     """
@@ -170,6 +201,7 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         # Get all matching files
         matching_file = get_matching_pdf_file(keyword_in_dl_file_name, download_dir)
 
+        # Read original PDF from dls dir
         print(f'Processing file: {matching_file}')
         with open(matching_file, 'rb') as f:
             viewer = SimplePDFViewer(f)
@@ -183,3 +215,4 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         # If any error occurred, print it and return False
         print(f'An unexpected error occurred: {str(e)}')
         return False
+
