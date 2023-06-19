@@ -3,7 +3,8 @@ import re
 import shutil
 import datetime
 import pikepdf
-
+import io
+from PyPDF2 import PdfFileReader
 # Invoices
 def rename_and_move_pdf(file_name, source_dir, target_dir):
     # Get today's date and format it as MM-DD-YY
@@ -19,6 +20,20 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             print(f'Moving {destination_file} to {target_dir}')
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
+
+
+def extract_text_from_page(page):
+    with pikepdf.Pdf.new() as pdf_tmp:
+        pdf_tmp.pages.append(page)
+
+        pdf_bytes = pdf_tmp.save_mem()
+
+    with io.BytesIO(pdf_bytes) as f:
+        reader = PdfFileReader(f)
+        page = reader.pages[0]
+        text = page.extract_text()
+
+    return text
 
 
 def extract_info_from_text(text, target_keywords):
@@ -55,7 +70,9 @@ def extract_info_from_text(text, target_keywords):
 
 def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
 
-    page = pdf.pages[page_num]
+    for page_num in range(len(pdf.pages)):
+        page = pdf.pages[page_num]
+        text = extract_text_from_page(page)
 
     # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
