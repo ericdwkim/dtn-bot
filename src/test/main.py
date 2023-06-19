@@ -51,6 +51,7 @@ def user_journey():
 
         # Get full path to each companies' subdirectory as mapping
         # where {company_name: company_subdirectory}
+        # TODO: fix helper fn as CVR and US OIL not being mapped
         company_name_to_company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_to_search_keyword_mapping)
         print(f'company_name_to_company_subdir_mapping: {company_name_to_company_subdir_mapping}')
 
