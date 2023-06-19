@@ -66,3 +66,30 @@ if eft_num is None or today is None or total_draft is None:
     continue
     
 """
+
+import re
+
+
+def extract_info_from_text(text, target_keywords):
+    """Extract the specific information from a page"""
+
+    # Extract total_draft
+    total_draft_keyword = target_keywords[0]
+    total_draft_matches = re.findall(r'(\d+\.\d+)', text)
+    if not total_draft_matches:
+        print(f"No matches for regular expression in text: {total_draft_keyword}")
+        return None, None, None
+    total_draft = total_draft_matches[0]
+
+    # Extract EFT number
+    eft_num_keyword = target_keywords[1]  # Assuming keyword is something like 'EFT-'
+    eft_num_pattern = eft_num_keyword.replace('*', '\d+')  # Replace '*' with regex pattern for any digit
+    eft_num_matches = re.findall(eft_num_pattern, text)
+    if not eft_num_matches:
+        print(f"No matches for regular expression in text: {eft_num_pattern}")
+        return None, None, None
+    eft_num = eft_num_matches[0]
+
+    today = datetime.date.today().strftime('%m-%d-%y')
+
+    return eft_num, today, total_draft

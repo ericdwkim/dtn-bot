@@ -26,11 +26,12 @@ def user_journey():
 
     # The mapping dictionary
     company_name_to_search_keyword_mapping = {
-        'CVR SUPPLY & TRADING, LLC': 'Total Draft',
-        'EXXONMOBIL': 'TOTAL AMOUNT OF FUNDS TRANSFER',
-        'U.S. OIL COMPANY': 'TOTALS',
-        'VALERO': '*** Net Amount ***',
+        'CVR SUPPLY & TRADING, LLC': ['Total Draft', 'EFT-\d+'],
+        'EXXONMOBIL': ['TOTAL AMOUNT OF FUNDS TRANSFER', 'EFT-\d+'],
+        'U.S. OIL COMPANY': ['TOTALS', 'EFT-\d+'],
+        'VALERO': ['*** Net Amount ***', 'EFT-\d+'],
     }
+
     # Parent directory to Draft Notices companies
     draft_notices_parent_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts'
 

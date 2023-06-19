@@ -81,35 +81,29 @@ def get_target_directories(parent_dir, company_keyword_mapping):
                 target_directories[company] = full_path
     return target_directories
 
-def extract_info_from_text(text, target_keyword):
+
+def extract_info_from_text(text, target_keywords):
     """Extract the specific information from a page"""
-    lines = text.split('\n')
-    print(f'lines: {lines}')
-    eft_num_line = lines[1] # EFT-#### typically on 2nd line
-    print(f'eft_num_line: {eft_num_line}')
-    eft_num = eft_num_line.split()[2] # EFT-#### typically third word
-    print(f'eft_num: {eft_num}')
+
+    # Extract total_draft
+    total_draft_keyword = target_keywords[0]
+    total_draft_matches = re.findall(r'(\d+\.\d+)', text)
+    if not total_draft_matches:
+        print(f"No matches for regular expression in text: {total_draft_keyword}")
+        return None, None, None
+    total_draft_amt = total_draft_matches[0]
+
+    # Extract EFT number
+    eft_num_pattern = target_keywords[1]  # Assuming keyword is something like 'EFT-'
+    eft_num_matches = re.findall(eft_num_pattern, text)
+    if not eft_num_matches:
+        print(f"No matches for regular expression in text: {eft_num_pattern}")
+        return None, None, None
+    eft_num = eft_num_matches[0]
+
     today = datetime.date.today().strftime('%m-%d-%y')
 
-    #  goes through each line in the text and if the target_keyword is in that line, that line is added to the total_draft_lines list.
-    total_draft_lines = [line for line in lines if target_keyword in line]
-    print(f'total_draft_lines: {total_draft_lines}')
-    if not total_draft_lines:
-        print(f"No lines found with keyword: {target_keyword}")
-        return None, None, None
-    # from list of lines with matching target_keyword, grab the first instance (line) and assign it to this variable
-    total_draft_line = total_draft_lines[0]
-    prit(f'total_draft_line: {total_draft_line}')
-    # from first line with matching target_keyword, find all occurrences of floats (amount values) and return a list of matches
-    total_draft_matches = re.findall(r'(\d+\.\d+)', total_draft_line)
-    if not total_draft_matches:
-        print(f"No matches for regular expression in line: {total_draft_line}")
-        return None, None, None
-    # from list of floats, grab the first instance
-    total_draft = total_draft_matches[0]
-    print(f'total_draft: {total_draft}')
-
-    return eft_num, today, total_draft
+    return eft_num, today, total_draft_amt
 
 
 def get_matching_pdf_files(keyword_in_dl_file_name, download_dir):
@@ -130,19 +124,19 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
     print(f'text: {text}')
 
     # Check each company
-    for company_name, keyword in company_name_to_search_keyword_mapping.items():
+    for company_name, keywords in company_name_to_search_keyword_mapping.items():
         if company_name in text:
             print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
-            eft_num, today, total_draft = extract_info_from_text(text, keyword)
+            eft_num, today, total_draft_amt = extract_info_from_text(text, keywords)
 
             # If any of the extracted values is None, continue to next company
-            if eft_num is None or today is None or total_draft is None:
+            if eft_num is None or today is None or total_draft_amt is None:
                 continue
 
             if company_name == 'EXXONMOBIL':
-                new_file_name = f'{eft_num}-{today}-({total_draft}).pdf'
+                new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
             else:
-                new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
+                new_file_name = f'{eft_num}-{today}-{total_draft_amt}.pdf'
 
             # Use subdir mapping by searching company_name to get full dir
             destination_dir = company_name_to_company_subdir_mapping[company_name]
