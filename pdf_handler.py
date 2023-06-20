@@ -23,7 +23,7 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
-def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_marker, destination_dir):
+def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf):
 
     start_idx = None
     end_idx = None
@@ -117,7 +117,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
         if company_name in text:
             print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
             eft_num, today, total_draft_amt = extract_info_from_text(text, keywords)
-            print(f'-----------------eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
+            print(f'eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
 
             # If any of the extracted values is None, continue to next company
             if eft_num is None or today is None or total_draft_amt is None:
@@ -138,7 +138,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
                 if page_num_pike == page_num:
                     # save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
 
-                    split_pdf_pages_on_markers(text, page_num, new_file_name, company_name, 'END_MSG', destination_dir)
+                    split_pdf_pages_on_markers(text, page_num, new_file_name, company_name, 'END_MSG', destination_dir, pdf)
                     print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
 
 
@@ -155,7 +155,6 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
 
             for page_num, page in enumerate(viewer.doc.pages()):
                 process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
-                print(f'444444444444: {pdf}')
 
             # If all pages processed without errors, return True
             return True
