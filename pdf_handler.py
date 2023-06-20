@@ -23,6 +23,7 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
+# TODO: Debug - messes up the splitting of pages based on markers.
 def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf):
 
     start_idx = None
@@ -84,6 +85,7 @@ def extract_info_from_text(text, target_keywords):
         print(f"No matches for regular expression in text: {total_draft_keyword}")
         return None, None, None
     total_draft_amt = total_draft_matches[0]
+    # TODO: once split_pdf_pages_on_markers works as intended and is validated, replace ^ with `total_draft_amt = total_draft_matches[-1]`
 
     # Extract EFT number
     eft_num_pattern = target_keywords[1]  # Assuming keyword is something like 'EFT-'
