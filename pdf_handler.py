@@ -7,9 +7,6 @@ import pikepdf
 from PyPDF2 import PdfReader
 from pdfreader import SimplePDFViewer
 
-
-pdf = pikepdf.Pdf.open(r'/Users/ekim/Downloads/messages.pdf')
-
 def save_pdf_page_as_new_file(page, new_file_name, destination_dir):
     # Create new Pdf object
     new_pdf = pikepdf.Pdf.new()
@@ -138,7 +135,7 @@ def get_matching_pdf_file(keyword_in_dl_file_name, download_dir):
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
-def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
+def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
     viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
     viewer.render()
 
@@ -188,6 +185,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
             #     output_pdf.write(writer.canvas.container.raw_content)
 
             # print(f'Moved page {page_num + 1} to {destination_dir}')  # page number starts from 1 for user's perspective
+pdf = pikepdf.Pdf.open(r'/Users/ekim/Downloads/messages.pdf')
 
 def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
     """
@@ -207,7 +205,7 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
             viewer = SimplePDFViewer(f)
 
             for page_num, page in enumerate(viewer.doc.pages()):
-                process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
+                process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
 
             # If all pages processed without errors, return True
             return True
