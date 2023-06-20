@@ -37,6 +37,8 @@ def user_journey():
         'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/U S VENTURE - U S OIL COMPANY [12262]',
 
         'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]'
+        
+        'DK Trading & Supply': # TODO
     }
 
 
