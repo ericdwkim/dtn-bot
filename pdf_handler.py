@@ -65,10 +65,10 @@ def extract_info_from_text(text, target_keywords):
 
     return eft_num, today, total_draft_amt
 
-def get_matching_pdf_file(keyword_in_dl_file_name, download_dir):
-    matching_file = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
-    print(f'matching_file: {matching_file}')
-    return matching_file
+def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
+    full_path_to_dl_dir = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
+    print(f'full_path_to_dl_dir: {full_path_to_dl_dir}')
+    return full_path_to_dl_dir
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
@@ -107,17 +107,14 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
                     save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
                     print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
 
-
-pdf = pikepdf.Pdf.open(r'/Users/ekim/Downloads/messages.pdf')
-
-def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
+def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping, pdf):
     try:
         # Get all matching files
-        matching_file = get_matching_pdf_file(keyword_in_dl_file_name, download_dir)
+        full_path_to_dl_dir = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
 
         # Read original PDF from dls dir
-        print(f'Processing file: {matching_file}')
-        with open(matching_file, 'rb') as f:
+        print(f'Processing file: {full_path_to_dl_dir}')
+        with open(full_path_to_dl_dir, 'rb') as f:
             viewer = SimplePDFViewer(f)
 
             for page_num, page in enumerate(viewer.doc.pages()):
