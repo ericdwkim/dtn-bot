@@ -48,7 +48,7 @@ def user_journey():
         # DataConnect 1st Flow - Invoices
         data_connect = DataConnectPage(driver)
         data_connect.switch_tab_and_apply_filters()
-        rename_and_move_pdf(file_name, dl_dir, dest_dir_invoices)
+        rename_and_move_pdf(keyword_in_dl_file_name, download_dir, dest_dir_invoices)
 
         # DataConnect 2nd Flow - Draft Notice
         draft_notices_downloaded = data_connect.set_group_filter_to_draft_notice()
