@@ -24,38 +24,73 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
 # EFT Draft Notices
-def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf):
+def split_pdf_pages_on_markers(text, page_num, pages, new_file_name, start_marker, end_marker, destination_dir, pdf):
 
     start_idx = None
     end_idx = None
 
-    # If company name in text, set current page as starting page
-    if start_marker in text and start_idx is None:
-        start_idx = page_num
+    # Unpack tuple
+    page_current, page_next = pages
 
-    if end_marker in text:
-        end_idx = page_num
-        # Create new pdf obj
-        new_pdf = pikepdf.Pdf.new()
+    # if multi page pdf; both markers should be in text as it is a single string text of all pages per company
+    if page_current is not None and page_next is not None and start_marker in text and end_marker in text:
+        # set page nums as indices
+        start_idx, end_idx = page_current, page_next
 
-        # Append pages from start_idx to current page
-        new_pdf.pages.extend(pdf.pages[start_idx:end_idx + 1])
-        total_pages_per_file = pdf.pages[start_idx:end_idx + 1]
-        print(f'Saving PDF: {new_file_name} from page {start_idx} to {end_idx} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
+    # if single page pdf, assign start_idx to current page number aka
+    elif page_current is not None and page_next is None and start_marker in text and start_idx is None and end_marker in text and end_idx is None:
+        # start_idx = end_idx = page_current = page_num + 1 # TODO: should all be the same, so may not need page_num up/down the chain
+        start_idx = end_idx = page_num + 1 # eg: 1 == 1 == 0 + 1 (page 1 example)
 
-        # Save the new pdf with new filename in appropriate dest directory
-        new_pdf.save(os.path.join(destination_dir, new_file_name))
+    # Create new pdf obj
+    new_pdf = pikepdf.Pdf.new()
 
-        # Reset start and end indices for slicing the next set of page(s)
-        start_idx = None
-        end_idx = None
+    # Append pages from start_idx to current page
+    new_pdf.pages.extend(pdf.pages[start_idx:end_idx + 1])
+    total_pages_per_file = pdf.pages[start_idx:end_idx + 1]
+    print(f'Saving PDF: {new_file_name} from page {start_idx} to {end_idx} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
 
+    # Save the new pdf with new filename in appropriate dest directory
+    new_pdf.save(os.path.join(destination_dir, new_file_name))
 
-    # Edge case if start_marker found but no end_marker found, then just turn everything from start_marker to the end of the pdf as single pdf
-    if start_idx is not None and end_idx is None:
+    # Reset start and end indices for slicing the next set of page(s)
+    start_idx = None
+    end_idx = None
+
+    # Edge case handler
+    else:
         new_pdf = pikepdf.Pdf.new()
         new_pdf.pages.extend(pdf.pages[start_idx:])
         new_pdf.save(os.path.join(destination_dir, new_file_name))
+
+
+    # If company name in text, set current page as starting page
+    # if start_marker in text and start_idx is None:
+    #     start_idx = page_num
+
+    # if end_marker in text:
+    #     end_idx = page_num
+    #     # Create new pdf obj
+    #     new_pdf = pikepdf.Pdf.new()
+    #
+    #     # Append pages from start_idx to current page
+    #     new_pdf.pages.extend(pdf.pages[start_idx:end_idx + 1])
+    #     total_pages_per_file = pdf.pages[start_idx:end_idx + 1]
+    #     print(f'Saving PDF: {new_file_name} from page {start_idx} to {end_idx} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
+    #
+    #     # Save the new pdf with new filename in appropriate dest directory
+    #     new_pdf.save(os.path.join(destination_dir, new_file_name))
+    #
+    #     # Reset start and end indices for slicing the next set of page(s)
+    #     start_idx = None
+    #     end_idx = None
+    #
+    #
+    # # Edge case if start_marker found but no end_marker found, then just turn everything from start_marker to the end of the pdf as single pdf
+    # if start_idx is not None and end_idx is None:
+    #     new_pdf = pikepdf.Pdf.new()
+    #     new_pdf.pages.extend(pdf.pages[start_idx:])
+    #     new_pdf.save(os.path.join(destination_dir, new_file_name))
 
 def pdf_and_pages(pdf):
     for page_num in range(len(pdf.pages)):
@@ -92,7 +127,7 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
-def process_page(text, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
+def process_page(text, page_num, pages, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
 
     # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
@@ -117,9 +152,10 @@ def process_page(text, page_num, company_name_to_search_keyword_mapping, company
             print(f'destination_dir: {destination_dir}')
 
             for page_num_pike, page_obj in pdf_and_pages(pdf):
+                # pikepdf uses 0 idx hence no page_num + 1
                 if page_num_pike == page_num:
 
-                    split_pdf_pages_on_markers(text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf)
+                    split_pdf_pages_on_markers(text, page_num, pages, new_file_name, company_name, 'END MSG', destination_dir, pdf)
                     print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
 
 
@@ -140,25 +176,31 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
             for page_num, page in enumerate(viewer.doc.pages()):
                 # Assign the next page's text `text_next` from previous iteration to `text_current` and reset `text_next` to None for next page iteration
                 text_current, text_next = text_next, None
+                page_current, page_next = page_next, None
 
                 # if text_current is None, this means a new section. Extract the text from current page
                 if text_current is None:
-                    viewer.navigate(page_num + 1) # navigating starts from 1, not 0
+                    page_current = page_num + 1 # navigating starts from 1, not 0
+                    viewer.navigate(page_current)
                     viewer.render()
                     text_current = ' '.join(viewer.canvas.strings)
 
                 # If not on last page of original PDF, extract text for next page
                 if page_num + 1 < len(list(viewer.doc.pages())):
-                    viewer.navigate(page_num + 2) # Get next page
+                    page_next = page_num + 2 # Get next page
+                    viewer.navigate(page_next)
                     viewer.render()
                     text_next = ' '.join(viewer.canvas.strings)
+
+                pages = (page_current, page_next)
 
                 # Concat current and next page's `text` strings into a large, single string as
                 # it is content from the "same page". If at EOF or only a single page, just concat empty string to avoid NoneType error
                 text = f"{text_current} {text_next or ''}"
                 print(f'************************************************\n{text}\n**********************************************\n')
 
-                process_page(text, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
+                # TODO: maybe no need to pass page_num?
+                process_page(text, page_num, pages, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
 
             # If all pages processed without errors, return True
             return True
