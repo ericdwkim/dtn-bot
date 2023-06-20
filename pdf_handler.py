@@ -105,7 +105,6 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
 def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
-    print(f'11111111111: {pdf}')
     viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
     viewer.render()
 
@@ -118,7 +117,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
         if company_name in text:
             print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
             eft_num, today, total_draft_amt = extract_info_from_text(text, keywords)
-            print(f'eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
+            print(f'-----------------eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
 
             # If any of the extracted values is None, continue to next company
             if eft_num is None or today is None or total_draft_amt is None:
@@ -126,17 +125,16 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
             if company_name == 'EXXONMOBIL':
                 new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
-                print(f'new_file_name1: {new_file_name}')
+                print(f'new_file_name: {new_file_name}')
             else:
                 new_file_name = f'{eft_num}-{today}-{total_draft_amt}.pdf'
-                print(f'new_file_name2: {new_file_name}')
+                print(f'new_file_name: {new_file_name}')
 
             # Use subdir mapping to search company_name to get full subdir path for newly renamed eft file
             destination_dir = company_name_to_company_subdir_mapping[company_name]
             print(f'destination_dir: {destination_dir}')
 
             for page_num_pike, page_obj in pdf_and_pages(pdf):
-                print(f'3333333333333: {pdf}')
                 if page_num_pike == page_num:
                     # save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
 
