@@ -28,12 +28,9 @@ def split_pdf_pages_on_markers(text, pages, new_file_name, start_marker, end_mar
 
     # Unpack tuple
     page_current, page_next = pages
-    print(f'---------------------------------- page_current: {page_current} | page_next: {page_next}')
 
     # if multi page pdf; both markers should be in text as it is a single string text of all pages per company
     if page_current is not None and page_next is not None and start_marker in text and end_marker in text:
-        print(f'111111111 page_current: {page_current} | page_next: {page_next}')
-
         # Create new pdf obj
         new_pdf = pikepdf.Pdf.new()
 
@@ -47,8 +44,6 @@ def split_pdf_pages_on_markers(text, pages, new_file_name, start_marker, end_mar
 
     # if single page pdf, assign page_current to current page number
     elif page_current is not None and page_next is None and start_marker in text and end_marker in text:
-        print(f'222222 page_current: {page_current} | page_next: {page_next}')
-
         # Create new pdf obj
         new_pdf = pikepdf.Pdf.new()
 
@@ -60,7 +55,6 @@ def split_pdf_pages_on_markers(text, pages, new_file_name, start_marker, end_mar
 
     # Edge case handler: if start_marker found but no end_marker found, then turn everything from start_marker to the end of the pdf into single pdf
     elif start_marker in text and end_marker not in text and page_current is not None and page_next is None:
-        print(f'3333333333 page_current: {page_current} | page_next: {page_next}')
         new_pdf = pikepdf.Pdf.new()
         new_pdf.pages.extend(pdf.pages[page_current:])
         new_pdf.save(os.path.join(destination_dir, new_file_name))
@@ -143,15 +137,13 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         with open(full_path_to_downloaded_pdf, 'rb') as f:
             viewer = SimplePDFViewer(f)
 
-            # Initialize text_next and page_next as None
+            # Initialize text_next as None
             text_next = None
-            page_next = None
 
             for page_num, page in enumerate(viewer.doc.pages()):
                 # Assign the next page's text `text_next` from previous iteration to `text_current` and reset `text_next` to None for next page iteration
                 text_current, text_next = text_next, None
                 page_current, page_next = page_next, None
-                print(f'3333333 page_current: {page_current} | page_next: {page_next}')
 
                 # if text_current is None, this means a new section. Extract the text from current page
                 if text_current is None:
@@ -159,7 +151,6 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
                     viewer.navigate(page_current)
                     viewer.render()
                     text_current = ' '.join(viewer.canvas.strings)
-                    print(f'4444444 page_current: {page_current} | page_next: {page_next}')
 
                 # If not on last page of original PDF, extract text for next page
                 if page_num + 1 < len(list(viewer.doc.pages())):
@@ -167,11 +158,8 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
                     viewer.navigate(page_next)
                     viewer.render()
                     text_next = ' '.join(viewer.canvas.strings)
-                    print(f'5555555 page_current: {page_current} | page_next: {page_next}')
 
                 pages = (page_current, page_next)
-                print(f'66666666 page_current: {page_current} | page_next: {page_next}')
-                print(f'pages &&&&&&&&&&&&&&&&: {pages}')
 
                 # Concat current and next page's `text` strings into a large, single string as
                 # it is content from the "same page". If at EOF or only a single page, just concat empty string to avoid NoneType error
