@@ -108,7 +108,7 @@ def extract_info_from_text(text, target_keywords):
 
     # Extract total_draft
     total_draft_keyword = target_keywords[0]
-    total_draft_matches = re.findall(r'(\d+\.\d+)', text)
+    total_draft_matches = re.findall(r'([\d,]+\.\d+)', text)
     if not total_draft_matches:
         print(f"No matches for regular expression in text: {total_draft_keyword}")
         return None, None, None
