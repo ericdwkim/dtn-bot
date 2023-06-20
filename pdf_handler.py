@@ -72,7 +72,6 @@ def extract_info_from_text(text, target_keywords):
         print(f"No matches for regular expression in text: {total_draft_keyword}")
         return None, None, None
     total_draft_amt = total_draft_matches[-1]
-    # TODO: once split_pdf_pages_on_markers works as intended and is validated, replace ^ with `total_draft_amt = total_draft_matches[-1]`
 
     # Extract EFT number
     eft_num_pattern = target_keywords[1]  # Assuming keyword is something like 'EFT-'
