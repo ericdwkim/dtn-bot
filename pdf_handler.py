@@ -24,73 +24,40 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
 # EFT Draft Notices
-def split_pdf_pages_on_markers(text, page_num, pages, new_file_name, start_marker, end_marker, destination_dir, pdf):
-
-    start_idx = None
-    end_idx = None
+def split_pdf_pages_on_markers(text, pages, new_file_name, start_marker, end_marker, destination_dir, pdf):
 
     # Unpack tuple
     page_current, page_next = pages
 
     # if multi page pdf; both markers should be in text as it is a single string text of all pages per company
     if page_current is not None and page_next is not None and start_marker in text and end_marker in text:
-        # set page nums as indices
-        start_idx, end_idx = page_current, page_next
-
-    # if single page pdf, assign start_idx to current page number aka
-    elif page_current is not None and page_next is None and start_marker in text and start_idx is None and end_marker in text and end_idx is None:
-        # start_idx = end_idx = page_current = page_num + 1 # TODO: should all be the same, so may not need page_num up/down the chain
-        start_idx = end_idx = page_num + 1 # eg: 1 == 1 == 0 + 1 (page 1 example)
-
-    # Create new pdf obj
-    new_pdf = pikepdf.Pdf.new()
-
-    # Append pages from start_idx to current page
-    new_pdf.pages.extend(pdf.pages[start_idx:end_idx + 1])
-    total_pages_per_file = pdf.pages[start_idx:end_idx + 1]
-    print(f'Saving PDF: {new_file_name} from page {start_idx} to {end_idx} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
-
-    # Save the new pdf with new filename in appropriate dest directory
-    new_pdf.save(os.path.join(destination_dir, new_file_name))
-
-    # Reset start and end indices for slicing the next set of page(s)
-    start_idx = None
-    end_idx = None
-
-    # Edge case handler
-    else:
+        # Create new pdf obj
         new_pdf = pikepdf.Pdf.new()
-        new_pdf.pages.extend(pdf.pages[start_idx:])
+
+        # Append pages from page_current to page_next
+        new_pdf.pages.extend(pdf.pages[page_current:page_next + 1])
+        total_pages_per_file = pdf.pages[page_current:page_next + 1]
+        print(f'Saving PDF: {new_file_name} from page {page_current} to {page_next} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
+
+        # Save the new pdf with new filename in appropriate dest directory
         new_pdf.save(os.path.join(destination_dir, new_file_name))
 
+    # if single page pdf, assign page_current to current page number
+    elif page_current is not None and page_next is None and start_marker in text and end_marker in text:
+        # Create new pdf obj
+        new_pdf = pikepdf.Pdf.new()
 
-    # If company name in text, set current page as starting page
-    # if start_marker in text and start_idx is None:
-    #     start_idx = page_num
+        # Append current page to new pdf
+        new_pdf.pages.append(pdf.pages[page_current])
 
-    # if end_marker in text:
-    #     end_idx = page_num
-    #     # Create new pdf obj
-    #     new_pdf = pikepdf.Pdf.new()
-    #
-    #     # Append pages from start_idx to current page
-    #     new_pdf.pages.extend(pdf.pages[start_idx:end_idx + 1])
-    #     total_pages_per_file = pdf.pages[start_idx:end_idx + 1]
-    #     print(f'Saving PDF: {new_file_name} from page {start_idx} to {end_idx} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
-    #
-    #     # Save the new pdf with new filename in appropriate dest directory
-    #     new_pdf.save(os.path.join(destination_dir, new_file_name))
-    #
-    #     # Reset start and end indices for slicing the next set of page(s)
-    #     start_idx = None
-    #     end_idx = None
-    #
-    #
-    # # Edge case if start_marker found but no end_marker found, then just turn everything from start_marker to the end of the pdf as single pdf
-    # if start_idx is not None and end_idx is None:
-    #     new_pdf = pikepdf.Pdf.new()
-    #     new_pdf.pages.extend(pdf.pages[start_idx:])
-    #     new_pdf.save(os.path.join(destination_dir, new_file_name))
+        # Save the new pdf with new filename in appropriate dest directory
+        new_pdf.save(os.path.join(destination_dir, new_file_name))
+
+    # Edge case handler: if start_marker found but no end_marker found, then turn everything from start_marker to the end of the pdf into single pdf
+    elif start_marker in text and end_marker not in text and page_current is not None and page_next is None:
+        new_pdf = pikepdf.Pdf.new()
+        new_pdf.pages.extend(pdf.pages[page_current:])
+        new_pdf.save(os.path.join(destination_dir, new_file_name))
 
 def pdf_and_pages(pdf):
     for page_num in range(len(pdf.pages)):
