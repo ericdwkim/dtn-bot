@@ -17,7 +17,7 @@ def user_journey():
     dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
     keyword_in_dl_file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf` on mac
     download_dir = r'/Users/ekim/Downloads'
-    full_path_to_dl_dir = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
+    full_path_to_downloaded_pdf = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
 
 
     # The mapping dictionary for company name to list of keywords for tot_draft_amt, eft_num vars
@@ -53,10 +53,9 @@ def user_journey():
         # DataConnect 2nd Flow - Draft Notice
         draft_notices_downloaded = data_connect.set_group_filter_to_draft_notice()
 
-        # ~/Downloads/messages.pdf should only be
-        # Draft Notices
+        # ~/Downloads/messages.pdf should only be Draft Notices
         if draft_notices_downloaded:
-            pdf = Pdf.open(full_path_to_dl_dir)
+            pdf = Pdf.open(full_path_to_downloaded_pdf)
 
             process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping, download_dir, company_name_to_search_keyword_mapping, pdf)
 
