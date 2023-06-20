@@ -49,13 +49,6 @@ def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_
         start_idx = None
         end_idx = None
 
-    # Edge case if start_marker found but no end_marker found, then just turn everything from start_marker to the end of the pdf as single pdf
-    if start_idx is not None and end_idx is None:
-        new_pdf = pikepdf.Pdf.new()
-        new_pdf.pages.extend(pdf.pages[start_idx:])
-        new_pdf.save(os.path.join(destination_dir, new_file_name))
-
-
 
 # EFT Draft Notices
 # def save_pdf_page_as_new_file(page, new_file_name, destination_dir):
@@ -86,7 +79,7 @@ def extract_info_from_text(text, target_keywords):
     if not total_draft_matches:
         print(f"No matches for regular expression in text: {total_draft_keyword}")
         return None, None, None
-    total_draft_amt = total_draft_matches[0]
+    total_draft_amt = total_draft_matches[-1]
     # TODO: once split_pdf_pages_on_markers works as intended and is validated, replace ^ with `total_draft_amt = total_draft_matches[-1]`
 
     # Extract EFT number
