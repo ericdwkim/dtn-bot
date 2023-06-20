@@ -131,5 +131,11 @@ company_name_to_target_subdir_mapping --> `company_subdir_mapping` = {company_na
 
 
 
+6/19/23
+- Current Status Update:
+1) ETF filing works just fine for CVR and US OIL COMPANY files
+2) Issues/Edge cases
+    2a) 
+
 
 """

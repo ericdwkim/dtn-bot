@@ -2,28 +2,9 @@ import os
 import re
 import shutil
 import datetime
-import glob
 import pikepdf
 from PyPDF2 import PdfReader
 from pdfreader import SimplePDFViewer
-
-def save_pdf_page_as_new_file(page, new_file_name, destination_dir):
-    # Create new Pdf object
-    new_pdf = pikepdf.Pdf.new()
-
-    # Append the page to the new Pdf object
-    new_pdf.pages.append(page)
-
-    # Construct the full path for the new PDF file
-    full_path_to_new_file = os.path.join(destination_dir, new_file_name)
-
-    # Save the new Pdf object as a file at the specified path
-    new_pdf.save(full_path_to_new_file)
-
-def pdf_and_pages(pdf):
-    for page_num in range(len(pdf.pages)):
-        yield page_num, pdf.pages[page_num]
-
 
 
 # Invoices
@@ -42,66 +23,24 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
-# EFT Draft Notices - currently hardcoded for CVR EFT files only
-# def extract_content_from_pdf(file_path, target_company):
-#     """Read a PDF and return its content if it contains the target company"""
-#     with open(file_path, 'rb') as f:
-#         reader = PdfReader(f)
-#         for page in reader.pages:
-#             text = page.extract_text()
-#             if target_company in text:
-#                 return text
-#     return None
-#
-#
-# def extract_info(text):
-#     """Extract the specific information for CVR Supply"""
-#     lines = text.splitlines()
-#     eft_num_line = lines[1]
-#     eft_num = eft_num_line.split()[2]
-#     today = datetime.date.today().strftime('%m-%d-%y')
-#
-#     total_draft_line = [line for line in lines if 'Total Draft' in line][0]
-#     total_draft = re.findall(r'(\d+\.\d+)', total_draft_line)[0]
-#
-#     return eft_num, today, total_draft
-#
-#
-# def rename_and_move_eft(file_name, source_dir, target_dir, target_company):
-#     """Find specific information in PDF files that contain the target company, rename and move the file"""
-#     for file in os.listdir(source_dir):
-#         if file.endswith('.pdf') and file_name in file:
-#             source_file = os.path.join(source_dir, file)
 
-            # text = extract_content_from_pdf(source_file, target_company)
-            # if text:
-            #     eft_num, today, total_draft = extract_info(text)
-            #     new_file_name = f'{eft_num}-{today}-{total_draft}.pdf'
-            #     destination_file = os.path.join(target_dir, new_file_name)
-            #
-            #     print(f'Moving {source_file} to {destination_file}')
-            #     shutil.move(source_file, destination_file)
+# EFT Draft Notices
+def save_pdf_page_as_new_file(page, new_file_name, destination_dir):
+    # Create new Pdf object
+    new_pdf = pikepdf.Pdf.new()
 
+    # Append the page to the new Pdf object
+    new_pdf.pages.append(page)
 
-# --------------- TEST ------------------------------
-# def get_target_directories(parent_dir, company_keywords_mapping):
-#     """
-#     :param parent_dir: The parent directory path where the subdirectories are located.
-#     :param company_keywords_mapping: A mapping of company names to their respective search keywords.
-#     :return: A mapping of company names to the full paths of their respective subdirectories.
-#     """
-#     target_directories = {}
-#     subdirs = os.listdir(parent_dir)
-#     for company in company_keywords_mapping.keys():
-#         company_lower = company.lower()
-#         for subdir in subdirs:
-#             if company_lower in subdir.lower():
-#                 full_path = os.path.join(parent_dir, subdir)
-#                 target_directories[company] = full_path
-#     return target_directories
-#
+    # Construct the full path for the new PDF file
+    full_path_to_new_file = os.path.join(destination_dir, new_file_name)
 
+    # Save the new Pdf object as a file at the specified path
+    new_pdf.save(full_path_to_new_file)
 
+def pdf_and_pages(pdf):
+    for page_num in range(len(pdf.pages)):
+        yield page_num, pdf.pages[page_num]
 
 def extract_info_from_text(text, target_keywords):
     """Extract the specific information from a page"""
@@ -126,12 +65,10 @@ def extract_info_from_text(text, target_keywords):
 
     return eft_num, today, total_draft_amt
 
-
 def get_matching_pdf_file(keyword_in_dl_file_name, download_dir):
     matching_file = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
     print(f'matching_file: {matching_file}')
     return matching_file
-
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
@@ -165,36 +102,15 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
             destination_dir = company_name_to_company_subdir_mapping[company_name]
             print(f'destination_dir: {destination_dir}')
 
-            # ALREADY HANDLED BY save_pdf_page_as_new_file() which also does the saving
-            # full_path_to_renamed_company_file = os.path.join(destination_dir, new_file_name)
-            # print(f'full_path_to_renamed_company_file: {full_path_to_renamed_company_file}')
-
-            # ------------------------------------------------------------------#
             for page_num_pike, page_obj in pdf_and_pages(pdf):
                 if page_num_pike == page_num:
                     save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
                     print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
-            # ------------------------------------------------------------------#
 
-            # # Save the page to a new PDF
-            # with open(full_path_to_renamed_company_file, 'wb') as output_pdf:
-            #     print(f' writing new pdf in correct subdir--------')
-            #     writer = SimplePDFViewer(f)
-            #     writer.navigate(page_num + 1)  # navigating starts from 1, not 0
-            #     writer.render()
-            #     output_pdf.write(writer.canvas.container.raw_content)
 
-            # print(f'Moved page {page_num + 1} to {destination_dir}')  # page number starts from 1 for user's perspective
 pdf = pikepdf.Pdf.open(r'/Users/ekim/Downloads/messages.pdf')
 
 def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
-    """
-    :param keyword_in_dl_file_name: substring keyword that is contained in the original downloaded EFT/draft notices PDF for all companies; 'messages' in messages.pdf
-    :param company_name_to_company_subdir_mapping: eg: {company_name: company_subdirectory}
-    :param download_dir: downloads directory folder (~/Downloads)
-    :param company_name_to_search_keyword_mapping: eg: { 'CVR SUPPLY & TRADING, LLC': 'Total Draft' }
-    :return: boolean indicating success or failure
-    """
     try:
         # Get all matching files
         matching_file = get_matching_pdf_file(keyword_in_dl_file_name, download_dir)
@@ -213,4 +129,3 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         # If any error occurred, print it and return False
         print(f'An unexpected error occurred: {str(e)}')
         return False
-

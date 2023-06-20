@@ -11,15 +11,9 @@ def user_journey():
     driver = setup_driver()
 
 
-    # Env vars for file hanlding
-    # TODO: test on Windows with prod file paths
-    file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf`
-    dl_dir = r'/Users/ekim/Downloads'
+    # Directory paths
+    # TODO: Update with Windows filepaths
     dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
-    # dest_dir_draft_notices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Training 12351'
-    # cvr_supply_trading_company = 'CVR SUPPLY & TRADING, LLC'
-
-    # ------------------------------------- TEST ------------------------------------------------------
     keyword_in_dl_file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf`
     download_dir = r'/Users/ekim/Downloads'
 
@@ -43,8 +37,6 @@ def user_journey():
         'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]'
     }
 
-    # Parent directory to Draft Notices companies
-    # draft_notices_parent_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts'
 
     try:
         # Visit site and login
@@ -58,13 +50,6 @@ def user_journey():
 
         # DataConnect 2nd Flow - Draft Notice
         data_connect.set_group_filter_to_draft_notice()
-        # rename_and_move_eft(file_name, dl_dir, dest_dir_draft_notices, cvr_supply_trading_company)
-
-        # Get full path to each companies' subdirectory as mapping
-        # where {company_name: company_subdirectory}
-        # # TODO: fix helper fn as CVR and US OIL not being mapped
-        # company_name_to_company_subdir_mapping= get_target_directories(draft_notices_parent_dir, company_name_to_search_keyword_mapping)
-        # print(f'company_name_to_company_subdir_mapping: {company_name_to_company_subdir_mapping}')
 
 
         process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping, download_dir, company_name_to_search_keyword_mapping)
