@@ -50,6 +50,14 @@ def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_
         end_idx = None
 
 
+    # Edge case if start_marker found but no end_marker found, then just turn everything from start_marker to the end of the pdf as single pdf
+    if start_idx is not None and end_idx is None:
+        new_pdf = pikepdf.Pdf.new()
+        new_pdf.pages.extend(pdf.pages[start_idx:])
+        new_pdf.save(os.path.join(destination_dir, new_file_name))
+
+
+
 # EFT Draft Notices
 # def save_pdf_page_as_new_file(page, new_file_name, destination_dir):
 #     # Create new Pdf object
