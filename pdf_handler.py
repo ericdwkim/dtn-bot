@@ -23,20 +23,51 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
+def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_marker, destination_dir):
+
+    start_idx = None
+    end_idx = None
+
+    if start_marker in text and start_idx is None:
+        start_idx = page_num
+
+    if end_marker in text:
+        end_idx = page_num
+        # Create new pdf obj
+        new_pdf = pikepdf.Pdf.new()
+
+        # Append pages from start_idx to current page
+        new_pdf.pages.extend(pdf.pages[start_idx:end_idx + 1])
+
+        # Save the new pdf with new filename in appropriate dest directory
+        new_pdf.save(os.path.join(destination_dir, new_file_name))
+
+        # Reset start and end indices for slicing the next set of page(s)
+        start_idx = None
+        end_idx = None
+
+    # Edge case if start_marker found but no end_marker found, then just turn everything from start_marker to the end of the pdf as single pdf
+    if start_idx is not None and end_idx is None:
+        new_pdf = pikepdf.Pdf.new()
+        new_pdf.pages.extend(pdf.pages[start_idx:])
+        new_pdf.save(os.path.join(destination_dir, new_file_name))
+
+
 
 # EFT Draft Notices
-def save_pdf_page_as_new_file(page, new_file_name, destination_dir):
-    # Create new Pdf object
-    new_pdf = pikepdf.Pdf.new()
-
-    # Append the page to the new Pdf object
-    new_pdf.pages.append(page)
-
-    # Construct the full path for the new PDF file
-    full_path_to_new_file = os.path.join(destination_dir, new_file_name)
-
-    # Save the new Pdf object as a file at the specified path
-    new_pdf.save(full_path_to_new_file)
+# def save_pdf_page_as_new_file(page, new_file_name, destination_dir):
+#     # Create new Pdf object
+#     new_pdf = pikepdf.Pdf.new()
+#
+#     # Append the page to the new Pdf object
+#     new_pdf.pages.append(page)
+#
+#     # Construct the full path for the new PDF file
+#     full_path_to_new_file = os.path.join(destination_dir, new_file_name)
+#
+#     # TODO: "if "END MSG" is hit, then save page or pages as a single PDF
+#     # Save the new Pdf object as a file at the specified path
+#     new_pdf.save(full_path_to_new_file)
 
 def pdf_and_pages(pdf):
     for page_num in range(len(pdf.pages)):
@@ -48,6 +79,7 @@ def extract_info_from_text(text, target_keywords):
     # Extract total_draft
     total_draft_keyword = target_keywords[0]
     total_draft_matches = re.findall(r'([\d,]+\.\d+)', text)
+    print(f'Using total_draft_keyword: {total_draft_keyword} and getting total_draft_matches: {total_draft_matches}')
     if not total_draft_matches:
         print(f"No matches for regular expression in text: {total_draft_keyword}")
         return None, None, None
@@ -66,9 +98,9 @@ def extract_info_from_text(text, target_keywords):
     return eft_num, today, total_draft_amt
 
 def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
-    full_path_to_dl_dir = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
-    print(f'full_path_to_dl_dir: {full_path_to_dl_dir}')
-    return full_path_to_dl_dir
+    full_path_to_downloaded_pdf = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
+    print(f'full_path_to_downloaded_pdf: {full_path_to_downloaded_pdf}')
+    return full_path_to_downloaded_pdf
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
@@ -104,17 +136,21 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
             for page_num_pike, page_obj in pdf_and_pages(pdf):
                 if page_num_pike == page_num:
-                    save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
+                    # save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
+
+                    split_pdf_pages_on_markers(text, page_num, new_file_name, company_name, 'END_MSG', destination_dir)
                     print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
+
+
 
 def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping, pdf):
     try:
         # Get all matching files
-        full_path_to_dl_dir = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
+        full_path_to_downloaded_pdf = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
 
         # Read original PDF from dls dir
-        print(f'Processing file: {full_path_to_dl_dir}')
-        with open(full_path_to_dl_dir, 'rb') as f:
+        print(f'Processing file: {full_path_to_downloaded_pdf}')
+        with open(full_path_to_downloaded_pdf, 'rb') as f:
             viewer = SimplePDFViewer(f)
 
             for page_num, page in enumerate(viewer.doc.pages()):
