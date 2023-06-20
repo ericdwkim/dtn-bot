@@ -56,7 +56,7 @@ def user_journey():
         # ~/Downloads/messages.pdf should only be Draft Notices
         if draft_notices_downloaded:
             pdf = Pdf.open(full_path_to_downloaded_pdf)
-
+            print(f'---------------------------------------------- pdf : {pdf}')
             process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping, download_dir, company_name_to_search_keyword_mapping, pdf)
 
 
