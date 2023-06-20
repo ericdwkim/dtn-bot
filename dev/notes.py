@@ -134,7 +134,8 @@ company_name_to_target_subdir_mapping --> `company_subdir_mapping` = {company_na
 - Current Status Update:
 1) ETF filing works just fine for CVR and US OIL COMPANY files
 2) Issues/Edge cases
-    2a) 
-
-
+    2a) Only grabs first monetary value from file for EXXONMOBIL and VALERO; may need to refine search string or just tinker w/ it more (maybe instead of  `total_draft_amt = total_draft_matches[0]`
+    could do `total_draft_amt = total_draft_matches[-1]` to get the last monetary value on file; still wouldn't work for other files (see 2b below) but could work for most.
+    2b) instances where ETF is > 1 page, like ETF-7245 --> this would need additional logic to account for end of page, perhaps using a different search string and/or "END MSG" to denote
+    when page ends so that it can account for dynamic multiple page splits. 
 """
