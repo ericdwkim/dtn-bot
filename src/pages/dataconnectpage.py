@@ -28,26 +28,24 @@ class DataConnectPage(BasePage):
 
     def set_date_filter(self):
         """
-        Sets `Date` filter to a date within the last week
+        Sets `Date` filter to yesterday
         :return: bool
         """
         try:
-            for child_day_num in range(2, 9):  # range starts from 2 (yesterday) to 8 (7 days before yesterday)
-                date_element_selector = f'#date > option:nth-child({child_day_num})'
-                was_clicked, element_selector_clicked = self.find_element_and_click(date_element_selector)
-
-                if was_clicked and element_selector_clicked:
-                    print(f'Successfully set date filter to {child_day_num - 1} day(s) ago.')
-                    return True
-                else:
-                    print(f'Failed to set date filter to {child_day_num - 1} day(s) ago.')
-
-            # If the loop completes without returning, no valid date filter was found
-            print('Date filter could not be set within the last week.')
-            return False
+            # TODO: revert to nth-child(2) for yesterdays date
+            # was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(2)') # yesterday's date
+            was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(5)') # temp. workaround for when `draft notice` bar unavailable; using Fri 6/16/23 b/c it has most draft notices
+            if was_clicked:
+                # print('Date filter set to yesterday')
+                return True
+            else:
+                # print('Date filter could not be set to yesterday')
+                return False
         except Exception as e:
-            print(f'An unexpected error occurred while setting the date filter: {str(e)}')
+            print(f'An error occurred trying to set date to yesterday: {str(e)}')
             return False
+
+
     def click_filter_header(self, filter_header_locator, locator_type=By.XPATH):
         """
             Clicks filter header at `filter_header_locator`\n
