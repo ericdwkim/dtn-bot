@@ -135,7 +135,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
                 if page_num_pike == page_num:
                     # save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
 
-                    split_pdf_pages_on_markers(text, page_num, new_file_name, company_name, 'END_MSG', destination_dir, pdf)
+                    split_pdf_pages_on_markers(text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf)
                     print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
 
 
