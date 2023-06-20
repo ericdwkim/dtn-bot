@@ -137,8 +137,9 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         with open(full_path_to_downloaded_pdf, 'rb') as f:
             viewer = SimplePDFViewer(f)
 
-            # Initialize text_next as None
+            # Initialize text_next and page_next as None
             text_next = None
+            page_next = None
 
             for page_num, page in enumerate(viewer.doc.pages()):
                 # Assign the next page's text `text_next` from previous iteration to `text_current` and reset `text_next` to None for next page iteration
