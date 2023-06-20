@@ -148,7 +148,7 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
                     text_current = ' '.join(viewer.canvas.strings)
 
                 # If not on last page of original PDF, extract text for next page
-                if page_num + 1 < len(viewer.doc.pages()):
+                if page_num + 1 < len(list(viewer.doc.pages())):
                     viewer.navigate(page_num + 2) # Get next page
                     viewer.render()
                     text_next = ' '.join(viewer.canvas.strings)
