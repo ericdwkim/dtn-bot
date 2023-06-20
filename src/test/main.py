@@ -26,6 +26,7 @@ def user_journey():
         'EXXONMOBIL': ['TOTAL AMOUNT OF FUNDS TRANSFER', 'EFT-\d+'],
         'U.S. OIL COMPANY': ['TOTALS', 'EFT-\d+'],
         'VALERO': ['*** Net Amount ***', 'EFT-\d+'],
+        'DK Trading & Supply': ['TOTAL DRAFT AMOUNT', 'EFT-\d+']
     }
 
     # Mapping for company name to subdir full path
@@ -36,9 +37,9 @@ def user_journey():
 
         'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/U S VENTURE - U S OIL COMPANY [12262]',
 
-        'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]'
+        'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]',
         
-        'DK Trading & Supply': # TODO
+        'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]'
     }
 
 
