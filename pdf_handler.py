@@ -39,6 +39,8 @@ def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_
 
         # Append pages from start_idx to current page
         new_pdf.pages.extend(pdf.pages[start_idx:end_idx + 1])
+        total_pages_per_file = pdf.pages[start_idx:end_idx + 1]
+        print(f'Saving PDF: {new_file_name} from page {start_idx} to {end_idx} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
 
         # Save the new pdf with new filename in appropriate dest directory
         new_pdf.save(os.path.join(destination_dir, new_file_name))
