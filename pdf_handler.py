@@ -157,6 +157,7 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
 
             for page_num, page in enumerate(viewer.doc.pages()):
                 process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
+                print(f'444444444444: {pdf}')
 
             # If all pages processed without errors, return True
             return True
