@@ -23,12 +23,13 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
-# TODO: Debug - messes up the splitting of pages based on markers.
+# EFT Draft Notices
 def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf):
 
     start_idx = None
     end_idx = None
 
+    # If company name in text, set current page as starting page
     if start_marker in text and start_idx is None:
         start_idx = page_num
 
@@ -55,23 +56,6 @@ def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_
         new_pdf = pikepdf.Pdf.new()
         new_pdf.pages.extend(pdf.pages[start_idx:])
         new_pdf.save(os.path.join(destination_dir, new_file_name))
-
-
-
-# EFT Draft Notices
-# def save_pdf_page_as_new_file(page, new_file_name, destination_dir):
-#     # Create new Pdf object
-#     new_pdf = pikepdf.Pdf.new()
-#
-#     # Append the page to the new Pdf object
-#     new_pdf.pages.append(page)
-#
-#     # Construct the full path for the new PDF file
-#     full_path_to_new_file = os.path.join(destination_dir, new_file_name)
-#
-#     # TODO: "if "END MSG" is hit, then save page or pages as a single PDF
-#     # Save the new Pdf object as a file at the specified path
-#     new_pdf.save(full_path_to_new_file)
 
 def pdf_and_pages(pdf):
     for page_num in range(len(pdf.pages)):
@@ -109,13 +93,7 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
-def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
-    viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
-    viewer.render()
-
-    # Get page content as text
-    text = ' '.join(viewer.canvas.strings)
-    print(f'text: {text}')
+def process_page(text, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
 
     # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
@@ -141,7 +119,6 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
             for page_num_pike, page_obj in pdf_and_pages(pdf):
                 if page_num_pike == page_num:
-                    # save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
 
                     split_pdf_pages_on_markers(text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf)
                     print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
@@ -158,8 +135,31 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         with open(full_path_to_downloaded_pdf, 'rb') as f:
             viewer = SimplePDFViewer(f)
 
+            # Initialize text_next as None
+            text_next = None
+
             for page_num, page in enumerate(viewer.doc.pages()):
-                process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
+                # Assign the next page's text `text_next` from previous iteration to `text_current` and reset `text_next` to None for next page iteration
+                text_current, text_next = text_next, None
+
+                # if text_current is None, this means a new section. Extract the text from current page
+                if text_current is None:
+                    viewer.navigate(page_num + 1) # navigating starts from 1, not 0
+                    viewer.render()
+                    text_current = ' '.join(viewer.canvas.strings)
+
+                # If not on last page of original PDF, extract text for next page
+                if page_num + 1 < len(viewer.doc.pages):
+                    viewer.navigate(page_num + 2) # Get next page
+                    viewer.render()
+                    text_next = ' '.join(viewer.canvas.strings)
+
+                # Concat current and next page's `text` strings into a large, single string as
+                # it is content from the "same page". If at EOF or only a single page, just concat empty string to avoid NoneType error
+                text = f"{text_current} {text_next or ''}"
+                print(f'************************************************\n{text}\n**********************************************\n')
+
+                process_page(text, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
 
             # If all pages processed without errors, return True
             return True
