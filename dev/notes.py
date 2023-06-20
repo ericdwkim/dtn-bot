@@ -138,4 +138,8 @@ company_name_to_target_subdir_mapping --> `company_subdir_mapping` = {company_na
     could do `total_draft_amt = total_draft_matches[-1]` to get the last monetary value on file; still wouldn't work for other files (see 2b below) but could work for most.
     2b) instances where ETF is > 1 page, like ETF-7245 --> this would need additional logic to account for end of page, perhaps using a different search string and/or "END MSG" to denote
     when page ends so that it can account for dynamic multiple page splits. 
+    
+    2c) *** When draft notice doesn't exist for yesterday (or the day before yesterday), we should keep going back in dates until draft notice does exist? or 
+    say if 6/16 draft notices is the latest ones that are available and they've already been saved and filed away correctly on sat (6/17) then if
+    this is ran again in prod, it should just skip it and not resave all the same draft notices in the same directories. --> should it still be named after today's date (day it was ran) or the date of the eft notice?
 """
