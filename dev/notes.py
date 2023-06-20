@@ -62,7 +62,6 @@ Using python, how to do the following:
 
 """
 
-# TODO: improvement functionality idea; this prevents having to hard code each and every `target_company`
 """
 1) extract target company from first line that preceeds after `text` (typically the first "word" of each `text` (aka pdf file). 
 2) turn target company name into variable for each respective file (ETF-#### for company X --> `company_name_etf`)
