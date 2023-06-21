@@ -86,14 +86,23 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
                  start_idx=None):
     # We will use a list to store pages
     current_pages = []
-
     # Initial page to start processing
     current_pages.append(pdf.pages[page_num])
+    print(f'++++++++++++++++++++++++++++ current_pages: {current_pages}')
 
     # Extract text
     current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 
-    # Check each company
+    # Store multi-page spanning doc pages' extracted text in a list
+    multi_page_spanning_texts = []
+    multi_page_spanning_texts.append(current_page_text)
+    print(f'---------------------------- multi_page_spanning_texts: {multi_page_spanning_texts}')
+
+    # Combine all related pages' text as a single large string 
+    current_page_text_combined = "".join(multi_page_spanning_texts)
+
+
+        # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         if company_name in current_page_text:
             print(
