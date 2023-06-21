@@ -120,7 +120,7 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
             new_pdf.pages.extend(current_pages)
             total_pages_per_file = new_pdf.pages
             print(
-                f'Saving PDF: {new_file_name} from page {page_num + 1 - len(current_pages)} to {page_num + 1} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {company_name} and end_marker: {end_marker}')
+                f'Saving PDF: {new_file_name} from page {page_num + 1 - len(current_pages)} to {page_num + 1} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {company_name}')
 
             # Save the new pdf with new filename in appropriate dest directory
             new_pdf.save(os.path.join(destination_dir, new_file_name))
