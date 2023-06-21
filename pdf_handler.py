@@ -103,6 +103,7 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
 
         # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
+        # Enter starter page
         if company_name in current_page_text:
             print(
                 f"***************************************************\nProcessing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
