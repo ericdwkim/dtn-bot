@@ -93,15 +93,6 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
     # Extract text
     current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 
-    # Store multi-page spanning doc pages' extracted text in a list
-    multi_page_spanning_texts = []
-    multi_page_spanning_texts.append(current_page_text)
-    print(f'---------------------------- multi_page_spanning_texts: {multi_page_spanning_texts}')
-
-    # Combine all related pages' text as a single large string 
-    current_page_text_combined = "".join(multi_page_spanning_texts)
-
-
         # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         if company_name in current_page_text:
@@ -118,9 +109,20 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
             eft_num, today, total_draft_amt = extract_info_from_text(current_page_text, keywords)
             print(f'\neft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}\n')
 
-            # If any of the extracted values is None, continue to next company
-            if eft_num is None or today is None or total_draft_amt is None:
-                continue
+            # If either vars return Null, assume current doc spans multiple pages
+            # Current logic for `current_page_text` overwrites all previous pages' text
+            # So multipage spanning docs' text only contains the last few bits of text
+            # It will always contain the eft_num and sometimes also contain the total_draft_amt
+            # if final page of multipage docs always contained both eft_num and total_draft_amt then we could avoid this block
+            if eft_num is None or total_draft_amt is None:
+
+                # Store multi-page spanning doc pages' extracted text in a list
+                multi_page_spanning_texts = []
+                multi_page_spanning_texts.append(current_page_text)
+                print(f'---------------------------- multi_page_spanning_texts: {multi_page_spanning_texts}')
+
+                # Combine all related pages' text as a single large string
+                current_page_text_combined = "".join(multi_page_spanning_texts)
 
             if company_name == 'EXXONMOBIL':
                 new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
