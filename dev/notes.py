@@ -147,7 +147,11 @@ company_name_to_target_subdir_mapping --> `company_subdir_mapping` = {company_na
 
 Improvement / feature idea:
  - logic for if file directory for company X doesn't exist but we have a file for this company, then make directory with naming convention and place file in that dir
+ - Create generic mapping for both fuel drafts and credit cards subdirs full path to be generated dynamically; 
+ ie: r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/ as parent dir --> if on Draft Notice Flow only place files in Fuel Drafts; if on Credit Cards flow
+ only place files in Credit Cards; this will allow us to only have a single mapping for {company_name: parent_dir_full_path}
  
+
 
 
 

@@ -34,7 +34,7 @@ def user_journey():
         'DK Trading & Supply': ['TOTAL DRAFT AMOUNT', 'EFT-\d+']
     }
 
-    # Mapping for company name to subdir full path
+    # Mapping for company name to Fuel Drafts subdir full path
     company_name_to_subdir_full_path_mapping = {
         'CVR SUPPLY & TRADING, LLC': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351',
 
@@ -46,6 +46,9 @@ def user_journey():
         
         'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]'
     }
+
+    # Mapping for company name to Credit Cards subdir full path
+    # TODO manually create mapping
 
 
     try:
