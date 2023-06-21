@@ -29,7 +29,6 @@ def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_
     start_idx = None
     end_idx = None
 
-    # If company name in text, set current page as starting page
     if start_marker in text and start_idx is None:
         start_idx = page_num
 
@@ -92,7 +91,13 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
-def process_page(text, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
+def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
+    viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
+    viewer.render()
+
+    # Get page content as text
+    text = ' '.join(viewer.canvas.strings)
+    print(f'text: {text}')
 
     # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
@@ -134,31 +139,8 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         with open(full_path_to_downloaded_pdf, 'rb') as f:
             viewer = SimplePDFViewer(f)
 
-            # Initialize text_next as None
-            text_next = None
-
             for page_num, page in enumerate(viewer.doc.pages()):
-                # Assign the next page's text `text_next` from previous iteration to `text_current` and reset `text_next` to None for next page iteration
-                text_current, text_next = text_next, None
-
-                # if text_current is None, this means a new section. Extract the text from current page
-                if text_current is None:
-                    viewer.navigate(page_num + 1) # navigating starts from 1, not 0
-                    viewer.render()
-                    text_current = ' '.join(viewer.canvas.strings)
-
-                # If not on last page of original PDF, extract text for next page
-                if page_num + 1 < len(list(viewer.doc.pages())):
-                    viewer.navigate(page_num + 2) # Get next page
-                    viewer.render()
-                    text_next = ' '.join(viewer.canvas.strings)
-
-                # Concat current and next page's `text` strings into a large, single string as
-                # it is content from the "same page". If at EOF or only a single page, just concat empty string to avoid NoneType error
-                text = f"{text_current} {text_next or ''}"
-                print(f'************************************************\n{text}\n**********************************************\n')
-
-                process_page(text, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
+                process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
 
             # If all pages processed without errors, return True
             return True
