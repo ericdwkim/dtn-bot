@@ -63,7 +63,6 @@ pandocfilters==1.5.0
 parso==0.8.3
 pdfminer.six==20221105
 pdfplumber==0.9.0
-pdfreader==0.1.12
 pexpect==4.8.0
 pickleshare==0.7.5
 pikepdf==7.2.0
@@ -78,7 +77,6 @@ pure-eval==0.2.2
 pycparser==2.21
 pycryptodome==3.18.0
 Pygments==2.15.1
-PyPDF2==3.0.1
 pyrsistent==0.19.3
 PySocks==1.7.1
 pytest==7.3.1

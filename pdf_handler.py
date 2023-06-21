@@ -3,8 +3,8 @@ import re
 import shutil
 import datetime
 import pikepdf
-from PyPDF2 import PdfReader
-from pdfreader import SimplePDFViewer
+import pdfplumber
+import io
 
 
 # Invoices
@@ -23,42 +23,46 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
-def split_pdf_pages_on_markers(current_page_text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf):
-
-    start_idx = None
-    end_idx = None
+def split_pdf_pages_on_markers(current_page_text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf, start_idx=None):
 
     if start_marker in current_page_text and start_idx is None:
         start_idx = page_num
 
-    if end_marker in current_page_text:
+    if end_marker in current_page_text and start_idx is not None:
         end_idx = page_num
         # Create new pdf obj
         new_pdf = pikepdf.Pdf.new()
 
         # Append pages from start_idx to current page
         new_pdf.pages.extend(pdf.pages[start_idx:end_idx + 1])
-        total_pages_per_file = pdf.pages[start_idx:end_idx + 1]
-        print(f'Saving PDF: {new_file_name} from page {start_idx} to {end_idx} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
+        total_pages_per_file = new_pdf.pages
+        print(f'Saving PDF: {new_file_name} from page {start_idx + 1} to {end_idx + 1} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
 
         # Save the new pdf with new filename in appropriate dest directory
         new_pdf.save(os.path.join(destination_dir, new_file_name))
 
-        # Reset start and end indices for slicing the next set of page(s)
+        # Reset start index for slicing the next set of page(s)
         start_idx = None
-        end_idx = None
 
+    return start_idx
 
-    # Edge case if start_marker found but no end_marker found, then just turn everything from start_marker to the end of the pdf as single pdf
-    if start_idx is not None and end_idx is None:
-        new_pdf = pikepdf.Pdf.new()
-        new_pdf.pages.extend(pdf.pages[start_idx:])
-        new_pdf.save(os.path.join(destination_dir, new_file_name))
+# Take in pikepdf Pdf object, return extracted text
+def extract_text_from_pdf_page(page):
+    # Create a BytesIO buffer
+    pdf_stream = io.BytesIO()
 
+    # Write the page to the buffer
+    with pikepdf.Pdf.new() as pdf:
+        pdf.pages.append(page)
+        pdf.save(pdf_stream)
 
-def pdf_and_pages(pdf):
-    for page_num in range(len(pdf.pages)):
-        yield page_num, pdf.pages[page_num]
+    # Use pdfplumber to read the page from the buffer
+    pdf_stream.seek(0)
+    with pdfplumber.open(pdf_stream) as pdf:
+        page = pdf.pages[0]
+        text = page.extract_text()
+
+    return text
 
 def extract_info_from_text(current_page_text, target_keywords):
     """Extract the specific information from a page"""
@@ -90,13 +94,10 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
     return full_path_to_downloaded_pdf
 
 
-# @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
-def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf, next_page_text=None):
-    viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
-    viewer.render()
+def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, start_idx=None):
+    # Extract the text of the current page
+    current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 
-    # Get page content as current_page_text
-    current_page_text = ' '.join(viewer.canvas.strings)
     print(f'current_page_text: {current_page_text}')
 
     # Check each company
@@ -121,19 +122,11 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
             destination_dir = company_name_to_company_subdir_mapping[company_name]
             print(f'destination_dir: {destination_dir}')
 
-            # Pass next_page_text to the split_pdf_pages_on_markers function
-            split_pdf_pages_on_markers(current_page_text, next_page_text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf)
+            # Update the start index of the PDF slice by calling split_pdf_pages_on_markers
+            start_idx = split_pdf_pages_on_markers(current_page_text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf, start_idx)
             print(f'Saving page {page_num + 1} to {destination_dir} with new file name: {new_file_name}')
 
-    # Set next_page_text for the next iteration
-    if page_num + 1 < len(viewer.doc.pages()):
-        viewer.navigate(page_num + 2)  # navigate to the next page
-        viewer.render()
-        next_page_text = ' '.join(viewer.canvas.strings)  # get the text for the next page
-    else:
-        next_page_text = None  # no more pages after this
-
-
+    return start_idx  # Return the start_idx to pass it to the next call of process_page
 
 def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping, pdf):
     try:
@@ -142,11 +135,10 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
 
         # Read original PDF from dls dir
         print(f'Processing file: {full_path_to_downloaded_pdf}')
-        with open(full_path_to_downloaded_pdf, 'rb') as f:
-            viewer = SimplePDFViewer(f)
-
-            for page_num, page in enumerate(viewer.doc.pages()):
-                process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf)
+        with pikepdf.open(full_path_to_downloaded_pdf) as pdf:
+            start_idx = None  # Initialize start_idx to None
+            for page_num in range(len(pdf.pages)):
+                start_idx = process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, start_idx)  # Pass start_idx to process_page and update it
 
             # If all pages processed without errors, return True
             return True
