@@ -92,7 +92,7 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
     current_page_texts = []
 
     # Initial page to start processing
-    # @dev: if single page, example: ['10']
+    # @dev: list of current_pages if single page, example: [pikepdf.Page1]
     current_pages.append(pdf.pages[page_num])
     print(f'++++++++++++++++++++++++++++ current_pages: {current_pages}')
 
@@ -113,7 +113,7 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
                     pdf.pages) - 1:
                 page_num += 1
                 # Keep track of pages for multi-page doc
-                # @dev: if multi page, example: ['9', '10']
+                # list of pikepdf.Page objects; [pikepdf.Page1, pikepdf.Page2, etc...]
                 current_pages.append(pdf.pages[page_num])
                 print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! current_pages: {current_pages}')
 
