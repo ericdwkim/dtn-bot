@@ -84,14 +84,22 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
 
 def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping,
                  start_idx=None):
-    # We will use a list to store pages
+
+    # Store page numbers
     current_pages = []
+
+    # Store page texts
+    current_page_texts = []
+
     # Initial page to start processing
+    # @dev: if single page, example: ['10']
     current_pages.append(pdf.pages[page_num])
     print(f'++++++++++++++++++++++++++++ current_pages: {current_pages}')
 
     # Extract text
     current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
+    print(f'Extracting text from page: {page_num}')
+
 
         # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
@@ -100,29 +108,35 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
                 f"***************************************************\nProcessing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
 
             # Look for start and end markers, include more pages if needed
+            # @dev: this while loop condition will *ONLY* apply to the first page which is how we can enter this loop
             while company_name in current_page_text and 'END MSG' not in current_page_text and page_num < len(
                     pdf.pages) - 1:
                 page_num += 1
+                # Keep track of pages for multi-page doc
+                # @dev: if multi page, example: ['9', '10']
                 current_pages.append(pdf.pages[page_num])
+                print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! current_pages: {current_pages}')
+
+                # Extract text for all subsequent page(s)
                 current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
+
+                # Keep track of texts for multi-page doc
+                current_page_texts.append(current_page_text)
+                print(f'---------------------------- current_page_texts: {current_page_texts}')
+
+                # Combine all page text strings into a single string
+                current_page_text = "".join(current_page_texts)
+                # @dev: if multi-page doc, `current_page_text` should now be
+                # all texts from all pages as single string to be passed into
+                # extraction function
+                print(f'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n current_page_text: {current_page_text}')
 
             eft_num, today, total_draft_amt = extract_info_from_text(current_page_text, keywords)
             print(f'\neft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}\n')
 
-            # If either vars return Null, assume current doc spans multiple pages
-            # Current logic for `current_page_text` overwrites all previous pages' text
-            # So multipage spanning docs' text only contains the last few bits of text
-            # It will always contain the eft_num and sometimes also contain the total_draft_amt
-            # if final page of multipage docs always contained both eft_num and total_draft_amt then we could avoid this block
+            # If both vars still null then skip to next one
             if eft_num is None or total_draft_amt is None:
-
-                # Store multi-page spanning doc pages' extracted text in a list
-                multi_page_spanning_texts = []
-                multi_page_spanning_texts.append(current_page_text)
-                print(f'---------------------------- multi_page_spanning_texts: {multi_page_spanning_texts}')
-
-                # Combine all related pages' text as a single large string
-                current_page_text_combined = "".join(multi_page_spanning_texts)
+                continue
 
             if company_name == 'EXXONMOBIL':
                 new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
@@ -155,7 +169,7 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
     # Return the start_idx and page_num to pass them to the next call of process_page
     return start_idx, page_num
 
-
+# TODO: remove unused pdf param and see if it affects anything
 def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping, pdf):
     try:
         # Get all matching files
