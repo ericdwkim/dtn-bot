@@ -34,7 +34,7 @@ class DataConnectPage(BasePage):
         try:
             # TODO: revert to nth-child(2) for yesterdays date
             # was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(2)') # yesterday's date
-            was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(5)') # temp. workaround for when `draft notice` bar unavailable; using Fri 6/16/23 b/c it has most draft notices
+            was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(6)') # temp. workaround for when `draft notice` bar unavailable; using Fri 6/16/23 b/c it has most draft notices
             if was_clicked:
                 # print('Date filter set to yesterday')
                 return True
