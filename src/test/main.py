@@ -6,9 +6,11 @@ from utility import setup_driver, teardown_driver
 from pdf_handler import rename_and_move_pdf, process_pdf, get_full_path_to_dl_dir
 import subprocess
 
-# Run the shell script and clear the terminal
-subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True); subprocess.run(["clear"], shell=True)
+# Run the shell script
+subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True)
 
+# Clear the terminal
+subprocess.run(["clear"], shell=True, env=dict(os.environ, TERM='iTerm'))
 
 username = os.getenv('DTN_EMAIL_ADDRESS')
 password = os.getenv('DTN_PASSWORD')
