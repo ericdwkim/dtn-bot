@@ -28,7 +28,6 @@ def user_journey():
     company_name_to_search_keyword_mapping = {
         'CVR SUPPLY & TRADING, LLC': ['Total Draft', 'EFT-\d+'],
         'EXXONMOBIL': ['TOTAL AMOUNT OF FUNDS TRANSFER', 'EFT-\d+'],
-        # 'EXXONMOBIL': ['TOTAL AMT OF EST. FUNDS TRANSFER', 'EFT-\d+'], # TODO: keywords[0] as a tuple using logical OR?
         'U.S. OIL COMPANY': ['TOTALS', 'EFT-\d+'],
         'VALERO': ['*** Net Amount ***', 'EFT-\d+'],
         'DK Trading & Supply': ['TOTAL DRAFT AMOUNT', 'EFT-\d+']
