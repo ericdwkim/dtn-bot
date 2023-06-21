@@ -56,6 +56,7 @@ def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_
         new_pdf.pages.extend(pdf.pages[start_idx:])
         new_pdf.save(os.path.join(destination_dir, new_file_name))
 
+
 def pdf_and_pages(pdf):
     for page_num in range(len(pdf.pages)):
         yield page_num, pdf.pages[page_num]
@@ -123,6 +124,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
 
             for page_num_pike, page_obj in pdf_and_pages(pdf):
                 if page_num_pike == page_num:
+                    # save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
 
                     split_pdf_pages_on_markers(text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf)
                     print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
