@@ -23,7 +23,6 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
-# EFT Draft Notices
 def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf):
 
     start_idx = None
