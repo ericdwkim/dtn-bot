@@ -142,4 +142,18 @@ company_name_to_target_subdir_mapping --> `company_subdir_mapping` = {company_na
     2c) *** When draft notice doesn't exist for yesterday (or the day before yesterday), we should keep going back in dates until draft notice does exist? or 
     say if 6/16 draft notices is the latest ones that are available and they've already been saved and filed away correctly on sat (6/17) then if
     this is ran again in prod, it should just skip it and not resave all the same draft notices in the same directories. --> should it still be named after today's date (day it was ran) or the date of the eft notice?
+
+
+
+Improvement / feature idea:
+ - logic for if file directory for company X doesn't exist but we have a file for this company, then make directory with naming convention and place file in that dir
+ 
+
+
+
+
+
+
+
+
 """
