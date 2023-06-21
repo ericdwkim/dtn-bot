@@ -23,29 +23,6 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
-def split_pdf_pages_on_markers(current_page_text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf, start_idx=None):
-
-    if start_marker in current_page_text and start_idx is None:
-        start_idx = page_num
-
-    if end_marker in current_page_text and start_idx is not None:
-        end_idx = page_num
-        # Create new pdf obj
-        new_pdf = pikepdf.Pdf.new()
-
-        # Append pages from start_idx to current page
-        new_pdf.pages.extend(pdf.pages[start_idx:end_idx + 1])
-        total_pages_per_file = new_pdf.pages
-        print(f'Saving PDF: {new_file_name} from page {start_idx + 1} to {end_idx + 1} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {start_marker} and end_marker: {end_marker}')
-
-        # Save the new pdf with new filename in appropriate dest directory
-        new_pdf.save(os.path.join(destination_dir, new_file_name))
-
-        # Reset start index for slicing the next set of page(s)
-        start_idx = None
-
-    return start_idx
-
 # Take in pikepdf Pdf object, return extracted text
 def extract_text_from_pdf_page(page):
     # Create a BytesIO buffer
@@ -94,16 +71,30 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
     return full_path_to_downloaded_pdf
 
 
-def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, start_idx=None):
-    # Extract the text of the current page
-    current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
+def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping,
+                 start_idx=None):
+    # We will use a list to store pages
+    current_pages = []
 
-    print(f'current_page_text: {current_page_text}')
+    # Initial page to start processing
+    current_pages.append(pdf.pages[page_num])
+
+    # Extract text
+    current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 
     # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         if company_name in current_page_text:
-            print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
+            print(
+                f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
+
+            # Look for start and end markers, include more pages if needed
+            while company_name in current_page_text and 'END MSG' not in current_page_text and page_num < len(
+                    pdf.pages) - 1:
+                page_num += 1
+                current_pages.append(pdf.pages[page_num])
+                current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
+
             eft_num, today, total_draft_amt = extract_info_from_text(current_page_text, keywords)
             print(f'\neft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}\n')
 
@@ -122,11 +113,26 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
             destination_dir = company_name_to_company_subdir_mapping[company_name]
             print(f'destination_dir: {destination_dir}')
 
-            # Update the start index of the PDF slice by calling split_pdf_pages_on_markers
-            start_idx = split_pdf_pages_on_markers(current_page_text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf, start_idx)
-            print(f'Saving page {page_num + 1} to {destination_dir} with new file name: {new_file_name}')
+            # Create new pdf obj
+            new_pdf = pikepdf.Pdf.new()
 
-    return start_idx  # Return the start_idx to pass it to the next call of process_page
+            # Append pages from current_pages to new_pdf
+            new_pdf.pages.extend(current_pages)
+            total_pages_per_file = new_pdf.pages
+            print(
+                f'Saving PDF: {new_file_name} from page {page_num + 1 - len(current_pages)} to {page_num + 1} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {company_name} and end_marker: {end_marker}')
+
+            # Save the new pdf with new filename in appropriate dest directory
+            new_pdf.save(os.path.join(destination_dir, new_file_name))
+            print(
+                f'Saved page(s) {page_num + 1 - len(current_pages)} to {page_num + 1} to {destination_dir} with new file name: {new_file_name}')
+
+            # Update start_idx for the next document
+            start_idx = None if 'END MSG' in current_page_text else page_num
+
+    # Return the start_idx and page_num to pass them to the next call of process_page
+    return start_idx, page_num
+
 
 def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping, pdf):
     try:
@@ -136,9 +142,11 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         # Read original PDF from dls dir
         print(f'Processing file: {full_path_to_downloaded_pdf}')
         with pikepdf.open(full_path_to_downloaded_pdf) as pdf:
-            start_idx = None  # Initialize start_idx to None
-            for page_num in range(len(pdf.pages)):
-                start_idx = process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, start_idx)  # Pass start_idx to process_page and update it
+            start_idx = 0  # Initialize start index
+            while start_idx < len(pdf.pages):
+                # Process pages and update the start index and page number
+                start_idx, page_num = process_page(pdf, start_idx, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
+                start_idx = page_num + 1  # Update the start index to the next page after the last processed page
 
             # If all pages processed without errors, return True
             return True
