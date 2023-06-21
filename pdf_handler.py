@@ -82,96 +82,62 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
     return full_path_to_downloaded_pdf
 
 
-def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping,
-                 start_idx=None):
-
-    # Store page numbers
-    current_pages = []
-
-    # Store page texts
-    current_page_texts = []
-
-    # Initial page to start processing
-    # @dev: list of current_pages if single page, example: [pikepdf.Page1]
-    current_pages.append(pdf.pages[page_num])
-    print(f'++++++++++++++++++++++++++++ current_pages: {current_pages}')
-
-    # Extract text
-    current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
-    print(f'Extracting text from page: {page_num}')
+def create_and_save_pdf(pages, new_file_name, destination_dir):
+    new_pdf = pikepdf.Pdf.new()
+    new_pdf.pages.extend(pages)
+    dest_dir_with_new_file_name = os.path.join(destination_dir, new_file_name)
+    new_pdf.save(dest_dir_with_new_file_name)
 
 
-        # Check each company
+def get_new_file_name(eft_num, today, total_draft_amt, company_name):
+    if company_name == 'EXXONMOBIL':
+        new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
+    else:
+        new_file_name = f'{eft_num}-{today}-{total_draft_amt}.pdf'
+    print(f'new_file_name: {new_file_name}')
+    return new_file_name
+
+
+def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
-        # Enter starter page
-        if company_name in current_page_text:
-            print(
-                f"***************************************************\nProcessing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
+        current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 
-            # Look for start and end markers, include more pages if needed
-            # @dev: this while loop condition will *ONLY* apply to the first page which is how we can enter this loop
-            while company_name in current_page_text and 'END MSG' not in current_page_text and page_num < len(
-                    pdf.pages) - 1:
-                page_num += 1
-                # Keep track of pages for multi-page doc
-                # list of pikepdf.Page objects; [pikepdf.Page1, pikepdf.Page2, etc...]
-                current_pages.append(pdf.pages[page_num])
-                print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! current_pages: {current_pages}')
-
-                # Extract text for all subsequent page(s)
-                current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
-
-                # Keep track of texts for multi-page doc
-                current_page_texts.append(current_page_text)
-                print(f'---------------------------- current_page_texts: {current_page_texts}')
-
-                # Combine all page text strings into a single string
-                current_page_text = "".join(current_page_texts)
-                # @dev: if multi-page doc, `current_page_text` should now be
-                # all texts from all pages as single string to be passed into
-                # extraction function
-                print(f'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n current_page_text: {current_page_text}')
-
+        # Only single page docs
+        if company_name in current_page_text and 'END MSG' in current_page_text:
+            current_pages = [pdf.pages[page_num]]
             eft_num, today, total_draft_amt = extract_info_from_text(current_page_text, keywords)
-            print(f'\neft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}\n')
 
-            # If both vars still null then skip to next one
-            if eft_num is None or total_draft_amt is None:
-                continue
-
-            if company_name == 'EXXONMOBIL':
-                new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
-                print(f'new_file_name: {new_file_name}')
-            else:
-                new_file_name = f'{eft_num}-{today}-{total_draft_amt}.pdf'
-                print(f'new_file_name: {new_file_name}')
-
-            # Use subdir mapping to search company_name to get full subdir path for newly renamed eft file
+            new_file_name = get_new_file_name(eft_num, today, total_draft_amt, company_name)
             destination_dir = company_name_to_company_subdir_mapping[company_name]
-            print(f'destination_dir: {destination_dir}')
 
-            # Create new pdf obj
-            new_pdf = pikepdf.Pdf.new()
+            create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
-            # Append pages from current_pages to new_pdf
-            new_pdf.pages.extend(current_pages)
-            total_pages_per_file = new_pdf.pages
-            print(
-                f'Saving PDF: {new_file_name} from page {page_num + 1 - len(current_pages)} to {page_num + 1} for a total of {len(total_pages_per_file)} page(s)\nUsed start_marker: {company_name}')
+            # Move cursor at single page (micro) level
+            page_num += 1
 
-            # Save the new pdf with new filename in appropriate dest directory
-            new_pdf.save(os.path.join(destination_dir, new_file_name))
-            print(
-                f'Saved page(s) {page_num + 1 - len(current_pages)} to {page_num + 1} to {destination_dir} with new file name: {new_file_name}\n************************************************\n')
+        # Only multipage docs
+        elif company_name in current_page_text and 'END MSG' not in current_page_text:
+            current_pages = []
+            current_page_texts = []
 
-            # Update start_idx for the next document
-            start_idx = None if 'END MSG' in current_page_text else page_num
+            while 'END MSG' not in current_page_text and page_num < len(pdf.pages) - 1:
+                current_pages.append(pdf.pages[page_num])
+                current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
+                current_page_texts.append(current_page_text)
+                # Move cursor at multi-page (micro) level
+                page_num += 1
 
-    # Return the start_idx and page_num to pass them to the next call of process_page
-    return start_idx, page_num
+            current_page_text = "".join(current_page_texts)
+            eft_num, today, total_draft_amt = extract_info_from_text(current_page_text, keywords)
 
-# TODO: remove unused pdf param and see if it affects anything
-def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping, pdf):
+            new_file_name = get_new_file_name(eft_num, today, total_draft_amt, company_name)
+            destination_dir = company_name_to_company_subdir_mapping[company_name]
+
+            create_and_save_pdf(current_pages, new_file_name, destination_dir)
+
+    return page_num
+
+def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
     try:
         # Get all matching files
         full_path_to_downloaded_pdf = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
@@ -179,11 +145,10 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         # Read original PDF from dls dir
         print(f'Processing file: {full_path_to_downloaded_pdf}')
         with pikepdf.open(full_path_to_downloaded_pdf) as pdf:
-            start_idx = 0  # Initialize start index
-            while start_idx < len(pdf.pages):
-                # Process pages and update the start index and page number
-                start_idx, page_num = process_page(pdf, start_idx, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
-                start_idx = page_num + 1  # Update the start index to the next page after the last processed page
+            page_num = 0  # Initialize page_num
+            while page_num < len(pdf.pages):
+                # Process pages and update the page number at original PDF (macro) level
+                page_num = process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
 
             # If all pages processed without errors, return True
             return True
