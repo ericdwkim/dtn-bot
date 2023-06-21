@@ -43,25 +43,29 @@ def extract_text_from_pdf_page(page):
 
 def extract_info_from_text(current_page_text, target_keywords):
     """Extract the specific information from a page"""
+    today = datetime.date.today().strftime('%m-%d-%y')
+
+    # Extract EFT number
+    eft_num_pattern = target_keywords[1]  # Assuming keyword is something like 'EFT-'
+    eft_num_matches = re.findall(eft_num_pattern, current_page_text)
+    print(f'\nUsing eft_num_pattern: "{eft_num_pattern}"\nGetting eft_num_matches: {eft_num_matches}\n')
+    if eft_num_matches:
+        eft_num = eft_num_matches[0]
+
+    elif not eft_num_matches:
+        print(f"No matches for regular expression: {eft_num_pattern} in text:\n*****************************************************\n {current_page_text}\n*****************************************************\n")
+        return None, today, None
+    eft_num = eft_num_matches[0]
 
     # Extract total_draft
     total_draft_keyword = target_keywords[0]
     total_draft_matches = re.findall(r'([\d,]+\.\d+)', current_page_text)
     print(f'\nUsing total_draft_keyword: "{total_draft_keyword}"\nGetting total_draft_matches: {total_draft_matches}\n')
     if not total_draft_matches:
-        print(f"No matches for regular expression using keyword: {total_draft_keyword} in current_page_text\n*****************************************************\n {current_page_text}\n*****************************************************\n")
+        print(f"No matches for regular expression using keyword: {total_draft_keyword} in text:\n*****************************************************\n {current_page_text}\n*****************************************************\n")
         return None, None, None
     total_draft_amt = total_draft_matches[-1]
 
-    # Extract EFT number
-    eft_num_pattern = target_keywords[1]  # Assuming keyword is something like 'EFT-'
-    eft_num_matches = re.findall(eft_num_pattern, current_page_text)
-    if not eft_num_matches:
-        print(f"No matches for regular expression: {eft_num_pattern} in current page text")
-        return None, None, None
-    eft_num = eft_num_matches[0]
-
-    today = datetime.date.today().strftime('%m-%d-%y')
 
     return eft_num, today, total_draft_amt
 
