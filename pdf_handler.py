@@ -91,7 +91,7 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
 
 
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
-def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
+def process_page(viewer, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf, next_page_text=None):
     viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
     viewer.render()
 
@@ -121,12 +121,17 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
             destination_dir = company_name_to_company_subdir_mapping[company_name]
             print(f'destination_dir: {destination_dir}')
 
-            for page_num_pike, page_obj in pdf_and_pages(pdf):
-                if page_num_pike == page_num:
-                    # save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
+            # Pass next_page_text to the split_pdf_pages_on_markers function
+            split_pdf_pages_on_markers(current_page_text, next_page_text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf)
+            print(f'Saving page {page_num + 1} to {destination_dir} with new file name: {new_file_name}')
 
-                    split_pdf_pages_on_markers(current_page_text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf)
-                    print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
+    # Set next_page_text for the next iteration
+    if page_num + 1 < len(viewer.doc.pages()):
+        viewer.navigate(page_num + 2)  # navigate to the next page
+        viewer.render()
+        next_page_text = ' '.join(viewer.canvas.strings)  # get the text for the next page
+    else:
+        next_page_text = None  # no more pages after this
 
 
 
