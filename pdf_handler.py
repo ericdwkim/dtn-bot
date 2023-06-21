@@ -49,7 +49,7 @@ def extract_info_from_text(current_page_text, target_keywords):
     total_draft_matches = re.findall(r'([\d,]+\.\d+)', current_page_text)
     print(f'\nUsing total_draft_keyword: "{total_draft_keyword}"\nGetting total_draft_matches: {total_draft_matches}\n')
     if not total_draft_matches:
-        print(f"No matches for regular expression in current_page_text\n*****************************************************\n {total_draft_keyword}\n*****************************************************\n")
+        print(f"No matches for regular expression in current_page_text\n*****************************************************\n {current_page_text}\n*****************************************************\n")
         return None, None, None
     total_draft_amt = total_draft_matches[-1]
 
