@@ -91,6 +91,8 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
     return full_path_to_downloaded_pdf
 
 
+# TEST COMMIT
+
 # @dev: 0-idxing default of `enumerate` for start_count assigned to `page_num` resulted in "islice must be None or an int" error as SimplePDFViewer's `navigate()` 1-idxs hence `page_num + 1`
 def process_page(text, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping, pdf):
 
