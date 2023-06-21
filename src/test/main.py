@@ -6,8 +6,8 @@ from utility import setup_driver, teardown_driver
 from pdf_handler import rename_and_move_pdf, process_pdf, get_full_path_to_dl_dir
 import subprocess
 
-# Delete all project related PDF files prior to the newest run
-subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True)
+# Run the shell script and clear the terminal
+subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True); subprocess.run(["clear"], shell=True)
 
 
 username = os.getenv('DTN_EMAIL_ADDRESS')
