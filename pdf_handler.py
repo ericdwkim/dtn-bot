@@ -49,7 +49,7 @@ def extract_info_from_text(current_page_text, target_keywords):
     total_draft_matches = re.findall(r'([\d,]+\.\d+)', current_page_text)
     print(f'\nUsing total_draft_keyword: "{total_draft_keyword}"\nGetting total_draft_matches: {total_draft_matches}\n')
     if not total_draft_matches:
-        print(f"No matches for regular expression in current_page_text\n*****************************************************\n {current_page_text}\n*****************************************************\n")
+        print(f"No matches for regular expression using keyword: {total_draft_keyword} in current_page_text\n*****************************************************\n {current_page_text}\n*****************************************************\n")
         return None, None, None
     total_draft_amt = total_draft_matches[-1]
 
@@ -57,7 +57,7 @@ def extract_info_from_text(current_page_text, target_keywords):
     eft_num_pattern = target_keywords[1]  # Assuming keyword is something like 'EFT-'
     eft_num_matches = re.findall(eft_num_pattern, current_page_text)
     if not eft_num_matches:
-        print(f"No matches for regular expression in current_page_text: {eft_num_pattern}")
+        print(f"No matches for regular expression: {eft_num_pattern} in current page text")
         return None, None, None
     eft_num = eft_num_matches[0]
 
@@ -86,7 +86,7 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         if company_name in current_page_text:
             print(
-                f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
+                f"***************************************************\nProcessing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
 
             # Look for start and end markers, include more pages if needed
             while company_name in current_page_text and 'END MSG' not in current_page_text and page_num < len(
@@ -125,7 +125,7 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
             # Save the new pdf with new filename in appropriate dest directory
             new_pdf.save(os.path.join(destination_dir, new_file_name))
             print(
-                f'Saved page(s) {page_num + 1 - len(current_pages)} to {page_num + 1} to {destination_dir} with new file name: {new_file_name}')
+                f'Saved page(s) {page_num + 1 - len(current_pages)} to {page_num + 1} to {destination_dir} with new file name: {new_file_name}\n************************************************\n')
 
             # Update start_idx for the next document
             start_idx = None if 'END MSG' in current_page_text else page_num
