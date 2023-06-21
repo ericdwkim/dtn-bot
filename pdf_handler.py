@@ -70,9 +70,9 @@ def extract_info_from_text(current_page_text, target_keywords):
     # Extract total_draft
     total_draft_keyword = target_keywords[0]
     total_draft_matches = re.findall(r'([\d,]+\.\d+)', current_page_text)
-    print(f'Using total_draft_keyword: {total_draft_keyword} and getting total_draft_matches: {total_draft_matches}')
+    print(f'\nUsing total_draft_keyword: "{total_draft_keyword}"\nGetting total_draft_matches: {total_draft_matches}\n')
     if not total_draft_matches:
-        print(f"No matches for regular expression in current_page_text: {total_draft_keyword}")
+        print(f"No matches for regular expression in current_page_text\n*****************************************************\n {total_draft_keyword}\n*****************************************************\n")
         return None, None, None
     total_draft_amt = total_draft_matches[-1]
 
@@ -105,7 +105,7 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
         if company_name in current_page_text:
             print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
             eft_num, today, total_draft_amt = extract_info_from_text(current_page_text, keywords)
-            print(f'eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
+            print(f'\neft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}\n')
 
             # If any of the extracted values is None, continue to next company
             if eft_num is None or today is None or total_draft_amt is None:
