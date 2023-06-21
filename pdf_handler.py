@@ -23,15 +23,15 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
             shutil.move(source_file, destination_file)
             break  # If you're only expecting one such file, you can break the loop after the first one found
 
-def split_pdf_pages_on_markers(text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf):
+def split_pdf_pages_on_markers(current_page_text, page_num, new_file_name, start_marker, end_marker, destination_dir, pdf):
 
     start_idx = None
     end_idx = None
 
-    if start_marker in text and start_idx is None:
+    if start_marker in current_page_text and start_idx is None:
         start_idx = page_num
 
-    if end_marker in text:
+    if end_marker in current_page_text:
         end_idx = page_num
         # Create new pdf obj
         new_pdf = pikepdf.Pdf.new()
@@ -60,23 +60,23 @@ def pdf_and_pages(pdf):
     for page_num in range(len(pdf.pages)):
         yield page_num, pdf.pages[page_num]
 
-def extract_info_from_text(text, target_keywords):
+def extract_info_from_text(current_page_text, target_keywords):
     """Extract the specific information from a page"""
 
     # Extract total_draft
     total_draft_keyword = target_keywords[0]
-    total_draft_matches = re.findall(r'([\d,]+\.\d+)', text)
+    total_draft_matches = re.findall(r'([\d,]+\.\d+)', current_page_text)
     print(f'Using total_draft_keyword: {total_draft_keyword} and getting total_draft_matches: {total_draft_matches}')
     if not total_draft_matches:
-        print(f"No matches for regular expression in text: {total_draft_keyword}")
+        print(f"No matches for regular expression in current_page_text: {total_draft_keyword}")
         return None, None, None
     total_draft_amt = total_draft_matches[-1]
 
     # Extract EFT number
     eft_num_pattern = target_keywords[1]  # Assuming keyword is something like 'EFT-'
-    eft_num_matches = re.findall(eft_num_pattern, text)
+    eft_num_matches = re.findall(eft_num_pattern, current_page_text)
     if not eft_num_matches:
-        print(f"No matches for regular expression in text: {eft_num_pattern}")
+        print(f"No matches for regular expression in current_page_text: {eft_num_pattern}")
         return None, None, None
     eft_num = eft_num_matches[0]
 
@@ -95,15 +95,15 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
     viewer.navigate(page_num + 1)  # navigating starts from 1, not 0
     viewer.render()
 
-    # Get page content as text
-    text = ' '.join(viewer.canvas.strings)
-    print(f'text: {text}')
+    # Get page content as current_page_text
+    current_page_text = ' '.join(viewer.canvas.strings)
+    print(f'current_page_text: {current_page_text}')
 
     # Check each company
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
-        if company_name in text:
+        if company_name in current_page_text:
             print(f"Processing page {page_num + 1} for {company_name}")  # page number starts from 1 for user's perspective
-            eft_num, today, total_draft_amt = extract_info_from_text(text, keywords)
+            eft_num, today, total_draft_amt = extract_info_from_text(current_page_text, keywords)
             print(f'eft_num: {eft_num} | today: {today}  | total_draft_amt: {total_draft_amt}')
 
             # If any of the extracted values is None, continue to next company
@@ -125,7 +125,7 @@ def process_page(viewer, page_num, company_name_to_search_keyword_mapping, compa
                 if page_num_pike == page_num:
                     # save_pdf_page_as_new_file(page_obj, new_file_name, destination_dir)
 
-                    split_pdf_pages_on_markers(text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf)
+                    split_pdf_pages_on_markers(current_page_text, page_num, new_file_name, company_name, 'END MSG', destination_dir, pdf)
                     print(f'Saving page {page_num_pike + 1} to {destination_dir} with new file name: {new_file_name}')
 
 
