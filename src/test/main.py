@@ -72,13 +72,16 @@ def user_journey():
             process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_fuel_drafts, download_dir, company_name_to_search_keyword_mapping)
 
         # DataConnect 3rd Flow - Credit Cards
-        # TODO: delete messages.pdf (Draft Notices)
+
+        # Delete messages.pdf (Draft Notices)
+        if os.path.exists(full_path_to_downloaded_pdf):
+            os.remove(full_path_to_downloaded_pdf)
 
         # Switch date from yesterday's to today's
         date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
 
         # Wait for UI to update date change
-        time.sleep(60)
+        time.sleep(90)
         if not date_set_to_today:
             return
 
