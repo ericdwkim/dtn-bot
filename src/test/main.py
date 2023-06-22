@@ -76,27 +76,14 @@ def user_journey():
 
         # DataConnect 2nd Flow - Draft Notice
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
-        if not group_filter_set_to_draft_notice:
-            return
-
-        draft_notices_processed_and_filed = process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_fuel_drafts, download_dir, company_name_to_search_keyword_mapping)
-
-        if not draft_notices_processed_and_filed:
-            return
-
-
+        if group_filter_set_to_draft_notice:
+            process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_fuel_drafts, download_dir, company_name_to_search_keyword_mapping)
 
         # DataConnect 3rd Flow - Credit Cards
 
         # Delete messages.pdf (Draft Notices)
-        file_exists = os.path.exists(full_path_to_downloaded_pdf)
-        if not file_exists:
-            print("File does not exist. Cannot proceed.")
-            return False
-
-        print(f"Deleting file: {full_path_to_downloaded_pdf}")
-        os.remove(full_path_to_downloaded_pdf)
-        print("File deleted successfully.")
+        if os.path.exists(full_path_to_downloaded_pdf):
+            os.remove(full_path_to_downloaded_pdf)
 
         # Switch date from yesterday's to today's
         date_set_to_today = data_connect.set_date_filter()
