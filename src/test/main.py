@@ -87,14 +87,15 @@ def user_journey():
 
 
         # DataConnect 3rd Flow - Credit Cards
-        file_exists = os.path.exists(full_path_to_downloaded_pdf)
-        if not file_exists:
+        if os.path.exists(full_path_to_downloaded_pdf):
+            try:
+                os.remove(full_path_to_downloaded_pdf)
+                print("File deleted successfully.")
+            except OSError as e:
+                print(f"Error deleting file: {str(e)}")
+        else:
             print("File does not exist. Cannot proceed.")
             return False
-
-        print(f"Deleting file: {full_path_to_downloaded_pdf}")
-        os.remove(full_path_to_downloaded_pdf)
-        print("File deleted successfully.")
 
         # Switch date from yesterday's to today's
         date_set_to_today = data_connect.set_date_filter()
