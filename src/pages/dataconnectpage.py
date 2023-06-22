@@ -131,7 +131,7 @@ class DataConnectPage(BasePage):
 
 
     def set_filter(self, filter_btn_elem_idx, filter_header_locator,
-                   target_elem_idx, src_locator=None, reset_selected=False):
+                   target_elem_idx, src_locator, reset_selected=False):
         """
         Click filter head @ `filter_header_locator`\n
         Drag `src_locator` elem and drop to `target_elements[target_elem_idx]` elem\n

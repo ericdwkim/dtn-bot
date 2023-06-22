@@ -50,11 +50,7 @@ class BasePage(object):
 
         return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
 
-    def find_element_drag_and_drop(self, src_locator=None, target_elem_idx=None):
-        source_element = None
-        src_element_is_clickable_and_present = False
-        target_element = None
-        target_elements_present = False
+    def find_element_drag_and_drop(self, src_locator, target_elem_idx):
 
         source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
             src_locator, target_elem_idx)
