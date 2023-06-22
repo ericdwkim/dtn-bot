@@ -1,4 +1,5 @@
 import os
+import time
 from pikepdf import Pdf
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
@@ -71,8 +72,11 @@ def user_journey():
             process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_fuel_drafts, download_dir, company_name_to_search_keyword_mapping)
 
         # DataConnect 3rd Flow - Credit Cards
+        # TODO: delete messages.pdf (Draft Notices)
         # Switch date from yesterday's to today's
         date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
+        # Wait for UI to update changing dates
+        time.sleep(60)
         if date_set_to_today:
             # Reset Translated to No
             translated_set_to_no = data_connect.set_translated_filter_to_no()
