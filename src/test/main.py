@@ -73,14 +73,21 @@ def user_journey():
 
         # DataConnect 3rd Flow - Credit Cards
         # TODO: delete messages.pdf (Draft Notices)
+
         # Switch date from yesterday's to today's
         date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
-        # Wait for UI to update changing dates
+
+        # Wait for UI to update date change
         time.sleep(60)
-        if date_set_to_today:
-            # Reset Translated to No
-            translated_set_to_no = data_connect.set_translated_filter_to_no()
-            group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
+        if not date_set_to_today:
+            return
+
+        # Reset Translated to No
+        translated_set_to_no = data_connect.set_translated_filter_to_no()
+        if not translated_set_to_no:
+            return
+
+        group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
 
 
 
