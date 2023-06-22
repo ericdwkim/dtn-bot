@@ -34,7 +34,7 @@ def user_journey():
     }
 
     # Mapping for company name to Fuel Drafts subdir full path
-    company_name_to_subdir_full_path_mapping = {
+    company_name_to_subdir_full_path_mapping_fuel_drafts = {
         'CVR SUPPLY & TRADING, LLC': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351',
 
         'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/EXXONMOBIL [10005]',
@@ -47,8 +47,13 @@ def user_journey():
     }
 
     # Mapping for company name to Credit Cards subdir full path
-    # TODO manually create mapping
-
+    company_name_to_subdir_full_path_mapping_credit_cards = {
+        'CVR SUPPLY & TRADING, LLC': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/CVR Supply & Trading 12351',
+        'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL [10005]',
+        'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/U S VENTURE - U S OIL COMPANY [12262]',
+        'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/VALERO [10006]',
+        'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/DK TRADING [12293]'
+    }
 
     try:
         # Visit site and login
@@ -63,7 +68,7 @@ def user_journey():
         # DataConnect 2nd Flow - Draft Notice
         draft_notices_downloaded = data_connect.set_group_filter_to_draft_notice()
         if draft_notices_downloaded:
-            process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping, download_dir, company_name_to_search_keyword_mapping)
+            process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_fuel_drafts, download_dir, company_name_to_search_keyword_mapping)
 
         # DataConnect 3rd Flow - Credit Cards
         # Switch date from yesterday's to today's
