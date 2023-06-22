@@ -66,16 +66,18 @@ def user_journey():
         rename_and_move_pdf(keyword_in_dl_file_name, download_dir, dest_dir_invoices)
 
         # DataConnect 2nd Flow - Draft Notice
-        draft_notices_downloaded = data_connect.set_group_filter_to_draft_notice()
-        if draft_notices_downloaded:
+        group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
+        if group_filter_set_to_draft_notice:
             process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_fuel_drafts, download_dir, company_name_to_search_keyword_mapping)
 
         # DataConnect 3rd Flow - Credit Cards
         # Switch date from yesterday's to today's
-        # date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
-        # if date_set_to_today:
-        #     # Reset Translated to No
-        #     translated_set_to_no = data_connect.set_translated_filter_to_no()
+        date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
+        if date_set_to_today:
+            # Reset Translated to No
+            translated_set_to_no = data_connect.set_translated_filter_to_no()
+            group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
+
 
 
 
