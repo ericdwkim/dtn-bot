@@ -1,7 +1,3 @@
-def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
-    full_path_to_downloaded_pdf = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
-    return full_path_to_downloaded_pdf
-
 def create_and_save_pdf(pages, new_file_name, destination_dir):
     new_pdf = pikepdf.Pdf.new()
     new_pdf.pages.extend(pages)
@@ -53,8 +49,8 @@ def extract_info_from_text_cc(current_page_text, target_keywords):
 
 
 def process_page_cc(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
-    print(f'Processing page {page_num}')
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
+        print(f'company_name: {company_name}| keywords: {keywords}')
         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 
         # Handle single page CCM VALERO docs
@@ -98,14 +94,12 @@ def process_page_cc(pdf, page_num, company_name_to_search_keyword_mapping, compa
     return page_num
 
 
-def process_pdf_cc(keyword_in_dl_file_name, company_name_to_company_subdir_mapping, download_dir, company_name_to_search_keyword_mapping):
+def process_pdf_cc(filepath,  company_name_to_company_subdir_mapping,company_name_to_search_keyword_mapping):
     try:
-        # Get all matching files
-        full_path_to_downloaded_pdf = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
 
         # Read original PDF from dls dir
-        print(f'Processing file: {full_path_to_downloaded_pdf}')
-        with pikepdf.open(full_path_to_downloaded_pdf) as pdf:
+        print(f'Processing file: {filepath}')
+        with pikepdf.open(filepath) as pdf:
             page_num = 0  # Initialize page_num
             while page_num < len(pdf.pages):
                 # Process pages and update the page number at original PDF (macro) level
