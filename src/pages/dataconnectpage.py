@@ -26,16 +26,10 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
 
-    def set_date_filter(self):
-        """
-        Sets `Date` filter to yesterday
-        :return: bool
-        """
+
+    def set_date_filter(self, date_locator='#date > option:nth-child(2)'):
         try:
-            # TODO: revert to nth-child(2) for yesterdays date
-            # was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(2)') # yesterday's date
-            # was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(6)') # temp. workaround for when `draft notice` bar unavailable; using Fri 6/16/23 b/c it has most draft notices
-            was_clicked, element_selector_clicked = self.find_element_and_click('#date > option:nth-child(37)') # temp. workaround for when `draft notice` bar unavailable; using Fri 6/16/23 b/c it has most draft notices
+            was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
             if was_clicked:
                 # print('Date filter set to yesterday')
                 return True
@@ -253,6 +247,9 @@ class DataConnectPage(BasePage):
     def switch_tab_and_apply_filters(self):
         if not self.switch_tab():
             return False
+
+        # EFT-7062 Edge Case Test of > 2 pages; Can also use for testing Draft Notices
+        # if not self.set_date_filter('#date > option:nth-child(37)'):
 
         if not self.set_date_filter():
             return False
