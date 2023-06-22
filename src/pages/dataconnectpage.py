@@ -241,8 +241,30 @@ class DataConnectPage(BasePage):
                 f'src_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}'
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
 
-    # Only up to Invoices
-    def switch_tab_and_apply_filters(self):
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    def set_group_filter_to_credit_card(self):
+        """
+        set_filter wrapper specific to Group filter to Credit Card
+        :return: bool
+        """
+        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
+            filter_button_is_clicked = self.set_filter(
+            filter_btn_elem_idx=1,
+            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
+            target_elem_idx=1,
+            src_locator="//li[@title='Credit Card']",
+        )
+        if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
+            return True
+        else:
+            print(
+                f'filter_header_is_clicked: {filter_header_is_clicked}\n'
+                f'src_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}'
+                f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+
+
+
+    def switch_tab_set_filters_and_download_invoices(self):
         if not self.switch_tab():
             return False
 
