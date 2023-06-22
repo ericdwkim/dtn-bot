@@ -98,16 +98,19 @@ def user_journey():
         # Reset Translated to No
         # TODO: this doesn't work for some reason in Test #2
         translated_set_to_no = data_connect.set_translated_filter_to_no()
+        print(f'translated_set_to_no: {translated_set_to_no}')
         if not translated_set_to_no:
             return
 
         # Set Group filter to CC
         group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
+        print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
         if not group_filter_set_to_credit_card:
             return
 
         # Download CC PDF
         ccm_files_downloaded = data_connect.check_all_then_click_print()
+        print(f'ccm_files_downloaded: {ccm_files_downloaded}')
         if not ccm_files_downloaded:
             return
 

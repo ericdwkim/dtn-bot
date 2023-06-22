@@ -30,6 +30,7 @@ class DataConnectPage(BasePage):
         for attempt in range(max_retries):
             try:
                 was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
+                time.sleep(15) # Wait for filter heads to load on DOM
 
                 # Handles DOM glitch where filter header elements don't load properly; might be worth just having user restart script or
                 # add a page reload function here

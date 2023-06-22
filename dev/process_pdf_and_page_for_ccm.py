@@ -1,3 +1,7 @@
+def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
+    full_path_to_downloaded_pdf = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
+    return full_path_to_downloaded_pdf
+
 def create_and_save_pdf(pages, new_file_name, destination_dir):
     new_pdf = pikepdf.Pdf.new()
     new_pdf.pages.extend(pages)
