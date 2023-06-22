@@ -30,16 +30,6 @@ def extract_text_from_pdf_page(page):
 def extract_info_from_text_cc(current_page_text, target_keywords):
     """Extract the specific information from a page"""
 
-    # Extract CCM number
-    ccm_num_pattern = target_keywords[1]  # Assuming keyword is something like 'CCM-'
-    ccm_num_matches = re.findall(ccm_num_pattern, current_page_text)
-    print(f'\nUsing ccm_num_pattern: "{ccm_num_pattern}"\nGetting ccm_num_matches: {ccm_num_matches}\n')
-    if ccm_num_matches:
-        ccm_num = ccm_num_matches[0]
-    else:
-        print(f"No matches for regular expression: {ccm_num_pattern} in text:\n*****************************************************\n {current_page_text}\n*****************************************************\n")
-        ccm_num = None
-
     # Extract total_credit
     total_credit_keyword = target_keywords[0]
     total_credit_matches = re.findall(r'([\d,]+\.\d+)', current_page_text)
@@ -52,14 +42,10 @@ def extract_info_from_text_cc(current_page_text, target_keywords):
 
     today = datetime.date.today().strftime('%m-%d-%y')
 
-    if ccm_num is not None and total_credit_amt is None:
-        return ccm_num, today, None
-    elif ccm_num is None and total_credit_amt is not None:
-        return None, today, total_credit_amt
-    elif ccm_num is None and total_credit_amt is None:
-        return None, today, None
+    if total_credit_amt is None:
+        return today, None
 
-    return ccm_num, today, total_credit_amt
+    return today, total_credit_amt
 
 
 def process_page_cc(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
@@ -69,7 +55,7 @@ def process_page_cc(pdf, page_num, company_name_to_search_keyword_mapping, compa
         # Handle single page CCM VALERO docs
         if re.search(r'CCM-\d+', current_page_text) and 'VALERO' in current_page_text and 'END MSG' in current_page_text:
             current_pages = [pdf.pages[page_num]]
-            ccm_num, today, net_credit_amt = extract_info_from_text_cc(current_page_text, keywords)
+            today, net_credit_amt = extract_info_from_text_cc(current_page_text, keywords)
 
             new_file_name = get_new_file_name_cc(today, net_credit_amt)
             destination_dir = company_name_to_company_subdir_mapping[company_name]
@@ -97,7 +83,7 @@ def process_page_cc(pdf, page_num, company_name_to_search_keyword_mapping, compa
                     break
 
             current_page_text = "".join(current_page_texts)
-            ccm_num, today, total_credit_amt = extract_info_from_text(current_page_text, keywords)
+            today, total_credit_amt = extract_info_from_text(current_page_text, keywords)
 
             new_file_name = get_new_file_name_cc(today, total_credit_amt)
             destination_dir = company_name_to_company_subdir_mapping[company_name]
