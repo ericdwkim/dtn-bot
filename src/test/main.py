@@ -36,11 +36,12 @@ def user_journey():
     }
 
     company_name_to_search_keyword_mapping_credit_cards = {
-        'CVR SUPPLY & TRADING, LLC': ['CCM-\d+', 'RTV-\d+'],
+        'CONCORD FIRST DATA': [
+            'CCM-\d+', 'RTV-\d+'],
         'EXXONMOBIL': ['CCM-\d+', 'RTV-\d+'],
         'U.S. OIL COMPANY': ['CCM-\d+', 'RTV-\d+'],
-        'VALERO': ['CCM-\d+', 'RTV-\d+'],
-        'DK Trading & Supply': ['CCM-\d+', 'RTV-\d+']
+        'VALERO': ['NET CREDIT', 'CCM-\d+'],
+        'P66': ['CCM-\d+', 'RTV-\d+']
     }
 
     # Mapping for company name to Fuel Drafts subdir full path
