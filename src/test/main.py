@@ -96,34 +96,25 @@ def user_journey():
 
         # Switch date from yesterday's to today's
         date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
-        print(f'------------------date_set_to_today: {date_set_to_today}')
-
-        # Wait for UI to update date change
-        time.sleep(45)
         if not date_set_to_today:
             return
 
         # Reset Translated to No
         translated_set_to_no = data_connect.set_translated_filter_to_no()
-        print(f'------------------translated_set_to_no: {translated_set_to_no}')
         if not translated_set_to_no:
             return
 
+        # Set Group filter to CC
         group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
-        print(f'------------------group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
         if not group_filter_set_to_credit_card:
             return
 
+        # Download CC PDF
         print_button_clicked = data_connect.click_print_button()
-        print(f'------------------print_button_clicked: {print_button_clicked}')
         if not print_button_clicked:
             return
 
-        credit_cards_docs_processed_and_filed = process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, download_dir, company_name_to_search_keyword_mapping_credit_cards)
-
-        print(f'-------------------credit_cards_docs_processed_and_filed: {credit_cards_docs_processed_and_filed}')
-
-
+        # Process CC PDF (RTVs vs CCMs vs
 
 
 

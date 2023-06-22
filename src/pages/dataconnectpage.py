@@ -38,6 +38,7 @@ class DataConnectPage(BasePage):
                 translated_filter_head_clickable = self.wait_for_element_clickable(
                     r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
                 if was_clicked and translated_filter_head_located and translated_filter_head_clickable:
+                    time.sleep(15) # wait for UI to update
                     return True
             except Exception as e:
                 print(f'An error occurred trying to set date filter: {str(e)}')
