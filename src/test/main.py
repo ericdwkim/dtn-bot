@@ -87,6 +87,7 @@ def user_journey():
 
 
         # DataConnect 3rd Flow - Credit Cards
+        # TODO: ensure this works
         if os.path.exists(full_path_to_downloaded_pdf):
             try:
                 os.remove(full_path_to_downloaded_pdf)
