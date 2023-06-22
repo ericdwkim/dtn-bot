@@ -2,12 +2,20 @@
 
 # List of directories to search for PDF files
 directories=(
-  "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351"
+
   "/Users/ekim/Downloads"
+
+  "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351"
   "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May"
   "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]"
   "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/EXXONMOBIL [10005]"
   "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/U S VENTURE - U S OIL COMPANY [12262]"
+
+  '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/CVR Supply & Trading 12351'
+  '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL [10005]'
+  '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/U S VENTURE - U S OIL COMPANY [12262]'
+  '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/VALERO [10006]'
+  '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/DK TRADING [12293]'
 )
 
 # Iterate through each directory
