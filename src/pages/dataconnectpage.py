@@ -175,7 +175,7 @@ class DataConnectPage(BasePage):
 
         return True, True, True
 
-    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_translated_filter_to_no(self):
         """
         set_filter wrapper specific to Translated filter to `No`
@@ -195,7 +195,7 @@ class DataConnectPage(BasePage):
             print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: '
                   f'{src_elem_dragged_and_dropped_to_target_elem}'
                   f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
-            return False
+            raise Exception("Failed to set filter.")
 
     # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_group_filter_to_invoice(self):
