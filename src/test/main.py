@@ -96,6 +96,7 @@ def user_journey():
             return
 
         # Reset Translated to No
+        # TODO: this doesn't work for some reason in Test #2
         translated_set_to_no = data_connect.set_translated_filter_to_no()
         if not translated_set_to_no:
             return
@@ -104,6 +105,8 @@ def user_journey():
         group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
         if not group_filter_set_to_credit_card:
             return
+
+        # TODO: Check target CC docs to download; dl all
 
         # Download CC PDF
         ccm_files_downloaded = data_connect.click_print_button()
