@@ -65,6 +65,13 @@ def user_journey():
         if draft_notices_downloaded:
             process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping, download_dir, company_name_to_search_keyword_mapping)
 
+        # DataConnect 3rd Flow - Credit Cards
+        # Switch date from yesterday's to today's
+        # date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
+        # if date_set_to_today:
+        #     # Reset Translated to No
+        #     translated_set_to_no = data_connect.set_translated_filter_to_no()
+
 
 
     finally:
