@@ -35,6 +35,14 @@ def user_journey():
         'DK Trading & Supply': ['TOTAL DRAFT AMOUNT', 'EFT-\d+']
     }
 
+    company_name_to_search_keyword_mapping_credit_cards = {
+        'CVR SUPPLY & TRADING, LLC': ['CCM-\d+', 'RTV-\d+'],
+        'EXXONMOBIL': ['CCM-\d+', 'RTV-\d+'],
+        'U.S. OIL COMPANY': ['CCM-\d+', 'RTV-\d+'],
+        'VALERO': ['CCM-\d+', 'RTV-\d+'],
+        'DK Trading & Supply': ['CCM-\d+', 'RTV-\d+']
+    }
+
     # Mapping for company name to Fuel Drafts subdir full path
     company_name_to_subdir_full_path_mapping_fuel_drafts = {
         'CVR SUPPLY & TRADING, LLC': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351',
@@ -55,14 +63,6 @@ def user_journey():
         'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/U S VENTURE - U S OIL COMPANY [12262]',
         'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/VALERO [10006]',
         'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/DK TRADING [12293]'
-    }
-
-    company_name_to_search_keyword_mapping_credit_cards = {
-        'CVR SUPPLY & TRADING, LLC': 'RTV-\d+',
-        'EXXONMOBIL': 'RTV-\d+',
-        'U.S. OIL COMPANY': 'RTV-\d+',
-        'VALERO': 'RTV-\d+',
-        'DK Trading & Supply': 'RTV-\d+'
     }
 
     try:
@@ -119,6 +119,7 @@ def user_journey():
         if not print_button_clicked:
             return
 
+        # TODO: new processing fn?
         credit_cards_docs_processed_and_filed = process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, download_dir, company_name_to_search_keyword_mapping_credit_cards)
 
         print(f'-------------------credit_cards_docs_processed_and_filed: {credit_cards_docs_processed_and_filed}')
