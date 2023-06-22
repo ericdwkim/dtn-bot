@@ -56,6 +56,14 @@ def user_journey():
         'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/DK TRADING [12293]'
     }
 
+    company_name_to_search_keyword_mapping_credit_cards = {
+        'CVR SUPPLY & TRADING, LLC': 'RTV-\d+',
+        'EXXONMOBIL': 'RTV-\d+',
+        'U.S. OIL COMPANY': 'RTV-\d+',
+        'VALERO': 'RTV-\d+',
+        'DK Trading & Supply': 'RTV-\d+'
+    }
+
     try:
         # Visit site and login
         login_page = LoginPage(driver)
@@ -91,6 +99,15 @@ def user_journey():
             return
 
         group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
+        if not group_filter_set_to_credit_card:
+            return
+
+        print_button_clicked = data_connect.click_print_button()
+        if not print_button_clicked:
+            return
+
+        # process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, download_dir, company_name_to_search_keyword_mapping_credit_cards)
+
 
 
 
