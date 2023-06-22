@@ -50,82 +50,21 @@ class BasePage(object):
 
         return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
 
-    # TODO: remove
-    def find_and_wait_for_src_and_target_elems_to_be_present(
-        self,
-        src_elem_idx,
-        target_elem_idx,
-        src_locator="//ul[@class='available connected-list']",
-        target_locator="//ul[@class='selected connected-list ui-sortable']",
-        locator_type=By.XPATH
-    ):
-        """
-        Finds and waits for multiple source & target WebElements to be present on DOM
-        :param src_elem_idx:
-        :param target_elem_idx:
-        :param src_locator:
-        :param target_locator:
-        :param locator_type:
-        :return:
-        """
+    def find_element_drag_and_drop(self, src_locator=None, target_elem_idx=None):
         source_element = None
         src_element_is_clickable_and_present = False
         target_element = None
         target_elements_present = False
 
-        try:
-            source_elements = self.driver.find_elements(locator_type, src_locator)
-            target_elements = self.driver.find_elements(locator_type, target_locator)
-
-
-            if source_elements and src_elem_idx < len(source_elements):
-                source_element = source_elements[src_elem_idx]
-                src_element_is_clickable = self.wait_for_element_clickable(source_element)
-                src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
-                src_element_is_clickable_and_present = src_element_is_clickable and src_element_is_present
-            else:
-                print(f'No source element found at idx "{src_elem_idx}" or src_elem_idx is out of range.')
-
-            if target_elements and target_elem_idx < len(target_elements):
-                target_element = target_elements[target_elem_idx]
-                target_element_is_clickable = self.wait_for_element_clickable(target_locator, locator_type)
-                target_elements_present = self.wait_for_presence_of_elements_located(target_locator, locator_type)
-                target_element_is_clickable_and_present = target_element_is_clickable and target_elements_present
-            else:
-                print(f'No target element found at idx "{target_elem_idx}" or target_elem_idx is out of range.')
-
-        except Exception as e:
-            print(f'An error occurred trying to find and wait for source and target elements\nError: {str(e)}')
-
-        return source_element, src_element_is_clickable_and_present, target_element, target_element_is_clickable_and_present
-
-    def find_element_drag_and_drop(self, src_elem_idx=None, src_locator=None, target_elem_idx=None):
-        source_element = None
-        src_element_is_clickable_and_present = False
-        target_element = None
-        target_elements_present = False
-
-
-        if src_elem_idx is None:
-            # print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
-            source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
-                src_locator, target_elem_idx)
-
-        # TODO: remove
-        elif src_locator is None and src_elem_idx is not None and target_elem_idx is not None:
-            print(f'src_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
-
-            source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_and_target_elems_to_be_present(
-                src_elem_idx, target_elem_idx)
-
-            print(f'source_element: {source_element} | src_element_is_clickable_and_present: {src_element_is_clickable_and_present} | target_element: {target_element} | target_elements_present: {target_elements_present}')
+        source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
+            src_locator, target_elem_idx)
 
         if source_element and target_element and src_element_is_clickable_and_present and target_elements_present:
             self.action.drag_and_drop(source_element, target_element).perform()
             time.sleep(10)  # Wait for UI to update
             return True
         else:
-            print(f'Source and/or Target element was not found and/or not present\nsrc_elem_idx: {src_elem_idx} |src_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
+            print(f'Source and/or Target element was not found and/or not present\nsrc_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
             return False
 
 

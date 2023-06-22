@@ -90,7 +90,7 @@ class DataConnectPage(BasePage):
     def reset_selected_group_filter(self):
         # list of webelements (4 total)
         remove_all_elements = self.driver.find_elements(By.XPATH, "//a[@class='remove-all' and text()='Remove all']")
-        remove_all_element = remove_all_elements[1] # desired `remove all` elem idx
+        remove_all_element = remove_all_elements[1]  # desired `remove all` elem idx
         if remove_all_element:
             remove_all_element.click()  # remove `Notice` filter
             # print(f'Reset selected Group filter list')
@@ -104,7 +104,7 @@ class DataConnectPage(BasePage):
         found_and_clicked = self.find_element_and_click("//*[@id='prMasterCheckbox2']", By.XPATH)
         if found_and_clicked:
             # print(f'Checkbox was found and clicked!')
-            time.sleep(15) # wait for UI to update
+            time.sleep(15)  # wait for UI to update
             return True
         else:
             print(f'Checkbox could not be found and clicked')
@@ -115,7 +115,7 @@ class DataConnectPage(BasePage):
         found_and_clicked = self.find_element_and_click("//*[@id='print_button']/span[2]", By.XPATH)
         if found_and_clicked:
             # print(f'Print button was found and clicked!')
-            time.sleep(15) # wait for UI to update
+            time.sleep(15)  # wait for UI to update
             return True
         else:
             print(f'Print button could not be found and clicked')
@@ -130,11 +130,13 @@ class DataConnectPage(BasePage):
             return False
 
 
-    def set_filter(self, filter_btn_elem_idx, filter_header_locator,  target_elem_idx, src_elem_idx=None, src_locator=None, reset_selected=False):
+    def set_filter(self, filter_btn_elem_idx, filter_header_locator,
+                   target_elem_idx, src_locator=None, reset_selected=False):
         """
         Click filter head @ `filter_header_locator`\n
         Drag `src_locator` elem and drop to `target_elements[target_elem_idx]` elem\n
         Click `Filter` button @ `filter_button_elements[filter_btn_elem_idx]` elem
+        :param reset_selected:
         :param filter_header_locator:
         :param src_locator:
         :param target_elem_idx:
@@ -146,32 +148,22 @@ class DataConnectPage(BasePage):
             print("Filter header could not be clicked")
             return False, False, False
 
-        # Group `Draft Notice` case requires reset of selected list to remove `Invoice` before selecting `Draft Notice`
+        # Group `Draft Notice` case requires resetting of selected list
+        # to remove `Invoice` before selecting `Draft Notice`
         if filter_header_is_clicked and reset_selected is True:
 
-            # Find Remove all and click to reset selected list on widget
-            selected_group_filter_is_reset = self.reset_selected_group_filter()
+            # Find `Remove all` and click to reset selected list on Filter widget
+            self.reset_selected_group_filter()
 
-
-        if src_elem_idx is None:
-            src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
-            if not src_elem_dragged_and_dropped_to_target_elem:
-                print("Source element could not be dragged and dropped to target element")
-                return True, False, False
-
-        # TODO: remove
-        elif src_locator is None:
-            src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_elem_idx, src_locator, target_elem_idx)
-            if not src_elem_dragged_and_dropped_to_target_elem:
-                print("Source element could not be dragged and dropped to target element")
-                return True, False, False
-
+        src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_locator, target_elem_idx)
+        if not src_elem_dragged_and_dropped_to_target_elem:
+            print("Source element could not be dragged and dropped to target element")
+            return True, False, False
 
         filter_button_is_clicked = self.click_filter_button_at_idx(filter_btn_elem_idx)
         if not filter_button_is_clicked:
             print("Filter button could not be clicked")
             return True, True, False
-
 
         if filter_button_is_clicked and reset_selected is True:
             # @dev: first checkbox click req'd
@@ -179,7 +171,7 @@ class DataConnectPage(BasePage):
             checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
             if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
                 print("Downloading Draft Notice PDF")
-                time.sleep(60) # wait for UI to update
+                time.sleep(30)  # wait for UI to update
 
         return True, True, True
 
@@ -190,17 +182,19 @@ class DataConnectPage(BasePage):
         :return: bool
         """
 
-        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
+        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
+            filter_button_is_clicked = self.set_filter(
             filter_btn_elem_idx=3,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[7]/button',
             target_elem_idx=3,
-            src_elem_idx=None,
             src_locator="//li[@title='No']"
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
         else:
-            print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+            print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: '
+                  f'{src_elem_dragged_and_dropped_to_target_elem}'
+                  f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             return False
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
@@ -210,18 +204,20 @@ class DataConnectPage(BasePage):
         :return: bool
         """
 
-        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
+        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
+            filter_button_is_clicked = self.set_filter(
             filter_btn_elem_idx=1,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
             target_elem_idx=1,
-            src_elem_idx=None,
             src_locator="//li[@title='Invoice']",
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
         else:
             print(
-                f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+                f'filter_header_is_clicked: {filter_header_is_clicked}\n'
+                f'src_elem_dragged_and_dropped_to_target_elem: '
+                f'{src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
 
     # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_group_filter_to_draft_notice(self):
@@ -229,11 +225,11 @@ class DataConnectPage(BasePage):
         set_filter wrapper specific to Group filter to Draft Notice
         :return: bool
         """
-        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
+        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
+            filter_button_is_clicked = self.set_filter(
             filter_btn_elem_idx=1,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
             target_elem_idx=1,
-            src_elem_idx=None,
             src_locator="//li[@title='Draft Notice']",
             reset_selected=True
         )
@@ -241,7 +237,9 @@ class DataConnectPage(BasePage):
             return True
         else:
             print(
-                f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+                f'filter_header_is_clicked: {filter_header_is_clicked}\n'
+                f'src_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}'
+                f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
 
     # Only up to Invoices
     def switch_tab_and_apply_filters(self):
