@@ -81,7 +81,7 @@ def user_journey():
         date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
 
         # Wait for UI to update date change
-        time.sleep(90)
+        time.sleep(45)
         if not date_set_to_today:
             return
 
