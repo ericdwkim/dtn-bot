@@ -86,7 +86,7 @@ def user_journey():
             os.remove(full_path_to_downloaded_pdf)
 
         # Switch date from yesterday's to today's
-        date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
+        date_set_to_today = data_connect.set_date_filter()
 
         # Wait for UI to update date change
         time.sleep(45)
