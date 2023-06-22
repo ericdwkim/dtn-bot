@@ -55,11 +55,9 @@ def user_journey():
 
     # Mapping for company name to Credit Cards subdir full path
     company_name_to_subdir_full_path_mapping_credit_cards = {
-        'CVR SUPPLY & TRADING, LLC': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/CVR Supply & Trading 12351',
-        'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL [10005]',
-        'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/U S VENTURE - U S OIL COMPANY [12262]',
-        'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/VALERO [10006]',
-        'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/DK TRADING [12293]'
+
+        'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/VALERO [10006]'
+
     }
 
     try:
