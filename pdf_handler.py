@@ -102,8 +102,8 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 
-        # Only single page docs
-        if company_name in current_page_text and 'END MSG' in current_page_text:
+        # Only single page EFT docs only
+        if re.search(r'EFT-\d+', current_page_text) and company_name in current_page_text and 'END MSG' in current_page_text:
             current_pages = [pdf.pages[page_num]]
             eft_num, today, total_draft_amt = extract_info_from_text(current_page_text, keywords)
 
@@ -115,8 +115,8 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
             # Move cursor at single page (micro) level
             page_num += 1
 
-        # Only multipage docs
-        elif company_name in current_page_text and 'END MSG' not in current_page_text:
+        # Only multipage EFT docs only
+        elif re.search(r'EFT-\d+', current_page_text) and company_name in current_page_text and 'END MSG' not in current_page_text:
             current_pages = []
             current_page_texts = []
 
