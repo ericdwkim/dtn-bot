@@ -46,18 +46,36 @@ class DataConnectPage(BasePage):
                 continue  # Try again
         return False  # Failed after max_retries attempts
 
+    def reload_page(self, driver, max_retries=3):
+        for attempt in range(max_retries):
+            try:
+                driver.refresh()
+                return True
+            except Exception as e:
+                print(f"Error during refresh: {str(e)}. Attempt: {attempt + 1}")
+                time.sleep(1)  # Wait for 1 second before the next attempt
+        return False
+
     def click_filter_header(self, filter_header_locator, locator_type=By.XPATH):
         """
-            Clicks filter header at `filter_header_locator`\n
+        Clicks filter header at `filter_header_locator`\n
         :return: bool
         """
         # If filter header found and clicked, return True
         if self.wait_for_find_then_click(filter_header_locator, locator_type):
-            # print(f'Filter header: {filter_header_locator} was clicked!')
             return True
         else:
             print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
-            return False
+
+            # Call page reload function and get the result
+            reload_success = self.reload_page(self.driver)
+
+            # If reload was successful, try clicking the filter header again
+            if reload_success and self.wait_for_find_then_click(filter_header_locator, locator_type):
+                return True
+            else:
+                print(f'Could not click filter header: {filter_header_locator} even after reload')
+                return False
 
     def click_filter_button_at_idx(self, filter_btn_elem_idx, timeout=10):
         """
