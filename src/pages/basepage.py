@@ -109,7 +109,7 @@ class BasePage(object):
             return False
 
 
-    def wait_for_element(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
+    def wait_for_element(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
         try:
             WebDriverWait(self.driver, timeout).until(
                 EC.visibility_of_element_located((locator_type, locator))

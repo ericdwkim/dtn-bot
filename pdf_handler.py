@@ -78,7 +78,6 @@ def extract_info_from_text(current_page_text, target_keywords):
 
 def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
     full_path_to_downloaded_pdf = os.path.join(download_dir, f"{keyword_in_dl_file_name}.pdf")
-    print(f'full_path_to_downloaded_pdf: {full_path_to_downloaded_pdf}')
     return full_path_to_downloaded_pdf
 
 

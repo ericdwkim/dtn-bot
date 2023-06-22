@@ -9,6 +9,7 @@ import subprocess
 
 # Run the shell script to delete PDF files from previous session
 subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True)
+print(f'===========================================================================================')
 
 
 username = os.getenv('DTN_EMAIL_ADDRESS')
