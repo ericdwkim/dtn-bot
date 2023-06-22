@@ -106,10 +106,8 @@ def user_journey():
         if not group_filter_set_to_credit_card:
             return
 
-        # TODO: Check target CC docs to download; dl all
-
         # Download CC PDF
-        ccm_files_downloaded = data_connect.click_print_button()
+        ccm_files_downloaded = data_connect.check_all_then_click_print()
         if not ccm_files_downloaded:
             return
 
