@@ -108,14 +108,6 @@ class BasePage(object):
             print(f'Could not locate element: {locator}')
             return False
 
-    # def find_element_and_double_click(self, locator, locator_type=By.XPATH):
-    #     element = self.driver.find_element(locator_type, locator)
-    #     self.action.move_to_element(element).double_click(element).perform()
-    #
-    # def wait_for_page_to_load(self, timeout=10):
-    #     WebDriverWait(self.driver, timeout).until(
-    #         lambda driver: driver.execute_script("return document.readyState") == "complete"
-    #     )
 
     def wait_for_element(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
         try:
@@ -158,23 +150,6 @@ class BasePage(object):
     def is_web_element(self, obj):
         return hasattr(obj, "tag_name")
 
-    # def wait_for_presence_of_elements_located_then_click(self, locator, locator_type=By.CSS_SELECTOR, timeout=15):
-    #     """
-    #     :param locator:
-    #     :param locator_type:
-    #     :param timeout:
-    #     :return: list of WebElements as `elements`
-    #     """
-    #     try:
-    #         elements = WebDriverWait(self.driver, timeout).until(
-    #             EC.presence_of_all_elements_located((locator_type, locator))
-    #         )
-    #         # print(f'Element: {locator} was found')
-    #         return elements
-    #     except Exception as e:
-    #         print(f'An error occurred trying to click filter button: {str(e)}')
-    #         return None
-
     def wait_for_presence_of_elements_located(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
         """
         Checking for multiple elements to be visible
@@ -213,90 +188,3 @@ class BasePage(object):
         except NoSuchElementException:
             print(f'NoSuchElementException: The element "{locator}" was not found.')
             return False
-
-    """
-        @dev: wait_for_find_then_single_click() uses ActionChains.click().perform()
-    """
-    # def wait_for_find_then_single_click(self, locator, locator_type=By.CSS_SELECTOR):
-    #     self.wait_for_element(locator)
-    #     self.find_element_and_click_perform(locator, locator_type)
-
-
-    # def wait_for_find_then_double_click(self, locator, locator_type=By.XPATH):
-    #     self.wait_for_element_clickable(locator, locator_type)
-    #     element_selector_double_clicked = self.find_element_and_double_click(locator, locator_type)
-    #     return element_selector_double_clicked
-
-    # def wait_for_find_click_then_send_keys(self, locator, keys_to_send):
-    #     element_selector_clicked = self.wait_for_find_then_click(locator)
-    #     # self.find_element_and_click_and_send_keys(locator, keys_to_send)
-    #     element_selector_clicked.send_keys(keys_to_send)
-
-    """
-        @dev: retry_wait_for_single_click_perform() uses ActionChains.click()
-    """
-    # def retry_wait_for_single_click_perform(self, locator, locator_type=By.CSS_SELECTOR, max_retries=5, retry_delay=1 ):
-    #     retries = 0
-    #     while retries < max_retries:
-    #         try:
-    #             print("Going to wait for it to be clickable")
-    #             self.wait_for_element_clickable(locator, locator_type)
-    #             print("Going to wait for it and then single click")
-    #             self.wait_for_find_then_single_click(locator, locator_type)
-    #             return True # Return True and exit fn if elm is found and clicked successfully
-    #         except (NoSuchElementException, TimeoutException):
-    #             print(f'Element (single ActionChains.click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
-    #             retries += 1
-    #             time.sleep(retry_delay) # Delay before retrying
-    #     else:
-    #         # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
-    #         print(f'Maximum number of retries reached. Element (single ActionChains.click) with locator: {locator}  not found.')
-    #         return False  # Return False if element was not found after max_retries
-
-
-    # def retry_wait_find_then_click(self, locator, locator_type=By.CSS_SELECTOR, max_retries=5, retry_delay=1):
-    #     """
-    #     Retry wrapper for `wait_for_find_then_click()`
-    #     :param locator:
-    #     :param max_retries:
-    #     :param retry_delay:
-    #     :return: bool
-    #     """
-    #     retries = 0
-    #     while retries < max_retries:
-    #         try:
-    #             element = self.wait_for_find_then_click(locator, locator_type)
-    #             # print(f'Found element: {locator}')
-    #             return True  # Return True and exit the function if element is found and clicked successfully
-    #         except (NoSuchElementException, TimeoutException):
-    #             print(f'Element (single click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
-    #             retries += 1
-    #             time.sleep(retry_delay)  # Delay before retrying
-    #     else:
-    #         # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
-    #         print(f'Maximum number of retries reached. Element (single click) with locator: {locator}  not found.')
-    #         return False  # Return False if element was not found after max_retries
-
-    # def retry_wait_find_then_double_click(self, locator, locator_type=By.XPATH , max_retries=5, retry_delay=1):
-    #     retries = 0
-    #     while retries < max_retries:
-    #         try:
-    #             element = self.wait_for_find_then_double_click(locator, locator_type)
-    #             return True  # Return True and exit the function if element is found and clicked successfully
-    #         except (NoSuchElementException, TimeoutException):
-    #             print(f'Element (double click) with locator: {locator} not found. Retrying... (Attempt {retries+1}/{max_retries})')
-    #             retries += 1
-    #             time.sleep(retry_delay)  # Delay before retrying
-    #     else:
-    #         # Executed if the loop completes without encountering a break statement (i.e., max_retries reached)
-    #         print(f'Maximum number of retries reached. Element (double click) with locator: {locator}  not found.')
-    #         return False  # Return False if element was not found after max_retries
-    #
-    #
-    # def check_element_visibility(self, locator ,locator_type=By.CSS_SELECTOR):
-    #     element = self.driver.find_element(locator_type, locator)
-    #     if element.is_displayed():
-    #         print("Element is visible")
-    #     else:
-    #         print("Element is not visible")
-    #
