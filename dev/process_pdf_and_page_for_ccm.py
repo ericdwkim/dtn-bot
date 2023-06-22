@@ -49,6 +49,7 @@ def extract_info_from_text_cc(current_page_text, target_keywords):
 
 
 def process_page_cc(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
+    print(f'Processing page {page_num}')
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 

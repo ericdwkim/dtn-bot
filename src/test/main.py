@@ -113,6 +113,8 @@ def user_journey():
         # Process CCM VALERO PDFs only
         valero_ccm_processed_and_filed = process_pdf_cc(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, download_dir, company_name_to_search_keyword_mapping_credit_cards)
 
+        print(f'valero_ccm_processed_and_filed: {valero_ccm_processed_and_filed}')
+
 
 
     finally:
