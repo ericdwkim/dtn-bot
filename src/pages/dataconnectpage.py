@@ -200,7 +200,7 @@ class DataConnectPage(BasePage):
             print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: '
                   f'{src_elem_dragged_and_dropped_to_target_elem}'
                   f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
-            raise Exception("Failed to set filter.")
+            raise Exception("Failed to set Translated filter.")
 
     # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_group_filter_to_invoice(self):
@@ -223,8 +223,9 @@ class DataConnectPage(BasePage):
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
                 f'src_elem_dragged_and_dropped_to_target_elem: '
                 f'{src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+            raise Exception("Failed to set Group filter to Invoice")
 
-    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_group_filter_to_draft_notice(self):
         """
         set_filter wrapper specific to Group filter to Draft Notice
@@ -245,8 +246,9 @@ class DataConnectPage(BasePage):
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
                 f'src_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}'
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+            raise Exception("Failed to set Group filter to Draft Notice")
 
-    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_group_filter_to_credit_card(self):
         """
         set_filter wrapper specific to Group filter to Credit Card
@@ -266,6 +268,8 @@ class DataConnectPage(BasePage):
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
                 f'src_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}'
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+            raise Exception("Failed to set Group filter to Credit Cards")
+
 
 
 
@@ -273,8 +277,6 @@ class DataConnectPage(BasePage):
         if not self.switch_tab():
             return False
 
-        # EFT-7062 Edge Case Test of > 2 pages; Can also use for testing Draft Notices
-        # if not self.set_date_filter('#date > option:nth-child(37)'):
 
         if not self.set_date_filter():
             return False
@@ -285,7 +287,10 @@ class DataConnectPage(BasePage):
             print(f"set_translated_filter_to_no failed with error: {str(e)}")
             return False
 
-        if not self.set_group_filter_to_invoice():
+        try:
+            self.set_group_filter_to_invoice()
+        except Exception as e:
+            print(f'set_group_filter_to_invoice failed with error: {str(e)}')
             return False
 
         if not self.check_all_then_click_print():
