@@ -119,7 +119,6 @@ def user_journey():
         if not print_button_clicked:
             return
 
-        # TODO: new processing fn?
         credit_cards_docs_processed_and_filed = process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, download_dir, company_name_to_search_keyword_mapping_credit_cards)
 
         print(f'-------------------credit_cards_docs_processed_and_filed: {credit_cards_docs_processed_and_filed}')
