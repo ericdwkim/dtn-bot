@@ -17,7 +17,7 @@ directories=(
   '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/First Data'
   '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)'
   '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/P66'
-  '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/VALERO [10006]'
+  '/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/VALERO ([)10006)'
 )
 
 # Iterate through each directory
