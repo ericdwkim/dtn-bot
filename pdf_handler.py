@@ -96,7 +96,7 @@ def get_new_file_name(eft_num, today, total_draft_amt, company_name):
     print(f'new_file_name: {new_file_name}')
     return new_file_name
 
-
+# TODO: refactor for credit card & draft notice reuse or just new process fn?
 def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
