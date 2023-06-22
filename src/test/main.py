@@ -5,6 +5,7 @@ from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
 from pdf_handler import rename_and_move_pdf, process_pdf, get_full_path_to_dl_dir
+from dev.process_pdf_and_page_for_ccm import process_pdf_cc
 import subprocess
 
 # Run the shell script to delete PDF files from previous session
@@ -36,12 +37,7 @@ def user_journey():
     }
 
     company_name_to_search_keyword_mapping_credit_cards = {
-        'CONCORD FIRST DATA': [
-            'CCM-\d+', 'RTV-\d+'],
-        'EXXONMOBIL': ['CCM-\d+', 'RTV-\d+'],
-        'U.S. OIL COMPANY': ['CCM-\d+', 'RTV-\d+'],
-        'VALERO': ['NET CREDIT', 'CCM-\d+'],
-        'P66': ['CCM-\d+', 'RTV-\d+']
+        'VALERO': ['-NET CREDIT 51000', 'CCM-\d+']
     }
 
     # Mapping for company name to Fuel Drafts subdir full path
@@ -77,6 +73,7 @@ def user_journey():
         rename_and_move_pdf(keyword_in_dl_file_name, download_dir, dest_dir_invoices)
 
         # DataConnect 2nd Flow - Draft Notice
+        # TODO: if set date has no draft notices (aka draft notice bar not found) then just skip draft notices and continue to 3rd Flow)
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
             return
@@ -88,7 +85,7 @@ def user_journey():
         if os.path.exists(full_path_to_downloaded_pdf):
             try:
                 os.remove(full_path_to_downloaded_pdf)
-                print("The original Draft Notices PDF File located in: {full_path_to_downloaded_pdf} has been deleted successfully.")
+                print(f'The original Draft Notices PDF File located in: {full_path_to_downloaded_pdf} has been deleted successfully.')
             except OSError as e:
                 print(f"Error deleting file: {str(e)}")
         else:
@@ -111,11 +108,12 @@ def user_journey():
             return
 
         # Download CC PDF
-        print_button_clicked = data_connect.click_print_button()
-        if not print_button_clicked:
+        ccm_files_downloaded = data_connect.click_print_button()
+        if not ccm_files_downloaded:
             return
 
-        # Process CC PDF (RTVs vs CCMs vs
+        # Process CCM VALERO PDFs only
+        valero_ccm_processed_and_filed = process_pdf_cc(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, download_dir, company_name_to_search_keyword_mapping_credit_cards)
 
 
 
