@@ -81,7 +81,6 @@ def user_journey():
             return
         draft_notices_processed_and_filed = process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_fuel_drafts, download_dir, company_name_to_search_keyword_mapping)
         if not draft_notices_processed_and_filed:
-            print(f'draft_notices_processed_and_filed: {draft_notices_processed_and_filed}')
             return
 
         # DataConnect 3rd Flow - Credit Cards
