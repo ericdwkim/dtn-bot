@@ -87,8 +87,6 @@ def user_journey():
 
 
         # DataConnect 3rd Flow - Credit Cards
-
-        # Delete messages.pdf (Draft Notices)
         file_exists = os.path.exists(full_path_to_downloaded_pdf)
         if not file_exists:
             print("File does not exist. Cannot proceed.")
