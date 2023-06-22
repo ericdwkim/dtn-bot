@@ -30,6 +30,9 @@ class DataConnectPage(BasePage):
         for attempt in range(max_retries):
             try:
                 was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
+
+                # Handles DOM glitch where filter header elements don't load properly; might be worth just having user restart script or
+                # add a page reload function here
                 translated_filter_head_located = self.wait_for_presence_of_elements_located(
                     r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
                 translated_filter_head_clickable = self.wait_for_element_clickable(

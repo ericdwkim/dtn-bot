@@ -98,7 +98,6 @@ def get_new_file_name(eft_num, today, total_draft_amt, company_name):
 
 
 def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
-    print(f'processing page: {page_num + 1}')
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 
@@ -155,8 +154,6 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         with pikepdf.open(full_path_to_downloaded_pdf) as pdf:
             page_num = 0  # Initialize page_num
             while page_num < len(pdf.pages):
-                print(f'page_num count: {page_num}')
-                print(f' len(pdf.pages): {len(pdf.pages)}')
                 # Process pages and update the page number at original PDF (macro) level
                 page_num = process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
 
