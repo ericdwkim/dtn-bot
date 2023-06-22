@@ -98,6 +98,7 @@ def get_new_file_name(eft_num, today, total_draft_amt, company_name):
 
 
 def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
+    print(f'processing page: {page_num + 1}')
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
 
@@ -114,6 +115,10 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
             # Move cursor at single page (micro) level
             page_num += 1
 
+            # If there aren't anymore pages, exit loop
+            if page_num >= len(pdf.pages):
+                break
+
         # Only multipage EFT docs only
         elif re.search(r'EFT-\d+', current_page_text) and company_name in current_page_text and 'END MSG' not in current_page_text:
             current_pages = []
@@ -125,6 +130,10 @@ def process_page(pdf, page_num, company_name_to_search_keyword_mapping, company_
                 current_page_texts.append(current_page_text)
                 # Move cursor at multi-page (micro) level
                 page_num += 1
+
+                # If there aren't anymore pages, exit loop
+                if page_num >= len(pdf.pages):
+                    break
 
             current_page_text = "".join(current_page_texts)
             eft_num, today, total_draft_amt = extract_info_from_text(current_page_text, keywords)
