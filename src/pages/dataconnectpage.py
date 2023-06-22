@@ -26,20 +26,22 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
 
-
-    def set_date_filter(self, date_locator='#date > option:nth-child(2)'):
-        try:
-            was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
-            if was_clicked:
-                # print('Date filter set to yesterday')
-                return True
-            else:
-                # print('Date filter could not be set to yesterday')
-                return False
-        except Exception as e:
-            print(f'An error occurred trying to set date to yesterday: {str(e)}')
-            return False
-
+    def set_date_filter(self, date_locator='#date > option:nth-child(2)', max_retries=3):
+        for attempt in range(max_retries):
+            try:
+                was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
+                translated_filter_head_located = self.wait_for_presence_of_elements_located(
+                    r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
+                translated_filter_head_clickable = self.wait_for_element_clickable(
+                    r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
+                if was_clicked and translated_filter_head_located and translated_filter_head_clickable:
+                    return True
+            except Exception as e:
+                print(f'An error occurred trying to set date filter: {str(e)}')
+                if attempt < max_retries - 1:  # No need to sleep on the last attempt
+                    time.sleep(2)  # Wait a bit before retrying, adjust as needed
+                continue  # Try again
+        return False  # Failed after max_retries attempts
 
     def click_filter_header(self, filter_header_locator, locator_type=By.XPATH):
         """
@@ -274,7 +276,10 @@ class DataConnectPage(BasePage):
         if not self.set_date_filter():
             return False
 
-        if not self.set_translated_filter_to_no():
+        try:
+            self.set_translated_filter_to_no()
+        except Exception as e:
+            print(f"set_translated_filter_to_no failed with error: {str(e)}")
             return False
 
         if not self.set_group_filter_to_invoice():
