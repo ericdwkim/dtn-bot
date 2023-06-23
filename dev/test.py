@@ -11,6 +11,7 @@ file_path_val_ccm = '/Users/ekim/workspace/txb/docs/val_ccm.pdf'
 company_name_to_search_keyword_mapping_valero = {
     'VALERO': ['-NET CREDIT 51000', 'CCM-\d+'],
     'CONCORD FIRST DATA RETRIEVAL': ['MARKETER TOTAL', 'CMB-\d+'],
+    'EXXONMOBIL': ['TOTAL DISTRIBUTOR', 'CCM-\d+']
 
 
 }
@@ -20,7 +21,9 @@ company_name_to_subdir_full_path_mapping_valero = {
 
     'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/Valero (10006)',
 
-    'CONCORD FIRST DATA RETRIEVAL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/First Data'
+    'CONCORD FIRST DATA RETRIEVAL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/First Data',
+
+    'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp'
 
 }
 
@@ -33,12 +36,9 @@ def create_and_save_pdf(pages, new_file_name, destination_dir):
     new_pdf.save(dest_dir_with_new_file_name)
 
 
-def get_new_file_name_cc(today, total_credit_amt, regex_num=None):
-    if regex_num is not None:
-        new_file_name = f'{regex_num}-{today}-{total_credit_amt}.pdf'
-    else:
-        new_file_name = f'{today}-{total_credit_amt}.pdf'
-    print(f'new_file_name: {new_file_name}')
+def get_new_file_name_cc(regex_num, today, total_credit_amt):
+    new_file_name = f'{regex_num}-{today}-{total_credit_amt}.pdf'
+    # print(f'new_file_name: {new_file_name}')
     return new_file_name
 
 def extract_text_from_pdf_page(page):
@@ -80,7 +80,7 @@ def extract_info_from_text_cc(current_page_text, target_keywords):
     if total_credit_matches:
         total_credit_amt = total_credit_matches[-1]
     else:
-        print(f"No matches for regular expression using keyword: {total_credit_keyword} in text:\n*****************************************************\n {current_page_text}\n*****************************************************\n")
+        # print(f"No matches for regular expression using keyword: {total_credit_keyword} in text:\n*****************************************************\n {current_page_text}\n*****************************************************\n")
         total_credit_amt = None
 
     today = datetime.date.today().strftime('%m-%d-%y')
@@ -94,17 +94,18 @@ def extract_info_from_text_cc(current_page_text, target_keywords):
 def process_page_cc(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping):
     for company_name, keywords in company_name_to_search_keyword_mapping.items():
         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
+        print(f'Processing page: {page_num}')
         print(f'\n*****************************\n{current_page_text}\n*****************************\n')
 
-
-        # Handle single page CCM VALERO docs
-        if re.search(r'CCM-\d+', current_page_text) and 'VALERO' in current_page_text and 'END MSG' in current_page_text:
+        # Handle single page CCM docs
+        if re.search(r'CCM-\d+', current_page_text) and company_name in current_page_text and 'END MSG' in current_page_text:
             current_pages = [pdf.pages[page_num]]
-            today, net_credit_amt = extract_info_from_text_cc(current_page_text, keywords)
+            regex_num, today, total_credit_amt = extract_info_from_text_cc(current_page_text, keywords)
 
-            new_file_name = get_new_file_name_cc(today, net_credit_amt)
+            new_file_name = get_new_file_name_cc(regex_num, today, total_credit_amt)
             destination_dir = company_name_to_company_subdir_mapping[company_name]
             create_and_save_pdf(current_pages, new_file_name, destination_dir)
+            print(f'Processing pageA: {page_num}')
 
             page_num += 1
 
@@ -115,27 +116,35 @@ def process_page_cc(pdf, page_num, company_name_to_search_keyword_mapping, compa
         if (re.search(r'CCM-\d+', current_page_text) or re.search(r'CMB-\d+', current_page_text)) and company_name in current_page_text and 'END MSG' not in current_page_text:
             current_pages =[]
             current_page_texts = []
+            # todo: TOTAL DISTRIBUTOR : $411,947.66; why not processed?
+
 
             while 'END MSG' not in current_page_text and page_num < len(pdf.pages):
                 current_pages.append(pdf.pages[page_num])
+                print(f'---------------------------------current_pages: {current_pages}')
                 current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
                 current_page_texts.append(current_page_text)
+                print(f'\n#######################################\n: {current_page_texts}\n#######################################\n')
 
                 page_num += 1
 
                 if page_num > len(pdf.pages):
                     break
             current_page_text = "".join(current_page_texts)
+            print(
+                f'\n#######################################\n: {current_page_text}\n#######################################\n')
             regex_num, today, total_credit_amt = extract_info_from_text_cc(current_page_text, keywords)
 
-            if company_name == 'CONCORD FIRST DATA RETRIEVAL':
-                new_file_name = get_new_file_name_cc(today, total_credit_amt, regex_num)
-            else:
-                new_file_name = get_new_file_name_cc(today, total_credit_amt, regex_num=None)
+
+
+            new_file_name = get_new_file_name_cc(regex_num, today, total_credit_amt)
 
             destination_dir = company_name_to_company_subdir_mapping[company_name]
 
+
             create_and_save_pdf(current_pages, new_file_name, destination_dir)
+
+
     return page_num
 
 
