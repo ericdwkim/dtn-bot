@@ -5,7 +5,7 @@ import datetime
 import pikepdf
 import pdfplumber
 import io
-
+from post_processing import merge_rename_and_summate
 
 # Invoices
 def rename_and_move_pdf(file_name, source_dir, target_dir):
@@ -56,9 +56,9 @@ def extract_info_from_text(current_page_text, target_keywords):
         eft_num = None
 
     # Extract total_draft
-    total_draft_keyword = target_keywords[0] # not even used to search. don't need mapping prolly. just use regex
+    # total_draft_keyword = target_keywords[0]
     total_draft_matches = re.findall(r'([\d,]+\.\d+)', current_page_text)
-    print(f'\nUsing total_draft_keyword: "{total_draft_keyword}"\nGetting total_draft_matches: {total_draft_matches}\n')
+    # print(f'\nUsing total_draft_keyword: "{total_draft_keyword}"\nGetting total_draft_matches: {total_draft_matches}\n')
     if total_draft_matches:
         total_draft_amt = total_draft_matches[-1]
     else:

@@ -7,22 +7,18 @@ def delete_pdf_files(directory_path):
     files_deleted = False
 
     for file_name in os.listdir(directory_path):
-        print(f'---- filename: {file_name}')
+        print(f'filename: {file_name}')
         if file_name.endswith('.pdf'):
             file_path = os.path.join(directory_path, file_name)
             os.remove(file_path)
             files_deleted = True
 
     return files_deleted
-
-
-def post_processing(temp_dir):
-
+def merge_rename_and_summate(temp_dir):
 
     today = datetime.date.today().strftime('%m-%d-%y')
     # Get a list of all PDF files in the directory
     pdf_files = os.listdir(temp_dir)
-    # print(pdf_files)
     # Create a list to store parsed information
     pdf_data = []
     # Loop through each PDF file and extract information
@@ -73,7 +69,3 @@ def post_processing(temp_dir):
 
     merged_pdf.close()
 
-
-temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp'
-
-post_processing(temp_dir)
