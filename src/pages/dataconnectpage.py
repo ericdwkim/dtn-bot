@@ -279,7 +279,25 @@ class DataConnectPage(BasePage):
             filter_btn_elem_idx=1,
             filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[5]/button/span[2]',
             target_elem_idx=1,
-            src_locator="//li[@title='Credit Card']",
+            src_locator="//li[@title='Credit Card']"
+        )
+        if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
+            return True
+        else:
+            print(
+                f'filter_header_is_clicked: {filter_header_is_clicked}\n'
+                f'src_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}'
+                f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
+            raise Exception("Failed to set Group filter to Credit Cards")
+
+
+    def set_document_filter(self, doc_type_locator):
+
+        filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, filter_button_is_clicked = self.set_filter(
+            filter_btn_elem_idx=2,
+            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[6]/button/span[2]',
+            target_elem_idx=2,
+            src_locator=doc_type_locator
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
@@ -315,3 +333,20 @@ class DataConnectPage(BasePage):
             return False
 
         return True
+
+    username = os.getenv('DTN_EMAIL_ADDRESS')
+    password = os.getenv('DTN_PASSWORD')
+
+    """
+        use for isolated testing setting and switch out document filter for 3rd Flow
+    """
+    def test_document_filter(self):
+        login_page = LoginPage(driver)
+        login_page.visit_and_login(username, password)
+
+        # Switch tab
+        self.switch_tab()
+        self.set_translated_filter_to_no()
+        self.set_document_filter()
+        self.set_group_filter_to_credit_card()
+        self.set_supplier_filter() # to define
