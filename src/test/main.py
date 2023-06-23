@@ -37,7 +37,10 @@ def user_journey():
     }
 
     company_name_to_search_keyword_mapping_credit_cards = {
-        'VALERO': ['-NET CREDIT 51000', 'CCM-\d+']
+        'VALERO': ['-NET CREDIT 51000', 'CCM-\d+'],
+        'CONCORD FIRST DATA RETRIEVAL': ['MARKETER TOTAL', 'CMB-\d+'],
+        'EXXONMOBIL': ['TOTAL DISTRIBUTOR', 'CCM-\d+']
+
     }
 
     # Mapping for company name to Fuel Drafts subdir full path
@@ -54,9 +57,13 @@ def user_journey():
     }
 
     # Mapping for company name to Credit Cards subdir full path
-    company_name_to_subdir_full_path_mapping_credit_cards = {
+    company_name_to_subdir_full_path_mapping_valero = {
 
-        'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/VALERO [10006]'
+        'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/Valero (10006)',
+
+        'CONCORD FIRST DATA RETRIEVAL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/First Data',
+
+        'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp'
 
     }
 
