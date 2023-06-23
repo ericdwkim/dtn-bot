@@ -1,11 +1,8 @@
 import os
-import time
-from pikepdf import Pdf
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
-from pdf_handler import rename_and_move_pdf, process_pdf, get_full_path_to_dl_dir
-from dev.process_pdf_and_page_for_ccm import process_pdf_cc
+from utils.pdf_handler import rename_and_move_pdf, process_pdf, get_full_path_to_dl_dir
 import subprocess
 
 # Run the shell script to delete PDF files from previous session
