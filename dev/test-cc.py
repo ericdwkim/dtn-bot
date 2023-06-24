@@ -4,8 +4,11 @@ import re
 import datetime
 import os
 from utils.post_processing import merge_rename_and_summate
+from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 
 file_path = '/Users/ekim/workspace/txb/docs/ccm_full.pdf'
+temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp'
+
 
 company_name_to_search_keyword_mapping_credit_cards = {
     'VALERO': ['-NET CREDIT 51000', 'CCM-\d+'],
