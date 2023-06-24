@@ -1,5 +1,9 @@
 from pikepdf import Pdf
 import pdfplumber
+import io
+import re
+import datetime
+
 
 # Take in pikepdf Pdf object, return extracted text
 def extract_text_from_pdf_page(page):
@@ -23,33 +27,35 @@ def extract_text_from_pdf_page(page):
 def extract_info_from_text(current_page_text, target_keywords):
     """Extract the specific information from a page"""
 
-    # Extract EFT number
-    eft_num_pattern = target_keywords[1]  # Assuming keyword is something like 'EFT-'
-    eft_num_matches = re.findall(eft_num_pattern, current_page_text)
-    print(f'\nUsing eft_num_pattern: "{eft_num_pattern}"\nGetting eft_num_matches: {eft_num_matches}\n')
-    if eft_num_matches:
-        eft_num = eft_num_matches[0]
+    # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
+    regex_num_pattern = target_keywords[1]
+    regex_num_matches = re.findall(regex_num_pattern, current_page_text)
+    print(f'\nUsing regex_num_pattern: {regex_num_pattern}\nGetting regex_num_matches: {regex_num_matches}')
+    if regex_num_matches:
+        regex_num = regex_num_matches[0]
     else:
-        print(f"No matches for regular expression: {eft_num_pattern} in text:\n*****************************************************\n {current_page_text}\n*****************************************************\n")
-        eft_num = None
+        print(f'No matches for regex: {regex_num_pattern} in\n {current_page_text}')
+        regex_num = None
 
-    # Extract total_draft
-    # total_draft_keyword = target_keywords[0]
-    total_draft_matches = re.findall(r'([\d,]+\.\d+)', current_page_text)
-    # print(f'\nUsing total_draft_keyword: "{total_draft_keyword}"\nGetting total_draft_matches: {total_draft_matches}\n')
-    if total_draft_matches:
-        total_draft_amt = total_draft_matches[-1]
+
+    # Extract total_target_value
+    # total_credit_keyword = target_keywords[0]
+    total_amount_matches = re.findall(r'([\d,]+\.\d+)', current_page_text)
+    # print(f'\nUsing total_credit_keyword: "{total_credit_keyword}"\nGetting total_amount_matches: {total_amount_matches}\n')
+    if total_amount_matches:
+        total_amount = total_amount_matches[-1]
     else:
-        print(f"No matches for regular expression using keyword: {total_draft_keyword} in text:\n*****************************************************\n {current_page_text}\n*****************************************************\n")
-        total_draft_amt = None
+        # print(f"No matches for regular expression using keyword: {total_credit_keyword} in text:\n*****************************************************\n {current_page_text}\n*****************************************************\n")
+        total_amount = None
 
     today = datetime.date.today().strftime('%m-%d-%y')
 
-    if eft_num is not None and total_draft_amt is None:
-        return eft_num, today, None
-    elif eft_num is None and total_draft_amt is not None:
-        return None, today, total_draft_amt
-    elif eft_num is None and total_draft_amt is None:
-        return None, today, None
+    # Debugging purposes
+    # if regex_num is not None and total_amount is None:
+    #     return eft_num, today, None
+    # elif regex_num is None and total_amount is not None:
+    #     return None, today, total_amount
+    # elif regex_num is None and total_amount is None:
+    #     return None, today, None
 
-    return eft_num, today, total_draft_amt
+    return regex_num, today, total_amount
