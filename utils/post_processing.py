@@ -3,6 +3,12 @@ import re
 import datetime
 import pikepdf
 
+
+# TODO: need to fix this logic to 1) check if all appropriate multi AND single page pdfs are ready for post processing and located in temp_dir
+# TODO: this will be dependent on each original PDF. REMEMBER, this is specific to exxon 'TOTAL DISTRIBUTOR' calculation
+
+
+
 def delete_pdf_files(directory_path):
     files_deleted = False
 
@@ -52,10 +58,11 @@ def merge_rename_and_summate(temp_dir):
         merged_pdf.pages.extend(pdf.pages)
 
     # Save the merged PDF with the new file name
-    new_file_name = f'CCM-{pdf_data[0][0]}-{today}-{total_credit_amt_sum}.pdf'  # Use the first regex_num and today
+    new_file_name = f'CCM-{today}-{total_credit_amt_sum}.pdf'  # Use the first regex_num and today
     output_dir = temp_dir[:-5]
     output_path = os.path.join(output_dir, new_file_name)
     merged_pdf.save(output_path)
+
 
     if os.path.exists(output_path):
         print(f'PDFs have been merged, renamed, and moved to: {output_path}')
