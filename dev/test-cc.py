@@ -1,5 +1,4 @@
 import pikepdf
-import io
 import pdfplumber
 import re
 import datetime

@@ -4,7 +4,6 @@ import shutil
 import datetime
 import pikepdf
 import pdfplumber
-import io
 from post_processing import merge_rename_and_summate
 from extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 
