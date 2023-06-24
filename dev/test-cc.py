@@ -98,14 +98,19 @@ def process_page_cc(pdf, page_num, company_name_to_search_keyword_mapping, compa
         # Handle single page CCM docs
         if re.search(r'CCM-\d+', current_page_text) and company_name in current_page_text and 'END MSG' in current_page_text:
             current_pages = [pdf.pages[page_num]]
-            regex_num, today, total_amount = extract_info_from_text_cc(current_page_text, keywords)
+            regex_num, today, total_amount = extract_info_from_text(current_page_text, keywords)
             new_file_name = get_new_file_name_cc(regex_num, today, total_amount)
-            # print(f'new_file_name: {new_file_name}')
-
             destination_dir = company_name_to_company_subdir_mapping[company_name]
-            # print(f'destination_dir: {destination_dir}')
 
-            create_and_save_pdf(current_pages, new_file_name, destination_dir)
+            if company_name != 'EXXONMOBIL':
+                single_made_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
+
+            if company_name == 'EXXONMOBIL':
+                single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
+                if single_page_pdf_saved_in_temp:
+                    merge_rename_and_summate(temp_dir)
+                else:
+                    print('Could not post process single pdfs')
             page_num += 1
 
             if page_num >= len(pdf.pages):
