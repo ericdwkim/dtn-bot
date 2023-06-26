@@ -101,12 +101,8 @@ def process_multi_page(pdf, page_num, company_name_to_search_keyword_mapping, co
                 multi_page_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
             # POST PROCESSING ONLY FOR EXXON CCM 'TOTAL DISTRIBUTOR'
-            if company_name == 'EXXONMOBIL' and re.match(r'CCM-\d+', regex_num):
+            elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\d+', regex_num):
                 multi_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
-                if multi_page_pdf_saved_in_temp:
-                    merge_rename_and_summate(temp_dir)
-                else:
-                    print(f'Could not post process multi page pdfs')
 
     return page_num
 
@@ -128,13 +124,9 @@ def process_single_page(pdf, page_num, company_name_to_search_keyword_mapping, c
             if company_name != 'EXXONMOBIL':
                 single_made_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
-            if company_name == 'EXXONMOBIL':
+            elif company_name == 'EXXONMOBIL':
                 print(f'----------------------------------------------------------------')
                 single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
-                if single_page_pdf_saved_in_temp:
-                    merge_rename_and_summate(temp_dir)
-                else:
-                    print('Could not post process single pdfs')
             page_num += 1
 
             if page_num >= len(pdf.pages):
@@ -202,17 +194,24 @@ def process_single_pages(filepath, company_name_to_company_subdir_mapping, compa
 
 def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping):
     try:
+        print(f'Processing all single-page CCMs....\n')
         single_pages_processed = process_single_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping)
         if single_pages_processed:
-            print(f'successful test')
-            # multi_pages_processed = process_multi_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping)
+            print(f'successfully finished processing all single page CCMs\n')
+
+        print(f'Now processing all multi-page CCMs....\n')
+        multi_pages_processed = process_multi_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping)
+
+        # once all single and multi page CCMs for EXXON are done,
+        # post process all pdfs in temp dir
+        if single_pages_processed and multi_pages_processed:
+            # Exxon Temp dir post processing
+            merge_rename_and_summate(temp_dir)
+
     except Exception as e:
         print(f'An error occurred: {str(e)}')
 
 
-results = process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_name_to_search_keyword_mapping_credit_cards)
-if results:
-    print('Finished')
 
 
 # TODO
