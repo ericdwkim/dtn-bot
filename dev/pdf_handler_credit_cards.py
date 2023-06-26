@@ -29,24 +29,6 @@ company_name_to_subdir_full_path_mapping_credit_cards = {
 
 }
 
-# def process_exxon_ccm(current_pages, new_file_name, destination_dir, temp_dir, company_name, regex_num):
-#     if company_name != 'EXXONMOBIL':
-#         single_made_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
-#     elif company_name == 'EXXONMOBIL':
-#         single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
-#         if single_page_pdf_saved_in_temp:
-#             merge_rename_and_summate(temp_dir)
-#         else:
-#             print(f'Could not post process multi page pdfs')
-#     if company_name != 'EXXONMOBIL' and re.match(r'CMB-\d+', regex_num):
-#         multi_page_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
-#     elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\d+', regex_num):
-#         multi_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
-#         if multi_page_pdf_saved_in_temp:
-#             merge_rename_and_summate(temp_dir)
-#         else:
-#             print(f'Could not post process multi page pdfs')
-
 
 def create_and_save_pdf(pages, new_file_name, destination_dir):
     try:
