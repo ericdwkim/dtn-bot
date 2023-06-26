@@ -45,7 +45,7 @@ def create_and_save_pdf(pages, new_file_name, destination_dir):
 def get_new_file_name(regex_num, today, total_target_amt, company_name):
     # File naming convention for EXXONMOBIL ETFs only; wrapping amount in () to indicate amount owed
     if company_name == 'EXXONMOBIL' and re.match(r'ETF-\d+', regex_num):
-        new_file_name = f'{eft_num}-{today}-({total_draft_amt}).pdf'
+        new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
 
     # File naming convention for loyalty files
     elif re.match(r'LRD-\d+', regex_num):
@@ -72,7 +72,9 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
         if company_name in current_page_text and 'END MSG' not in current_page_text:
             for pattern in regex_patterns:
                 if re.search(pattern, current_page_text):
-                    # print(f'page_num: {page_num}')
+                    print(f'process_multi_page - page_num-----------: {page_num + 1}')
+                    print(f'For company {company_name}\nand regex_pattern {pattern}\nOn page {page_num + 1} searching in text\n*****************************\n {current_page_text}\n*****************************\n')
+
                     current_pages = []
                     current_page_texts = []
 
@@ -80,7 +82,7 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                         current_pages.append(pdf.pages[page_num])
                         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
                         current_page_texts.append(current_page_text)
-                        # print(f'current_page_texts: {current_page_texts}')
+                        print(f'current_page_texts: {current_page_texts}')
 
                         page_num += 1
 
@@ -92,7 +94,7 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
 
                     new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
-                    # print(f'new_file_name: {new_file_name}')
+                    print(f'\nnew_file_name: {new_file_name}')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
 
                     if company_name == 'CONCORD FIRST DATA RETRIEVAL' and re.match(r'CMB-\d+', regex_num):
@@ -172,10 +174,10 @@ def process_pages(filepath, company_name_to_company_subdir_mapping, company_name
 
 def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns):
     try:
-        print(f'Processing all single-page CCMs....\n')
-        single_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page=False)
-        if single_pages_processed:
-            print(f'successfully finished processing all single page CCMs\n')
+        # print(f'Processing all single-page CCMs....\n')
+        # single_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page=False)
+        # if single_pages_processed:
+        #     print(f'successfully finished processing all single page CCMs\n')
 
         print(f'Now processing all multi-page CCMs....\n')
         multi_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page=True)
@@ -184,8 +186,9 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
 
         # once all single and multi page CCMs for EXXON are done,
         # post process all pdfs in temp dir
-        if single_pages_processed and multi_pages_processed:
-            # Exxon Temp dir post processing
+        if multi_pages_processed:
+        # if single_pages_processed and multi_pages_processed:
+        #     Exxon Temp dir post processing
             print(f'Post processing for EXXON CCMs.....')
             merge_rename_and_summate(temp_dir)
 
