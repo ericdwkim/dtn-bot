@@ -17,7 +17,7 @@ temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXX
 
 company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply', 'CVR SUPPLY & TRADING, LLC']
 
-regex_patterns = ['EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'CMB-\d+', 'RTV-\d+', 'CBK-\+']
+regex_patterns = {'EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'RTV-\d+', 'CBK-\+'}
 
 
 company_name_to_subdir_full_path_mapping_credit_cards = {
@@ -62,40 +62,49 @@ def get_new_file_name(regex_num, today, total_target_amt, company_name):
 
 
 def process_multi_page(pdf, page_num, company_names, regex_patterns, company_name_to_company_subdir_mapping):
+    print(f'USING PAGE NUMBER: {page_num + 1} ')
     current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
     print(f'Processing page: {page_num + 1}')
-    # print(f'\n*****************************\n{current_page_text}\n*****************************\n')
+    print(f'\n*****************************\n{current_page_text}\n*****************************\n')
 
-    # for company_name in company_names:
-    #     # Handles CCM, CMB, LRD multi page docs
-    #     if company_name in current_page_text and 'END MSG' not in current_page_text:
-    #         print(f'\n*****************************\n{current_page_text}\n*****************************\n')
-    #         for pattern in regex_patterns:
-    #             if re.search(pattern, current_page_text):
-    #                 print(f'process_multi_page - page_num-----------: {page_num + 1}')
-    #                 # print(f'For company {company_name}\nand regex_pattern {pattern}\nOn page {page_num + 1} searching in text\n*****************************\n {current_page_text}\n*****************************\n')
-    #
-    #                 current_pages = []
-    #                 current_page_texts = []
+    for company_name in company_names:
+        print(f'Checking: {company_name} in company_names')
+        # Handles CCM, CMB, LRD multi page docs
+        if company_name in current_page_text and 'END MSG' not in current_page_text:
 
-                    # while 'END MSG' not in current_page_text and page_num < len(pdf.pages):
-                    #     current_pages.append(pdf.pages[page_num])
-                    #     current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
-                    #     current_page_texts.append(current_page_text)
-                    #     print(f'current_page_texts: {current_page_texts}')
+            print(f'\n*****************************\n{current_page_text}\n*****************************\n')
+            for pattern in regex_patterns:
+                if re.search(pattern, current_page_text):
+                    print(f'using pattern {pattern}\nprocess_multi_page - page_num-----------: {page_num + 1}')
+                    print(f'For company {company_name}\nand regex_pattern {pattern}\nOn page {page_num + 1} searching in text\n*****************************\n {current_page_text}\n*****************************\n')
+
+                    current_pages = []
+                    current_page_texts = []
+
+                    while 'END MSG' not in current_page_text and page_num < len(pdf.pages):
+                        current_pages.append(pdf.pages[page_num])
+                        current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
+                        current_page_texts.append(current_page_text)
+                        print(f'current_page_texts: {current_page_texts}')
+
+                        print(f'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ {page_num + 1}')
+                        page_num += 1
+                        print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!{page_num + 1}')
+
+                        if page_num >= len(pdf.pages):
+                            break
+
+                    current_page_text = "".join(current_page_texts)
+
+                    regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     #
-                    #     print(f'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ {page_num + 1}')
-                    #     page_num += 1
-                    #     print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!{page_num + 1}')
-                    #
-                    #     if page_num >= len(pdf.pages):
-                    #         break
-                    #
-                    # current_page_text = "".join(current_page_texts)
-                    #
-                    # regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
-                    #
-                    # new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
+
+                    print(f'regex_num: {regex_num}')
+                    print(f'today: {today}')
+                    print(f'total_amount: {total_amount}')
+
+                    new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
+
                     # print(f'\nnew_file_name: {new_file_name}')
                     # destination_dir = company_name_to_company_subdir_mapping[company_name]
                     #
@@ -128,6 +137,7 @@ def process_pages(filepath, company_name_to_company_subdir_mapping, company_name
                 # Process pages and update the page number at original PDF (macro) level
                 if is_multi_page:
                     new_page_num = process_multi_page(pdf, page_num, company_names, regex_patterns, company_name_to_company_subdir_mapping)
+                    print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {new_page_num}')
                 else:
                     new_page_num = process_single_page(pdf, page_num, company_names, regex_patterns, company_name_to_company_subdir_mapping)
 

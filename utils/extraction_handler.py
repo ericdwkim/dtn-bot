@@ -9,6 +9,7 @@ import datetime
 def extract_text_from_pdf_page(page):
     # Create a BytesIO buffer
     pdf_stream = io.BytesIO()
+    print(f'---------------pdf_stream: {pdf_stream}')
 
     # Write the page to the buffer
     with Pdf.new() as pdf:
@@ -26,6 +27,8 @@ def extract_text_from_pdf_page(page):
 def extract_info_from_text(current_page_text, regex_pattern):
     """Extract the specific information from a page"""
 
+    print(f'&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n'
+          f'{current_page_text}\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n')
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
     regex_num_matches = re.findall(regex_pattern, current_page_text)
     print(f'\nUsing regex_pattern: {regex_pattern}\nGetting regex_num_matches: {regex_num_matches}')
@@ -44,15 +47,6 @@ def extract_info_from_text(current_page_text, regex_pattern):
         total_amount = None
 
     today = datetime.date.today().strftime('%m-%d-%y')
-
-    # Debugging purposes
-    # if regex_num is not None and total_amount is None:
-    #     return eft_num, today, None
-    # elif regex_num is None and total_amount is not None:
-    #     return None, today, total_amount
-    # elif regex_num is None and total_amount is None:
-    #     return None, today, None
-
 
     return regex_num, today, total_amount
 

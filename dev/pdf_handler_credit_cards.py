@@ -17,7 +17,7 @@ temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXX
 
 company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply', 'CVR SUPPLY & TRADING, LLC']
 
-regex_patterns = ['EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'CMB-\d+', 'RTV-\d+', 'CBK-\+']
+regex_patterns = {'EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'RTV-\d+', 'CBK-\+'}
 
 
 company_name_to_subdir_full_path_mapping_credit_cards = {
