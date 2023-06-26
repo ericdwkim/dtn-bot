@@ -47,16 +47,15 @@ def get_new_file_name(regex_num, today, total_target_amt, company_name):
     if company_name == 'EXXONMOBIL' and re.match(r'EFT-\s*\d+', regex_num):
         new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
 
-    # # File naming convention for loyalty files
-    # elif re.match(r'LRD-\s*\d+', regex_num):
-    #     new_file_name = f'{today}-Loyalty.pdf'
-    #
-    # # File naming convention for chargebacks/retrievals
-    # elif re.match(r'RTV-\s*\d+', regex_num):
-    #     new_file_name = f'{today}-CHARGEBACK REQUEST.pdf'
-    #
-    # elif re.search(r'CBK-\s*\d+', regex_num, re.IGNORECASE):
-    #     new_file_name = f'{today}-CHARGEBACK REQUEST.pdf'
+    # File naming convention for loyalty files
+    elif re.match(r'LRD-\s*\d+', regex_num):
+        new_file_name = f'{today}-Loyalty.pdf'
+
+    # File naming convention for chargebacks/retrievals
+    # @dev: regex_num is included due to edge case of identical filenames overwriting
+    # eg: VALERO CBK-0379 gets overwritten by RTV-0955 if regex_num is not included
+    elif (re.match(r'CBK-\s*\d+', regex_num) or re.match(r'RTV-\s*\d+', regex_num)):
+        new_file_name = f'{regex_num}-{today}-CHARGEBACK REQUEST.pdf'
 
     # File naming convention for all other files (CCM, CMB, non-EXXON ETFs)
     else:
