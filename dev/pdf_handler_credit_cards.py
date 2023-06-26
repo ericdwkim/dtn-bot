@@ -117,8 +117,6 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                     current_pages = [pdf.pages[page_num]]
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
-                    if regex_num == 'CBK-0379':
-                        print(f'$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n{new_file_name}\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
 
                     # VALERO RTV, CBK, CCM
@@ -198,3 +196,5 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
 
 
 process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns)
+
+# TODO: LRD need to follow similar logic as EXXON CCMs as only the last processed LRD is being saved; Rethink using temp_dir as it is not a viable solution anymore since both CCMs and LRDs will need to be using it for post processing which can get messy.
