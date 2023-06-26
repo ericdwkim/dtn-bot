@@ -96,11 +96,11 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
 
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
 
-                    new_file_name = get_new_file_name(regex_num, today, total_amount)
-                    print(f'new_file_name: {new_file_name}')
+                    new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
+                    # print(f'new_file_name: {new_file_name}')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
 
-                    if company_name != 'EXXONMOBIL' and re.match(r'CMB-\d+', regex_num):
+                    if company_name == 'CONCORD FIRST DATA RETRIEVAL' and re.match(r'CMB-\d+', regex_num):
                         multi_page_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
                     # POST PROCESSING ONLY FOR EXXON CCMs  'TOTAL DISTRIBUTOR'
