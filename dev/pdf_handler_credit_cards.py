@@ -41,8 +41,19 @@ def create_and_save_pdf(pages, new_file_name, destination_dir):
         print(f"Error occurred while creating and saving PDF: {str(e)}")
         return False  # Return False if an error occurred
 
-def get_new_file_name_cc(regex_num, today, total_credit_amt):
-    new_file_name = f'{regex_num}-{today}-{total_credit_amt}.pdf'
+def get_new_file_name(regex_num, today, total_credit_amt):
+
+    # File naming convention for loyalty files
+    if re.match(r'LRD-\d+', regex_num):
+        new_file_name = f'{today}-Loyalty.pdf'
+
+    # File naming convention for chargebacks/retrievals
+    elif (re.match(r'CBK-\d+', regex_num) or re.match(r'RTV-\d+', regex_num)):
+        new_file_name = f'{today}-CHARGEBACK REQUEST.pdf'
+
+    # File naming convention for all other files (CCM, ETF, CMB)
+    else:
+        new_file_name = f'{regex_num}-{today}-{total_credit_amt}.pdf'
     # print(f'new_file_name: {new_file_name}')
     return new_file_name
 
@@ -54,8 +65,9 @@ def process_multi_page(pdf, page_num, company_name_to_search_keyword_mapping, co
         print(f'Processing page: {page_num + 1}')
         print(f'\n*****************************\n{current_page_text}\n*****************************\n')
 
-        # Handles CCM, CMB multi page docs
+        # Handles CCM, CMB, LRD multi page docs
         if (re.search(r'CCM-\d+', current_page_text) or re.search(r'CMB-\d+',
+                                                                  current_page_text) or re.search(r'LRD-\d+',
                                                                   current_page_text)) and company_name in current_page_text and 'END MSG' not in current_page_text:
             # print(f'page_num: {page_num}')
             current_pages = []
@@ -75,16 +87,21 @@ def process_multi_page(pdf, page_num, company_name_to_search_keyword_mapping, co
             current_page_text = "".join(current_page_texts)
 
             regex_num, today, total_amount = extract_info_from_text(current_page_text, keywords)
-            new_file_name = get_new_file_name_cc(regex_num, today, total_amount)
+
+            new_file_name = get_new_file_name(regex_num, today, total_amount)
             print(f'new_file_name: {new_file_name}')
             destination_dir = company_name_to_company_subdir_mapping[company_name]
 
             if company_name != 'EXXONMOBIL' and re.match(r'CMB-\d+', regex_num):
                 multi_page_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
-            # POST PROCESSING ONLY FOR EXXON CCM 'TOTAL DISTRIBUTOR'
+            # POST PROCESSING ONLY FOR EXXON CCMs  'TOTAL DISTRIBUTOR'
             elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\d+', regex_num):
                 multi_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
+
+            # Loyalty Reward Detail (LRD) files
+            elif re.match(r'LRD-\d+', regex_num):
+                loyalty_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
     return page_num
 
@@ -96,11 +113,11 @@ def process_single_page(pdf, page_num, company_name_to_search_keyword_mapping, c
         print(f'\n*****************************\n{current_page_text}\n*****************************\n')
 
         # Handle single page CCM, CBK, RTV files
-        if re.search(r'CCM-\d+', current_page_text) or re.search(r'CBK-\d+', current_page_text) or re.search(r'RTV-\d+', current_page_text) \
+        if (re.search(r'CCM-\d+', current_page_text) or re.search(r'CBK-\d+', current_page_text)) or re.search(r'RTV-\d+', current_page_text) \
                 and company_name in current_page_text and 'END MSG' in current_page_text:
             current_pages = [pdf.pages[page_num]]
             regex_num, today, total_amount = extract_info_from_text(current_page_text, keywords)
-            new_file_name = get_new_file_name_cc(regex_num, today, total_amount)
+            new_file_name = get_new_file_name(regex_num, today, total_amount)
             destination_dir = company_name_to_company_subdir_mapping[company_name]
 
             if company_name != 'EXXONMOBIL':
