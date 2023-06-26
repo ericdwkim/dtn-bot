@@ -5,6 +5,11 @@ import datetime
 import os
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
+import subprocess
+
+subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True)
+print(f'===========================================================================================')
+
 
 file_path = '/Users/ekim/workspace/txb/docs/ccm_full.pdf'
 temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp'
