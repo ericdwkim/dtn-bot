@@ -16,6 +16,7 @@ company_name_to_search_keyword_mapping_credit_cards = {
     'EXXONMOBIL': ['TOTAL DISTRIBUTOR', 'CCM-\d+']
 
 
+
 }
 
 
@@ -63,7 +64,7 @@ def process_multi_page(pdf, page_num, company_name_to_search_keyword_mapping, co
 
         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
         print(f'Processing page: {page_num + 1}')
-        print(f'\n*****************************\n{current_page_text}\n*****************************\n')
+        # print(f'\n*****************************\n{current_page_text}\n*****************************\n')
 
         # Handles CCM, CMB, LRD multi page docs
         if (re.search(r'CCM-\d+', current_page_text) or re.search(r'CMB-\d+',
@@ -77,7 +78,7 @@ def process_multi_page(pdf, page_num, company_name_to_search_keyword_mapping, co
                 current_pages.append(pdf.pages[page_num])
                 current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
                 current_page_texts.append(current_page_text)
-                print(f'current_page_texts: {current_page_texts}')
+                # print(f'current_page_texts: {current_page_texts}')
 
                 page_num += 1
 
