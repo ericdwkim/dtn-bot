@@ -17,7 +17,7 @@ temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXX
 
 company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply', 'CVR SUPPLY & TRADING, LLC']
 
-regex_patterns = ['EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'RTV-\d+', 'CBK-\+', 'LRD-\+']
+regex_patterns = {'EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'RTV-\d+', 'CBK-\d+', 'LRD-\d+'}
 
 
 company_name_to_subdir_full_path_mapping_credit_cards = {
@@ -111,10 +111,7 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
         # Handle single page CCM, CBK, RTV files
         if company_name in current_page_text and 'END MSG' in current_page_text:
             for pattern in regex_patterns:
-                print(f'pattern {pattern} -------------------------------------------')
                 if re.search(pattern, current_page_text):
-                    print(
-                        f'IF COMPANY NAME: {company_name} USING PATTERN {pattern} in text:\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n{current_page_text}\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
                     current_pages = [pdf.pages[page_num]]
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
