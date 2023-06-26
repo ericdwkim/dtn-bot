@@ -65,15 +65,12 @@ def get_new_file_name(regex_num, today, total_target_amt, company_name):
 def process_multi_page(pdf, page_num, company_names, regex_patterns, company_name_to_company_subdir_mapping):
     current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
     print(f'Processing page: {page_num + 1}')
-    # print(f'\n*****************************\n{current_page_text}\n*****************************\n')
 
     for company_name in company_names:
         # Handles CCM, CMB, LRD multi page docs
         if company_name in current_page_text and 'END MSG' not in current_page_text:
             for pattern in regex_patterns:
                 if re.search(pattern, current_page_text):
-                    print(f'process_multi_page - page_num-----------: {page_num + 1}')
-                    print(f'For company {company_name}\nand regex_pattern {pattern}\nOn page {page_num + 1} searching in text\n*****************************\n {current_page_text}\n*****************************\n')
 
                     current_pages = []
                     current_page_texts = []
@@ -82,7 +79,6 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                         current_pages.append(pdf.pages[page_num])
                         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
                         current_page_texts.append(current_page_text)
-                        print(f'current_page_texts: {current_page_texts}')
 
                         page_num += 1
 
@@ -114,7 +110,6 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
 def process_single_page(pdf, page_num, company_names, regex_patterns, company_name_to_company_subdir_mapping):
     current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
     print(f'Processing page: {page_num + 1}')
-    print(f'\n*****************************\n{current_page_text}\n*****************************\n')
 
     for company_name in company_names:
         # Handle single page CCM, CBK, RTV files
@@ -130,7 +125,6 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                         single_made_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
                     elif company_name == 'EXXONMOBIL':
-                        print(f'----------------------------------------------------------------')
                         single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
                     page_num += 1
 
@@ -174,10 +168,10 @@ def process_pages(filepath, company_name_to_company_subdir_mapping, company_name
 
 def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns):
     try:
-        # print(f'Processing all single-page CCMs....\n')
-        # single_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page=False)
-        # if single_pages_processed:
-        #     print(f'successfully finished processing all single page CCMs\n')
+        print(f'Processing all single-page CCMs....\n')
+        single_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page=False)
+        if single_pages_processed:
+            print(f'successfully finished processing all single page CCMs\n')
 
         print(f'Now processing all multi-page CCMs....\n')
         multi_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page=True)
@@ -186,9 +180,8 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
 
         # once all single and multi page CCMs for EXXON are done,
         # post process all pdfs in temp dir
-        if multi_pages_processed:
-        # if single_pages_processed and multi_pages_processed:
-        #     Exxon Temp dir post processing
+        if single_pages_processed and multi_pages_processed:
+            # Exxon Temp dir post processing
             print(f'Post processing for EXXON CCMs.....')
             merge_rename_and_summate(temp_dir)
 
