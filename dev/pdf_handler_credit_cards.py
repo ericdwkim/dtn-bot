@@ -15,16 +15,6 @@ company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. O
 regex_patterns = ['EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'CMB-\d+', 'RTV-\d+', 'CBK-\+']
 
 
-# company_name_to_search_keyword_mapping_credit_cards = {
-#     'VALERO': ['-NET CREDIT 51000', 'CCM-\d+'],
-#     'CONCORD FIRST DATA RETRIEVAL': ['MARKETER TOTAL', 'CMB-\d+'],
-#     'EXXONMOBIL': ['TOTAL DISTRIBUTOR', 'CCM-\d+']
-#
-#
-#
-# }
-
-
 company_name_to_subdir_full_path_mapping_credit_cards = {
 
     'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/Valero (10006)',
@@ -60,7 +50,7 @@ def get_new_file_name(regex_num, today, total_target_amt, company_name):
     elif (re.match(r'CBK-\d+', regex_num) or re.match(r'RTV-\d+', regex_num)):
         new_file_name = f'{today}-CHARGEBACK REQUEST.pdf'
 
-    # File naming convention for all other files (CCM, ETF, CMB)
+    # File naming convention for all other files (CCM, CMB, non-EXXON ETFs)
     else:
         new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
     # print(f'new_file_name: {new_file_name}')
