@@ -4,8 +4,8 @@ import shutil
 import datetime
 import pikepdf
 import pdfplumber
-from post_processing import merge_rename_and_summate
-from extraction_handler import extract_text_from_pdf_page, extract_info_from_text
+from utils.post_processing import merge_rename_and_summate
+from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 
 # Invoices
 def rename_and_move_pdf(file_name, source_dir, target_dir):
