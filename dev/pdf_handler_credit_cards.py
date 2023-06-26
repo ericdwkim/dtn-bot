@@ -190,6 +190,3 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_name_
 
 
 process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_name_to_search_keyword_mapping_credit_cards)
-
-
-# TODO: RTV / CBK files & Loyalty Files  6/26/23 *******************************
