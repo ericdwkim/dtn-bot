@@ -201,11 +201,14 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_name_
 
         print(f'Now processing all multi-page CCMs....\n')
         multi_pages_processed = process_multi_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping)
+        if multi_pages_processed:
+            print(f'successfully finished processing all multi paged CCMs\n')
 
         # once all single and multi page CCMs for EXXON are done,
         # post process all pdfs in temp dir
         if single_pages_processed and multi_pages_processed:
             # Exxon Temp dir post processing
+            print(f'Post processing for EXXON CCMs.....')
             merge_rename_and_summate(temp_dir)
 
     except Exception as e:
@@ -215,16 +218,4 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_name_
 process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_name_to_search_keyword_mapping_credit_cards)
 
 
-# TODO
-"""
-6/23/23 - 8:10 PM CST 
-
-1) current issue is the processing order of the PDF is mixed of multi CCM (exxon) and single page ccm (exxon). the single pages get saved in the same temp_dir which merge_rename_and_summate() deletes ; also multi page doesn't get merged --> a different way than having an intermediary subdir?????
-
-2) RTV and CBK files 
-
-
-
-4) Move/merge/refactor all functions in here to their respective modules or main.py
-
-"""
+# TODO: RTV / CBK files & Loyalty Files  6/26/23 *******************************
