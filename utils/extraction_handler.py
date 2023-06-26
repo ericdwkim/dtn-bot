@@ -9,7 +9,6 @@ import datetime
 def extract_text_from_pdf_page(page):
     # Create a BytesIO buffer
     pdf_stream = io.BytesIO()
-    print(f'---------------pdf_stream: {pdf_stream}')
 
     # Write the page to the buffer
     with Pdf.new() as pdf:
