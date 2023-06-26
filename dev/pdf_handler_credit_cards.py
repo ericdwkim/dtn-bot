@@ -17,7 +17,7 @@ temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXX
 
 company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply', 'CVR SUPPLY & TRADING, LLC']
 
-regex_patterns = {'EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'RTV-\d+', 'CBK-\d+', 'LRD-\d+'}
+regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
 
 
 company_name_to_subdir_full_path_mapping_credit_cards = {
@@ -44,18 +44,18 @@ def create_and_save_pdf(pages, new_file_name, destination_dir):
 
 def get_new_file_name(regex_num, today, total_target_amt, company_name):
     # File naming convention for EXXONMOBIL ETFs only; wrapping amount in () to indicate amount owed
-    if company_name == 'EXXONMOBIL' and re.match(r'ETF-\d+', regex_num):
+    if company_name == 'EXXONMOBIL' and re.match(r'EFT-\s*\d+', regex_num):
         new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
 
     # File naming convention for loyalty files
-    elif re.match(r'LRD-\d+', regex_num):
+    elif re.match(r'LRD-\s*\d+', regex_num):
         new_file_name = f'{today}-Loyalty.pdf'
 
     # File naming convention for chargebacks/retrievals
-    elif (re.match(r'CBK-\d+', regex_num) or re.match(r'RTV-\d+', regex_num)):
+    elif (re.match(r'CBK-\s*\d+', regex_num) or re.match(r'RTV-\s*\d+', regex_num)):
         new_file_name = f'{today}-CHARGEBACK REQUEST.pdf'
 
-    # File naming convention for all other files (CCM, CMB, non-EXXON ETFs)
+    # File naming convention for all other files (CCM, CMB, non-EXXON s)
     else:
         new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
     # print(f'new_file_name: {new_file_name}')
@@ -70,7 +70,7 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
         # Handles CCM, CMB, LRD multi page docs
         if company_name in current_page_text and 'END MSG' not in current_page_text:
             for pattern in regex_patterns:
-                if re.search(pattern, current_page_text):
+                if re.search(pattern, current_page_text, re.IGNORECASE):
 
                     current_pages = []
                     current_page_texts = []
@@ -97,7 +97,7 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                         create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
                     # POST PROCESSING ONLY FOR EXXON CCMs  'TOTAL DISTRIBUTOR'
-                    elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\d+', regex_num):
+                    elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\s*\d+', regex_num):
                         multi_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
 
     return page_num
@@ -111,18 +111,24 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
         # Handle single page CCM, CBK, RTV files
         if company_name in current_page_text and 'END MSG' in current_page_text:
             for pattern in regex_patterns:
-                if re.search(pattern, current_page_text):
+                if re.search(pattern, current_page_text, re.IGNORECASE):
                     current_pages = [pdf.pages[page_num]]
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
 
-                    # VALERO RTV, CCBK, CCM
+                    # VALERO RTV, CBK, CCM
                     if company_name != 'EXXONMOBIL':
                         single_made_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
-                    elif company_name == 'EXXONMOBIL':
+                    # ONLY SEND SINGLE PAGE EXXON CCM FILES TO TEMP
+                    elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\s*\d+', regex_num):
                         single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
+
+                    # redundant?
+                    elif company_name == 'EXXONMOBIL':
+                        single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, destination_dir)
+
 
                     page_num += 1
 
