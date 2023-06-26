@@ -212,6 +212,7 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_name_
         print(f'An error occurred: {str(e)}')
 
 
+process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_name_to_search_keyword_mapping_credit_cards)
 
 
 # TODO
