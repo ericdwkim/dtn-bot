@@ -17,7 +17,7 @@ temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXX
 
 company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply', 'CVR SUPPLY & TRADING, LLC']
 
-regex_patterns = {'EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'RTV-\d+', 'CBK-\+', 'LRD-\+'}
+regex_patterns = ['EFT-\d+', 'CMB-\d+', 'CCM-\d+', 'RTV-\d+', 'CBK-\+', 'LRD-\+']
 
 
 company_name_to_subdir_full_path_mapping_credit_cards = {
@@ -93,16 +93,12 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                     print(f'\nnew_file_name: {new_file_name}')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
 
-                    if company_name == 'CONCORD FIRST DATA RETRIEVAL' and re.match(r'CMB-\d+', regex_num):
-                        multi_page_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
+                    if company_name != 'EXXONMOBIL':
+                        create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
                     # POST PROCESSING ONLY FOR EXXON CCMs  'TOTAL DISTRIBUTOR'
                     elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\d+', regex_num):
                         multi_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
-
-                    # Loyalty Reward Detail (LRD) files
-                    elif re.match(r'LRD-\d+', regex_num):
-                        loyalty_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
     return page_num
 
@@ -124,13 +120,13 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                     new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
 
+                    # VALERO RTV, CCBK, CCM
                     if company_name != 'EXXONMOBIL':
                         single_made_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
                     elif company_name == 'EXXONMOBIL':
                         single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
-                    elif company_name == 'VALERO':
-                        print(f'')
+
                     page_num += 1
 
                     if page_num >= len(pdf.pages):
