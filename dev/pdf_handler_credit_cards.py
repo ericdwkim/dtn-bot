@@ -47,16 +47,16 @@ def get_new_file_name(regex_num, today, total_target_amt, company_name):
     if company_name == 'EXXONMOBIL' and re.match(r'EFT-\s*\d+', regex_num):
         new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
 
-    # File naming convention for loyalty files
-    elif re.match(r'LRD-\s*\d+', regex_num):
-        new_file_name = f'{today}-Loyalty.pdf'
-
-    # File naming convention for chargebacks/retrievals
-    elif re.match(r'RTV-\s*\d+', regex_num):
-        new_file_name = f'{today}-CHARGEBACK REQUEST.pdf'
-
-    elif re.search(r'CBK-\s*\d+', regex_num, re.IGNORECASE):
-        new_file_name = f'{today}-CHARGEBACK REQUEST.pdf'
+    # # File naming convention for loyalty files
+    # elif re.match(r'LRD-\s*\d+', regex_num):
+    #     new_file_name = f'{today}-Loyalty.pdf'
+    #
+    # # File naming convention for chargebacks/retrievals
+    # elif re.match(r'RTV-\s*\d+', regex_num):
+    #     new_file_name = f'{today}-CHARGEBACK REQUEST.pdf'
+    #
+    # elif re.search(r'CBK-\s*\d+', regex_num, re.IGNORECASE):
+    #     new_file_name = f'{today}-CHARGEBACK REQUEST.pdf'
 
     # File naming convention for all other files (CCM, CMB, non-EXXON ETFs)
     else:
@@ -118,6 +118,8 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                     current_pages = [pdf.pages[page_num]]
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
+                    if regex_num == 'CBK-0379':
+                        print(f'$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n{new_file_name}\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
 
                     # VALERO RTV, CBK, CCM
