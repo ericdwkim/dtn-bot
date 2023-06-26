@@ -38,8 +38,8 @@ def extract_pdf_data(temp_dir):
     total_credit_amt_sum = round(sum(item[2] for item in pdf_data), 2)
     return pdf_data, total_credit_amt_sum
 
-def check_file_exists(new_file_name, output_path):
-    file_path = os.path.join(output_path, new_file_name)
+def check_file_exists(output_path):
+    file_path = os.path.join(output_path)
     return os.path.isfile(file_path)
 
 
@@ -57,7 +57,7 @@ def save_merged_pdf(temp_dir, merged_pdf, total_credit_amt_sum):
     output_path = os.path.join(output_dir, new_file_name)
     merged_pdf.save(output_path)
     merged_pdf.close()
-    merged_file_exists = check_file_exists(new_file_name, output_path)
+    merged_file_exists = check_file_exists(output_path)
     if merged_file_exists:
         print(f'EXXON CCM PDFs have been merged, renamed "{new_file_name}" and moved to: {output_path}\nDeleting temporary PDF files in {temp_dir}')
         temp_files_deleted = delete_pdf_files(temp_dir)
