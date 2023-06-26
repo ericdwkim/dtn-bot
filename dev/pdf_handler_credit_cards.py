@@ -95,9 +95,9 @@ def process_single_page(pdf, page_num, company_name_to_search_keyword_mapping, c
         print(f'Processing page: {page_num + 1}')
         print(f'\n*****************************\n{current_page_text}\n*****************************\n')
 
-        # Handle single page CCM docs
-        if re.search(r'CCM-\d+',
-                     current_page_text) and company_name in current_page_text and 'END MSG' in current_page_text:
+        # Handle single page CCM, CBK, RTV files
+        if re.search(r'CCM-\d+', current_page_text) or re.search(r'CBK-\d+', current_page_text) or re.search(r'RTV-\d+', current_page_text) \
+                and company_name in current_page_text and 'END MSG' in current_page_text:
             current_pages = [pdf.pages[page_num]]
             regex_num, today, total_amount = extract_info_from_text(current_page_text, keywords)
             new_file_name = get_new_file_name_cc(regex_num, today, total_amount)
@@ -117,7 +117,8 @@ def process_single_page(pdf, page_num, company_name_to_search_keyword_mapping, c
     return page_num
 
 
-def process_multi_pages(filepath,  company_name_to_company_subdir_mapping,company_name_to_search_keyword_mapping):
+
+def process_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping, is_multi_page):
     try:
 
         # Read original PDF from dls dir
@@ -126,38 +127,12 @@ def process_multi_pages(filepath,  company_name_to_company_subdir_mapping,compan
             page_num = 0  # Initialize page_num
             while page_num < len(pdf.pages):
                 print(f'page_num: {page_num + 1}')
+
                 # Process pages and update the page number at original PDF (macro) level
-                new_page_num = process_multi_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
-
-
-                # if process_page has not incremented
-                # prevents one off issue
-                if new_page_num == page_num:
-                    page_num += 1
+                if is_multi_page:
+                    new_page_num = process_multi_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
                 else:
-                    page_num = new_page_num
-
-            # If all pages processed without errors, return True
-            return True
-    except Exception as e:
-        # If any error occurred, print it and return False
-        print(f'An unexpected error occurred: {str(e)}')
-        return False
-
-
-def process_single_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping):
-    try:
-
-        # Read original PDF from dls dir
-        print(f'Processing file: {filepath}')
-        with pikepdf.open(filepath) as pdf:
-            page_num = 0  # Initialize page_num
-            while page_num < len(pdf.pages):
-                print(f'page_num: {page_num + 1}')
-
-                # Process pages and update the page number at original PDF (macro) level
-                new_page_num = process_single_page(pdf, page_num, company_name_to_search_keyword_mapping,
-                                                   company_name_to_company_subdir_mapping)
+                    new_page_num = process_single_page(pdf, page_num, company_name_to_search_keyword_mapping, company_name_to_company_subdir_mapping)
 
                 # if process_page has not incremented
                 # prevents one off issue
@@ -177,12 +152,12 @@ def process_single_pages(filepath, company_name_to_company_subdir_mapping, compa
 def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping):
     try:
         print(f'Processing all single-page CCMs....\n')
-        single_pages_processed = process_single_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping)
+        single_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping, is_multi_page=False)
         if single_pages_processed:
             print(f'successfully finished processing all single page CCMs\n')
 
         print(f'Now processing all multi-page CCMs....\n')
-        multi_pages_processed = process_multi_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping)
+        multi_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_name_to_search_keyword_mapping, is_multi_page=True)
         if multi_pages_processed:
             print(f'successfully finished processing all multi paged CCMs\n')
 
