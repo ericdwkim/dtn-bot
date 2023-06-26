@@ -25,13 +25,8 @@ def extract_text_from_pdf_page(page):
     return text
 
 def extract_info_from_text(current_page_text, regex_pattern):
-    """Extract the specific information from a page"""
-
-    print(f'&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n'
-          f'{current_page_text}\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n')
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
     regex_num_matches = re.findall(regex_pattern, current_page_text)
-    print(f'\nUsing regex_pattern: {regex_pattern}\nGetting regex_num_matches: {regex_num_matches}')
     if regex_num_matches:
         regex_num = regex_num_matches[0]
     else:
