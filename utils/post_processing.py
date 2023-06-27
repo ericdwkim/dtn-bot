@@ -39,7 +39,8 @@ def extract_pdf_data(directory):
         if pdf_file.startswith('CCM'):
             regex_num_ccm, amount = extract_ccm_data(pdf_file)
             total_amount += amount
-            pdf_data_ccm.append((regex_num_ccm, today, total_amount, os.path.join(directory, pdf_file)))
+            total_amount_rounded = round(total_amount, 2)  # Round to two decimal places
+            pdf_data_ccm.append((regex_num_ccm, today, total_amount_rounded, os.path.join(directory, pdf_file)))
         elif pdf_file.startswith('LRD'):
             regex_num_lrd, _ = extract_lrd_data(pdf_file)
             pdf_data_lrd.append((regex_num_lrd, today, _, os.path.join(directory, pdf_file)))
