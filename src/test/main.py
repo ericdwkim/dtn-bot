@@ -108,8 +108,8 @@ def user_journey():
         if not ccm_files_downloaded:
             return
 
-        # CCM files
-        process_pdfs(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns)
+        # CCM, LRD files
+        process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
         print(f'Finished!')
 
 
