@@ -3,6 +3,7 @@ from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
 from utils.pdf_handler import rename_and_move_pdf, process_pdf, get_full_path_to_dl_dir
+from dev.pdf_handler_credit_cards import process_pdfs
 import subprocess
 
 # Run the shell script to delete PDF files from previous session
@@ -23,6 +24,12 @@ def user_journey():
     download_dir = r'/Users/ekim/Downloads'
     full_path_to_downloaded_pdf = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
 
+
+
+    company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply',
+                     'CVR SUPPLY & TRADING, LLC']
+
+    regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
 
     # The mapping dictionary for company name to list of keywords for tot_draft_amt, eft_num vars
     company_name_to_search_keyword_mapping = {
@@ -54,7 +61,7 @@ def user_journey():
     }
 
     # Mapping for company name to Credit Cards subdir full path
-    company_name_to_subdir_full_path_mapping_valero = {
+    company_name_to_subdir_full_path_mapping_credit_cards = {
 
         'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/Valero (10006)',
 
@@ -84,45 +91,43 @@ def user_journey():
             return
 
         # DataConnect 3rd Flow - Credit Cards
-        # if os.path.exists(full_path_to_downloaded_pdf):
-        #     try:
-        #         os.remove(full_path_to_downloaded_pdf)
-        #         print(f'The original Draft Notices PDF File located in: {full_path_to_downloaded_pdf} has been deleted successfully.')
-        #     except OSError as e:
-        #         print(f"Error deleting file: {str(e)}")
-        # else:
-        #     print("File does not exist. Cannot proceed.")
-        #     return False
-        #
-        # # Switch date from yesterday's to today's
-        # date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
-        # if not date_set_to_today:
-        #     return
-        #
-        # # Reset Translated to No
-        # # TODO: this doesn't work for some reason in Test #2
-        # translated_set_to_no = data_connect.set_translated_filter_to_no()
-        # print(f'translated_set_to_no: {translated_set_to_no}')
-        # if not translated_set_to_no:
-        #     return
-        #
-        # # Set Group filter to CC
-        # group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
-        # print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
-        # if not group_filter_set_to_credit_card:
-        #     return
-        #
-        # # Download CC PDF
-        # ccm_files_downloaded = data_connect.check_all_then_click_print()
-        # print(f'ccm_files_downloaded: {ccm_files_downloaded}')
-        # if not ccm_files_downloaded:
-        #     return
-        #
-        # # Process CCM VALERO PDFs only
-        # valero_ccm_processed_and_filed = process_pdf_cc(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, download_dir, company_name_to_search_keyword_mapping_credit_cards)
-        #
-        # print(f'valero_ccm_processed_and_filed: {valero_ccm_processed_and_filed}')
+        if os.path.exists(full_path_to_downloaded_pdf):
+            try:
+                os.remove(full_path_to_downloaded_pdf)
+                print(f'The original Draft Notices PDF File located in: {full_path_to_downloaded_pdf} has been deleted successfully.')
+            except OSError as e:
+                print(f"Error deleting file: {str(e)}")
+        else:
+            print("File does not exist. Cannot proceed.")
+            return False
 
+        # # Switch date from yesterday's to today's
+        date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
+        if not date_set_to_today:
+            return
+
+        # Reset Translated to No
+        # TODO: this doesn't work for some reason in Test #2
+        translated_set_to_no = data_connect.set_translated_filter_to_no()
+        print(f'translated_set_to_no: {translated_set_to_no}')
+        if not translated_set_to_no:
+            return
+
+        # Set Group filter to CC
+        group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
+        print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
+        if not group_filter_set_to_credit_card:
+            return
+
+        # Download CC PDF
+        ccm_files_downloaded = data_connect.check_all_then_click_print()
+        print(f'ccm_files_downloaded: {ccm_files_downloaded}')
+        if not ccm_files_downloaded:
+            return
+
+        # CCM files
+        process_pdfs(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns)
+        print(f'Finished!')
 
 
     finally:

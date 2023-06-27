@@ -334,12 +334,12 @@ class DataConnectPage(BasePage):
 
         return True
 
-    username = os.getenv('DTN_EMAIL_ADDRESS')
-    password = os.getenv('DTN_PASSWORD')
+    # username = os.getenv('DTN_EMAIL_ADDRESS')
+    # password = os.getenv('DTN_PASSWORD')
 
-    """
-        use for isolated testing setting and switch out document filter for 3rd Flow
-    """
+    # """
+    #     use for isolated testing setting and switch out document filter for 3rd Flow
+    # """
     def test_document_filter(self):
         login_page = LoginPage(driver)
         login_page.visit_and_login(username, password)
