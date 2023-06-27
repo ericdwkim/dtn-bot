@@ -3,19 +3,27 @@ import re
 import datetime
 import pikepdf
 
-def delete_pdf_files(output_directory, merged_file_path):
-    if not os.path.exists(merged_file_path):
-        print("Merged file does not exist. Not deleting any files.")
-        return False
-
+def cleanup_files(pdf_data):
     files_deleted = False
-    for file_name in os.listdir(output_directory):
-        if file_name.endswith('.pdf'):
-            file_path = os.path.join(output_directory, file_name)
+    for _, _, _, file_path in pdf_data:
+        if os.path.exists(file_path):
             os.remove(file_path)
             files_deleted = True
-
     return files_deleted
+
+# def delete_pdf_files(output_directory, merged_file_path):
+#     if not os.path.exists(merged_file_path):
+#         print("Merged file does not exist. Not deleting any files.")
+#         return False
+#
+#     files_deleted = False
+#     for file_name in os.listdir(output_directory):
+#         if file_name.endswith('.pdf'):
+#             file_path = os.path.join(output_directory, file_name)
+#             os.remove(file_path)
+#             files_deleted = True
+#
+#     return files_deleted
 
 def extract_ccm_data(pdf_file):
     match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', pdf_file)
@@ -60,9 +68,13 @@ def check_file_exists(output_path):
 def merge_pdfs(pdf_data):
     merged_pdf = pikepdf.Pdf.new()
     for _, _, _, file_path in pdf_data:
-        pdf = pikepdf.Pdf.open(file_path)
-        merged_pdf.pages.extend(pdf.pages)
+        try:
+            pdf = pikepdf.Pdf.open(file_path)
+            merged_pdf.pages.extend(pdf.pages)
+        except pikepdf.PdfError:
+            return False
     return merged_pdf
+
 
 def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
     today = datetime.date.today().strftime('%m-%d-%y')
@@ -72,31 +84,23 @@ def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
         new_file_name = f'{today}-Loyalty.pdf'
 
     output_path = os.path.join(directory, new_file_name)
-    merged_pdf.save(output_path)
-    merged_pdf.close()
-
-    # TODO: turn into helper for ensuring that merged pdfs exist in output directory before ending script
-    # merged_file_exists = check_file_exists(output_path)
-    # if merged_file_exists:
-    #     if file_prefix == 'CCM':
-    #         print(f'EXXON CCM PDFs have been merged, renamed "{new_file_name}" and moved to: {output_path}\nDeleting temporary PDF files in {temp_dir}')
-    #     elif file_prefix == 'LRD':
-    #         print(f'Loyalty PDFs have been merged and saved as "{new_file_name}" to: {output_path}\nDeleting temporary PDF files in {temp_dir}')
-    #     temp_files_deleted = delete_pdf_files(temp_dir)
-    #     if temp_files_deleted:
-    #         print('Temporary PDF files have been deleted.')
-    #     else:
-    #         print('Temporary PDF files were not deleted.')
-    # else:
-    #     print('Failed to save the merged PDF.')
-
-    print(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
+    try:
+        merged_pdf.save(output_path)
+        merged_pdf.close()
+        print(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
+        return True
+    except Exception:
+        return False
 
 def merge_rename_and_summate(directory):
     pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(directory)
 
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
-    save_merged_pdf(directory, merged_pdf_ccm, total_amount_sum_ccm, 'CCM')
+    merged_ccm_pdf_is_saved = save_merged_pdf(directory, merged_pdf_ccm, total_amount_sum_ccm, 'CCM')
+    if merged_pdf_ccm and merged_ccm_pdf_is_saved:
+        cleanup_files(pdf_data_ccm)
 
     merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
-    save_merged_pdf(directory, merged_pdf_lrd, None, 'LRD')
+    merged_lrd_pdf_is_saved = save_merged_pdf(directory, merged_pdf_lrd, None, 'LRD')
+    if merged_pdf_lrd and merged_lrd_pdf_is_saved:
+        cleanup_files(pdf_data_lrd)
