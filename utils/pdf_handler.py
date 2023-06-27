@@ -4,6 +4,7 @@ import pdfplumber
 import re
 import datetime
 import os
+import time
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 
@@ -11,21 +12,34 @@ from utils.extraction_handler import extract_text_from_pdf_page, extract_info_fr
 def rename_and_delete_pdf(file_path):
     file_deleted = False
     today = datetime.date.today().strftime('%m-%d-%y')
-    # Check if /Downloads/messages.pdf exists
+
+    # Check if file_path exists
     if os.path.exists(file_path):
-        # open messages.pdf to check what type of file
+        # Open the PDF file to check its contents
         with pikepdf.open(file_path) as pdf:
-            first_page = pdf.pages[0].extract_text()
-            # if it is the original EFT file
-            if re.search(r'EFT-\s*\d+', first_page, re.IGNORECASE):
-                # Rename file
-                new_file_path = os.path.join(file_path, f'EFT-{today}-MESSAGES.pdf')
-                # Delete file using new file name
-                os.remove(new_file_path)
-                file_deleted = True
+            if len(pdf.pages) > 0:
+                first_page = extract_text_from_pdf_page(pdf.pages[0])
+                # Check if it is the original EFT file
+                if re.search(r'EFT-\d+', first_page):
+                    # Rename file
+                    file_directory = os.path.dirname(file_path)
+                    file_name = os.path.basename(file_path)
+                    new_file_name = f'EFT-{today}-MESSAGES.pdf'
+                    new_file_path = os.path.join(file_directory, new_file_name)
+                    old_file_path = os.path.join(file_directory, file_name)
+
+                    print(f"Renaming file: {old_file_path} to {new_file_path}")
+                    os.rename(old_file_path, new_file_path)
+                    file_deleted = True
+                    print(f"File renamed successfully.")
+                    time.sleep(3)
+
+                    # Delete the file using the new file name
+                    print(f"Deleting file: {new_file_path}")
+                    os.remove(new_file_path)
+                    print(f"File deleted successfully.")
+
     return file_deleted
-
-
 
 
 # Invoices

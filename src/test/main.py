@@ -75,7 +75,7 @@ def user_journey():
 
         # DataConnect 3rd Flow - Credit Cards
         if draft_notices_processed_and_filed:
-            original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
+            original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf + '.pdf')
 
             print(f'original_eft_messages_pdf_is_deleted: {original_eft_messages_pdf_is_deleted}')
         # # Switch date from yesterday's to today's
@@ -84,7 +84,7 @@ def user_journey():
         #     return
         #
         # # Reset Translated to No
-        # # TODO: this doesn't work for some reason in Test #2
+        # # TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely
         # translated_set_to_no = data_connect.set_translated_filter_to_no()
         # print(f'translated_set_to_no: {translated_set_to_no}')
         # if not translated_set_to_no:
