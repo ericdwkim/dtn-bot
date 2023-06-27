@@ -3,7 +3,7 @@ import pdfplumber
 import re
 import datetime
 import os
-from utils.post_processing import process_directory
+from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 import subprocess
 
@@ -12,7 +12,6 @@ print(f'========================================================================
 
 
 file_path = '/Users/ekim/workspace/txb/docs/ccm_full.pdf'
-temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp'
 
 
 
@@ -182,15 +181,13 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
             print(f'successfully finished processing all multi paged CCMs\n')
 
         # once all single and multi page CCMs for EXXON are done,
-        # post process all pdfs in temp dir
+        # post process all pdfs and save to final output directory
         if single_pages_processed and multi_pages_processed:
-            print(f'Post processing for EXXON CCMs.....')
-            temp_dir_ccm = os.path.join(temp_dir, 'CCM')
-            temp_dir_lrd = os.path.join(temp_dir, 'LRD')
-            process_directory(temp_dir_ccm)
-            process_directory(temp_dir_lrd)
+            print(f'Post processing for EXXON CCMs & LRDs')
+            output_directory_exxon = company_name_to_subdir_full_path_mapping_credit_cards['EXXONMOBIL']
+            merge_rename_and_summate(output_directory_exxon)
     except Exception as e:
-        print(f'An error occurred: {str(e)}')
+        print(f'An error occurred: {str(e)}')2
 
 
 process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns)
