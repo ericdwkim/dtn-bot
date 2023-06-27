@@ -2,6 +2,7 @@ import os
 import re
 import datetime
 import pikepdf
+from PyPDF2 import PdfFileMerger
 
 def delete_pdf_files(output_directory, merged_file_path):
     if not os.path.exists(merged_file_path):
