@@ -165,8 +165,9 @@ def process_pages(filepath, company_name_to_company_subdir_mapping, company_name
         return False
 
 
-def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns):
+def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, post_processing=False):
     try:
+        print(f'----------------------------- {filepath}')
         print(f'Processing all single-page files....\n')
         single_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page=False)
         if single_pages_processed:
@@ -177,15 +178,14 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
         if multi_pages_processed:
             print(f'successfully finished processing all multi paged files\n')
 
-        # once all single and multi page CCMs for EXXON are done,
-        # post process all pdfs and save to final output directory
-        # if single_pages_processed and multi_pages_processed:
-        #     print(f'Post processing for EXXON CCMs & LRDs')
-        #     output_directory_exxon = company_name_to_subdir_full_path_mapping_credit_cards['EXXONMOBIL']
-        #     merge_rename_and_summate(output_directory_exxon)
+        # Conditional post processing only for EXXON CCMs and LRDs
+        if single_pages_processed and multi_pages_processed and post_processing is True:
+            print(f'Post processing for EXXON CCMs & LRDs')
+            output_directory_exxon = company_name_to_subdir_full_path_mapping_credit_cards['EXXONMOBIL']
+            merge_rename_and_summate(output_directory_exxon)
     except Exception as e:
         print(f'An error occurred: {str(e)}')
 
 
-# process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns)
-process_pdfs(file_path, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns)
+process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
+process_pdfs(file_path, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
