@@ -94,7 +94,7 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                     if company_name != 'EXXONMOBIL':
                         create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
-                    # POST PROCESSING ONLY FOR EXXON CCMs  'TOTAL DISTRIBUTOR'
+                    # POST PROCESSING ONLY FOR EXXON CCMs  'TOTAL DISTRIBUTOR' AND LRDs
                     elif company_name == 'EXXONMOBIL' and (re.match(r'CCM-\s*\d+', regex_num) or re.match(r'LRD-\s*\d+', regex_num)):
                         multi_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
 
@@ -119,8 +119,8 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                     if company_name != 'EXXONMOBIL':
                         single_made_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
-                    # ONLY SEND SINGLE PAGE EXXON CCM FILES TO TEMP
-                    elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\s*\d+', regex_num):
+                    # ONLY SEND SINGLE PAGE EXXON CCM FILES TO TEMP AND LRDs
+                    elif company_name == 'EXXONMOBIL' and (re.match(r'CCM-\s*\d+', regex_num) or re.match(r'LRD-\s*\d+', regex_num)):
                         single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
 
                     # redundant?
