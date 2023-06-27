@@ -85,7 +85,7 @@ def user_journey():
             return
 
         # Reset Translated to No
-        # TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely
+        # TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely; timeout logic to automatically restart script if filter head not found after retries
         translated_set_to_no = data_connect.set_translated_filter_to_no()
         print(f'translated_set_to_no: {translated_set_to_no}')
         if not translated_set_to_no:
