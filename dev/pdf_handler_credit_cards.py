@@ -11,7 +11,7 @@ subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True)
 print(f'===========================================================================================')
 
 
-file_path = '/Users/ekim/workspace/txb/docs/ccm_full.pdf'
+file_path = '/Users/ekim/workspace/txb/docs/etf_full.pdf'
 
 
 
@@ -173,28 +173,3 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
 
 
 process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns)
-
-
-"""
-
-file_path = '/Users/ekim/workspace/txb/docs/ccm_full.pdf'
-
-
-
-company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply', 'CVR SUPPLY & TRADING, LLC']
-
-regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
-
-
-company_name_to_subdir_full_path_mapping_credit_cards = {
-
-    'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/Valero (10006)',
-
-    'CONCORD FIRST DATA RETRIEVAL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/First Data',
-
-'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)'
-
-}
-
-
-"""
