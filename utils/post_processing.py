@@ -17,6 +17,24 @@ def delete_pdf_files(directory_path):
 
     return files_deleted
 
+def extract_ccm_data(pdf_file):
+    match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', pdf_file)
+    if match:
+        regex_num = int(match.group(1))
+        total_amount = float(match.group(2).replace(',', ''))
+        return regex_num, total_amount
+    return None, None
+
+
+def extract_lrd_data(pdf_file):
+    match = re.match(r'LRD-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', pdf_file)
+    if match:
+        regex_num = match.group(1)
+        total_amount_lrd = float(match.group(2).replace(',', ''))
+        return regex_num, None
+    return None
+
+
 def extract_pdf_data(temp_dir):
     today = datetime.date.today().strftime('%m-%d-%y')
     pdf_files = os.listdir(temp_dir)
@@ -26,20 +44,17 @@ def extract_pdf_data(temp_dir):
         if pdf_file.endswith('.pdf'):
             file_path = os.path.join(temp_dir, pdf_file)
             if pdf_file.startswith('CCM'):
-                match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', pdf_file)
-                if match:
-                    regex_num = int(match.group(1))
-                    total_credit_amt = float(match.group(2).replace(',', ''))
-                    pdf_data_ccm.append((regex_num, today, total_credit_amt, file_path))
+                regex_num, total_amount = extract_ccm_data(pdf_file)
+                if regex_num is not None and total_amount is not None:
+                    pdf_data_ccm.append((regex_num, today, total_amount, file_path))
             elif pdf_file.startswith('LRD'):
-                match = re.match(r'LRD-(\d+)-.*\.pdf', pdf_file)
-                if match:
-                    regex_num = match.group(1)
+                regex_num, total_amount = extract_lrd_data(pdf_file)
+                if regex_num is not None and total_amount is None:
                     pdf_data_lrd.append((regex_num, today, file_path))
     pdf_data_ccm.sort(key=lambda x: x[0])
     pdf_data_lrd.sort(key=lambda x: x[0])
-    total_credit_amt_sum = round(sum(item[2] for item in pdf_data_ccm), 2)
-    return pdf_data_ccm, total_credit_amt_sum, pdf_data_lrd
+    total_amount_sum = round(sum(item[2] for item in pdf_data_ccm), 2)
+    return pdf_data_ccm, pdf_data_lrd, total_amount_sum
 
 def check_file_exists(output_path):
     file_path = os.path.join(output_path)
@@ -53,11 +68,11 @@ def merge_pdfs(pdf_data):
         merged_pdf.pages.extend(pdf.pages)
     return merged_pdf
 
-def save_merged_pdf(temp_dir, merged_pdf, total_credit_amt_sum, file_prefix):
+def save_merged_pdf(temp_dir, merged_pdf, total_amount_sum, file_prefix):
     today = datetime.date.today().strftime('%m-%d-%y')
     new_file_name = ''
     if file_prefix == 'CCM':
-        new_file_name = f'{file_prefix}-{today}-{total_credit_amt_sum}.pdf'
+        new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
     elif file_prefix == 'LRD':
         new_file_name = f'{today}-Loyalty.pdf'
     output_dir = temp_dir[:-5]
@@ -81,10 +96,10 @@ def save_merged_pdf(temp_dir, merged_pdf, total_credit_amt_sum, file_prefix):
     merged_pdf.close()
 
 def merge_rename_and_summate(temp_dir):
-    pdf_data_ccm, total_credit_amt_sum_ccm, pdf_data_lrd = extract_pdf_data(temp_dir)
+    pdf_data_ccm, pdf_data_lrd, total_amount_sum_ccm = extract_pdf_data(temp_dir)
 
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
-    save_merged_pdf(temp_dir, merged_pdf_ccm, total_credit_amt_sum_ccm, 'CCM')
+    save_merged_pdf(temp_dir, merged_pdf_ccm, total_amount_sum_ccm, 'CCM')
 
     merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
     save_merged_pdf(temp_dir, merged_pdf_lrd, None, 'LRD')
