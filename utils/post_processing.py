@@ -47,7 +47,7 @@ def extract_pdf_data(directory):
             pdf_data_ccm.append((regex_num_ccm, today, total_amount, os.path.join(directory, pdf_file)))
         elif pdf_file.startswith('LRD'):
             regex_num_lrd, _ = extract_lrd_data(pdf_file)
-            pdf_data_lrd.append((regex_num_lrd, today, os.path.join(directory, pdf_file)))
+            pdf_data_lrd.append((regex_num_lrd, today, _, os.path.join(directory, pdf_file)))
     pdf_data_ccm.sort(key=lambda x: x[0])
     pdf_data_lrd.sort(key=lambda x: x[0])
     return pdf_data_ccm, total_amount, pdf_data_lrd
