@@ -2,7 +2,7 @@ import os
 import re
 import datetime
 import pikepdf
-from PyPDF2 import PdfFileMerger
+from PyPDF2 import PdfMerger
 
 def delete_pdf_files(output_directory, merged_file_path):
     if not os.path.exists(merged_file_path):
@@ -35,68 +35,76 @@ def extract_lrd_data(pdf_file):
     return None, None
 
 
-def extract_pdf_data(temp_dir, prefix):
+def extract_pdf_data(directory):
     today = datetime.date.today().strftime('%m-%d-%y')
-    pdf_files = os.listdir(temp_dir)
+    pdf_files = [f for f in os.listdir(directory) if f.endswith('.pdf')]
     pdf_data = []
+    total_amount = 0
     for pdf_file in pdf_files:
-        if pdf_file.endswith('.pdf'):
-            file_path = os.path.join(temp_dir, pdf_file)
-            if pdf_file.startswith(prefix):
-                regex_num, total_amount = extract_ccm_data(pdf_file) if prefix == 'CCM' else extract_lrd_data(pdf_file)
-                if regex_num is not None:
-                    pdf_data.append((regex_num, today, total_amount, file_path))
+        if 'CCM' in directory:
+            regex_num, amount = extract_ccm_data(pdf_file)
+            total_amount += amount
+        else:  # LRD
+            regex_num, _ = extract_lrd_data(pdf_file)
+        pdf_data.append((regex_num, today, os.path.join(directory, pdf_file)))
     pdf_data.sort(key=lambda x: x[0])
-    total_amount_sum = round(sum(item[2] for item in pdf_data if item[2] is not None), 2) if prefix == 'CCM' else None
-    return pdf_data, total_amount_sum
+    return pdf_data, total_amount
 
 def check_file_exists(output_path):
     file_path = os.path.join(output_path)
     return os.path.isfile(file_path)
 
 
+# def merge_pdfs(pdf_data):
+#     merged_pdf = pikepdf.Pdf.new()
+#     for _, _, _, file_path in pdf_data:
+#         pdf = pikepdf.Pdf.open(file_path)
+#         merged_pdf.pages.extend(pdf.pages)
+#     return merged_pdf
+
 def merge_pdfs(pdf_data):
-    merged_pdf = pikepdf.Pdf.new()
-    for _, _, _, file_path in pdf_data:
-        pdf = pikepdf.Pdf.open(file_path)
-        merged_pdf.pages.extend(pdf.pages)
-    return merged_pdf
+    merger = PdfMerger()
+    for _, _, file_path in pdf_data:
+        merger.append(file_path)
+    return merger
 
-def save_merged_pdf(temp_dir, merged_pdf, total_amount_sum, file_prefix):
+def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
     today = datetime.date.today().strftime('%m-%d-%y')
-    new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf' if file_prefix == 'CCM' else f'{today}-Loyalty.pdf'
-    output_path = os.path.join(temp_dir, new_file_name)
-    merged_pdf.save(output_path)
+    if file_prefix == 'CCM':
+        new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
+    else:  # LRD
+        new_file_name = f'{today}-Loyalty.pdf'
+    output_path = os.path.join(directory, new_file_name)
+    merged_pdf.write(output_path)
     merged_pdf.close()
-
-    while not os.path.exists(output_path):
-        print("Waiting for merged file to be created...")
-        time.sleep(1)
-
-    print(
-        f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and moved to: {output_path}\nDeleting temporary PDF files in {temp_dir}')
-    temp_files_deleted = delete_pdf_files(temp_dir, output_path)
-    if temp_files_deleted:
-        print('Temporary PDF files have been deleted.')
-    else:
-        print('Temporary PDF files were not deleted.')
+    print(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
 
 
-def merge_rename_and_summate(temp_dir):
-    ccm_temp_dir = os.path.join(temp_dir, "CCM")
-    lrd_temp_dir = os.path.join(temp_dir, "LRD")
-
-
-    # Move the files to their respective directories
-    for file in os.listdir(temp_dir):
-        if file.startswith("CCM"):
-            os.rename(os.path.join(temp_dir, file), os.path.join(ccm_temp_dir, file))
-        elif file.startswith("LRD"):
-            os.rename(os.path.join(temp_dir, file), os.path.join(lrd_temp_dir, file))
-
-    pdf_data_ccm, total_amount_sum_ccm = extract_pdf_data(ccm_temp_dir, 'CCM')
+def process_directory(directory):
+    pdf_data_ccm, total_amount_sum_ccm = extract_pdf_data(directory)
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
-    save_merged_pdf(ccm_temp_dir, merged_pdf_ccm, total_amount_sum_ccm, 'CCM')
+    save_merged_pdf(directory, merged_pdf_ccm, total_amount_sum_ccm, 'CCM')
 
-    pdf_data_lrd, _ = extract_pdf_data(lrd_temp_dir, 'LRD')
+    pdf_data_lrd, _ = extract_pdf_data(directory)
+    merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
+    save_merged_pdf(directory, merged_pdf_lrd, None, 'LRD')
 
+
+# def merge_rename_and_summate(temp_dir):
+#     ccm_temp_dir = os.path.join(temp_dir, "CCM")
+#     lrd_temp_dir = os.path.join(temp_dir, "LRD")
+#
+#
+#     # Move the files to their respective directories
+#     for file in os.listdir(temp_dir):
+#         if file.startswith("CCM"):
+#             os.rename(os.path.join(temp_dir, file), os.path.join(ccm_temp_dir, file))
+#         elif file.startswith("LRD"):
+#             os.rename(os.path.join(temp_dir, file), os.path.join(lrd_temp_dir, file))
+#
+#     pdf_data_ccm, total_amount_sum_ccm = extract_pdf_data(ccm_temp_dir, 'CCM')
+#     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
+#     save_merged_pdf(ccm_temp_dir, merged_pdf_ccm, total_amount_sum_ccm, 'CCM')
+#
+#     pdf_data_lrd, _ = extract_pdf_data(lrd_temp_dir, 'LRD')
+#
