@@ -2,7 +2,7 @@ import os
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
-from utils.pdf_handler import process_pdfs, rename_and_move_pdf, get_full_path_to_dl_dir
+from utils.pdf_handler import process_pdfs, rename_and_move_pdf, get_full_path_to_dl_dir, rename_and_delete_pdf
 import subprocess
 
 # Run the shell script to delete PDF files from previous session
@@ -74,43 +74,37 @@ def user_journey():
             return
 
         # DataConnect 3rd Flow - Credit Cards
-        if os.path.exists(full_path_to_downloaded_pdf):
-            try:
-                os.remove(full_path_to_downloaded_pdf)
-                print(f'The original Draft Notices PDF File located in: {full_path_to_downloaded_pdf} has been deleted successfully.')
-            except OSError as e:
-                print(f"Error deleting file: {str(e)}")
-        else:
-            print("File does not exist. Cannot proceed.")
-            return False
+        if draft_notices_processed_and_filed:
+            original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
 
+            print(f'original_eft_messages_pdf_is_deleted: {original_eft_messages_pdf_is_deleted}')
         # # Switch date from yesterday's to today's
-        date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
-        if not date_set_to_today:
-            return
-
-        # Reset Translated to No
-        # TODO: this doesn't work for some reason in Test #2
-        translated_set_to_no = data_connect.set_translated_filter_to_no()
-        print(f'translated_set_to_no: {translated_set_to_no}')
-        if not translated_set_to_no:
-            return
-
-        # Set Group filter to CC
-        group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
-        print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
-        if not group_filter_set_to_credit_card:
-            return
-
-        # Download CC PDF
-        ccm_files_downloaded = data_connect.check_all_then_click_print()
-        print(f'ccm_files_downloaded: {ccm_files_downloaded}')
-        if not ccm_files_downloaded:
-            return
-
-        # CCM, LRD files
-        process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
-        print(f'Finished!')
+        # date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
+        # if not date_set_to_today:
+        #     return
+        #
+        # # Reset Translated to No
+        # # TODO: this doesn't work for some reason in Test #2
+        # translated_set_to_no = data_connect.set_translated_filter_to_no()
+        # print(f'translated_set_to_no: {translated_set_to_no}')
+        # if not translated_set_to_no:
+        #     return
+        #
+        # # Set Group filter to CC
+        # group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
+        # print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
+        # if not group_filter_set_to_credit_card:
+        #     return
+        #
+        # # Download CC PDF
+        # ccm_files_downloaded = data_connect.check_all_then_click_print()
+        # print(f'ccm_files_downloaded: {ccm_files_downloaded}')
+        # if not ccm_files_downloaded:
+        #     return
+        #
+        # # CCM, LRD files
+        # process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
+        # print(f'Finished!')
 
     finally:
         teardown_driver(driver)

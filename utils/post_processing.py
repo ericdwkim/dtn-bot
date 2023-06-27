@@ -11,19 +11,6 @@ def cleanup_files(pdf_data):
             files_deleted = True
     return files_deleted
 
-# def delete_pdf_files(output_directory, merged_file_path):
-#     if not os.path.exists(merged_file_path):
-#         print("Merged file does not exist. Not deleting any files.")
-#         return False
-#
-#     files_deleted = False
-#     for file_name in os.listdir(output_directory):
-#         if file_name.endswith('.pdf'):
-#             file_path = os.path.join(output_directory, file_name)
-#             os.remove(file_path)
-#             files_deleted = True
-#
-#     return files_deleted
 
 def extract_ccm_data(pdf_file):
     match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', pdf_file)

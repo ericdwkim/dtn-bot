@@ -7,6 +7,27 @@ import os
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 
+
+def rename_and_delete_pdf(file_path):
+    file_deleted = False
+    today = datetime.date.today().strftime('%m-%d-%y')
+    # Check if /Downloads/messages.pdf exists
+    if os.path.exists(file_path):
+        # open messages.pdf to check what type of file
+        with pikepdf.open(file_path) as pdf:
+            first_page = pdf.pages[0].extract_text()
+            # if it is the original EFT file
+            if re.search(r'EFT-\s*\d+', first_page, re.IGNORECASE):
+                # Rename file
+                new_file_path = os.path.join(file_path, f'EFT-{today}-MESSAGES.pdf')
+                # Delete file using new file name
+                os.remove(new_file_path)
+                file_deleted = True
+    return file_deleted
+
+
+
+
 # Invoices
 def rename_and_move_pdf(file_name, source_dir, target_dir):
     # Get today's date and format it as MM-DD-YY
