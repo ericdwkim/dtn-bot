@@ -69,7 +69,7 @@ def user_journey():
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
             return
-        draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns)
+        draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
         if not draft_notices_processed_and_filed:
             return
 
@@ -112,16 +112,9 @@ def user_journey():
         process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
         print(f'Finished!')
 
-
-""" How to call function for CCM/LRD vs ETF respectively
-# process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
-# process_pdfs(file_path, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
-
-
-"""
-
     finally:
         teardown_driver(driver)
 
 if __name__ == '__main__':
     user_journey()
+
