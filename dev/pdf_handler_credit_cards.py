@@ -90,13 +90,7 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                     new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
                     print(f'\nnew_file_name: {new_file_name}')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
-
-                    if company_name != 'EXXONMOBIL':
-                        create_and_save_pdf(current_pages, new_file_name, destination_dir)
-
-                    # POST PROCESSING ONLY FOR EXXON CCMs  'TOTAL DISTRIBUTOR' AND LRDs
-                    elif company_name == 'EXXONMOBIL' and (re.match(r'CCM-\s*\d+', regex_num) or re.match(r'LRD-\s*\d+', regex_num)):
-                        multi_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
+                    create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
     return page_num
 
@@ -114,19 +108,7 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
-
-                    # VALERO RTV, CBK, CCM
-                    if company_name != 'EXXONMOBIL':
-                        create_and_save_pdf(current_pages, new_file_name, destination_dir)
-
-                    # ONLY SEND SINGLE PAGE EXXON CCM FILES TO TEMP AND LRDs
-                    elif company_name == 'EXXONMOBIL' and (re.match(r'CCM-\s*\d+', regex_num) or re.match(r'LRD-\s*\d+', regex_num)):
-                        single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
-
-
-                    elif company_name == 'EXXONMOBIL':
-                        create_and_save_pdf(current_pages, new_file_name, destination_dir)
-
+                    create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
                     page_num += 1
 

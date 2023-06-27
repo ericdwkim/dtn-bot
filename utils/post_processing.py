@@ -72,7 +72,7 @@ def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
     merged_pdf.save(output_path)
     merged_pdf.close()
 
-    # TODO: turn into helper for ensuring that merged pdfs exist in output directory
+    # TODO: turn into helper for ensuring that merged pdfs exist in output directory before ending script
     # merged_file_exists = check_file_exists(output_path)
     # if merged_file_exists:
     #     if file_prefix == 'CCM':
