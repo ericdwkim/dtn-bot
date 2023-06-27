@@ -2,7 +2,6 @@ import os
 import re
 import datetime
 import pikepdf
-from PyPDF2 import PdfMerger
 
 def delete_pdf_files(output_directory, merged_file_path):
     if not os.path.exists(merged_file_path):
@@ -55,18 +54,12 @@ def check_file_exists(output_path):
     return os.path.isfile(file_path)
 
 
-# def merge_pdfs(pdf_data):
-#     merged_pdf = pikepdf.Pdf.new()
-#     for _, _, _, file_path in pdf_data:
-#         pdf = pikepdf.Pdf.open(file_path)
-#         merged_pdf.pages.extend(pdf.pages)
-#     return merged_pdf
-
 def merge_pdfs(pdf_data):
-    merger = PdfMerger()
-    for _, _, file_path in pdf_data:
-        merger.append(file_path)
-    return merger
+    merged_pdf = pikepdf.Pdf.new()
+    for _, _, _, file_path in pdf_data:
+        pdf = pikepdf.Pdf.open(file_path)
+        merged_pdf.pages.extend(pdf.pages)
+    return merged_pdf
 
 def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
     today = datetime.date.today().strftime('%m-%d-%y')
@@ -74,8 +67,24 @@ def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
     else:  # LRD
         new_file_name = f'{today}-Loyalty.pdf'
-    output_path = os.path.join(directory, new_file_name)
-    merged_pdf.write(output_path)
+    output_dir = temp_dir[:-5]
+    output_path = os.path.join(output_dir, new_file_name)
+    merged_pdf.save(output_path)
+    merged_pdf.close()
+    merged_file_exists = check_file_exists(output_path)
+    if merged_file_exists:
+        if file_prefix == 'CCM':
+            print(f'EXXON CCM PDFs have been merged, renamed "{new_file_name}" and moved to: {output_path}\nDeleting temporary PDF files in {temp_dir}')
+        elif file_prefix == 'LRD':
+            print(f'Loyalty PDFs have been merged and saved as "{new_file_name}" to: {output_path}\nDeleting temporary PDF files in {temp_dir}')
+        temp_files_deleted = delete_pdf_files(temp_dir)
+        if temp_files_deleted:
+            print('Temporary PDF files have been deleted.')
+        else:
+            print('Temporary PDF files were not deleted.')
+    else:
+        print('Failed to save the merged PDF.')
+
     merged_pdf.close()
     print(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
 
