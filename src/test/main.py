@@ -2,7 +2,7 @@ import os
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
-from utils.pdf_handler import rename_and_move_pdf, process_pdf, get_full_path_to_dl_dir
+from utils.pdf_handler import rename_and_move_pdf, get_full_path_to_dl_dir
 from dev.pdf_handler_credit_cards import process_pdfs
 import subprocess
 
@@ -31,21 +31,6 @@ def user_journey():
 
     regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
 
-    # The mapping dictionary for company name to list of keywords for tot_draft_amt, eft_num vars
-    company_name_to_search_keyword_mapping = {
-        'CVR SUPPLY & TRADING, LLC': ['Total Draft', 'EFT-\d+'],
-        'EXXONMOBIL': ['TOTAL AMOUNT OF FUNDS TRANSFER', 'EFT-\d+'],
-        'U.S. OIL COMPANY': ['TOTALS', 'EFT-\d+'],
-        'VALERO': ['*** Net Amount ***', 'EFT-\d+'],
-        'DK Trading & Supply': ['TOTAL DRAFT AMOUNT', 'EFT-\d+']
-    }
-
-    company_name_to_search_keyword_mapping_credit_cards = {
-        'VALERO': ['-NET CREDIT 51000', 'CCM-\d+'],
-        'CONCORD FIRST DATA RETRIEVAL': ['MARKETER TOTAL', 'CMB-\d+'],
-        'EXXONMOBIL': ['TOTAL DISTRIBUTOR', 'CCM-\d+']
-
-    }
 
     # Mapping for company name to Fuel Drafts subdir full path
     company_name_to_subdir_full_path_mapping_fuel_drafts = {
@@ -86,7 +71,7 @@ def user_journey():
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
             return
-        draft_notices_processed_and_filed = process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_fuel_drafts, download_dir, company_name_to_search_keyword_mapping)
+        draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns)
         if not draft_notices_processed_and_filed:
             return
 
