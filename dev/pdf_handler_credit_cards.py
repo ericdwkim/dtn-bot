@@ -47,10 +47,6 @@ def get_new_file_name(regex_num, today, total_target_amt, company_name):
     if company_name == 'EXXONMOBIL' and re.match(r'EFT-\s*\d+', regex_num):
         new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
 
-    # File naming convention for loyalty files
-    elif re.match(r'LRD-\s*\d+', regex_num):
-        new_file_name = f'{today}-Loyalty.pdf'
-
     # File naming convention for chargebacks/retrievals
     # @dev: regex_num is included due to edge case of identical filenames overwriting
     # eg: VALERO CBK-0379 gets overwritten by RTV-0955 if regex_num is not included
@@ -99,7 +95,7 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                         create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
                     # POST PROCESSING ONLY FOR EXXON CCMs  'TOTAL DISTRIBUTOR'
-                    elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\s*\d+', regex_num):
+                    elif company_name == 'EXXONMOBIL' and (re.match(r'CCM-\s*\d+', regex_num) or re.match(r'LRD-\s*\d+', regex_num)):
                         multi_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
 
     return page_num
@@ -196,5 +192,3 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
 
 
 process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns)
-
-# TODO: LRD need to follow similar logic as EXXON CCMs as only the last processed LRD is being saved; Rethink using temp_dir as it is not a viable solution anymore since both CCMs and LRDs will need to be using it for post processing which can get messy.
