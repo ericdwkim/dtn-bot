@@ -10,6 +10,7 @@ import subprocess
 subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True)
 print(f'===========================================================================================')
 
+# TODO 6/27/23 1015AM - 1) Test in main.py for all cc files 2) test etf files with this handler script 3) make appropriate merges/refactors until single handler script works for all files 4) test from start to end of 3rd flow.
 
 file_path = '/Users/ekim/workspace/txb/docs/etf_full.pdf'
 
@@ -29,6 +30,19 @@ company_name_to_subdir_full_path_mapping_credit_cards = {
     'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)'
 
 }
+
+# Mapping for company name to Fuel Drafts subdir full path
+# company_name_to_subdir_full_path_mapping_fuel_drafts = {
+#     'CVR SUPPLY & TRADING, LLC': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351',
+#
+#     'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/EXXONMOBIL [10005]',
+#
+#     'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/U S VENTURE - U S OIL COMPANY [12262]',
+#
+#     'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]',
+#
+#     'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]'
+# }
 
 
 def create_and_save_pdf(pages, new_file_name, destination_dir):
