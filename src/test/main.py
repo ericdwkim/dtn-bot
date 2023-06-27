@@ -73,6 +73,7 @@ def user_journey():
         if not draft_notices_processed_and_filed:
             return
 
+        print(f'draft_notices_processed_and_filed: {draft_notices_processed_and_filed}')
         # DataConnect 3rd Flow - Credit Cards
         if draft_notices_processed_and_filed:
             original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf + '.pdf')

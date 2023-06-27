@@ -12,11 +12,13 @@ from utils.extraction_handler import extract_text_from_pdf_page, extract_info_fr
 def rename_and_delete_pdf(file_path):
     file_deleted = False
     today = datetime.date.today().strftime('%m-%d-%y')
+    print(f'--------------------{file_path}')
 
     # Check if file_path exists
     if os.path.exists(file_path):
         # Open the PDF file to check its contents
         with pikepdf.open(file_path) as pdf:
+            print(f'--------------------{file_path}')
             if len(pdf.pages) > 0:
                 first_page = extract_text_from_pdf_page(pdf.pages[0])
                 # Check if it is the original EFT file
@@ -25,8 +27,11 @@ def rename_and_delete_pdf(file_path):
                     file_directory = os.path.dirname(file_path)
                     file_name = os.path.basename(file_path)
                     new_file_name = f'EFT-{today}-MESSAGES.pdf'
+                    print(f'--------------------{new_file_name}')
                     new_file_path = os.path.join(file_directory, new_file_name)
+                    print(f'--------------------{new_file_path}')
                     old_file_path = os.path.join(file_directory, file_name)
+                    print(f'--------------------{old_file_path}')
 
                     print(f"Renaming file: {old_file_path} to {new_file_path}")
                     os.rename(old_file_path, new_file_path)
@@ -183,23 +188,29 @@ def process_pages(filepath, company_name_to_company_subdir_mapping, company_name
         return False
 
 
-def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, post_processing=False):
+def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns,
+                 post_processing=False):
     try:
         print(f'----------------------------- {filepath}')
         print(f'Processing all single-page files....\n')
-        single_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page=False)
+        single_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names,
+                                               regex_patterns, is_multi_page=False)
         if single_pages_processed:
-            print(f'successfully finished processing all single paged files\n')
+            print(f'Successfully finished processing all single-paged files\n')
 
         print(f'Now processing all multi-page files....\n')
-        multi_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page=True)
+        multi_pages_processed = process_pages(filepath, company_name_to_company_subdir_mapping, company_names,
+                                              regex_patterns, is_multi_page=True)
         if multi_pages_processed:
-            print(f'successfully finished processing all multi paged files\n')
+            print(f'Successfully finished processing all multi-paged files\n')
 
         # Conditional post processing only for EXXON CCMs and LRDs
         if single_pages_processed and multi_pages_processed and post_processing is True:
             print(f'Post processing for EXXON CCMs & LRDs')
             output_directory_exxon = company_name_to_subdir_full_path_mapping_credit_cards['EXXONMOBIL']
             merge_rename_and_summate(output_directory_exxon)
+
+        return single_pages_processed and multi_pages_processed
     except Exception as e:
         print(f'An error occurred: {str(e)}')
+        return False
