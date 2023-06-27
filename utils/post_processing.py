@@ -27,7 +27,7 @@ def extract_ccm_data(pdf_file):
 
 
 def extract_lrd_data(pdf_file):
-    match = re.match(r'LRD-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', pdf_file)
+    match = re.match(r'LRD-(\d+)-.*\.pdf', pdf_file)
     if match:
         regex_num = match.group(1)
         return regex_num, None
@@ -37,17 +37,20 @@ def extract_lrd_data(pdf_file):
 def extract_pdf_data(directory):
     today = datetime.date.today().strftime('%m-%d-%y')
     pdf_files = [f for f in os.listdir(directory) if f.endswith('.pdf')]
-    pdf_data = []
+    pdf_data_ccm = []
+    pdf_data_lrd = []
     total_amount = 0
     for pdf_file in pdf_files:
-        if 'CCM' in directory:
-            regex_num, amount = extract_ccm_data(pdf_file)
+        if pdf_file.startswith('CCM'):
+            regex_num_ccm, amount = extract_ccm_data(pdf_file)
             total_amount += amount
-        else:  # LRD
-            regex_num, _ = extract_lrd_data(pdf_file)
-        pdf_data.append((regex_num, today, os.path.join(directory, pdf_file)))
-    pdf_data.sort(key=lambda x: x[0])
-    return pdf_data, total_amount
+            pdf_data_ccm.append((regex_num_ccm, today, total_amount, os.path.join(directory, pdf_file)))
+        elif pdf_file.startswith('LRD'):
+            regex_num_lrd, _ = extract_lrd_data(pdf_file)
+            pdf_data_lrd.append((regex_num_lrd, today, os.path.join(directory, pdf_file)))
+    pdf_data_ccm.sort(key=lambda x: x[0])
+    pdf_data_lrd.sort(key=lambda x: x[0])
+    return pdf_data_ccm, total_amount, pdf_data_lrd
 
 def check_file_exists(output_path):
     file_path = os.path.join(output_path)
@@ -90,7 +93,7 @@ def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
     print(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
 
 def merge_rename_and_summate(directory):
-    pdf_data, total_amount_sum_ccm = extract_pdf_data(directory)
+    pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(directory)
 
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
     save_merged_pdf(directory, merged_pdf_ccm, total_amount_sum_ccm, 'CCM')
