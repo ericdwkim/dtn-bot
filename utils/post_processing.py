@@ -30,9 +30,8 @@ def extract_lrd_data(pdf_file):
     match = re.match(r'LRD-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', pdf_file)
     if match:
         regex_num = match.group(1)
-        total_amount_lrd = float(match.group(2).replace(',', ''))
         return regex_num, None
-    return None
+    return None, None
 
 
 def extract_pdf_data(temp_dir):
@@ -48,9 +47,9 @@ def extract_pdf_data(temp_dir):
                 if regex_num is not None and total_amount is not None:
                     pdf_data_ccm.append((regex_num, today, total_amount, file_path))
             elif pdf_file.startswith('LRD'):
-                regex_num, total_amount = extract_lrd_data(pdf_file)
-                if regex_num is not None and total_amount is None:
-                    pdf_data_lrd.append((regex_num, today, file_path))
+                regex_num, _ = extract_lrd_data(pdf_file)
+                if regex_num is not None:
+                    pdf_data_lrd.append((regex_num, today, None, file_path))
     pdf_data_ccm.sort(key=lambda x: x[0])
     pdf_data_lrd.sort(key=lambda x: x[0])
     total_amount_sum = round(sum(item[2] for item in pdf_data_ccm), 2)
