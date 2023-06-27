@@ -13,7 +13,7 @@ print(f'========================================================================
 # TODO 6/27/23 1015AM - 1) Test in main.py for all cc files 2) test etf files with this handler script 3) make appropriate merges/refactors until single handler script works for all files 4) test from start to end of 3rd flow.
 
 # file_path = '/Users/ekim/workspace/txb/docs/etf_full.pdf'
-file_path = '/Users/ekim/downloads/messages.pdf'
+file_path = '/Users/ekim/workspace/txb/docs/ccm_full.pdf'
 
 
 
@@ -187,5 +187,5 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
         print(f'An error occurred: {str(e)}')
 
 
-# process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
-process_pdfs(file_path, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
+process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
+# process_pdfs(file_path, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
