@@ -76,36 +76,36 @@ def user_journey():
         print(f'draft_notices_processed_and_filed: {draft_notices_processed_and_filed}')
         # DataConnect 3rd Flow - Credit Cards
         if draft_notices_processed_and_filed:
-            original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf + '.pdf')
+            original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
 
             print(f'original_eft_messages_pdf_is_deleted: {original_eft_messages_pdf_is_deleted}')
-        # # Switch date from yesterday's to today's
-        # date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
-        # if not date_set_to_today:
-        #     return
-        #
-        # # Reset Translated to No
-        # # TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely
-        # translated_set_to_no = data_connect.set_translated_filter_to_no()
-        # print(f'translated_set_to_no: {translated_set_to_no}')
-        # if not translated_set_to_no:
-        #     return
-        #
-        # # Set Group filter to CC
-        # group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
-        # print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
-        # if not group_filter_set_to_credit_card:
-        #     return
-        #
-        # # Download CC PDF
-        # ccm_files_downloaded = data_connect.check_all_then_click_print()
-        # print(f'ccm_files_downloaded: {ccm_files_downloaded}')
-        # if not ccm_files_downloaded:
-        #     return
-        #
-        # # CCM, LRD files
-        # process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
-        # print(f'Finished!')
+        # Switch date from yesterday's to today's
+        date_set_to_today = data_connect.set_date_filter('#date > option:nth-child(1)')
+        if not date_set_to_today:
+            return
+
+        # Reset Translated to No
+        # TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely
+        translated_set_to_no = data_connect.set_translated_filter_to_no()
+        print(f'translated_set_to_no: {translated_set_to_no}')
+        if not translated_set_to_no:
+            return
+
+        # Set Group filter to CC
+        group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
+        print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
+        if not group_filter_set_to_credit_card:
+            return
+
+        # Download CC PDF
+        ccm_files_downloaded = data_connect.check_all_then_click_print()
+        print(f'ccm_files_downloaded: {ccm_files_downloaded}')
+        if not ccm_files_downloaded:
+            return
+
+        # CCM, LRD files
+        process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
+        print(f'Finished!')
 
     finally:
         teardown_driver(driver)
