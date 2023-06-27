@@ -23,6 +23,7 @@ def rename_and_delete_pdf(file_path):
                 first_page = extract_text_from_pdf_page(pdf.pages[0])
                 # Check if it is the original EFT file
                 if re.search(r'EFT-\d+', first_page):
+                    print(f'first_page: {first_page}')
                     # Rename file
                     file_directory = os.path.dirname(file_path)
                     file_name = os.path.basename(file_path)
@@ -39,6 +40,7 @@ def rename_and_delete_pdf(file_path):
                     print(f"File renamed successfully.")
                     time.sleep(3)
                 elif re.search(r'CCM-\d+', first_page) or re.search(r'CMD-\d+', first_page):
+                    print(f'first_page: {first_page}')
                     # Rename file with CCM naming convention
                     file_directory = os.path.dirname(file_path)
                     file_name = os.path.basename(file_path)
