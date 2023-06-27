@@ -38,7 +38,22 @@ def rename_and_delete_pdf(file_path):
                     file_deleted = True
                     print(f"File renamed successfully.")
                     time.sleep(3)
+                elif re.search(r'CCM-\d+', first_page) or re.search(r'CMD-\d+', first_page):
+                    # Rename file with CCM naming convention
+                    file_directory = os.path.dirname(file_path)
+                    file_name = os.path.basename(file_path)
+                    new_file_name = f'CCM-{today}-MESSAGES.pdf'
+                    print(f'--------------------{new_file_name}')
+                    new_file_path = os.path.join(file_directory, new_file_name)
+                    print(f'--------------------{new_file_path}')
+                    old_file_path = os.path.join(file_directory, file_name)
+                    print(f'--------------------{old_file_path}')
 
+                    print(f"Renaming file: {old_file_path} to {new_file_path}")
+                    os.rename(old_file_path, new_file_path)
+                    file_deleted = True
+                    print(f"File renamed successfully.")
+                    time.sleep(3)
                     # Delete the file using the new file name
                     print(f"Deleting file: {new_file_path}")
                     os.remove(new_file_path)
