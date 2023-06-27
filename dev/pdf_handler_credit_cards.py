@@ -12,7 +12,10 @@ print(f'========================================================================
 
 
 file_path = '/Users/ekim/workspace/txb/docs/ccm_full.pdf'
+temp_dir_ccm = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp/CCM'
+temp_dir_lrd = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp/LRD'
 temp_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp'
+
 
 
 company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply', 'CVR SUPPLY & TRADING, LLC']
@@ -95,8 +98,13 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                         create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
                     # POST PROCESSING ONLY FOR EXXON CCMs  'TOTAL DISTRIBUTOR' AND LRDs
-                    elif company_name == 'EXXONMOBIL' and (re.match(r'CCM-\s*\d+', regex_num) or re.match(r'LRD-\s*\d+', regex_num)):
-                        multi_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
+                    elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\s*\d+', regex_num):
+                        create_and_save_pdf(current_pages, new_file_name, temp_dir_ccm)
+
+                    elif company_name == 'EXXONMOBIL' and re.match(r'LRD-\s*\d+', regex_num):
+                        create_and_save_pdf(current_pages, new_file_name, temp_dir_lrd)
+
+
 
     return page_num
 
@@ -117,15 +125,19 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
 
                     # VALERO RTV, CBK, CCM
                     if company_name != 'EXXONMOBIL':
-                        single_made_pdf_saved = create_and_save_pdf(current_pages, new_file_name, destination_dir)
+                        create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
-                    # ONLY SEND SINGLE PAGE EXXON CCM FILES TO TEMP AND LRDs
-                    elif company_name == 'EXXONMOBIL' and (re.match(r'CCM-\s*\d+', regex_num) or re.match(r'LRD-\s*\d+', regex_num)):
-                        single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, temp_dir)
+                    # ONLY SEND SINGLE PAGE EXXON CCM FILES TO TEMP
+                    elif company_name == 'EXXONMOBIL' and re.match(r'CCM-\s*\d+', regex_num):
+                        create_and_save_pdf(current_pages, new_file_name, temp_dir_ccm)
 
-                    # redundant?
+                    # single LRDs
+                    elif company_name == 'EXXONMOBIL' and re.match(r'LRD-\s*\d+', regex_num):
+                        create_and_save_pdf(current_pages, new_file_name, temp_dir_lrd)
+
+
                     elif company_name == 'EXXONMOBIL':
-                        single_page_pdf_saved_in_temp = create_and_save_pdf(current_pages, new_file_name, destination_dir)
+                        create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
 
                     page_num += 1
