@@ -111,3 +111,37 @@ def process_pdf(keyword_in_dl_file_name, company_name_to_company_subdir_mapping,
         # If any error occurred, print it and return False
         print(f'An unexpected error occurred: {str(e)}')
         return False
+
+
+
+keyword_in_dl_file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf` on mac
+download_dir = r'/Users/ekim/Downloads'
+
+full_path_to_downloaded_pdf = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
+
+
+# The mapping dictionary for company name to list of keywords for tot_draft_amt, eft_num vars
+company_name_to_search_keyword_mapping = {
+    'CVR SUPPLY & TRADING, LLC': ['Total Draft', 'EFT-\d+'],
+    'EXXONMOBIL': ['TOTAL AMOUNT OF FUNDS TRANSFER', 'EFT-\d+'],
+    'U.S. OIL COMPANY': ['TOTALS', 'EFT-\d+'],
+    'VALERO': ['*** Net Amount ***', 'EFT-\d+'],
+    'DK Trading & Supply': ['TOTAL DRAFT AMOUNT', 'EFT-\d+']
+}
+
+
+# Mapping for company name to Fuel Drafts subdir full path
+company_name_to_subdir_full_path_mapping_fuel_drafts = {
+    'CVR SUPPLY & TRADING, LLC': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351',
+
+    'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/EXXONMOBIL [10005]',
+
+    'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/U S VENTURE - U S OIL COMPANY [12262]',
+
+    'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]',
+
+    'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]'
+}
+
+
+process_pdf(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_fuel_drafts, download_dir, company_name_to_search_keyword_mapping)
