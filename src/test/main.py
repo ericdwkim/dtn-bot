@@ -2,8 +2,7 @@ import os
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
-from utils.pdf_handler import rename_and_move_pdf, get_full_path_to_dl_dir
-from dev.pdf_handler_credit_cards import process_pdfs
+from utils.pdf_handler import process_pdfs, rename_and_move_pdf, get_full_path_to_dl_dir
 import subprocess
 
 # Run the shell script to delete PDF files from previous session
@@ -18,7 +17,7 @@ def user_journey():
 
 
     # Directory paths
-    # TODO: Update with Windows filepaths
+    # TODO: Update with Windows filepaths (staging and prod)
     dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
     keyword_in_dl_file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf` on mac
     download_dir = r'/Users/ekim/Downloads'
@@ -31,17 +30,16 @@ def user_journey():
 
     regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
 
-
     # Mapping for company name to Fuel Drafts subdir full path
     company_name_to_subdir_full_path_mapping_fuel_drafts = {
         'CVR SUPPLY & TRADING, LLC': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351',
 
-        'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/EXXONMOBIL [10005]',
+        'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/EXXONMOBIL (10005)',
 
         'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/U S VENTURE - U S OIL COMPANY [12262]',
 
         'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]',
-        
+
         'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]'
     }
 
@@ -52,7 +50,7 @@ def user_journey():
 
         'CONCORD FIRST DATA RETRIEVAL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/First Data',
 
-        'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)/temp'
+        'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL (10005)'
 
     }
 
@@ -114,6 +112,13 @@ def user_journey():
         process_pdfs(keyword_in_dl_file_name, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns)
         print(f'Finished!')
 
+
+""" How to call function for CCM/LRD vs ETF respectively
+# process_pdfs(file_path, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
+# process_pdfs(file_path, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
+
+
+"""
 
     finally:
         teardown_driver(driver)
