@@ -18,7 +18,7 @@ def rename_and_delete_pdf(file_path):
             if len(pdf.pages) > 0:
                 first_page = extract_text_from_pdf_page(pdf.pages[0])
 
-                if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+|CMD-\d+', first_page):
+                if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
                     if re.search(r'EFT-\d+', first_page):
                         new_file_name = f'EFT-{today}-TO-BE-DELETED.pdf'
                     else:
