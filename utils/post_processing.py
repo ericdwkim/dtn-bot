@@ -45,6 +45,7 @@ def extract_pdf_data(directory):
             regex_num_ccm, amount = extract_ccm_data(pdf_file)
             total_amount += amount
             total_amount = round(total_amount, 2)  # Round to two decimal places
+            total_amount = "{:.2f}".format(total_amount) # Include trailing zeros after decimal
             pdf_data_ccm.append((regex_num_ccm, today, total_amount, os.path.join(directory, pdf_file)))
         elif pdf_file.startswith('LRD'):
             regex_num_lrd, _ = extract_lrd_data(pdf_file)
