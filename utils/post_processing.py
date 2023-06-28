@@ -52,7 +52,7 @@ def extract_pdf_data(directory):
             pdf_data_lrd.append((regex_num_lrd, today, _, os.path.join(directory, pdf_file)))
     pdf_data_ccm.sort(key=lambda x: x[0])
     pdf_data_lrd.sort(key=lambda x: x[0])
-    return pdf_data_ccm, total_amount, pdf_data_lrd
+    return pdf_data_ccm, total_amount_rounded, pdf_data_lrd
 
 def check_file_exists(output_path):
     file_path = os.path.join(output_path)
