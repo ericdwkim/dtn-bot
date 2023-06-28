@@ -62,7 +62,7 @@ def someFunc(directory):
             print(f'amount: {amount}')
             total_amount += amount
             total_amount = round(total_amount, 2)  # Round to two decimal places
-            total_amount = float("{:.2f}".format(total_amount)) # Include trailing zeros after decimal
+            # total_amount = float("{:.2f}".format(total_amount)) # Include trailing zeros after decimal
             pdf_data_ccm.append((regex_num_ccm, today, total_amount, os.path.join(directory, pdf_file)))
             print(f'pdf_data_ccm: {pdf_data_ccm}')
             print(f'total_amount: {total_amount}')
