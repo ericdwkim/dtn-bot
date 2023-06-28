@@ -1,10 +1,10 @@
+import os
+import re
+import time
 import pikepdf
 import shutil
 import pdfplumber
-import re
 import datetime
-import os
-import time
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 
@@ -12,57 +12,33 @@ from utils.extraction_handler import extract_text_from_pdf_page, extract_info_fr
 def rename_and_delete_pdf(file_path):
     file_deleted = False
     today = datetime.date.today().strftime('%m-%d-%y')
-    print(f'--------------------{file_path}')
 
-    # Check if file_path exists
     if os.path.exists(file_path):
-        # Open the PDF file to check its contents
         with pikepdf.open(file_path) as pdf:
-            print(f'--------------------{file_path}')
             if len(pdf.pages) > 0:
                 first_page = extract_text_from_pdf_page(pdf.pages[0])
-                # Check if it is the original EFT file
-                if re.search(r'EFT-\d+', first_page):
-                    # print(f'first_page: {first_page}')
-                    # Rename file
-                    file_directory = os.path.dirname(file_path)
-                    file_name = os.path.basename(file_path)
-                    new_file_name = f'EFT-{today}-MESSAGES.pdf'
-                    # print(f'--------------------{new_file_name}')
-                    new_file_path = os.path.join(file_directory, new_file_name)
-                    # print(f'--------------------{new_file_path}')
-                    old_file_path = os.path.join(file_directory, file_name)
-                    # print(f'--------------------{old_file_path}')
 
-                    print(f"Renaming file: {old_file_path} to {new_file_path}")
-                    os.rename(old_file_path, new_file_path)
-                    file_deleted = True
-                    print(f"File renamed successfully.")
-                    time.sleep(3)
-                elif re.search(r'CCM-\d+', first_page) or re.search(r'CMD-\d+', first_page):
-                    # print(f'first_page: {first_page}')
-                    # Rename file with CCM naming convention
-                    file_directory = os.path.dirname(file_path)
-                    file_name = os.path.basename(file_path)
-                    new_file_name = f'CCM-{today}-MESSAGES.pdf'
-                    # print(f'--------------------{new_file_name}')
-                    new_file_path = os.path.join(file_directory, new_file_name)
-                    # print(f'--------------------{new_file_path}')
-                    old_file_path = os.path.join(file_directory, file_name)
-                    # print(f'--------------------{old_file_path}')
+                if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+|CMD-\d+', first_page):
+                    if re.search(r'EFT-\d+', first_page):
+                        new_file_name = f'EFT-{today}-TO-BE-DELETED.pdf'
+                    else:
+                        new_file_name = f'CCM-{today}-TO-BE-DELETED.pdf'
 
-                    print(f"Renaming file: {old_file_path} to {new_file_path}")
-                    os.rename(old_file_path, new_file_path)
+                    file_directory = os.path.dirname(file_path)
+                    new_file_path = os.path.join(file_directory, new_file_name)
+
+                    print(f"Renaming file: {file_path} to {new_file_path}")
+                    os.rename(file_path, new_file_path)
                     file_deleted = True
-                    print(f"File renamed successfully.")
+                    print("File renamed successfully.")
                     time.sleep(3)
-                    # Delete the file using the new file name
-                    print(f"Deleting file: {new_file_path}")
-                    os.remove(new_file_path)
-                    print(f"File deleted successfully.")
+
+                    if os.path.exists(new_file_path):
+                        print(f"Deleting file: {new_file_path}")
+                        os.remove(new_file_path)
+                        print("File deleted successfully.")
 
     return file_deleted
-
 
 # Invoices
 def rename_and_move_pdf(file_name, source_dir, target_dir):
