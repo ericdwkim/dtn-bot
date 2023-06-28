@@ -26,7 +26,7 @@
    ```bash
    cd path/to/directory
    ```
-3. Create a new virtual environment:
+3. Create a new virtual environment. Feel free to replace `myenv` with the desired name for your environment.
    ```bash
    python -m venv myenv
    ```
@@ -46,3 +46,15 @@
 
 Feel free to replace `myenv` with the desired name for your environment.
 
+6. Set the following environmental variables on local machine:
+   ```
+   DTN_EMAIL_ADDRESS 
+   DTN_PASSWORD
+   DTN_URL = "https://dataconnect.dtn.com/energy"
+   ```
+   
+7. Run the script:
+
+   ```
+   python -m src.test.main
+   ```

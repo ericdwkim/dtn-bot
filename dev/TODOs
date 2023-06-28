@@ -1,0 +1,11 @@
+# TODO: Update with Windows filepaths (staging and prod)
+# TODO: if set date has no draft notices (aka draft notice bar not found) then just skip draft notices and continue to 3rd Flow)
+# TODO: docstrings for all funcs
+# TODO: README for running main.py. SEE BELOW
+
+FYI: running dtn-bot’s main.py must be done like so:
+/Users/ekim/opt/anaconda3/envs/bots/bin/python -m src.test.main
+if using pycharm, ensure that the configuration is set to module name: src.test.main and working directory set to ~dtn-bot/src
+this is b/c python does not recognize the current working directory src as a package despite pages and test modules being nested within src !!!
+
+# TODO: Running scripts/delete_pdf_files.sh - pathing issue when ran in terminal vs pycharm due to similar issue above ^^^
