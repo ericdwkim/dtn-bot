@@ -18,7 +18,8 @@ def cleanup_files(pdf_data):
 
 
 def extract_ccm_data(pdf_file):
-    match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', pdf_file)
+    filename = os.path.basename(pdf_file)
+    match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', filename)
     if match:
         regex_num = int(match.group(1))
         total_amount = float(match.group(2).replace(',', ''))
@@ -39,13 +40,13 @@ def extract_pdf_data(directory):
     pdf_files = [f for f in os.listdir(directory) if f.endswith('.pdf')]
     pdf_data_ccm = []
     pdf_data_lrd = []
-    total_amount = 0
+    total_amount = 0.00
     for pdf_file in pdf_files:
         if pdf_file.startswith('CCM'):
             regex_num_ccm, amount = extract_ccm_data(pdf_file)
             total_amount += amount
             total_amount = round(total_amount, 2)  # Round to two decimal places
-            total_amount = "{:.2f}".format(total_amount) # Include trailing zeros after decimal
+            total_amount = float("{:.2f}".format(total_amount)) # Include trailing zeros after decimal
             pdf_data_ccm.append((regex_num_ccm, today, total_amount, os.path.join(directory, pdf_file)))
         elif pdf_file.startswith('LRD'):
             regex_num_lrd, _ = extract_lrd_data(pdf_file)
