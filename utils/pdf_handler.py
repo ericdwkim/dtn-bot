@@ -23,16 +23,16 @@ def rename_and_delete_pdf(file_path):
                 first_page = extract_text_from_pdf_page(pdf.pages[0])
                 # Check if it is the original EFT file
                 if re.search(r'EFT-\d+', first_page):
-                    print(f'first_page: {first_page}')
+                    # print(f'first_page: {first_page}')
                     # Rename file
                     file_directory = os.path.dirname(file_path)
                     file_name = os.path.basename(file_path)
                     new_file_name = f'EFT-{today}-MESSAGES.pdf'
-                    print(f'--------------------{new_file_name}')
+                    # print(f'--------------------{new_file_name}')
                     new_file_path = os.path.join(file_directory, new_file_name)
-                    print(f'--------------------{new_file_path}')
+                    # print(f'--------------------{new_file_path}')
                     old_file_path = os.path.join(file_directory, file_name)
-                    print(f'--------------------{old_file_path}')
+                    # print(f'--------------------{old_file_path}')
 
                     print(f"Renaming file: {old_file_path} to {new_file_path}")
                     os.rename(old_file_path, new_file_path)
@@ -40,16 +40,16 @@ def rename_and_delete_pdf(file_path):
                     print(f"File renamed successfully.")
                     time.sleep(3)
                 elif re.search(r'CCM-\d+', first_page) or re.search(r'CMD-\d+', first_page):
-                    print(f'first_page: {first_page}')
+                    # print(f'first_page: {first_page}')
                     # Rename file with CCM naming convention
                     file_directory = os.path.dirname(file_path)
                     file_name = os.path.basename(file_path)
                     new_file_name = f'CCM-{today}-MESSAGES.pdf'
-                    print(f'--------------------{new_file_name}')
+                    # print(f'--------------------{new_file_name}')
                     new_file_path = os.path.join(file_directory, new_file_name)
-                    print(f'--------------------{new_file_path}')
+                    # print(f'--------------------{new_file_path}')
                     old_file_path = os.path.join(file_directory, file_name)
-                    print(f'--------------------{old_file_path}')
+                    # print(f'--------------------{old_file_path}')
 
                     print(f"Renaming file: {old_file_path} to {new_file_path}")
                     os.rename(old_file_path, new_file_path)

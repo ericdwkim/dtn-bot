@@ -4,6 +4,11 @@ import datetime
 import pikepdf
 
 def cleanup_files(pdf_data):
+    """
+
+    :param pdf_data:
+    :return:
+    """
     files_deleted = False
     for _, _, _, file_path in pdf_data:
         if os.path.exists(file_path):

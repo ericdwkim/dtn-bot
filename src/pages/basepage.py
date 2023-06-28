@@ -19,7 +19,7 @@ class BasePage(object):
         :param target_elem_idx:
         :param target_locator:
         :param locator_type:
-        :return:
+        :return: Tuple(WebElement, bool, WebElement, bool)
         """
         source_element = None
         src_element_is_clickable_and_present = False
@@ -51,6 +51,12 @@ class BasePage(object):
         return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
 
     def find_element_drag_and_drop(self, src_locator, target_elem_idx):
+        """
+        Find element by src_locator string, drag elem and drop to target element by index target_elem_idx
+        :param src_locator:
+        :param target_elem_idx:
+        :return: bool
+        """
 
         source_element, src_element_is_clickable_and_present, target_element, target_elements_present = self.find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(
             src_locator, target_elem_idx)
@@ -84,6 +90,12 @@ class BasePage(object):
             return False, None
 
     def find_element_and_click_and_send_keys(self, locator, keys_to_send):
+        """
+        Find element by locator string, click on element, and send keys
+        :param locator:
+        :param keys_to_send:
+        :return: bool
+        """
         try:
             was_clicked, element_selector_clicked = self.find_element_and_click(locator)
             if was_clicked:
@@ -96,10 +108,13 @@ class BasePage(object):
             print(f'An error occurred: {str(e)}')
             return False
 
-    """
-        @dev: find_element_and_click_perform() uses ActionChains
-    """
     def find_element_and_click_perform(self, locator, locator_type=By.CSS_SELECTOR):
+        """
+        Finds element by locator string using locator_type. Uses ActionChains to click() and perform()
+        :param locator:
+        :param locator_type:
+        :return: bool
+        """
         element = self.driver.find_element(locator_type, locator)
         if element:
             self.action.move_to_element(element).click(element).perform()
@@ -110,6 +125,13 @@ class BasePage(object):
 
 
     def wait_for_element(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
+        """
+        Waits for element by locator string using locator_type with a timeout
+        :param locator:
+        :param locator_type:
+        :param timeout:
+        :return: bool
+        """
         try:
             WebDriverWait(self.driver, timeout).until(
                 EC.visibility_of_element_located((locator_type, locator))
@@ -145,9 +167,12 @@ class BasePage(object):
             print(f'Tried to wait for element: {mark} to be clickable')
             return False
 
-    # checking for one of the common attributes/methods a WebElement instance has, like tag_name workaround as
-    # `WebElement` is not a directly importable class in the selenium module.It's a type of object returned when a web element is found by a driver. There's no direct way to check if an object is a WebElement via isinstance().
     def is_web_element(self, obj):
+        """
+        Checks for common attributes/methods a WebElement instance has, such as `tag_name`\nas a workaround since `WebElement` is not a directly importable class in Selenium module. There is no direct way to check if an obj is a WebElement via isintance() method.
+        :param obj:
+        :return: bool
+        """
         return hasattr(obj, "tag_name")
 
     def wait_for_presence_of_elements_located(self, locator, locator_type=By.CSS_SELECTOR, timeout=30):
