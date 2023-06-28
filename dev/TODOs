@@ -1,6 +1,7 @@
 # TODO: Update with Windows filepaths (staging and prod)
 # TODO: directory paths simplier/cleaner? might require more work/tinkering....
 # TODO: if set date has no draft notices (aka draft notice bar not found) then just skip draft notices and continue to 3rd Flow)
+# TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely; timeout logic to automatically restart script if filter head not found after retries
 # TODO: docstrings for all funcs
 # TODO: README for running main.py. SEE BELOW
 
