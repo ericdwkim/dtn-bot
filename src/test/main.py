@@ -17,7 +17,6 @@ def user_journey():
 
 
     # Directory paths
-    # TODO: Update with Windows filepaths (staging and prod)
     dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May'
     keyword_in_dl_file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf` on mac
     download_dir = r'/Users/ekim/Downloads'
@@ -65,7 +64,6 @@ def user_journey():
         rename_and_move_pdf(keyword_in_dl_file_name, download_dir, dest_dir_invoices)
 
         # DataConnect 2nd Flow - Draft Notice
-        # TODO: if set date has no draft notices (aka draft notice bar not found) then just skip draft notices and continue to 3rd Flow)
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
             return

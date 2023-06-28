@@ -1,4 +1,5 @@
 # TODO: Update with Windows filepaths (staging and prod)
+# TODO: directory paths simplier/cleaner? might require more work/tinkering....
 # TODO: if set date has no draft notices (aka draft notice bar not found) then just skip draft notices and continue to 3rd Flow)
 # TODO: docstrings for all funcs
 # TODO: README for running main.py. SEE BELOW
