@@ -2,6 +2,9 @@ WIP - # TODO: dynamically create subdirs for YYYY and NUM-MONTH for each directo
 # TODO: Update with Windows filepaths (staging and prod)
 # TODO: if set date has no draft notices (aka draft notice bar not found) then just skip draft notices and continue to 3rd Flow)
 # TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely; timeout logic to automatically restart script if filter head not found after retries
+# TODO: improve data structure to account for all companies; dynamically create company subdir if parsed PDF company dir doesn't exist
+# TODO: need more conditional logic for when to rename files with `()` around total_amount values as it is not always for just exxon EFTs, but rather it depends on whether there is a preceding or trailing `-` from the extracted total_amount value. currently logic has it so that ALL exxon EFTs are assumed to be money owed. it needs to use the total_amount value as a string, not just a float from matches[-1]
+
 
 FYI: running dtn-bot’s main.py must be done like so:
 /Users/ekim/opt/anaconda3/envs/bots/bin/python -m src.test.main
