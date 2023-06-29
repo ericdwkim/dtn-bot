@@ -5,7 +5,7 @@ directories=(
 
   "/Users/ekim/Downloads"
 
-  "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/5-May"
+  "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/6-June"
 
 
   "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351"
