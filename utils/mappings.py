@@ -1,4 +1,4 @@
-# STAGING 
+# STAGING -
 
 # Directory paths
 dest_dir_invoices = r'K:/DTN Reports/Fuel Invoices/5-May'
