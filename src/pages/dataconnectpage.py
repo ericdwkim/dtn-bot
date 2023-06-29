@@ -200,7 +200,7 @@ class DataConnectPage(BasePage):
 
         return True, True, True
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(10))
     def set_translated_filter_to_no(self):
         """
         set_filter wrapper specific to Translated filter to `No`
@@ -222,7 +222,7 @@ class DataConnectPage(BasePage):
                   f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Translated filter.")
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(10))
     def set_group_filter_to_invoice(self):
         """
         set_filter wrapper specific to Group filter to `Invoice`
@@ -245,7 +245,7 @@ class DataConnectPage(BasePage):
                 f'{src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Group filter to Invoice")
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(10))
     def set_group_filter_to_draft_notice(self):
         """
         set_filter wrapper specific to Group filter to Draft Notice
@@ -268,7 +268,7 @@ class DataConnectPage(BasePage):
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Group filter to Draft Notice")
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(10))
     def set_group_filter_to_credit_card(self):
         """
         set_filter wrapper specific to Group filter to Credit Card
