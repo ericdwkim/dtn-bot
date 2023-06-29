@@ -47,14 +47,14 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
 
     # Find the downloaded PDF
     for file in os.listdir(source_dir):
-        if file.endswith('.pdf') and file_name in file:  # Adjust this as needed to match your file
+        if file.endswith('.pdf') and file_name in file:
             source_file = os.path.join(source_dir, file)
             # Rename file
             destination_file = os.path.join(target_dir, f'{today}.pdf')
             # Move the file
             print(f'Moving {destination_file} to {target_dir}')
             shutil.move(source_file, destination_file)
-            break  # If you're only expecting one such file, you can break the loop after the first one found
+            break  # Only expecting one file, so exit loop after first one is found
 
 
 def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):

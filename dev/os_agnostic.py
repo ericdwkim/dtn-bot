@@ -8,6 +8,22 @@ config = {
     "temp_dir": ""
 }
 
+# Windows config dict
+config_win = {
+    "ccm_dir": r'K:/DTN Reports/Credit Cards/',
+    "etf_dir": r'K:/DTN Reports/Draft Notice/',
+    "inv_dir": r'K:/DTN Reports/Draft Notice/'
+}
+
+# Windows config dict
+config_mac = {
+    "ccm_dir": r'K:/DTN Reports/Credit Cards/',
+    "etf_dir": r'K:/DTN Reports/Draft Notice/',
+    "inv_dir": r'K:/DTN Reports/Draft Notice/'
+}
+
+
+
 # Get the current operating system
 os_type = platform.system()
 
@@ -19,6 +35,7 @@ if os_type == 'Windows':
     config["data_dir"] = "C:\\path\\to\\data\\dir"
     config["log_dir"] = "C:\\path\\to\\log\\dir"
     config["temp_dir"] = "C:\\path\\to\\temp\\dir"
+
 else:  # Assume Unix-based system (like MacOS or Linux)
     config["data_dir"] = "/path/to/data/dir"
     config["log_dir"] = "/path/to/log/dir"
