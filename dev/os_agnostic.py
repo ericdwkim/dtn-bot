@@ -11,6 +11,10 @@ config = {
 # Get the current operating system
 os_type = platform.system()
 
+# print(os_type) # Darwin on M1
+
+
+
 if os_type == 'Windows':
     config["data_dir"] = "C:\\path\\to\\data\\dir"
     config["log_dir"] = "C:\\path\\to\\log\\dir"

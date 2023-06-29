@@ -23,9 +23,15 @@ company_id_to_subdir_mapping = {
     '10778': 'WINTERS OIL [10778]',
 }
 
-# file_prefix INV is only needed for conditional logic. it is not used for actual file renaming
-root_directory_mapping = {
+regex_pattern_to_document_type_root_directory_mapping_windows = {
     ('CCM', 'LRD'): r'K:/DTN Reports/Credit Cards/',
     'EFT': r'K:/DTN Reports/Fuel Drafts/',
     'INV': r'K:/DTN Reports/Fuel Invoices/',
+}
+
+
+regex_pattern_to_document_type_root_directory_mapping_mac = {
+    ('CCM', 'LRD'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
+    'EFT': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/',
+    'INV': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/',
 }
