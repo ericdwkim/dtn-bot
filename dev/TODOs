@@ -1,4 +1,5 @@
-WIP - # TODO: dynamically create subdirs for YYYY and NUM-MONTH for each directory in DTN Reports
+# TODO (6/29/23) 9am - manually add all filepaths to each mapping in its current data structure and test thoroughly for tomorrow's review
+WIP - # TODO: dynamically create subdirs for YYYY and NUM-MONTH for each directory in DTN Reports --> use company_id to company subdir root path mapping
 # TODO: Update with Windows filepaths (staging and prod)
 # TODO: if set date has no draft notices (aka draft notice bar not found) then just skip draft notices and continue to 3rd Flow)
 # TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely; timeout logic to automatically restart script if filter head not found after retries
