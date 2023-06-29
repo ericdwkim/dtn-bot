@@ -1,4 +1,3 @@
-import os
 from config import setup_config
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage

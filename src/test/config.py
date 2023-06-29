@@ -12,14 +12,6 @@ def setup_config():
     username = os.getenv('DTN_EMAIL_ADDRESS')
     password = os.getenv('DTN_PASSWORD')
 
-    # Configuration setup code
-
-# main.py
-# import config
-
-# config.setup_config()
-
-# The rest of your main script here...
 
 
 setup_config()
