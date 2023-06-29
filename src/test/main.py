@@ -1,21 +1,19 @@
 import os
+from config import setup_config
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
 from utils.pdf_handler import process_pdfs, rename_and_move_pdf, get_full_path_to_dl_dir, rename_and_delete_pdf
-import subprocess
 from utils.mappings import (dest_dir_invoices, keyword_in_dl_file_name, download_dir, company_names,
                       regex_patterns, company_name_to_subdir_full_path_mapping_fuel_drafts,
                       company_name_to_subdir_full_path_mapping_credit_cards)
 
-# Run the shell script to delete PDF files from previous session
-subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True)
-print(f'===========================================================================================')
 
-
-username = os.getenv('DTN_EMAIL_ADDRESS')
-password = os.getenv('DTN_PASSWORD')
 def user_journey():
+
+    # Configuration setup
+    setup_config()
+
     driver = setup_driver()
 
 
