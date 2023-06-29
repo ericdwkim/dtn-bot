@@ -9,8 +9,8 @@ from utils.mappings import (dest_dir_invoices, keyword_in_dl_file_name, download
                       company_name_to_subdir_full_path_mapping_credit_cards)
 
 # Run the shell script to delete PDF files from previous session
-subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True)
-print(f'===========================================================================================')
+# subprocess.run(["../scripts/delete_pdf_files.sh"], shell=True)
+# print(f'===========================================================================================')
 
 
 username = os.getenv('DTN_EMAIL_ADDRESS')
