@@ -24,3 +24,4 @@ this is b/c python does not recognize the current working directory src as a pac
 
 # Improvements
 # TODO: directory paths simplier/cleaner? might require more work/tinkering....
+# TODO: os-agnostism
