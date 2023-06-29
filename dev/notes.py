@@ -8,7 +8,6 @@
 #  This PC / nt1data (\\fileserver\data) (K:) / DTN Reports / Fuel Invoices / 5-May
 
 
-
 """
 """
 """
@@ -17,15 +16,54 @@ File system structure:
 This PC
 |_ nt1data (\\fileserver\data) (K:)
   |______________ DTN Reports
-                |______________ Credit Cards         
-                |______________ Fuel Drafts                                
+                |______________ Credit Cards     
+                                |______________ Company A
+                                                |______________ 6-June
+                                                |______________ 2020
+                                                |______________ 2021
+                                                |______________ 1-Jan
+                                                |______________ etc..
+                                                |______________ 12-Dec
+
+                                |______________ Company B
+                                |______________ Company C
+                                |______________ Company D
+                                |______________ Company etc ...
+                                |______________ Company Z
+                     
+                |______________ Fuel Drafts              
+                                |______________ Company A
+                                                |______________ 6-June
+                                                |______________ 2020
+                                                |______________ 2021
+                                                                |______________ 1-Jan
+                                                                |______________ etc..
+                                                                |______________ 12-Dec
+
+                                |______________ Company B
+                                |______________ Company C
+                                |______________ Company D
+                                |______________ Company etc ...
+                                |______________ Company Z
+                                  
                 |______________ Fuel Invoices
-                                |______________ 5-May
+                                |______________ 6-June
                                 |______________ 2020
                                 |______________ 2021
+                                                |______________ 1-Jan
+                                                |______________ etc..
+                                                |______________ 12-Dec
+
                                 |______________ 2022
+                                                |______________ 1-Jan
+                                                |______________ etc..
+                                                |______________ 12-Dec
                                 |______________ 2023
+                                                |______________ 1-Jan
+                                                |______________ etc..
+                                                |______________ 5-May
                                                 
+K:/DTN Reports/Credit Cards/Company A
 """
 
 """
@@ -151,6 +189,134 @@ Improvement / feature idea:
  ie: r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/ as parent dir --> if on Draft Notice Flow only place files in Fuel Drafts; if on Credit Cards flow
  only place files in Credit Cards; this will allow us to only have a single mapping for {company_name: parent_dir_full_path}
  
+
+
+
+
+
+
+
+
+
+
+Given the following file system structure:
+
+```
+This PC
+|_ nt1data (\\fileserver\data) (K:)
+  |______________ DTN Reports
+                |______________ Credit Cards     
+                                |______________ Company A
+                                                |______________ 6-June
+                                                |______________ 2020
+                                                |______________ 2021
+                                                |______________ 1-Jan
+                                                |______________ etc..
+                                                |______________ 12-Dec
+
+                                |______________ Company B
+                                |______________ Company C
+                                |______________ Company D
+                                |______________ Company etc ...
+                                |______________ Company Z
+                     
+                |______________ Fuel Drafts              
+                                |______________ Company A
+                                                |______________ 6-June
+                                                |______________ 2020
+                                                |______________ 2021
+                                                                |______________ 1-Jan
+                                                                |______________ etc..
+                                                                |______________ 12-Dec
+
+                                |______________ Company B
+                                |______________ Company C
+                                |______________ Company D
+                                |______________ Company etc ...
+                                |______________ Company Z
+                                  
+                |______________ Fuel Invoices
+                                |______________ 6-June
+                                |______________ 2020
+                                |______________ 2021
+                                                |______________ 1-Jan
+                                                |______________ etc..
+                                                |______________ 12-Dec
+
+                                |______________ 2022
+                                                |______________ 1-Jan
+                                                |______________ etc..
+                                                |______________ 12-Dec
+                                |______________ 2023
+                                                |______________ 1-Jan
+                                                |______________ etc..
+                                                |______________ 5-May
+
+```
+
+
+Write me a python function that will return variable `output_path`. This function should perform the following:
+
+1) Dynamically create subdirectories for months. For example, if it tries to move or save a file in a subdirectory with the path `K:/DTN Reports/Credit Cards/Company A/7-July`, but `7-July` does not exist yet, it will create the directory in its parent directory `Company A` and then place the file in `K:/DTN Reports/Credit Cards/Company A/7-July`. 
+
+2) Dynamically create subdirectories for years. For example if it tries to move/save a directory ``K:/DTN Reports/Credit Cards/Company A/6-June` into `K:/DTN Reports/Credit Cards/Company A/2023` and `2023` does not yet exist, it will create it in `Company A` directory and place the directory `6-June` in that year directory. 
+    2A) A month directory such as `6-June` is considered "full" when a file with the last date of that month exists in the directory. For example: 6-June/06-30-23-someFile.pdf indicates that 6-June has files 6-June/06-01-23-someOlderFile.pdf through 6-June/06-30-23-someFile.pdf
+    2B) If the month directory is 12-December, since this is last month of the year, we will place 12-December in its year directory, say 2023/12-December, and then create a new `1-Jan` directory in the parent directory, that is, if we have `K:/DTN Reports/Credit Cards/Company A/2023/12-December`, then we create `K:/DTN Reports/Credit Cards/Company A/1-Jan` and also a `K:/DTN Reports/Credit Cards/Company A/2024` waiting to be filled as time continue.
+    
+
+3) As shown in the structure above, `K:/DTN Reports/Credit Cards` and `K:/DTN Reports/Fuel Drafts` only have company name directories after while `K:/DTN Reports/Fuel Invoices` do not and just have the year and month directories. 
+
+The function should be able to return `output_path` to then be passed into other functions that take in the `output_path` as a parameter for saving pikePDF objects. For example, take the function below:
+
+```
+def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
+    today = datetime.date.today().strftime('%m-%d-%y')
+    if file_prefix == 'CCM':
+        new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
+    else:  # LRD
+        new_file_name = f'{today}-Loyalty.pdf'
+
+    output_path = os.path.join(directory, new_file_name)
+    try:
+        merged_pdf.save(output_path)
+        merged_pdf.close()
+        print(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
+        return True
+    except Exception:
+        return False
+```
+
+Currently we manually create the `output_path` variable using the `directory` parameter which is simply the directory path retrieved from a company name to company subdirectory full path. Here is an example of the hardcoded mappings:
+
+
+company_name_to_subdir_full_path_mapping = {'EXXONMOBIL': r'K:/DTN Reports/Fuel Drafts/EXXONMOBIL (10005)'}
+
+Since these directory paths are hardcoded, there is no way to dynamically create and file away files into their appropriate month subdirectories and eventually month subdirectories into their appropriate year directories for every company directory. 
+
+This does not have to be done in a single function. Multiple functions can be written to perform all these requirements. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

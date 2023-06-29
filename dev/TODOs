@@ -1,9 +1,7 @@
+WIP - # TODO: dynamically create subdirs for YYYY and NUM-MONTH for each directory in DTN Reports
 # TODO: Update with Windows filepaths (staging and prod)
-# TODO: directory paths simplier/cleaner? might require more work/tinkering....
 # TODO: if set date has no draft notices (aka draft notice bar not found) then just skip draft notices and continue to 3rd Flow)
 # TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely; timeout logic to automatically restart script if filter head not found after retries
-# TODO: docstrings for all funcs
-# TODO: README for running main.py. SEE BELOW
 
 FYI: running dtn-bot’s main.py must be done like so:
 /Users/ekim/opt/anaconda3/envs/bots/bin/python -m src.test.main
@@ -12,3 +10,13 @@ this is b/c python does not recognize the current working directory src as a pac
 
 # TODO: Running scripts/delete_pdf_files.sh - pathing issue when ran in terminal vs pycharm due to similar issue above ^^^
 #TODO: Doesn't rename or delete original CCM after finishing 3rd Flow. Timing issue???
+
+
+
+# Chores
+# TODO: docstrings for all funcs
+# TODO: README for running main.py. SEE BELOW
+
+
+# Improvements
+# TODO: directory paths simplier/cleaner? might require more work/tinkering....
