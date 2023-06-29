@@ -38,9 +38,15 @@ class DataConnectPage(BasePage):
                     r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
                 translated_filter_head_clickable = self.wait_for_element_clickable(
                     r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
-                if was_clicked and translated_filter_head_located and translated_filter_head_clickable:
-                    time.sleep(15) # wait for UI to update
+                if was_clicked and element_selector_clicked and translated_filter_head_located and translated_filter_head_clickable:
+                    time.sleep(15)  # wait for UI to update
                     return True
+                elif was_clicked and element_selector_clicked and not translated_filter_head_located and not translated_filter_head_clickable:
+                    print(
+                        f'Unable to locate and wait for Translated filter head to be interactable after setting date filter to yesterday')
+                elif was_clicked and element_selector_clicked and translated_filter_head_located and not translated_filter_head_clickable:
+                    print(
+                        f'Date set to yesterday and Translated filter head was located, but not could not wait for filter head to be interactable')
             except Exception as e:
                 print(f'An error occurred trying to set date filter: {str(e)}')
                 if attempt < max_retries - 1:  # No need to sleep on the last attempt

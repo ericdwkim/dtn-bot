@@ -65,6 +65,12 @@ class BasePage(object):
             self.action.drag_and_drop(source_element, target_element).perform()
             time.sleep(10)  # Wait for UI to update
             return True
+
+        elif source_element and target_element and not src_element_is_clickable_and_present and not target_elements_present and (
+                (src_locator == r"//li[@title='Draft Notice']") or (src_locator == r"//li[@title='Credit Card']")):
+            print(f'Unable to wait for src elem: {src_locator} to be found and interactable\nAre there Draft Notices or Credit Cards for set date?\nProceeding with the script...')
+            return True
+
         else:
             print(f'Source and/or Target element was not found and/or not present\nsrc_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
             return False
