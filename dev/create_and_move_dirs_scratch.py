@@ -2,8 +2,37 @@ import os
 import datetime
 import shutil
 
-# Some global variable for the root directory.
-root_directory = r'K:/DTN Reports'
+
+company_id_to_subdir_mapping = {
+    '10482': 'COFFEYVILLE [10482]',
+    '12351': 'CVR Supply & Trading 12351',
+    '12293': 'DK TRADING [12293]',
+    '10005': 'EXXONMOBIL [10005]',
+    '11177': 'FLINT HILLS [11177]',
+    '10351': 'FRONTIER [10351]',
+    '10350': 'FUEL MASTERS [10350]',
+    '11465': 'JUNIPER [11465]',
+    '12123': 'LA LOMITA [12123]',
+    '11480': 'MANSFIELD OIL [11480]',
+    '11096': 'MERITUM - PICO [11096]',
+    '10420': 'MOTIVA [10420]',
+    '12170': 'OFFEN PETROLEUM [12170]',
+    '10007': 'PHILLIPS [10007]',
+    '11293': 'SEIFS [11293]',
+    '11613': 'SUNOCO [11613]',
+    '10280': 'TEXAS TRANSEASTERN [10280]',
+    '12262': 'U S VENTURE - U S OIL COMPANY [12262]',
+    '10006': 'VALERO [10006]',
+    '10778': 'WINTERS OIL [10778]',
+}
+
+# file_prefix INV is only needed for conditional logic. it is not used for actual file renaming
+root_directory_mapping = {
+    ('CCM', 'LRD'): r'K:/DTN Reports/Credit Cards/',
+    'EFT': r'K:/DTN Reports/Fuel Drafts/',
+    'INV': r'K:/DTN Reports/Fuel Invoices/',
+}
+
 
 def is_last_day_of_month():
     today = datetime.date.today()
@@ -21,33 +50,56 @@ def create_directory(directory):
     return directory
 
 
-def calculate_directory_path(file_prefix, company_name, last_day_of_month):
+def calculate_directory_path(file_prefix, company_id, last_day_of_month):
     today = datetime.date.today()
     current_month = today.strftime('%m-%b')
     current_year = today.strftime('%Y')
 
-    if file_prefix == 'CCM':
-        base_dir = os.path.join(root_directory, 'Credit Cards', company_name)
-    elif file_prefix == 'ETF':
-        base_dir = os.path.join(root_directory, 'Fuel Drafts', company_name)
-    else:  # For Fuel Invoices
-        base_dir = root_directory
+    root_directory_mapping = {
+        ('CCM', 'LRD'): r'K:/DTN Reports/Credit Cards/',
+        'EFT': r'K:/DTN Reports/Fuel Drafts/',
+        'INV': r'K:/DTN Reports/Fuel Invoices/',
+    }
 
-    month_dir = os.path.join(base_dir, current_month)
-    year_dir = os.path.join(base_dir, current_year)
+    root_directory = None
+    for key, value in root_directory_mapping.items():
+        if isinstance(key, tuple):
+            if file_prefix in key:
+                root_directory = value
+                break
+        elif key == file_prefix:
+            root_directory = value
+            break
 
-    # Create year and month directories if they don't exist.
-    month_dir = create_directory(month_dir)
-    if last_day_of_month:
-        # If it's the last day of the month, move the month to the year folder and create a new month folder.
-        move_directory_to_another(month_dir, year_dir)
-        next_month = (today.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
-        month_dir = create_directory(os.path.join(base_dir, next_month))
-        if next_month == '01-Jan':
-            # If it's January, create the next year folder.
-            create_directory(os.path.join(base_dir, str(int(current_year) + 1)))
+    if root_directory:
+        company_directory = company_id_to_subdir_mapping.get(company_id, '')  # Use the mapping to get company directory
+        current_directory = os.path.join(root_directory, company_directory)
 
-    return month_dir
+        month_dir = os.path.join(current_directory, current_month)
+        year_dir = os.path.join(current_directory, current_year)
+
+        # Create year and month directories if they don't exist.
+        month_dir = create_directory(month_dir)
+        if last_day_of_month:
+            # If it's the last day of the month, move the month to the year folder and create a new month folder.
+            move_directory_to_another(month_dir, year_dir)
+            next_month = (today.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
+            month_dir = create_directory(os.path.join(current_directory, next_month))
+            if last_day_of_month:
+                # If it's the last day of the month, move the month to the year folder.
+                move_directory_to_another(month_dir, year_dir)
+                next_month = (today.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
+                if next_month == '01-Jan':
+                    # If it's January, create the next year folder.
+                    create_directory(os.path.join(current_directory, str(int(current_year) + 1)))
+                # Always create the directory for next_month, whether it's January or not.
+                month_dir = create_directory(os.path.join(current_directory, next_month))
+
+        # This is the directory to save the file to.
+        return month_dir
+
+    # Return None if no appropriate directory could be found.
+    return None
 
 
 def create_and_save_pdf(pages, new_file_name, file_prefix, company_name):
