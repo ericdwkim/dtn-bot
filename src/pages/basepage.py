@@ -66,6 +66,7 @@ class BasePage(object):
             time.sleep(10)  # Wait for UI to update
             return True
 
+        # @dev: Handles edge case when either Draft Notices or Credit Cards are unavailable for set date; if so, continue to next flow
         elif source_element and target_element and not src_element_is_clickable_and_present and not target_elements_present and (
                 (src_locator == r"//li[@title='Draft Notice']") or (src_locator == r"//li[@title='Credit Card']")):
             print(f'Unable to wait for src elem: {src_locator} to be found and interactable\nAre there Draft Notices or Credit Cards for set date?\nProceeding with the script...')

@@ -41,6 +41,7 @@ class DataConnectPage(BasePage):
                 if was_clicked and element_selector_clicked and translated_filter_head_located and translated_filter_head_clickable:
                     time.sleep(15)  # wait for UI to update
                     return True
+                # TODO: add reload_page() in elif conditions? if so, may have to redo from beginning of script
                 elif was_clicked and element_selector_clicked and not translated_filter_head_located and not translated_filter_head_clickable:
                     print(
                         f'Unable to locate and wait for Translated filter head to be interactable after setting date filter to yesterday')
