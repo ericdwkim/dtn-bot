@@ -22,7 +22,7 @@ for dir in "${directories[@]}"; do
     echo "Searching for PDF files in $dir and its subdirectories..."
 
     # Find and delete PDF files within the directory and its subdirectories
-    find "$dir" -type f -path "*/*/????/??-*" -name "*.pdf" -delete
+    find "$dir" -type f -name "*.pdf" -delete
 
     echo "Deleted PDF files in $dir and its subdirectories"
   else
