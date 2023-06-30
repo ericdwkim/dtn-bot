@@ -84,7 +84,7 @@ def get_new_file_name(regex_num, today, total_target_amt):
     elif (re.match(r'CBK-\s*\d+', regex_num) or re.match(r'RTV-\s*\d+', regex_num)):
         new_file_name = f'{regex_num}-{today}-CHARGEBACK REQUEST.pdf'
 
-    # File naming convention for all other files (CCM, CMB, positive total amount values)
+    # File naming convention for all other files (CCM, CMB, positive ETF `total_amount` values)
     else:
         new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
     # print(f'new_file_name: {new_file_name}')
