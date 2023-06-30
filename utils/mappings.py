@@ -33,7 +33,7 @@ company_name_to_subdir_full_path_mapping_credit_cards = {
 }
 
 
-company_id_to_subdir_mapping = {
+company_id_to_company_subdir_map = {
     '10482': 'COFFEYVILLE [10482]',
     '12351': 'CVR Supply & Trading 12351',
     '12293': 'DK TRADING [12293]',
@@ -56,8 +56,7 @@ company_id_to_subdir_mapping = {
     '10778': 'WINTERS OIL [10778]',
 }
 
-# file_prefix INV is only needed for conditional logic. it is not used for actual file renaming
-root_directory_mapping = {
+doc_type_abbrv_to_doc_type_dir_map = {
     ('CCM', 'LRD'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
     'EFT': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/',
     'INV': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/',

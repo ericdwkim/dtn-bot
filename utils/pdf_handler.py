@@ -74,7 +74,7 @@ def create_and_save_pdf(pages, new_file_name, destination_dir):
         return False  # Return False if an error occurred
 
 def get_new_file_name(regex_num, today, total_target_amt):
-    # TODO: double check if it is only EFTs that follow this convention
+    # @dev: only EFTs that follow this convention
     # File naming convention for total_target_amt preceding/succeeding with a hyphen indicative of a balance owed
     if re.match(r'EFT-\s*\d+', regex_num) and re.match(r'-?[\d,]+\.\d+-?', total_target_amt):
         if "-" in total_target_amt:  # Checks if "-" exists anywhere in total_target_amt
@@ -122,7 +122,6 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                     current_page_text = "".join(current_page_texts)
 
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
-                    # TODO: Test
                     new_file_name = get_new_file_name(regex_num, today, total_amount)
                     print(f'\n*********************************************\n multi new_file_name\n*********************************************\n {new_file_name}')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
@@ -142,7 +141,6 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                 if re.search(pattern, current_page_text, re.IGNORECASE):
                     current_pages = [pdf.pages[page_num]]
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
-                    # TODO: Test
                     new_file_name = get_new_file_name(regex_num, today, total_amount)
                     print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
@@ -207,12 +205,12 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
         # Conditional post processing only for EXXON CCMs and LRDs
         if single_pages_processed and multi_pages_processed and post_processing is True:
             print(f'Post processing for EXXON CCMs & LRDs')
-            # output_directory_exxon = company_name_to_company_subdir_mapping['EXXONMOBIL']
-            # merge_rename_and_summate(output_directory_exxon)
+            output_directory_exxon = company_name_to_company_subdir_mapping['EXXONMOBIL']
+            merge_rename_and_summate(output_directory_exxon)
 
         # Dynamic filesystem mgmt when post processing is False
-        elif single_pages_processed and multi_pages_processed and post_processing is False:
-            print(f'')
+        # elif single_pages_processed and multi_pages_processed and post_processing is False:
+        #     print(f'')
 
         return single_pages_processed and multi_pages_processed
     except Exception as e:
