@@ -1,4 +1,4 @@
-from config import setup_config
+# from config import setup_config
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
@@ -10,8 +10,13 @@ from utils.mappings import (dest_dir_invoices, keyword_in_dl_file_name, download
 
 def user_journey():
 
-    # Configuration setup
-    setup_config()
+    # Run the shell script to delete PDF files from previous session
+    run(["../scripts/delete_pdf_files.sh"], shell=True)
+    print(f'===========================================================================================')
+
+    # Set environmental variables
+    username = os.getenv('DTN_EMAIL_ADDRESS')
+    password = os.getenv('DTN_PASSWORD')
 
     driver = setup_driver()
 
