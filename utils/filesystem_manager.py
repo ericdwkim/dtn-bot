@@ -23,38 +23,17 @@ def create_directory(directory):
         os.makedirs(directory)
     return directory
 
-def end_of_month_operations(directory, filename):
-    """
-    Create the new month and year directories at the end of the month.
-    """
+
+def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map):
+    print(f'Calculating directory path..............')
     # Extract the date from the filename
+    # TODO: toggle this back on after testing
     filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
+    # filename_date = datetime.date(2023, 12, 31)
     if filename_date:
         filename_date = datetime.datetime.strptime(filename_date.group(), '%m-%d-%y')
     else:
-        return  # Return if date cannot be extracted from filename
-
-    current_year = filename_date.strftime('%Y')
-    next_month = (filename_date.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
-    next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
-
-    # If it's December, create the next year's directory and the next month's directory inside it
-    if next_month == '01-Jan':
-        os.makedirs(os.path.join(directory, next_year, next_month), exist_ok=True)
-    else:  # If not December, just create the next month's directory inside the current year's directory
-        os.makedirs(os.path.join(directory, current_year, next_month), exist_ok=True)
-
-
-
-def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map):
-    # Extract the date from the filename
-    # TODO: toggle this back on after testing
-    # filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
-    filename_date = datetime.date(2023, 12, 31)
-    # if filename_date:
-    #     filename_date = datetime.datetime.strptime(filename_date.group(), '%m-%d-%y')
-    # else:
-    #     return None  # Return None if date cannot be extracted from filename
+        return None  # Return None if date cannot be extracted from filename
 
     current_month = filename_date.strftime('%m-%b')
     current_year = filename_date.strftime('%Y')
@@ -83,3 +62,27 @@ def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_t
 
     # Return None if no appropriate directory could be found.
     return None
+
+# TODO: wrap is_last_day_of_month() with this function since this operation should only be done if is_last_day_of_month() returns True
+def end_of_month_operations(directory, filename):
+    print(f'Today is the last day of the month\nConducting end of month operations.............')
+    """
+    Create the new month and year directories at the end of the month.
+    """
+    # Extract the date from the filename
+    filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
+    if filename_date:
+        filename_date = datetime.datetime.strptime(filename_date.group(), '%m-%d-%y')
+    else:
+        return  # Return if date cannot be extracted from filename
+
+    current_year = filename_date.strftime('%Y')
+    next_month = (filename_date.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
+    next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
+
+    # If it's December, create the next year's directory and the next month's directory inside it
+    if next_month == '01-Jan':
+        os.makedirs(os.path.join(directory, next_year, next_month), exist_ok=True)
+    else:  # If not December, just create the next month's directory inside the current year's directory
+        os.makedirs(os.path.join(directory, current_year, next_month), exist_ok=True)
+

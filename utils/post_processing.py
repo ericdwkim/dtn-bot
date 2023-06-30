@@ -3,6 +3,7 @@ import re
 import datetime
 import pikepdf
 import shutil
+from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
 
 
 
@@ -58,8 +59,8 @@ def merge_pdfs(pdf_data):
 
 def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map):
     # TODO: toggle this back on after testing
-    today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
-    # today = datetime.date.today().strftime('%m-%d-%y')
+    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
+    today = datetime.date.today().strftime('%m-%d-%y')
     if file_prefix == 'CCM':
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
     else:
@@ -84,10 +85,10 @@ def merge_rename_and_summate(directory, doc_type_abbrv_to_doc_type_map, company_
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
     # @dev: Hardcoded to '10005' == Exxon
     merged_ccm_pdf_is_saved, filename = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005', doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map)
-    print(f'merged_pdf_ccm / merged_ccm_pdf_is_saved: {merged_pdf_ccm} / {merged_ccm_pdf_is_saved}')
+    # print(f'merged_pdf_ccm / merged_ccm_pdf_is_saved: {merged_pdf_ccm} / {merged_ccm_pdf_is_saved}')
     # PDFs were merged, saved, and renamed with a new filename and it is currently the last day of the month, then perform end of month filesystem management
-    if merged_pdf_ccm and merged_ccm_pdf_is_saved  and filename and is_last_day_of_month():
-
+    if merged_pdf_ccm and merged_ccm_pdf_is_saved and filename and is_last_day_of_month():
+        print(f'CCM PDFs have been merged and saved!')
         end_of_month_operations(directory, filename)
         cleanup_files(pdf_data_ccm)
 
