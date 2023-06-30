@@ -74,9 +74,14 @@ def create_and_save_pdf(pages, new_file_name, destination_dir):
         return False  # Return False if an error occurred
 
 def get_new_file_name(regex_num, today, total_target_amt):
+    # TODO: double check if it is only EFTs that follow this convention
     # File naming convention for total_target_amt preceding/succeeding with a hyphen indicative of a balance owed
     if re.match(r'EFT-\s*\d+', regex_num) and re.match(r'-?[\d,]+\.\d+-?', total_target_amt):
-        new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
+        if "-" in total_target_amt:  # Checks if "-" exists anywhere in total_target_amt
+            total_target_amt = total_target_amt.replace("-", "")  # Removes "-"
+            new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
+        else:  # No "-" in total_target_amt
+            new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
 
     # File naming convention for chargebacks/retrievals
     # @dev: regex_num is included due to edge case of identical filenames overwriting
