@@ -73,9 +73,9 @@ def create_and_save_pdf(pages, new_file_name, destination_dir):
         print(f"Error occurred while creating and saving PDF: {str(e)}")
         return False  # Return False if an error occurred
 
-def get_new_file_name(regex_num, today, total_target_amt, company_name):
-    # File naming convention for EXXONMOBIL ETFs only; wrapping amount in () to indicate amount owed
-    if company_name == 'EXXONMOBIL' and re.match(r'EFT-\s*\d+', regex_num):
+def get_new_file_name(regex_num, today, total_target_amt):
+    # File naming convention for total_target_amt preceding/succeeding with a hyphen indicative of a balance owed
+    if re.match(r'EFT-\s*\d+', regex_num) and re.match(r'-?[\d,]+\.\d+-?', total_target_amt):
         new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
 
     # File naming convention for chargebacks/retrievals
@@ -84,7 +84,7 @@ def get_new_file_name(regex_num, today, total_target_amt, company_name):
     elif (re.match(r'CBK-\s*\d+', regex_num) or re.match(r'RTV-\s*\d+', regex_num)):
         new_file_name = f'{regex_num}-{today}-CHARGEBACK REQUEST.pdf'
 
-    # File naming convention for all other files (CCM, CMB, non-EXXON ETFs)
+    # File naming convention for all other files (CCM, CMB, non negative total amount values)
     else:
         new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
     # print(f'new_file_name: {new_file_name}')
@@ -117,8 +117,8 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                     current_page_text = "".join(current_page_texts)
 
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
-
-                    new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
+                    # TODO: Test
+                    new_file_name = get_new_file_name(regex_num, today, total_amount)
                     print(f'\nnew_file_name: {new_file_name}')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
                     create_and_save_pdf(current_pages, new_file_name, destination_dir)
@@ -137,7 +137,8 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                 if re.search(pattern, current_page_text, re.IGNORECASE):
                     current_pages = [pdf.pages[page_num]]
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
-                    new_file_name = get_new_file_name(regex_num, today, total_amount, company_name)
+                    # TODO: Test
+                    new_file_name = get_new_file_name(regex_num, today, total_amount)
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
                     create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
