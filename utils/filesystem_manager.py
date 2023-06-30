@@ -1,3 +1,4 @@
+import os
 
 def cleanup_files(pdf_data):
     """

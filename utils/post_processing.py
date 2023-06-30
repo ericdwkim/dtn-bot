@@ -43,8 +43,6 @@ def extract_pdf_data(directory):
     pdf_data_lrd.sort(key=lambda x: x[0])
     return pdf_data_ccm, total_amount, pdf_data_lrd
 
-akedirs(os.path.join(directory, current_year, next_month), exist_ok=True)
-
 
 def merge_pdfs(pdf_data):
     merged_pdf = pikepdf.Pdf.new()
