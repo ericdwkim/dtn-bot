@@ -1,3 +1,5 @@
+# TODO: - DOUBLE CHECK IF IT IS ONLY EFTs that follow the () naming convention for positive values, if not then remove that condition in the else
+
 WIP - # TODO: dynamically create subdirs for YYYY and NUM-MONTH for each directory in DTN Reports --> use company_id to company subdir root path mapping
 
 # TODO: Update with Windows filepaths (staging and prod)

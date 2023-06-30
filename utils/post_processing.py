@@ -70,14 +70,20 @@ def merge_pdfs(pdf_data):
     return merged_pdf
 
 
-def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
+
+def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_name):
     today = datetime.date.today().strftime('%m-%d-%y')
     if file_prefix == 'CCM':
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
-    else:  # LRD
+    elif file_prefix == 'LRD':
         new_file_name = f'{today}-Loyalty.pdf'
+    elif file_prefix == 'EFT':
+        new_file
 
+    last_day_of_month = is_last_day_of_month()
+    directory = calculate_directory_path(file_prefix, company_name, last_day_of_month)
     output_path = os.path.join(directory, new_file_name)
+
     try:
         merged_pdf.save(output_path)
         merged_pdf.close()
@@ -86,15 +92,16 @@ def save_merged_pdf(directory, merged_pdf, total_amount_sum, file_prefix):
     except Exception:
         return False
 
+
 def merge_rename_and_summate(directory):
     pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(directory)
 
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
-    merged_ccm_pdf_is_saved = save_merged_pdf(directory, merged_pdf_ccm, total_amount_sum_ccm, 'CCM')
+    merged_ccm_pdf_is_saved = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, 'COMPANY_NAME')  # Replace 'COMPANY_NAME' with the actual company name
     if merged_pdf_ccm and merged_ccm_pdf_is_saved:
         cleanup_files(pdf_data_ccm)
 
     merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
-    merged_lrd_pdf_is_saved = save_merged_pdf(directory, merged_pdf_lrd, None, 'LRD')
+    merged_lrd_pdf_is_saved = save_merged_pdf('LRD', merged_pdf_lrd, None, 'COMPANY_NAME')  # Replace 'COMPANY_NAME' with the actual company name
     if merged_pdf_lrd and merged_lrd_pdf_is_saved:
         cleanup_files(pdf_data_lrd)
