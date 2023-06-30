@@ -95,8 +95,8 @@ def merge_rename_and_summate(directory, doc_type_abbrv_to_doc_type_map, company_
     # if it is not the last day
     else:
         # TODO: toggle back to clean up
-        # cleanup_files(pdf_data_ccm)
-        print(f'dont delete plz')
+        cleanup_files(pdf_data_ccm)
+        # print(f'dont delete plz')
 
     merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
     # @dev: Hardcoded to '10005' == Exxon
@@ -109,5 +109,5 @@ def merge_rename_and_summate(directory, doc_type_abbrv_to_doc_type_map, company_
 
     else:
         # TODO: toggle back to clean up
-        # cleanup_files(pdf_data_lrd)
-        print(f'dont delete plz')
+        cleanup_files(pdf_data_lrd)
+        # print(f'dont delete plz')

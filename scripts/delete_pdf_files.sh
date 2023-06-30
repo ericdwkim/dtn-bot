@@ -2,7 +2,7 @@
 
 # List of directories to search for PDF files
 directories=(
-#  "/Users/ekim/Downloads"
+  "/Users/ekim/Downloads"
   "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices"
   "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/CVR Supply & Trading 12351"
   "/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]"
