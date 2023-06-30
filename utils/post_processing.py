@@ -4,7 +4,7 @@ import datetime
 import pikepdf
 import shutil
 
-
+# TODO: pass mapping as param where needed after testing
 company_id_to_subdir_mapping = {
     '10482': 'COFFEYVILLE [10482]',
     '12351': 'CVR Supply & Trading 12351',
@@ -28,6 +28,7 @@ company_id_to_subdir_mapping = {
     '10778': 'WINTERS OIL [10778]',
 }
 
+# TODO: move to new file `filesystem_manager.py`
 def cleanup_files(pdf_data):
     """
 
@@ -79,25 +80,19 @@ def extract_pdf_data(directory):
     pdf_data_lrd.sort(key=lambda x: x[0])
     return pdf_data_ccm, total_amount, pdf_data_lrd
 
-def check_file_exists(output_path):
-    file_path = os.path.join(output_path)
-    return os.path.isfile(file_path)
+# TODO: move to new file `filesystem_manager.py`
 def is_last_day_of_month():
     today = datetime.date.today()
     tomorrow = today + datetime.timedelta(days=1)
     return tomorrow.day == 1
 
-def move_directory_to_another(src_dir, dst_dir):
-    if not os.path.exists(dst_dir):
-        os.makedirs(dst_dir)
-    shutil.move(src_dir, dst_dir)
-
+# TODO: move to new file `filesystem_manager.py`
 def create_directory(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
     return directory
 
-
+# TODO: move to new file `filesystem_manager.py`
 def end_of_month_operations(directory, filename):
     """
     Create the new month and year directories at the end of the month.
@@ -120,6 +115,7 @@ def end_of_month_operations(directory, filename):
         os.makedirs(os.path.join(directory, current_year, next_month), exist_ok=True)
 
 
+# TODO: move to new file `filesystem_manager.py`
 def calculate_directory_path(file_prefix, company_id, filename):
     # Extract the date from the filename
     # TODO: toggle this back on after testing
@@ -133,6 +129,7 @@ def calculate_directory_path(file_prefix, company_id, filename):
     current_month = filename_date.strftime('%m-%b')
     current_year = filename_date.strftime('%Y')
 
+    # TODO: pass mapping as param after testing
     root_directory_mapping = {
         ('CCM', 'LRD'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
         'EFT': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/',
