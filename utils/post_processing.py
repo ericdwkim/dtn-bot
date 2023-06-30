@@ -122,8 +122,9 @@ def end_of_month_operations(directory, filename):
 
 def calculate_directory_path(file_prefix, company_id, filename):
     # Extract the date from the filename
+    # TODO: toggle this back on after testing
     # filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
-    filename_date = datetime.date(2023, 12, 31) # datetime.date obj
+    filename_date = datetime.date(2023, 12, 31)
     # if filename_date:
     #     filename_date = datetime.datetime.strptime(filename_date.group(), '%m-%d-%y')
     # else:
@@ -176,7 +177,9 @@ def merge_pdfs(pdf_data):
 
 
 def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
-    today = datetime.date.today().strftime('%m-%d-%y')
+    # TODO: toggle this back on after testing
+    today = datetime.date(2023, 12, 31)
+    # today = datetime.date.today().strftime('%m-%d-%y')
     if file_prefix == 'CCM':
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
     else:
