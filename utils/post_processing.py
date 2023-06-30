@@ -97,19 +97,23 @@ def create_directory(directory):
         os.makedirs(directory)
     return directory
 
+def calculate_directory_path(file_prefix, company_id, filename):
+    # Extract the date from the filename
+    # filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
+    filename_date = datetime.date(2023, 7, 1) # datetime.date obj
+    # if filename_date:
+    #     filename_date = datetime.datetime.strptime(filename_date.group(), '%m-%d-%y')
+    # else:
+    #     return None  # Return None if date cannot be extracted from filename
 
-def calculate_directory_path(file_prefix, company_id, last_day_of_month):
-    # today = datetime.date.today()
-    today = datetime.date(2023, 7, 1)
-    current_month = today.strftime('%m-%b')
-    current_year = today.strftime('%Y')
+    current_month = filename_date.strftime('%m-%b')
+    current_year = filename_date.strftime('%Y')
 
     root_directory_mapping = {
         ('CCM', 'LRD'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
         'EFT': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/',
         'INV': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/',
     }
-
     root_directory = None
     for key, value in root_directory_mapping.items():
         if isinstance(key, tuple):
@@ -121,28 +125,15 @@ def calculate_directory_path(file_prefix, company_id, last_day_of_month):
             break
 
     if root_directory:
-        company_directory = company_id_to_subdir_mapping.get(company_id, '')  # Use the mapping to get company directory
-        print(f'company dir: {company_directory}')
+        company_directory = company_id_to_subdir_mapping.get(company_id, '')
         current_directory = os.path.join(root_directory, company_directory)
-        print(f'current_directory : {current_directory}')
-
-        month_dir = os.path.join(current_directory, current_month)
         year_dir = os.path.join(current_directory, current_year)
 
-        # Create year and month directories if they don't exist.
-        month_dir = create_directory(month_dir)
-        if last_day_of_month:
-            # If it's the last day of the month, move the month to the year folder and create a new month folder.
-            move_directory_to_another(month_dir, year_dir)
-            next_month = (today.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
-            month_dir = create_directory(os.path.join(current_directory, next_month))
-            if next_month == '01-Jan':
-                # If it's January, create the next year folder.
-                create_directory(os.path.join(current_directory, str(int(current_year) + 1)))
-            # Always create the directory for next_month, whether it's January or not.
-            month_dir = create_directory(os.path.join(current_directory, next_month))
+        create_directory(year_dir)  # This will not do anything if the directory already exists.
 
-        # This is the directory to save the file to.
+        month_dir = os.path.join(year_dir, current_month)
+        month_dir = create_directory(month_dir)  # Create the month directory
+
         return month_dir
 
     # Return None if no appropriate directory could be found.
@@ -168,9 +159,10 @@ def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
     else:
         new_file_name = f'{today}-Loyalty.pdf'
 
-    last_day_of_month = is_last_day_of_month()
-    directory = calculate_directory_path(file_prefix, company_id, last_day_of_month)
-    output_path = os.path.join(directory, new_file_name)
+    # last_day_of_month = is_last_day_of_month()
+    month_directory = calculate_directory_path(file_prefix, company_id, new_file_name)
+    print(f'----------------------------------------- {month_directory} -----------------------------')
+    output_path = os.path.join(month_directory, new_file_name)
 
     try:
         merged_pdf.save(output_path)
@@ -185,11 +177,11 @@ def merge_rename_and_summate(directory):
     pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(directory)
 
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
-    merged_ccm_pdf_is_saved = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, 'EXXONMOBIL')  # Replace 'COMPANY_NAME' with the actual company name
+    merged_ccm_pdf_is_saved = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005')  # Replace 'COMPANY_NAME' with the actual company name
     if merged_pdf_ccm and merged_ccm_pdf_is_saved:
         cleanup_files(pdf_data_ccm)
 
     merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
-    merged_lrd_pdf_is_saved = save_merged_pdf('LRD', merged_pdf_lrd, None, 'EXXONMOBIL')  # Replace 'COMPANY_NAME' with the actual company name
+    merged_lrd_pdf_is_saved = save_merged_pdf('LRD', merged_pdf_lrd, None, '10005')  # Replace 'COMPANY_NAME' with the actual company name
     if merged_pdf_lrd and merged_lrd_pdf_is_saved:
         cleanup_files(pdf_data_lrd)
