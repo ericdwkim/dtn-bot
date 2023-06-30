@@ -97,10 +97,33 @@ def create_directory(directory):
         os.makedirs(directory)
     return directory
 
+
+def end_of_month_operations(directory, filename):
+    """
+    Create the new month and year directories at the end of the month.
+    """
+    # Extract the date from the filename
+    filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
+    if filename_date:
+        filename_date = datetime.datetime.strptime(filename_date.group(), '%m-%d-%y')
+    else:
+        return  # Return if date cannot be extracted from filename
+
+    current_year = filename_date.strftime('%Y')
+    next_month = (filename_date.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
+    next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
+
+    # If it's December, create the next year's directory and the next month's directory inside it
+    if next_month == '01-Jan':
+        os.makedirs(os.path.join(directory, next_year, next_month), exist_ok=True)
+    else:  # If not December, just create the next month's directory inside the current year's directory
+        os.makedirs(os.path.join(directory, current_year, next_month), exist_ok=True)
+
+
 def calculate_directory_path(file_prefix, company_id, filename):
     # Extract the date from the filename
     # filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
-    filename_date = datetime.date(2023, 7, 1) # datetime.date obj
+    filename_date = datetime.date(2023, 12, 31) # datetime.date obj
     # if filename_date:
     #     filename_date = datetime.datetime.strptime(filename_date.group(), '%m-%d-%y')
     # else:
@@ -159,7 +182,6 @@ def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
     else:
         new_file_name = f'{today}-Loyalty.pdf'
 
-    # last_day_of_month = is_last_day_of_month()
     month_directory = calculate_directory_path(file_prefix, company_id, new_file_name)
     print(f'----------------------------------------- {month_directory} -----------------------------')
     output_path = os.path.join(month_directory, new_file_name)
@@ -168,20 +190,36 @@ def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
         merged_pdf.save(output_path)
         merged_pdf.close()
         print(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
-        return True
+        return True, new_file_name
     except Exception:
-        return False
+        return False, None
 
 
 def merge_rename_and_summate(directory):
     pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(directory)
 
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
-    merged_ccm_pdf_is_saved = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005')  # Replace 'COMPANY_NAME' with the actual company name
-    if merged_pdf_ccm and merged_ccm_pdf_is_saved:
+    merged_ccm_pdf_is_saved, filename = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005')
+    print(f'merged_pdf_ccm / merged_ccm_pdf_is_saved: {merged_pdf_ccm} / {merged_ccm_pdf_is_saved}')
+    # PDFs were merged, saved, and renamed with a new filename and it is currently the last day of the month, then perform end of month filesystem management
+    if merged_pdf_ccm and merged_ccm_pdf_is_saved  and filename and is_last_day_of_month():
+
+        end_of_month_operations(directory, filename)
         cleanup_files(pdf_data_ccm)
 
+    # if it is not the last day
+    else:
+        # cleanup_files(pdf_data_ccm)
+        print(f'dont delete plz')
+
     merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
-    merged_lrd_pdf_is_saved = save_merged_pdf('LRD', merged_pdf_lrd, None, '10005')  # Replace 'COMPANY_NAME' with the actual company name
-    if merged_pdf_lrd and merged_lrd_pdf_is_saved:
+    merged_lrd_pdf_is_saved, filename = save_merged_pdf('LRD', merged_pdf_lrd, None, '10005')
+
+    if merged_pdf_lrd and merged_lrd_pdf_is_saved and filename:
+
+        end_of_month_operations(directory, filename)
         cleanup_files(pdf_data_lrd)
+
+    else:
+        cleanup_files(pdf_data_lrd)
+        print(f'dont delete plz')
