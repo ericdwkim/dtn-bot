@@ -178,7 +178,7 @@ def merge_pdfs(pdf_data):
 
 def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
     # TODO: toggle this back on after testing
-    today = datetime.date(2023, 12, 31)
+    today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
     # today = datetime.date.today().strftime('%m-%d-%y')
     if file_prefix == 'CCM':
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
