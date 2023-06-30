@@ -28,8 +28,8 @@ company_id_to_subdir_mapping = {
 
 # file_prefix INV is only needed for conditional logic. it is not used for actual file renaming
 root_directory_mapping = {
-    ('CCM', 'LRD'): r'K:/DTN Reports/Credit Cards/',
-    'EFT': r'K:/DTN Reports/Fuel Drafts/',
+    ('CCM-\s*\d+', 'LRD-\s*\d+'): r'K:/DTN Reports/Credit Cards/',
+    'EFT-\s*\d+': r'K:/DTN Reports/Fuel Drafts/',
     'INV': r'K:/DTN Reports/Fuel Invoices/',
 }
 
@@ -55,11 +55,7 @@ def calculate_directory_path(file_prefix, company_id, last_day_of_month):
     current_month = today.strftime('%m-%b')
     current_year = today.strftime('%Y')
 
-    root_directory_mapping = {
-        ('CCM', 'LRD'): r'K:/DTN Reports/Credit Cards/',
-        'EFT': r'K:/DTN Reports/Fuel Drafts/',
-        'INV': r'K:/DTN Reports/Fuel Invoices/',
-    }
+
 
     root_directory = None
     for key, value in root_directory_mapping.items():
