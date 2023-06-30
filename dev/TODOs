@@ -1,8 +1,8 @@
-# 6/30/23 1pm: Test with all companies for all file types to ensure new feat works w/ dynamic filing
+# WIP - 6/30/23 1pm: Test with all companies for all file types to ensure new feat works w/ dynamic filing
+
+
 # TODO: os-agnostism config as entrypoint prior to main.py; will make it easier to go back and forth
 # TODO: test on SP w/ windows filepaths
-# TODO: - DOUBLE CHECK IF IT IS ONLY EFTs that follow the () naming convention for positive values, if not then remove that condition in the else; search for `total_target_amt.replace("-", "")` in repo to see current conditional logic
-
 
 # TODO: Running scripts/delete_pdf_files.sh - pathing issue when ran in terminal vs pycharm due to similar issue above ^^^
 #TODO: Doesn't rename or delete original CCM after finishing 3rd Flow. Timing issue???
