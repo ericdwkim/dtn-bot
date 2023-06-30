@@ -1,22 +1,8 @@
-# TODO: - DOUBLE CHECK IF IT IS ONLY EFTs that follow the () naming convention for positive values, if not then remove that condition in the else
+# 6/30/23 1pm: Test with all companies for all file types to ensure new feat works w/ dynamic filing
+# TODO: os-agnostism config as entrypoint prior to main.py; will make it easier to go back and forth
+# TODO: test on SP w/ windows filepaths
+# TODO: - DOUBLE CHECK IF IT IS ONLY EFTs that follow the () naming convention for positive values, if not then remove that condition in the else; search for `total_target_amt.replace("-", "")` in repo to see current conditional logic
 
-WIP - # TODO: dynamically create subdirs for YYYY and NUM-MONTH for each directory in DTN Reports --> use company_id to company subdir root path mapping
-
-# TODO: Update with Windows filepaths (staging and prod)
-
-# TODO: if set date has no draft notices (aka draft notice bar not found) then just skip draft notices and continue to 3rd Flow); requires more testing, but logic is implemented to `find_element_drag_and_drop()`
-
-# TODO: Current UI glitch prevents filter heads from appearing properly on DOM. Only solution is to restart script entirely; timeout logic to automatically restart script if filter head not found after retries
-
-# TODO: improve data structure to account for all companies; dynamically create company subdir if parsed PDF company dir doesn't exist
-
-# TODO: need more conditional logic for when to rename files with `()` around total_amount values as it is not always for just exxon EFTs, but rather it depends on whether there is a preceding or trailing `-` from the extracted total_amount value. currently logic has it so that ALL exxon EFTs are assumed to be money owed. it needs to use the total_amount value as a string, not just a float from matches[-1]
-
-
-FYI: running dtn-bot’s main.py must be done like so:
-/Users/ekim/opt/anaconda3/envs/bots/bin/python -m src.test.main
-if using pycharm, ensure that the configuration is set to module name: src.test.main and working directory set to ~dtn-bot/src
-this is b/c python does not recognize the current working directory src as a package despite pages and test modules being nested within src !!!
 
 # TODO: Running scripts/delete_pdf_files.sh - pathing issue when ran in terminal vs pycharm due to similar issue above ^^^
 #TODO: Doesn't rename or delete original CCM after finishing 3rd Flow. Timing issue???
@@ -30,4 +16,11 @@ this is b/c python does not recognize the current working directory src as a pac
 
 # Improvements
 # TODO: directory paths simplier/cleaner? might require more work/tinkering....
+    # TODO: improve data structure to account for all companies; dynamically create company subdir if parsed PDF company dir doesn't exist
 # TODO: os-agnostism
+
+
+FYI: running dtn-bot’s main.py must be done like so:
+/Users/ekim/opt/anaconda3/envs/bots/bin/python -m src.test.main
+if using pycharm, ensure that the configuration is set to module name: src.test.main and working directory set to ~dtn-bot/src
+this is b/c python does not recognize the current working directory src as a package despite pages and test modules being nested within src !!!
