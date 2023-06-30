@@ -58,22 +58,9 @@ company_id_to_subdir_mapping = {
 
 # file_prefix INV is only needed for conditional logic. it is not used for actual file renaming
 root_directory_mapping = {
-    ('CCM', 'LRD'): r'K:/DTN Reports/Credit Cards/',
-    'EFT': r'K:/DTN Reports/Fuel Drafts/',
-    'INV': r'K:/DTN Reports/Fuel Invoices/',
+    ('CCM', 'LRD'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
+    'EFT': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/',
+    'INV': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/',
 }
 
 
-
-def merge_rename_and_summate(directory):
-    pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(directory)
-
-    merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
-    merged_ccm_pdf_is_saved = save_merged_pdf(directory, merged_pdf_ccm, total_amount_sum_ccm, 'CCM')
-    if merged_pdf_ccm and merged_ccm_pdf_is_saved:
-        cleanup_files(pdf_data_ccm)
-
-    merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
-    merged_lrd_pdf_is_saved = save_merged_pdf(directory, merged_pdf_lrd, None, 'LRD')
-    if merged_pdf_lrd and merged_lrd_pdf_is_saved:
-        cleanup_files(pdf_data_lrd)

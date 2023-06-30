@@ -28,19 +28,18 @@ def extract_info_from_text(current_page_text, regex_pattern):
     regex_num_matches = re.findall(regex_pattern, current_page_text)
     if regex_num_matches:
         regex_num = regex_num_matches[0]
-        print(f'-------------------------------------------------- regex_num--------------------------------: {regex_num}')
+        # print(f'-------------------------------------------------- regex_num--------------------------------: {regex_num}')
     else:
         print(f'No matches for regex: {regex_pattern} in\n {current_page_text}')
         regex_num = None
 
-    # TODO: If - in front or behind, then turn (total_amount) in filename, else today-total_amount in file_name
     # Extract total_target_value
     total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', current_page_text)
     # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
     if total_amount_matches:
-        print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
+        # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
         total_amount = total_amount_matches[-1]
-        print(f'=================================================: {total_amount}')
+        # print(f'=================================================: {total_amount}')
 
     else:
         total_amount = None

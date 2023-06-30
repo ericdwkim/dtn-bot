@@ -84,7 +84,7 @@ def get_new_file_name(regex_num, today, total_target_amt):
     elif (re.match(r'CBK-\s*\d+', regex_num) or re.match(r'RTV-\s*\d+', regex_num)):
         new_file_name = f'{regex_num}-{today}-CHARGEBACK REQUEST.pdf'
 
-    # File naming convention for all other files (CCM, CMB, non negative total amount values)
+    # File naming convention for all other files (CCM, CMB, positive total amount values)
     else:
         new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
     # print(f'new_file_name: {new_file_name}')
@@ -119,7 +119,7 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     # TODO: Test
                     new_file_name = get_new_file_name(regex_num, today, total_amount)
-                    print(f'\nnew_file_name: {new_file_name}')
+                    print(f'\n*********************************************\n multi new_file_name\n*********************************************\n {new_file_name}')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
                     create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
@@ -139,6 +139,7 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     # TODO: Test
                     new_file_name = get_new_file_name(regex_num, today, total_amount)
+                    print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
                     destination_dir = company_name_to_company_subdir_mapping[company_name]
                     create_and_save_pdf(current_pages, new_file_name, destination_dir)
 
@@ -208,3 +209,4 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
     except Exception as e:
         print(f'An error occurred: {str(e)}')
         return False
+
