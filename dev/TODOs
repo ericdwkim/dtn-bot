@@ -1,5 +1,5 @@
 # WIP - 6/30/23 1pm: Test with all companies for all file types to ensure new feat works w/ dynamic filing
-
+# TODO: 6/30/23 7pm: procedural approach sunken cost; test for all companies using test.py
 
 # TODO: os-agnostism config as entrypoint prior to main.py; will make it easier to go back and forth
 # TODO: test on SP w/ windows filepaths
