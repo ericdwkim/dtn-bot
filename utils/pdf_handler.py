@@ -207,8 +207,12 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
         # Conditional post processing only for EXXON CCMs and LRDs
         if single_pages_processed and multi_pages_processed and post_processing is True:
             print(f'Post processing for EXXON CCMs & LRDs')
-            output_directory_exxon = company_name_to_company_subdir_mapping['EXXONMOBIL']
-            merge_rename_and_summate(output_directory_exxon)
+            # output_directory_exxon = company_name_to_company_subdir_mapping['EXXONMOBIL']
+            # merge_rename_and_summate(output_directory_exxon)
+
+        # Dynamic filesystem mgmt when post processing is False
+        elif single_pages_processed and multi_pages_processed and post_processing is False:
+            print(f'')
 
         return single_pages_processed and multi_pages_processed
     except Exception as e:
