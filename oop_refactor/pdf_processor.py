@@ -18,7 +18,7 @@ class PdfProcessor:
     def __init__(self, file_path, doc_type):
         self.file_path = file_path
         self.new_file_name = None  # Instance variable to hold the new file name
-        self.doctype = doc_type
+        self.doc_type = doc_type
 
     # ----------------------------------  Class Attributes ----------------------------------
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
@@ -119,20 +119,43 @@ class PdfProcessor:
     rename_and_move use example:
     processor = PdfProcessor('INV') 
     processor.rename_and_move()
-
-    
     """
 
 
-    def create_and_save_pdf(pages, new_file_name, destination_dir):
-        # ...
-        # This function does not need to be updated, as it does not rely on the directory structure.
-        # ...
+    def create_and_save_pdf(self, pages):
+        try:
+            new_pdf = pikepdf.Pdf.new()
+            new_pdf.pages.extend(pages)
+            output_path = self.file_path_mappings[self.doc_type][self.company_id]
+            output_path = os.path.join(output_path, self.new_file_name)
+            new_pdf.save(output_path)
+            return True  # Return True if the file was saved successfully
+        except Exception as e:
+            print(f"Error occurred while creating and saving PDF: {str(e)}")
+            return False  # Return False if an error occurred
+
 
     def get_new_file_name(regex_num, today, total_target_amt):
-        # ...
-        # This function does not need to be updated, as it does not rely on the directory structure.
-        # ...
+        # @dev: only EFTs that follow this convention
+        # File naming convention for total_target_amt preceding/succeeding with a hyphen indicative of a balance owed
+        if re.match(r'EFT-\s*\d+', regex_num) and re.match(r'-?[\d,]+\.\d+-?', total_target_amt):
+            if "-" in total_target_amt:  # Checks if "-" exists anywhere in total_target_amt
+                total_target_amt = total_target_amt.replace("-", "")  # Removes "-"
+                new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
+            else:  # No "-" in total_target_amt
+                new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
+
+        # File naming convention for chargebacks/retrievals
+        # @dev: regex_num is included due to edge case of identical filenames overwriting
+        # eg: VALERO CBK-0379 gets overwritten by RTV-0955 if regex_num is not included
+        elif (re.match(r'CBK-\s*\d+', regex_num) or re.match(r'RTV-\s*\d+', regex_num)):
+            new_file_name = f'{regex_num}-{today}-CHARGEBACK REQUEST.pdf'
+
+        # File naming convention for all other files (CCM, CMB, positive ETF `total_amount` values)
+        else:
+            new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
+        # print(f'new_file_name: {new_file_name}')
+        return new_file_name
 
     def process_multi_page(pdf, page_num, company_names, regex_patterns, company_name_to_company_subdir_mapping):
         # This function does not need to be updated, as it does not rely on the directory structure.
