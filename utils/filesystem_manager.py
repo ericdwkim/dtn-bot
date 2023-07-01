@@ -26,8 +26,6 @@ def create_directory(directory):
 
 
 def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map):
-    print(f'Calculating directory path..............')
-    # Extract the date from the filename
     # TODO: toggle this back on after testing
     filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
     # filename_date = datetime.date(2023, 12, 31)
