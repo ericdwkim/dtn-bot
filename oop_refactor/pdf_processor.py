@@ -8,70 +8,37 @@ import datetime
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
-
+from mappings_refactored importdoc_type_to_subdir_mapping, doc_type_to_subdir_mapping, company_names, regex_patterns
 
 
 # pdf_handler as a class following OOP
 class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
-    def __init__(self, file_path, doc_type):
+    def __init__(self, file_path, doc_type, company_id, total_target_amt):
         self.file_path = file_path
         self.new_file_name = None  # Instance variable to hold the new file name
         self.doc_type = doc_type
+        self.company_id = company_id
+        self.total_target_amt = total_target_amt
+
+        # Construct the file_path_mappings using doc_type and company_id
+        self.file_path_mappings = {
+            self.doc_type: {
+                self.company_id: os.path.join
+                    (
+                self.root_dir,
+                doc_type_to_subdir_mapping[self.doc_type],
+                company_id_to_subdir_mapping[self.company_id]
+                )
+            }
+        }
 
     # ----------------------------------  Class Attributes ----------------------------------
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
     download_dir = r'/Users/ekim/Downloads'
     today = datetime.date.today().strftime('%m-%d-%y')
-
-    # Mapping from company id to company directory
-    company_id_to_company_subdir_map = {
-        '10482': 'COFFEYVILLE [10482]',
-        '12351': 'CVR Supply & Trading 12351',
-        '12293': 'DK TRADING [12293]',
-        '10005': 'EXXONMOBIL [10005]',
-        '11177': 'FLINT HILLS [11177]',
-        '10351': 'FRONTIER [10351]',
-        '10350': 'FUEL MASTERS [10350]',
-        '11465': 'JUNIPER [11465]',
-        '12123': 'LA LOMITA [12123]',
-        '11480': 'MANSFIELD OIL [11480]',
-        '11096': 'MERITUM - PICO [11096]',
-        '10420': 'MOTIVA [10420]',
-        '12170': 'OFFEN PETROLEUM [12170]',
-        '10007': 'PHILLIPS [10007]',
-        '11293': 'SEIFS [11293]',
-        '11613': 'SUNOCO [11613]',
-        '10280': 'TEXAS TRANSEASTERN [10280]',
-        '12262': 'U S VENTURE - U S OIL COMPANY [12262]',
-        '10006': 'VALERO [10006]',
-        '10778': 'WINTERS OIL [10778]',
-    }
-
-    # Mapping from document type to its respective directory under the root directory
-    doc_type_to_subdir_mapping = {
-        ('CCM', 'LRD'): 'Credit Cards',
-        'EFT': 'Fuel Drafts',
-        'INV': 'Fuel Invoices',
-    }
-
-    # Mapping of document type to company ID to file path
-    file_path_mappings = {
-        doc_type: {
-            company_id: os.path.join(root_dir, doc_type_to_subdir_mapping[doc_type], company_dir)
-            for company_id, company_dir in company_id_to_subdir_mapping.items()
-        }
-        for doc_type in doc_type_to_subdir_mapping.keys()
-    }
-
-    # Company names and regex patterns
-    company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply', 'CVR SUPPLY & TRADING, LLC']
-    regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
-
     # ----------------------------------  Class Attributes ----------------------------------
-
-
 
     def rename_and_delete_pdf(self):
         file_deleted = False

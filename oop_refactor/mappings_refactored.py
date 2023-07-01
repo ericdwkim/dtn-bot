@@ -1,38 +1,47 @@
 import os
 
-# First, define the common parts of the paths
-base_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
-
-# Define the mapping from company id to company directory
-company_id_to_subdir_mapping = {
-    '10006': 'VALERO [10006]',
+# Mapping from company id to company directory
+company_id_to_company_subdir_map = {
+    '10482': 'COFFEYVILLE [10482]',
+    '12351': 'CVR Supply & Trading 12351',
+    '12293': 'DK TRADING [12293]',
     '10005': 'EXXONMOBIL [10005]',
-    # More companies here...
+    '11177': 'FLINT HILLS [11177]',
+    '10351': 'FRONTIER [10351]',
+    '10350': 'FUEL MASTERS [10350]',
+    '11465': 'JUNIPER [11465]',
+    '12123': 'LA LOMITA [12123]',
+    '11480': 'MANSFIELD OIL [11480]',
+    '11096': 'MERITUM - PICO [11096]',
+    '10420': 'MOTIVA [10420]',
+    '12170': 'OFFEN PETROLEUM [12170]',
+    '10007': 'PHILLIPS [10007]',
+    '11293': 'SEIFS [11293]',
+    '11613': 'SUNOCO [11613]',
+    '10280': 'TEXAS TRANSEASTERN [10280]',
+    '12262': 'U S VENTURE - U S OIL COMPANY [12262]',
+    '10006': 'VALERO [10006]',
+    '10778': 'WINTERS OIL [10778]',
 }
 
-# Define the mapping from document type to its respective directory under the base directory
+# Mapping from document type to its respective directory under the root directory
 doc_type_to_subdir_mapping = {
     ('CCM', 'LRD'): 'Credit Cards',
     'EFT': 'Fuel Drafts',
     'INV': 'Fuel Invoices',
 }
 
-# Now you can create a mapping of document type to company ID to file path
+# Mapping of document type to company ID to file path
 file_path_mappings = {
     doc_type: {
-        company_id: os.path.join(base_dir, subdir, company_dir)
+        company_id: os.path.join(root_dir, doc_type_to_subdir_mapping[doc_type], company_dir)
         for company_id, company_dir in company_id_to_subdir_mapping.items()
     }
-    for doc_type, subdir in doc_type_to_subdir_mapping.items()
+    for doc_type in doc_type_to_subdir_mapping.keys()
 }
 
-# Other important file paths and constants
-other_file_paths = {
-    'download_dir': r'/Users/ekim/Downloads',
-    # 'dest_dir_invoices': os.path.join(base_dir, 'Fuel Invoices'),
-    'keyword_in_dl_file_name': 'messages'
-}
 
+# TODO: add all companies
 company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply',
                  'CVR SUPPLY & TRADING, LLC']
 
