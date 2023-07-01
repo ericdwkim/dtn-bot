@@ -29,20 +29,20 @@ def user_journey():
         # DataConnect 1st Flow - Invoices
         data_connect = DataConnectPage(driver)
         data_connect.switch_tab_set_filters_and_download_invoices()
-        PdfProcessor.rename_and_delete_pdf()
+        processor = PdfProcessor()
 
         # DataConnect 2nd Flow - Draft Notice
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
             return
-        draft_notices_processed_and_filed = PdfProcessor.process_pdfs(company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, )
+        draft_notices_processed_and_filed = PdfProcessor.process_pdfs(company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, doc_type_abbrv_to_doc_type_subdir_map, post_processing=False)
         if not draft_notices_processed_and_filed:
             return
 
         print(f'draft_notices_processed_and_filed: {draft_notices_processed_and_filed}')
         # DataConnect 3rd Flow - Credit Cards
         if draft_notices_processed_and_filed:
-            original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
+            original_eft_messages_pdf_is_deleted = processor.rename_and_delete_pdf()
 
             print(f'original_eft_messages_pdf_is_deleted: {original_eft_messages_pdf_is_deleted}')
         # Switch date from yesterday's to today's
