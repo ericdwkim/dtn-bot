@@ -24,3 +24,15 @@ FYI: running dtn-bot’s main.py must be done like so:
 /Users/ekim/opt/anaconda3/envs/bots/bin/python -m src.test.main
 if using pycharm, ensure that the configuration is set to module name: src.test.main and working directory set to ~dtn-bot/src
 this is b/c python does not recognize the current working directory src as a package despite pages and test modules being nested within src !!!
+
+
+
+7/1/23 6pm:
+1) need to have helper functions to dynamically fetch doc_type, company_id, and total_target_Amt
+within process_pdfs() to instantiate PdfProcessor to call process_pages
+
+2) if process pages works fine as an instance method, then need to refactor process_pdfs
+as a staticmethod and merge it with the old instancemethod version so that it can process the pages
+in a sequential order with the merge and last day of month logic working
+
+3)  cry
