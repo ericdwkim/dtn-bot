@@ -102,27 +102,18 @@ class PdfProcessor:
             return False  # Return False if an error occurred
 
 
-    def get_new_file_name(regex_num, today, total_target_amt):
-        # @dev: only EFTs that follow this convention
-        # File naming convention for total_target_amt preceding/succeeding with a hyphen indicative of a balance owed
-        if re.match(r'EFT-\s*\d+', regex_num) and re.match(r'-?[\d,]+\.\d+-?', total_target_amt):
-            if "-" in total_target_amt:  # Checks if "-" exists anywhere in total_target_amt
-                total_target_amt = total_target_amt.replace("-", "")  # Removes "-"
-                new_file_name = f'{regex_num}-{today}-({total_target_amt}).pdf'
-            else:  # No "-" in total_target_amt
-                new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
-
-        # File naming convention for chargebacks/retrievals
-        # @dev: regex_num is included due to edge case of identical filenames overwriting
-        # eg: VALERO CBK-0379 gets overwritten by RTV-0955 if regex_num is not included
+    def get_new_file_name(self, regex_num):
+        if re.match(r'EFT-\s*\d+', regex_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
+            if "-" in self.total_target_amt:
+                total_target_amt = self.total_target_amt.replace("-", "")
+                self.new_file_name = f'{regex_num}-{self.today}-({total_target_amt}).pdf'
+            else:
+                self.new_file_name = f'{regex_num}-{self.today}-{self.total_target_amt}.pdf'
         elif (re.match(r'CBK-\s*\d+', regex_num) or re.match(r'RTV-\s*\d+', regex_num)):
-            new_file_name = f'{regex_num}-{today}-CHARGEBACK REQUEST.pdf'
-
-        # File naming convention for all other files (CCM, CMB, positive ETF `total_amount` values)
+            self.new_file_name = f'{regex_num}-{self.today}-CHARGEBACK REQUEST.pdf'
         else:
-            new_file_name = f'{regex_num}-{today}-{total_target_amt}.pdf'
-        # print(f'new_file_name: {new_file_name}')
-        return new_file_name
+            self.new_file_name = f'{regex_num}-{self.today}-{self.total_target_amt}.pdf'
+        return self.new_file_name
 
     def process_multi_page(pdf, page_num, company_names, regex_patterns, company_name_to_company_subdir_mapping):
         # This function does not need to be updated, as it does not rely on the directory structure.
