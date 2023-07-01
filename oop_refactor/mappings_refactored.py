@@ -1,5 +1,3 @@
-import os
-
 # Mapping from company id to company directory
 company_id_to_company_subdir_map = {
     '10482': 'COFFEYVILLE [10482]',
@@ -31,18 +29,8 @@ doc_type_to_subdir_mapping = {
     'INV': 'Fuel Invoices',
 }
 
-# Mapping of document type to company ID to file path
-file_path_mappings = {
-    doc_type: {
-        company_id: os.path.join(root_dir, doc_type_to_subdir_mapping[doc_type], company_dir)
-        for company_id, company_dir in company_id_to_subdir_mapping.items()
-    }
-    for doc_type in doc_type_to_subdir_mapping.keys()
-}
 
-
-# TODO: add all companies
 company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply',
-                 'CVR SUPPLY & TRADING, LLC']
+                 'CVR SUPPLY & TRADING, LLC', 'COFFEYVILLE', 'FLINT HILLS', 'FRONTIER',  'FUEL MASTERS', 'JUNIPER', 'LA LOMITA', 'MANSFIELD OIL', 'MERITUM - PICO', 'MOTIVA', 'OFFEN PETROLEUM', 'PHILLIPS', 'SEIFS', 'SUNOCO', 'TEXAS TRANSEASTERN', 'WINTERS OIL']
 
 regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
