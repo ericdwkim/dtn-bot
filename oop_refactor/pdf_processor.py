@@ -14,13 +14,13 @@ from utils.filesystem_manager import end_of_month_operations, calculate_director
 # pdf_handler as a class following OOP
 class PdfProcessor:
 
-    # Instance attributes
+    # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self, file_path, doc_type):
         self.file_path = file_path
         self.new_file_name = None  # Instance variable to hold the new file name
         self.doctype = doc_type
 
-    # Class Attributes
+    # ----------------------------------  Class Attributes ----------------------------------
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
     download_dir = r'/Users/ekim/Downloads'
     today = datetime.date.today().strftime('%m-%d-%y')
@@ -65,6 +65,14 @@ class PdfProcessor:
         for doc_type in doc_type_to_subdir_mapping.keys()
     }
 
+    # Company names and regex patterns
+    company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply', 'CVR SUPPLY & TRADING, LLC']
+    regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
+
+    # ----------------------------------  Class Attributes ----------------------------------
+
+
+
     def rename_and_delete_pdf(self):
         file_deleted = False
         # access self.file_path instead of the file_path argument
@@ -96,10 +104,24 @@ class PdfProcessor:
                 return file_deleted
 
     # Invoices
-    def rename_and_move_pdf(file_name, source_dir, target_dir):
-        # ...
-        # This function does not need to be updated, as it does not rely on the directory structure.
-        # ...
+    def rename_and_move(self):
+        """Helper function to rename and move a PDF file"""
+        for file in os.listdir(self.download_dir):
+            if file.endswith('.pdf') and "messages" in file:  # static string "messages" for now
+                source_file = os.path.join(self.download_dir, file)
+                target_dir = os.path.join(self.root_dir, self.doc_type_to_subdir_mapping[self.doc_type])
+                destination_file = os.path.join(target_dir, f'{self.today}.pdf')
+                print(f'Moving {destination_file} to {target_dir}')
+                shutil.move(source_file, destination_file)
+                break
+
+    """
+    rename_and_move use example:
+    processor = PdfProcessor('INV') 
+    processor.rename_and_move()
+
+    
+    """
 
     def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
         # This function does not need to be updated, as it does not rely on the directory structure.
