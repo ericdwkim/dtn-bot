@@ -81,13 +81,6 @@ class PdfProcessor:
                 move(source_file, destination_file)
                 break
 
-    """
-    rename_and_move use example:
-    processor = PdfProcessor('INV') 
-    processor.rename_and_move()
-    """
-
-
     def create_and_save_pdf(self, pages):
         try:
             new_pdf = Pdf.new()
@@ -159,9 +152,9 @@ class PdfProcessor:
                         regex_num, self.today, self.total_target_amt = extract_info_from_text(current_page_text, pattern)
                         self.get_new_file_name(regex_num)
                         print(f'\n*********************************************\n single new_file_name\n*********************************************\n {self.new_file_name}')
-    def process_pages(self, company_id, doc_type, company_names, regex_patterns,
+    def process_pages(self,  company_names, regex_patterns,
                       is_multi_page):
-        file_path = self.file_path_mappings[doc_type][company_id]
+        file_path = self.file_path_mappings[self.doc_type][self.company_id]
 
         try:
 
@@ -192,22 +185,22 @@ class PdfProcessor:
             print(f'An unexpected error occurred: {str(e)}')
             return False
 
-    def process_pdfs(self, company_id, doc_type, company_name_to_company_subdir_mapping, company_names, regex_patterns,
+    def process_pdfs(self, company_names, regex_patterns,
                  doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map, post_processing=False):
 
-        file_path = self.file_path_mappings[doc_type][company_id]
+        file_path = self.file_path_mappings[self.doc_type][self.company_id]
 
         try:
 
             print(f'----------------------------- {file_path}')
             print(f'Processing all single-page files....\n')
-            single_pages_processed = process_pages(file_path, company_name_to_company_subdir_mapping, company_names,
+            single_pages_processed = process_pages(file_path, company_names,
                                                    regex_patterns, is_multi_page=False)
             if single_pages_processed:
                 print(f'Successfully finished processing all single-paged files\n')
 
             print(f'Now processing all multi-page files....\n')
-            multi_pages_processed = process_pages(file_path, company_name_to_company_subdir_mapping, company_names,
+            multi_pages_processed = process_pages(file_path, company_names,
                                                   regex_patterns, is_multi_page=True)
             if multi_pages_processed:
                 print(f'Successfully finished processing all multi-paged files\n')
@@ -230,7 +223,3 @@ class PdfProcessor:
             print(f'An error occurred: {str(e)}')
             return False
 
-
-# Usage:
-processor = PdfProcessor("example.pdf")
-processor.rename_and_delete_pdf()
