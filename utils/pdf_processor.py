@@ -208,13 +208,12 @@ class PdfProcessor:
             # Conditional post processing only for EXXON CCMs and LRDs
             if single_pages_processed and multi_pages_processed and post_processing is True:
                 print(f'Post processing for EXXON CCMs & LRDs')
-                output_directory_exxon = company_name_to_company_subdir_mapping['EXXONMOBIL']
-                merge_rename_and_summate(output_directory_exxon, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map)
+                output_path = self.file_path_mappings[self.doc_type][self.company_id]
+                merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map)
 
             # Dynamic filesystem mgmt when post processing is False and
             elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month():
-                directory, filename = os.path.split(file_path)
-                end_of_month_operations(directory, filename)
+                end_of_month_operations(self.new_file_name)
 
             else:
                 return single_pages_processed and multi_pages_processed
