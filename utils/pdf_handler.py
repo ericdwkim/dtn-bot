@@ -212,7 +212,7 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
 
         # Dynamic filesystem mgmt when post processing is False and
         elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month():
-            end_of_month_operations(directory, filename)
+            end_of_month_operations(directory, filename) # undefined filename
 
         else:
             return single_pages_processed and multi_pages_processed
