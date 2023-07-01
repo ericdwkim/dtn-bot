@@ -25,7 +25,7 @@ def create_directory(directory):
     return directory
 
 
-def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map):
+def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map):
     # TODO: toggle this back on after testing
     filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
     # filename_date = datetime.date(2023, 12, 31)
@@ -38,7 +38,7 @@ def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_t
     current_year = filename_date.strftime('%Y')
 
     root_directory = None
-    for key, value in doc_type_abbrv_to_doc_type_map.items():
+    for key, value in doc_type_abbrv_to_doc_type_subdir_map.items():
         if isinstance(key, tuple):
             if file_prefix in key:
                 root_directory = value

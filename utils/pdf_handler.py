@@ -188,7 +188,7 @@ def process_pages(filepath, company_name_to_company_subdir_mapping, company_name
         return False
 
 
-def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map,
+def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map,
                  post_processing=False):
     try:
         print(f'----------------------------- {filepath}')
@@ -208,7 +208,7 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
         if single_pages_processed and multi_pages_processed and post_processing is True:
             print(f'Post processing for EXXON CCMs & LRDs')
             output_directory_exxon = company_name_to_company_subdir_mapping['EXXONMOBIL']
-            merge_rename_and_summate(output_directory_exxon, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map)
+            merge_rename_and_summate(output_directory_exxon, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
 
         # Dynamic filesystem mgmt when post processing is False and
         elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month():

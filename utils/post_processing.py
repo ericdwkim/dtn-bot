@@ -57,7 +57,7 @@ def merge_pdfs(pdf_data):
 
 
 
-def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map):
+def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map):
     # TODO: toggle this back on after testing
     # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
     today = datetime.date.today().strftime('%m-%d-%y')
@@ -66,7 +66,7 @@ def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id, doc_t
     else:
         new_file_name = f'{today}-Loyalty.pdf'
 
-    month_directory = calculate_directory_path(file_prefix, company_id, new_file_name, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map)
+    month_directory = calculate_directory_path(file_prefix, company_id, new_file_name, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
     print(f'----------------------------------------- {month_directory} -----------------------------')
     output_path = os.path.join(month_directory, new_file_name)
 
@@ -79,12 +79,12 @@ def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id, doc_t
         return False, None
 
 
-def merge_rename_and_summate(directory, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map):
+def merge_rename_and_summate(directory, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map):
     pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(directory)
 
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
     # @dev: Hardcoded to '10005' == Exxon
-    merged_ccm_pdf_is_saved, filename = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005', doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map)
+    merged_ccm_pdf_is_saved, filename = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005', doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
     # print(f'merged_pdf_ccm / merged_ccm_pdf_is_saved: {merged_pdf_ccm} / {merged_ccm_pdf_is_saved}')
     # PDFs were merged, saved, and renamed with a new filename and it is currently the last day of the month, then perform end of month filesystem management
     if merged_pdf_ccm and merged_ccm_pdf_is_saved and filename and is_last_day_of_month():
@@ -100,7 +100,7 @@ def merge_rename_and_summate(directory, doc_type_abbrv_to_doc_type_map, company_
 
     merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
     # @dev: Hardcoded to '10005' == Exxon
-    merged_lrd_pdf_is_saved, filename = save_merged_pdf('LRD', merged_pdf_lrd, None, '10005', doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map)
+    merged_lrd_pdf_is_saved, filename = save_merged_pdf('LRD', merged_pdf_lrd, None, '10005', doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
 
     if merged_pdf_lrd and merged_lrd_pdf_is_saved and filename:
 

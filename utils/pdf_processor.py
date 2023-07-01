@@ -7,7 +7,7 @@ import datetime
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
-from mappings_refactored import doc_type_to_subdir_mapping, doc_type_to_subdir_mapping, company_names, regex_patterns
+from mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, company_names, regex_patterns
 
 
 # pdf_handler as a class following OOP
@@ -27,7 +27,7 @@ class PdfProcessor:
                 self.company_id: os.path.join
                     (
                 self.root_dir,
-                doc_type_to_subdir_mapping[self.doc_type],
+                doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
                 company_id_to_subdir_mapping[self.company_id]
                 )
             }
@@ -75,7 +75,7 @@ class PdfProcessor:
         for file in os.listdir(self.download_dir):
             if file.endswith('.pdf') and "messages" in file:  # static string "messages" for now
                 source_file = os.path.join(self.download_dir, file)
-                target_dir = os.path.join(self.root_dir, self.doc_type_to_subdir_mapping[self.doc_type])
+                target_dir = os.path.join(self.root_dir, self.doc_type_abbrv_to_doc_type_subdir_map[self.doc_type])
                 destination_file = os.path.join(target_dir, f'{self.today}.pdf')
                 print(f'Moving {destination_file} to {target_dir}')
                 move(source_file, destination_file)
@@ -186,7 +186,7 @@ class PdfProcessor:
             return False
 
     def process_pdfs(self, company_names, regex_patterns,
-                 doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map, post_processing=False):
+                 doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map, post_processing=False):
 
         file_path = self.file_path_mappings[self.doc_type][self.company_id]
 
@@ -209,7 +209,7 @@ class PdfProcessor:
             if single_pages_processed and multi_pages_processed and post_processing is True:
                 print(f'Post processing for EXXON CCMs & LRDs')
                 output_path = self.file_path_mappings[self.doc_type][self.company_id]
-                merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map)
+                merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
 
             # Dynamic filesystem mgmt when post processing is False and
             elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month():

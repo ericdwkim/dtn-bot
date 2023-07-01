@@ -35,7 +35,7 @@ def user_journey():
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
             return
-        draft_notices_processed_and_filed = PdfProcessor.process_pdfs()
+        draft_notices_processed_and_filed = PdfProcessor.process_pdfs(company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, )
         if not draft_notices_processed_and_filed:
             return
 
