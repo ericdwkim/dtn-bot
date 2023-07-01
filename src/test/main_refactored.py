@@ -6,7 +6,7 @@ from ..pages.dataconnectpage import DataConnectPage
 from utils.pdf_processor import PdfProcessor
 from utility import setup_driver, teardown_driver
 
-from utils.mappings_refactored import (company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
+from utils.mappings_refactored import (regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
 
 
 def user_journey():
@@ -45,7 +45,7 @@ def user_journey():
 
         processor = PdfProcessor(file_path, doc_type, company_id, total_target_amt)
 
-        draft_notices_processed_and_filed = processor.process_pdfs(company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map,company_id_to_company_subdir_map, post_processing=False)
+        draft_notices_processed_and_filed = processor.process_pdfs(regex_patterns, doc_type_abbrv_to_doc_type_subdir_map,company_id_to_company_subdir_map, post_processing=False)
 
         if not draft_notices_processed_and_filed:
             return

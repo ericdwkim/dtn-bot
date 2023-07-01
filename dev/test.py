@@ -1,16 +1,10 @@
-from utils.pdf_handler import process_pdfs, rename_and_move_pdf, get_full_path_to_dl_dir, rename_and_delete_pdf
-from utils.mappings import (dest_dir_invoices, keyword_in_dl_file_name, download_dir, company_names,
-                      regex_patterns, company_name_to_subdir_full_path_mapping_fuel_drafts,
-                      company_name_to_subdir_full_path_mapping_credit_cards, doc_type_abbrv_to_doc_type_dir_map, company_id_to_company_subdir_map,)
+from utils.mappings_refactored import (regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
+from utils.pdf_processor import PdfProcessor
+from utils.mappings_refactored import company_id_to_company_subdir_map
+
+dl_dir = PdfProcessor.download_dir
+file_path = dl_dir + '/etf_full.pdf'
 
 
-full_path_to_downloaded_pdf = r'/Users/ekim/Downloads/messages.pdf'
 
-
-# CCM, LRD files
-ccm_files_processed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards,
-                                   company_names, regex_patterns, doc_type_abbrv_to_doc_type_dir_map, company_id_to_company_subdir_map, post_processing=True)
-if ccm_files_processed:
-    # original_ccm_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
-    # print(f'Finished! original_ccm_messages_pdf_is_deleted: {original_ccm_messages_pdf_is_deleted}')
-    print(f'*********************************** SUCCESS *****************************************************')
+PdfProcessor.process_pdfs(file_path, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)

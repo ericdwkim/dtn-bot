@@ -4,11 +4,11 @@ from time import sleep
 from pikepdf import open, Pdf
 from shutil import move
 import datetime
-from company_getters import get_company_id, get_company_names
+from utils.company_getters import get_company_id, get_company_names
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
-from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, regex_patterns
+from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, regex_patterns, company_id_to_company_subdir_map
 
 
 # pdf_handler as a class following OOP
@@ -29,7 +29,7 @@ class PdfProcessor:
                     (
                 self.root_dir,
                 doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
-                company_id_to_subdir_mapping[self.company_id]
+                company_id_to_company_subdir_map[self.company_id]
                 )
             }
         }
@@ -155,9 +155,14 @@ class PdfProcessor:
                         regex_num, self.today, self.total_target_amt = extract_info_from_text(current_page_text, pattern)
                         self.get_new_file_name(regex_num)
                         print(f'\n*********************************************\n single new_file_name\n*********************************************\n {self.new_file_name}')
+                        self.create_and_save_pdf(current_pages)
+        return page_num
+
+
     def process_pages(self, regex_patterns,
                       is_multi_page):
-        file_path = self.file_path_mappings[self.doc_type][self.company_id]
+        # file_path = self.file_path_mappings[self.doc_type][self.company_id]
+        file_path = PdfProcessor.download_dir + '/etf_full.pdf'
 
         try:
 
@@ -188,41 +193,78 @@ class PdfProcessor:
             print(f'An unexpected error occurred: {str(e)}')
             return False
 
+    # def process_pdfs(self, regex_patterns,
+    #              doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map, post_processing=False):
+    #
+    #     file_path = self.file_path_mappings[self.doc_type][self.company_id]
+    #
+    #     try:
+    #
+    #         # print(f'----------------------------- {file_path}')
+    #         # print(f'Processing all single-page files....\n')
+    #         single_pages_processed = process_pages(file_path,
+    #                                                regex_patterns, is_multi_page=False)
+    #         if single_pages_processed:
+    #             print(f'Successfully finished processing all single-paged files\n')
+    #
+    #         # print(f'Now processing all multi-page files....\n')
+    #         multi_pages_processed = process_pages(file_path,
+    #                                               regex_patterns, is_multi_page=True)
+    #         if multi_pages_processed:
+    #             print(f'Successfully finished processing all multi-paged files\n')
+    #
+    #         # Conditional post processing only for EXXON CCMs and LRDs
+    #         if single_pages_processed and multi_pages_processed and post_processing is True:
+    #             # print(f'Post processing for EXXON CCMs & LRDs')
+    #             output_path = self.file_path_mappings[self.doc_type][self.company_id]
+    #             merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
+    #
+    #         # Dynamic filesystem mgmt when post processing is False and
+    #         elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month():
+    #             end_of_month_operations(self.new_file_name)
+    #
+    #         else:
+    #             return single_pages_processed and multi_pages_processed
+    #
+    #     except Exception as e:
+    #         print(f'An error occurred: {str(e)}')
+    #         return False
+
     @staticmethod
-    def process_pdfs(self, regex_patterns,
-                 doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map, post_processing=False):
+    def process_pdfs(output_path, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map,
+                     company_id_to_company_subdir_map, post_processing=False):
 
-        file_path = self.file_path_mappings[self.doc_type][self.company_id]
+        # Get company_names from the helper function
+        company_names = get_company_names(company_id_to_company_subdir_map)
+        file_path = PdfProcessor.download_dir + '/etf_full.pdf'
+        processor = PdfProcessor(file_path, 'EFT', '10005', '6900.00')
+        single_pages_processed = processor.process_pages(regex_patterns, is_multi_page=False)
 
-        try:
+        print(f'---------------------------- {single_pages_processed}')
 
-            # print(f'----------------------------- {file_path}')
-            # print(f'Processing all single-page files....\n')
-            single_pages_processed = process_pages(file_path, company_names,
-                                                   regex_patterns, is_multi_page=False)
-            if single_pages_processed:
-                print(f'Successfully finished processing all single-paged files\n')
 
-            # print(f'Now processing all multi-page files....\n')
-            multi_pages_processed = process_pages(file_path, company_names,
-                                                  regex_patterns, is_multi_page=True)
-            if multi_pages_processed:
-                print(f'Successfully finished processing all multi-paged files\n')
-
-            # Conditional post processing only for EXXON CCMs and LRDs
-            if single_pages_processed and multi_pages_processed and post_processing is True:
-                # print(f'Post processing for EXXON CCMs & LRDs')
-                output_path = self.file_path_mappings[self.doc_type][self.company_id]
-                merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
-
-            # Dynamic filesystem mgmt when post processing is False and
-            elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month():
-                end_of_month_operations(self.new_file_name)
-
-            else:
-                return single_pages_processed and multi_pages_processed
-
-        except Exception as e:
-            print(f'An error occurred: {str(e)}')
-            return False
-
+        #
+        #     for page_num in range(len(pdf.pages)):
+        #         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
+        #
+        #         for company_name in company_names:
+        #             if company_name in current_page_text:
+        #                 # Get the company_id from the mapping
+        #                 company_id = get_company_id(company_name)  # Use your helper function to get the company id
+        #
+        #                 for pattern in regex_patterns:
+        #                     if re.search(pattern, current_page_text, re.IGNORECASE):
+        #                         # The pattern is the doc_type
+        #                         doc_type = pattern
+        #
+        #                         # Extract the other info
+        #                         regex_num, today, total_target_amt = extract_info_from_text(current_page_text, pattern)
+        #
+        #                         # Now we have all the info we need to create a PdfProcessor instance
+        #                         processor = PdfProcessor(pdf_file, doc_type, company_id, total_target_amt)
+        #
+        #                         # Use the processor to process the PDF
+        #                         if 'END MSG' in current_page_text:
+        #                             processor.process_single_page(pdf, page_num,regex_patterns)
+        #                         else:
+        #                             page_num = processor.process_multi_page(pdf, page_num, regex_patterns)
