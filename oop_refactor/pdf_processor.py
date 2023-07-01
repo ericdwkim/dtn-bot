@@ -123,8 +123,6 @@ class PdfProcessor:
     
     """
 
-    def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
-        # This function does not need to be updated, as it does not rely on the directory structure.
 
     def create_and_save_pdf(pages, new_file_name, destination_dir):
         # ...
@@ -142,11 +140,15 @@ class PdfProcessor:
     def process_single_page(pdf, page_num, company_names, regex_patterns, company_name_to_company_subdir_mapping):
         # This function does not need to be updated, as it does not rely on the directory structure.
 
-    def process_pages(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, is_multi_page):
-        # This function does not need to be updated, as it does not rely on the directory structure.
+    def process_pages(company_id, doc_type, company_name_to_company_subdir_mapping, company_names, regex_patterns,
+                      is_multi_page):
+        file_path = self.file_path_mappings[doc_type][company_id]
 
-    def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map,
-                     post_processing=False):
+    def process_pdfs(company_id, doc_type, company_name_to_company_subdir_mapping, company_names, regex_patterns,
+                 doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map, post_processing=False):
+
+        file_path = self.file_path_mappings[doc_type][company_id]
+
         try:
             print(f'----------------------------- {filepath}')
             print(f'Processing all single-page files....\n')
