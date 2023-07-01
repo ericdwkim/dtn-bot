@@ -29,7 +29,7 @@ file_path_mappings = {
 # Other important file paths and constants
 other_file_paths = {
     'download_dir': r'/Users/ekim/Downloads',
-    'dest_dir_invoices': os.path.join(base_dir, 'Fuel Invoices/6-June'),
+    # 'dest_dir_invoices': os.path.join(base_dir, 'Fuel Invoices'),
     'keyword_in_dl_file_name': 'messages'
 }
 
