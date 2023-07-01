@@ -20,7 +20,7 @@ class PdfProcessor:
         self.new_file_name = None  # Instance variable to hold the new file name
         self.doc_type = doc_type
         self.company_id = company_id
-        self.total_target_amt = total_target_amt
+        self.total_target_amt = None
 
         # Construct the file_path_mappings using doc_type and company_id
         self.file_path_mappings = {
