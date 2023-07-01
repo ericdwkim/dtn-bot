@@ -1,14 +1,13 @@
 import os
 import re
-import time
-import pikepdf
-import shutil
-import pdfplumber
+from time import sleep
+from pikepdf import open, Pdf
+from shutil import move
 import datetime
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
-from mappings_refactored importdoc_type_to_subdir_mapping, doc_type_to_subdir_mapping, company_names, regex_patterns
+from mappings_refactored import doc_type_to_subdir_mapping, doc_type_to_subdir_mapping, company_names, regex_patterns
 
 
 # pdf_handler as a class following OOP
@@ -44,7 +43,7 @@ class PdfProcessor:
         file_deleted = False
         # access self.file_path instead of the file_path argument
         if os.path.exists(self.file_path):
-            with pikepdf.open(self.file_path) as pdf:
+            with open(self.file_path) as pdf:
                 if len(pdf.pages) > 0:
                     first_page = extract_text_from_pdf_page(pdf.pages[0])
 
@@ -61,7 +60,7 @@ class PdfProcessor:
                         os.rename(self.file_path, new_file_path)
                         file_deleted = True
                         print("File renamed successfully.")
-                        time.sleep(3)
+                        sleep(3)
 
                         if os.path.exists(new_file_path):
                             print(f"Deleting file: {new_file_path}")
@@ -79,7 +78,7 @@ class PdfProcessor:
                 target_dir = os.path.join(self.root_dir, self.doc_type_to_subdir_mapping[self.doc_type])
                 destination_file = os.path.join(target_dir, f'{self.today}.pdf')
                 print(f'Moving {destination_file} to {target_dir}')
-                shutil.move(source_file, destination_file)
+                move(source_file, destination_file)
                 break
 
     """
@@ -91,7 +90,7 @@ class PdfProcessor:
 
     def create_and_save_pdf(self, pages):
         try:
-            new_pdf = pikepdf.Pdf.new()
+            new_pdf = Pdf.new()
             new_pdf.pages.extend(pages)
             output_path = self.file_path_mappings[self.doc_type][self.company_id]
             output_path = os.path.join(output_path, self.new_file_name)
