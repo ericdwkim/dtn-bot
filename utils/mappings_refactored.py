@@ -1,7 +1,7 @@
 # Mapping from company id to company directory
 company_id_to_company_subdir_map = {
     '10482': 'COFFEYVILLE [10482]',
-    '12351': 'CVR Supply & Trading 12351',
+    '12351': 'CVR Supply & Trading [12351]',
     '12293': 'DK TRADING [12293]',
     '10005': 'EXXONMOBIL [10005]',
     '11177': 'FLINT HILLS [11177]',
@@ -30,7 +30,7 @@ doc_type_abbrv_to_doc_type_subdir_map = {
 }
 
 
-company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply',
-                 'CVR SUPPLY & TRADING, LLC', 'COFFEYVILLE', 'FLINT HILLS', 'FRONTIER',  'FUEL MASTERS', 'JUNIPER', 'LA LOMITA', 'MANSFIELD OIL', 'MERITUM - PICO', 'MOTIVA', 'OFFEN PETROLEUM', 'PHILLIPS', 'SEIFS', 'SUNOCO', 'TEXAS TRANSEASTERN', 'WINTERS OIL']
+# company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply',
+#                  'CVR SUPPLY & TRADING, LLC', 'COFFEYVILLE', 'FLINT HILLS', 'FRONTIER',  'FUEL MASTERS', 'JUNIPER', 'LA LOMITA', 'MANSFIELD OIL', 'MERITUM - PICO', 'MOTIVA', 'OFFEN PETROLEUM', 'PHILLIPS', 'SEIFS', 'SUNOCO', 'TEXAS TRANSEASTERN', 'WINTERS OIL']
 
 regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}

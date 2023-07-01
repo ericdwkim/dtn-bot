@@ -5,8 +5,8 @@ from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utils.pdf_processor import PdfProcessor
 from utility import setup_driver, teardown_driver
-from utils.mappings_refactored import (company_names,
-                      regex_patterns, doc_type_abbrv_to_doc_type_dir_map, company_id_to_company_subdir_map)
+
+from utils.mappings_refactored import (company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
 
 
 def user_journey():
@@ -19,6 +19,11 @@ def user_journey():
     username = os.getenv('DTN_EMAIL_ADDRESS')
     password = os.getenv('DTN_PASSWORD')
 
+    # Create processor instance
+    dl_dir = PdfProcessor.download_dir
+    file_path = dl_dir + '/messages.pdf'
+
+
     driver = setup_driver()
 
     try:
@@ -29,13 +34,19 @@ def user_journey():
         # DataConnect 1st Flow - Invoices
         data_connect = DataConnectPage(driver)
         data_connect.switch_tab_set_filters_and_download_invoices()
-        processor = PdfProcessor()
 
         # DataConnect 2nd Flow - Draft Notice
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
             return
-        draft_notices_processed_and_filed = PdfProcessor.process_pdfs(company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, doc_type_abbrv_to_doc_type_subdir_map, post_processing=False)
+        draft_notices_processed_and_filed = process_pdfs()
+
+
+
+        processor = PdfProcessor(file_path, doc_type, company_id, total_target_amt)
+
+        draft_notices_processed_and_filed = processor.process_pdfs(company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map,company_id_to_company_subdir_map, post_processing=False)
+
         if not draft_notices_processed_and_filed:
             return
 
@@ -69,10 +80,8 @@ def user_journey():
             return
 
         # CCM, LRD files
-        ccm_files_processed = process_pdfs(full_path_to_downloaded_pdf,
-                                           company_name_to_subdir_full_path_mapping_credit_cards, company_names,
-                                           regex_patterns, doc_type_abbrv_to_doc_type_dir_map,
-                                           company_id_to_company_subdir_map, post_processing=True)
+        ccm_files_processed = processor.process_pdfs(company_names, regex_patterns, doc_type_abbrv_to_doc_type_subdir_map,company_id_to_company_subdir_map, post_processing=True)
+
         if ccm_files_processed:
             # original_ccm_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
             # print(f'Finished! original_ccm_messages_pdf_is_deleted: {original_ccm_messages_pdf_is_deleted}')
@@ -84,11 +93,3 @@ def user_journey():
 
 if __name__ == '__main__':
     user_journey()
-
-"""
-
-# Usage:
-processor = PdfProcessor("example.pdf")
-processor.rename_and_delete_pdf()
-
-"""
