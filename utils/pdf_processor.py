@@ -216,10 +216,7 @@ class PdfProcessor:
         # save the split up multipage pdfs into their own pdfs
         create_and_save_pdf(current_pages)
 
-    def process_single_page(self, pdf_data):
-        company_names = get_company_names(company_id_to_company_subdir_map)
-        current_page_text = extract_text_from_pdf_page(pdf_data.pages[page_num])
-        print(f'Processing page: {page_num + 1}')
+    def process_single_page(self, pdf_data, page_text, pattern):
 
         for company_name in company_names:
             # Handle single page CCM, CBK, RTV, ETF files
