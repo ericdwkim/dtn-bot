@@ -1,8 +1,11 @@
 import os
 import re
+import io
+import pdfplumber
 from glob import glob
 from time import sleep
 from pikepdf import open, Pdf
+import pikepdf
 from shutil import move
 import datetime
 from pathlib import Path
@@ -21,11 +24,15 @@ class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
 
     # ---------------------------------- Instance attributes ----------------------------------
-    def __init__(self, doc_type=None, company_id=None, total_target_amt=None):
-        self.target_pdf_file_path = self.get_target_pdf_file_path()
-        self.doc_type = doc_type
-        self.company_id = company_id
-        self.total_target_amt = total_target_amt
+    def __init__(self, pdf_data):
+        self.pdf_file_path = self.get_pdf_file_path()
+        self.page_num = 0
+        self.pdf_data = self._parse_pdf(self.pdf_file_path)
+        self.page_text = self.current_page_text(self.pdf_data)
+        self.company_name = self.get_company_name(self.page_text)
+        self.company_id = self.get_company_id(self.company_name)
+        self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt(self.page_text, regex_patterns)
+
 
         # Construct the file_path_mappings using doc_type and company_id
         self.file_path_mappings = {
@@ -40,18 +47,83 @@ class PdfProcessor:
         }
 
     # ---------------------------------- Instance attributes ----------------------------------
+    @classmethod
+    def parse_pdf(cls, filepath):
+
+    if os.path.exists(filepath):
+        with pikepdf.open(filepath) as pdf:
+            page_num = 0
+            while page_num < len(pdf.pages):
+                print(f'Parsing PDF page number: {page_num + 1}')
+                # parse pdf logic
+        pass
+
+
+
 
     @classmethod
-    def get_target_pdf_file_path(cls):
+    def get_company_id(cls, company_name):
+        for id, subdir in company_id_to_company_subdir_map.items():
+            if company_name == subdir.split('[')[0].strip():
+                return id
+        return None
+
+    def get_company_name(self, page_text):
+
+        # if str in large string
+        if company_name in page_text:
+            return company_name
+
+
+    @classmethod
+    def get_pdf_file_path(cls):
         files = Path(cls.download_dir).glob('*messages*.pdf')
         target_file = max(files, key=lambda x: x.stat().st_mtime)
 
         return str(target_file)
 
+    def get_page_text(self, pdf_data, regex_patterns):
+        company_names = get_company_names(company_id_to_company_subdir_map)
+        # Extract main large pdf
+        page_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
+        for company_name in company_names:
+            # conditional for multi pages
+            if company_name in page_text and 'END MSG' not in page_text:
+                for pattern in regex_patterns:
+                    if re.search(pattern, page_text, re.IGNORECASE):
+                        self.process_multi_page(pdf_data, page_text, pattern)
+
+        # return the text for each instance of pdf_data
+        return page_text
+
+    def extract_doc_type_and_total_target_amt(self, current_page_text, regex_patterns):
+        # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
+        doc_type = None
+        for pattern in regex_patterns:
+            if re.search(pattern, current_page_text):
+                doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
+                break
+
+        if doc_type is None:
+            print(f"No matches for regex patterns: {regex_patterns} in\n {current_page_text}")
+            return None, None
+
+        # Extract total_target_value
+        total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', current_page_text)
+        # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
+        if total_amount_matches:
+            # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
+            total_amount = total_amount_matches[-1]
+            # print(f'=================================================: {total_amount}')
+        else:
+            total_amount = None
+
+        return doc_type, total_amount
+
     def rename_and_delete_pdf(self):
         file_deleted = False
         if os.path.exists(self.file_path):
-            with open(self.file_path) as pdf:
+            with pikepdf.open(self.file_path) as pdf:
                 if len(pdf.pages) > 0:
                     first_page = extract_text_from_pdf_page(pdf.pages[0])
 
@@ -91,7 +163,7 @@ class PdfProcessor:
 
     def create_and_save_pdf(self, pages):
         try:
-            new_pdf = Pdf.new()
+            new_pdf = pikepdf.Pdf.new()
             new_pdf.pages.extend(pages)
             output_path = self.file_path_mappings[self.doc_type][self.company_id]
             output_path = os.path.join(output_path, self.new_file_name)
@@ -115,39 +187,33 @@ class PdfProcessor:
             self.new_file_name = f'{regex_num}-{self.today}-{self.total_target_amt}.pdf'
         return self.new_file_name
 
-    def process_multi_page(self, pdf, page_num, regex_patterns):
-        company_names = get_company_names(company_id_to_company_subdir_map)
-        current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
-        print(f'Processing page: {page_num + 1}')
+    def process_multi_page(self, pdf_data, page_text, pattern):
 
-        for company_name in company_names:
-            # Handles CCM, CMB, LRD multi page docs
-            if company_name in current_page_text and 'END MSG' not in current_page_text:
-                for pattern in regex_patterns:
-                    if re.search(pattern, current_page_text, re.IGNORECASE):
+        current_pages = []
+        current_pages_texts = []
+        # split large pdf into their smaller, multi page pdfs while keeping track of page nums and texts
+        while 'END MSG' not in page_text and self.page_num < len(pdf_data.pages):
+            current_pages.append(pdf_data.pages[self.page_num])
+            current_pages_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
+            current_pages_text.append(page_text)
 
-                        current_pages = []
-                        current_page_texts = []
+            self.page_num += 1
 
-                        while 'END MSG' not in current_page_text and page_num < len(pdf.pages):
-                            current_pages.append(pdf.pages[page_num])
-                            current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
-                            current_page_texts.append(current_page_text)
+            # if at the end of the original pdf, exit loop
+            if self.page_num >= len(pdf_data.pages):
+                break
 
-                            page_num += 1
+        # form list of related strings into large string
+        page_text = "".join(current_pages_texts)
+        regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text, pattern)
+        self.get_new_file_name(regex_num)
+        print(
+            f'\n*********************************************\n multi new_file_name\n*********************************************\n {self.new_file_name}')
 
-                            if page_num >= len(pdf.pages):
-                                break
+        # save the split up multipage pdfs into their own pdfs
+        create_and_save_pdf(current_pages)
 
-                        current_page_text = "".join(current_page_texts)
-
-                        regex_num, self.today, self.total_target_amt = extract_info_from_text(current_page_text, pattern)
-                        self.get_new_file_name(regex_num)
-                        print(f'\n*********************************************\n multi new_file_name\n*********************************************\n {self.new_file_name}')
-                        self.create_and_save_pdf(current_pages)
-
-        return page_num
-    def process_single_page(self, pdf, page_num, regex_patterns):
+    def process_single_page(self, pdf, regex_patterns):
         company_names = get_company_names(company_id_to_company_subdir_map)
         current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
         print(f'Processing page: {page_num + 1}')
@@ -162,18 +228,17 @@ class PdfProcessor:
                         self.get_new_file_name(regex_num)
                         print(f'\n*********************************************\n single new_file_name\n*********************************************\n {self.new_file_name}')
                         self.create_and_save_pdf(current_pages)
-        return page_num
 
 
     def process_pages(self, regex_patterns, is_multi_page):
 
-        file_path = self.target_pdf_file_path
+        file_path = self.pdf_file_path
 
         try:
 
             # Read original PDF from downloads dir
             print(f'Processing file: {file_path}')
-            with open(file_path) as pdf:
+            with pikepdf.open(file_path) as pdf:
                 page_num = 0 # Initialize page_num
                 while page_num < len(pdf.pages):
                     print(f'page_num: {page_num + 1}') # zero-idx; user facing 1-idx
