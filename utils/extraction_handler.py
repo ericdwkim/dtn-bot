@@ -48,3 +48,28 @@ def extract_info_from_text(current_page_text, regex_pattern):
 
     return regex_num, today, total_amount
 
+
+
+def extract_doc_type_and_total_target_amt(current_page_text, regex_patterns):
+    # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
+    doc_type = None
+    for pattern in regex_patterns:
+        if re.search(pattern, current_page_text):
+            doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
+            break
+
+    if doc_type is None:
+        print(f"No matches for regex patterns: {regex_patterns} in\n {current_page_text}")
+        return None, None
+
+    # Extract total_target_value
+    total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', current_page_text)
+    # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
+    if total_amount_matches:
+        # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
+        total_amount = total_amount_matches[-1]
+        # print(f'=================================================: {total_amount}')
+    else:
+        total_amount = None
+
+    return doc_type, total_amountz

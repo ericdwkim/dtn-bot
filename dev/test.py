@@ -4,6 +4,9 @@ from utils.mappings_refactored import company_id_to_company_subdir_map
 
 
 
-PdfProcessor.get_target_pdf_file_path()
+processor = PdfProcessor('EFT', '10005', '6900.00')
 
-PdfProcessor.process_pdfs(regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
+processor.process_pdfs(regex_patterns, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
+
+
+
