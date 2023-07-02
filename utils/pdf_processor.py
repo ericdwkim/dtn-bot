@@ -24,7 +24,7 @@ class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
 
     # ---------------------------------- Instance attributes ----------------------------------
-    def __init__(self, pdf_data):
+    def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
         self.page_num = 0
         self.pdf_data = self._parse_pdf(self.pdf_file_path)
@@ -47,6 +47,7 @@ class PdfProcessor:
         }
 
     # ---------------------------------- Instance attributes ----------------------------------
+    # TODO:
     @classmethod
     def parse_pdf(cls, filepath):
 
@@ -68,6 +69,7 @@ class PdfProcessor:
                 return id
         return None
 
+    # TODO:
     def get_company_name(self, page_text):
 
         # if str in large string
@@ -227,72 +229,22 @@ class PdfProcessor:
             print(f'Could not save single page pdf {single_page_pdf_created_and_saved}')
 
 
+    def process_pdfs(self, post_processing=False):
 
-    def process_pages(self, regex_patterns, is_multi_page):
-
-        file_path = self.pdf_file_path
-
-        try:
-
-            # Read original PDF from downloads dir
-            print(f'Processing file: {file_path}')
-            with pikepdf.open(file_path) as pdf:
-                page_num = 0 # Initialize page_num
-                while page_num < len(pdf.pages):
-                    print(f'page_num: {page_num + 1}') # zero-idx; user facing 1-idx
-
-
-                    # Process pages and update the pagge num at original PDF (macro) level)
-                    if is_multi_page:
-                        new_page_num = self.process_multi_page(pdf, page_num, regex_patterns)
-                    else:
-                        new_page_num = self.process_single_page(pdf, page_num, regex_patterns)
-
-                    # if process_page has not incremented; prevents one-off issue
-                    if new_page_num == page_num:
-                        page_num += 1
-                    else:
-                        page_num = new_page_num
-
-                # if all pages processed w/o errors, return True
-                return True
-        #
-        except Exception as e:
-            # if any error occurred, print and return False
-            print(f'An unexpected error occurred: {str(e)}')
-            return False
-
-    def process_pdfs(self, regex_patterns,
-                     doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map, post_processing=False):
         output_path = self.file_path_mappings[self.doc_type][self.company_id]
 
         try:
 
-            # print(f'----------------------------- {file_path}')
-            # print(f'Processing all single-page files....\n')
-            single_pages_processed = self.process_pages(
-                                                   regex_patterns, is_multi_page=False)
-            if single_pages_processed:
-                print(f'Successfully finished processing all single-paged files\n')
-
-            # print(f'Now processing all multi-page files....\n')
-            multi_pages_processed = self.process_pages(
-                                                  regex_patterns, is_multi_page=True)
-            if multi_pages_processed:
-                print(f'Successfully finished processing all multi-paged files\n')
-
             # Conditional post processing only for EXXON CCMs and LRDs
-            if single_pages_processed and multi_pages_processed and post_processing is True:
+            if post_processing is True:
                 # print(f'Post processing for EXXON CCMs & LRDs')
                 merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map,
                                          company_id_to_company_subdir_map)
 
-            # Dynamic filesystem mgmt when post processing is False and
-            elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month():
-                end_of_month_operations(output_path, self.new_file_name)
-
             else:
-                return single_pages_processed and multi_pages_processed
+                # Dynamic filesystem mgmt for files that do not need post processing
+                end_of_month_operations(output_path, self.new_file_name)
+                return True
 
         except Exception as e:
             print(f'An error occurred: {str(e)}')

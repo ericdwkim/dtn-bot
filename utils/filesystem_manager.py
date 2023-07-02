@@ -14,6 +14,8 @@ def cleanup_files(pdf_data):
             files_deleted = True
     return files_deleted
 
+
+# TODO: if this fn returns true, then just call end_of_month_operations() ?
 def is_last_day_of_month():
     today = datetime.date.today()
     tomorrow = today + datetime.timedelta(days=1)
