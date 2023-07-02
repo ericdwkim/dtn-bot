@@ -21,24 +21,24 @@ class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
 
     # ---------------------------------- Instance attributes ----------------------------------
-    def __init__(self, doc_type, company_id, total_target_amt):
+    def __init__(self, doc_type=None, company_id=None, total_target_amt=None):
         self.target_pdf_file_path = self.get_target_pdf_file_path()
         self.doc_type = doc_type
         self.company_id = company_id
         self.total_target_amt = total_target_amt
-
 
         # Construct the file_path_mappings using doc_type and company_id
         self.file_path_mappings = {
             self.doc_type: {
                 self.company_id: os.path.join
                     (
-                self.root_dir,
-                doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
-                company_id_to_company_subdir_map[self.company_id]
+                    self.root_dir,
+                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
+                    company_id_to_company_subdir_map[self.company_id]
                 )
             }
         }
+
     # ---------------------------------- Instance attributes ----------------------------------
 
     @classmethod
@@ -50,7 +50,6 @@ class PdfProcessor:
 
     def rename_and_delete_pdf(self):
         file_deleted = False
-        # access self.file_path instead of the file_path argument
         if os.path.exists(self.file_path):
             with open(self.file_path) as pdf:
                 if len(pdf.pages) > 0:

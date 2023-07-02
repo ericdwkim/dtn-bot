@@ -72,4 +72,4 @@ def extract_doc_type_and_total_target_amt(current_page_text, regex_patterns):
     else:
         total_amount = None
 
-    return doc_type, total_amountz
+    return doc_type, total_amount
