@@ -4,3 +4,4 @@ __pycache__/
 dev.TODOs
 *.idea/*
 *.xml
+.idea/inspectionProfiles
