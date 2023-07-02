@@ -164,12 +164,12 @@ class PdfProcessor:
                 move(source_file, destination_file)
                 break
 
-    def create_and_save_pdf(self, pages):
+    def create_and_save_pdf(self, pages, new_file_name):
         try:
             new_pdf = pikepdf.Pdf.new()
             new_pdf.pages.extend(pages)
             output_path = self.file_path_mappings[self.doc_type][self.company_id]
-            output_path = os.path.join(output_path, self.new_file_name)
+            output_path = os.path.join(output_path, new_file_name)
             new_pdf.save(output_path)
             return True  # Return True if the file was saved successfully
         except Exception as e:
@@ -209,25 +209,23 @@ class PdfProcessor:
         # form list of related strings into large string
         page_text = "".join(current_pages_texts)
         regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text, pattern)
-        self.get_new_file_name(regex_num)
+        new_file_name = self.get_new_file_name(regex_num)
         print(
-            f'\n*********************************************\n multi new_file_name\n*********************************************\n {self.new_file_name}')
-
+            f'\n*********************************************\n multi new_file_name\n*********************************************\n {new_file_name}')
         # save the split up multipage pdfs into their own pdfs
-        create_and_save_pdf(current_pages)
+        multi_page_pdf_created_and_saved = create_and_save_pdf(current_pages, new_file_name)
+        if not multi_page_pdf_created_and_saved:
+            print(f'Could not save multi page pdf {multi_page_pdf_created_and_saved}')
 
     def process_single_page(self, pdf_data, page_text, pattern):
+        current_pages = [pdf_data.pages[self.page_num]]
+        regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text, pattern)
+        new_file_name = self.get_new_file_name(regex_num)
+        print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
+        single_page_pdf_created_and_saved = self.create_and_save_pdf(current_pages, new_file_name)
+        if not single_page_pdf_created_and_saved:
+            print(f'Could not save single page pdf {single_page_pdf_created_and_saved}')
 
-        for company_name in company_names:
-            # Handle single page CCM, CBK, RTV, ETF files
-            if company_name in current_page_text and 'END MSG' in current_page_text:
-                for pattern in regex_patterns:
-                    if re.search(pattern, current_page_text, re.IGNORECASE):
-                        current_pages = [pdf_data.pages[page_num]]
-                        regex_num, self.today, self.total_target_amt = extract_info_from_text(current_page_text, pattern)
-                        self.get_new_file_name(regex_num)
-                        print(f'\n*********************************************\n single new_file_name\n*********************************************\n {self.new_file_name}')
-                        self.create_and_save_pdf(current_pages)
 
 
     def process_pages(self, regex_patterns, is_multi_page):
