@@ -15,7 +15,7 @@ def cleanup_files(pdf_data):
     return files_deleted
 
 
-# TODO: if this fn returns true, then just call end_of_month_operations() ?
+# WIP: if this fn returns true, then just call end_of_month_operations() ?
 def is_last_day_of_month():
     today = datetime.date.today()
     tomorrow = today + datetime.timedelta(days=1)
@@ -28,7 +28,7 @@ def create_directory(directory):
 
 
 def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map):
-    # TODO: toggle this back on after testing
+    # WIP: toggle this back on after testing
     filename_date = re.search(r'\d{2}-\d{2}-\d{2}', filename)
     # filename_date = datetime.date(2023, 12, 31)
     if filename_date:
@@ -64,7 +64,7 @@ def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_t
     # Return None if no appropriate directory could be found.
     return None
 
-# TODO: wrap is_last_day_of_month() with this function since this operation should only be done if is_last_day_of_month() returns True
+# WIP: wrap is_last_day_of_month() with this function since this operation should only be done if is_last_day_of_month() returns True
 def end_of_month_operations(directory, filename):
     print(f'Today is the last day of the month\nConducting end of month operations.............')
     """

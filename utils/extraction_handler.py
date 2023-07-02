@@ -3,6 +3,7 @@ import pdfplumber
 import io
 import re
 import datetime
+from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, regex_patterns, company_id_to_company_subdir_map
 
 
 # Take in pikepdf Pdf object, return extracted text
@@ -23,18 +24,19 @@ def extract_text_from_pdf_page(page):
 
     return text
 
-def extract_info_from_text(current_page_text, regex_pattern):
+# WIP: combine w/ extract_doc_type_and_total_target_amt to return regex_num, total_target_amt, and doc_type; have all three as instance variables; then `self.regex_num` where applicable
+def extract_info_from_text(page_text):
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
-    regex_num_matches = re.findall(regex_pattern, current_page_text)
+    regex_num_matches = re.findall(regex_pattern, page_text)
     if regex_num_matches:
         regex_num = regex_num_matches[0]
         # print(f'-------------------------------------------------- regex_num--------------------------------: {regex_num}')
     else:
-        print(f'No matches for regex: {regex_pattern} in\n {current_page_text}')
+        print(f'No matches for regex: {regex_pattern} in\n {page_text}')
         regex_num = None
 
     # Extract total_target_value
-    total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', current_page_text)
+    total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
     # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
     if total_amount_matches:
         # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
@@ -44,26 +46,24 @@ def extract_info_from_text(current_page_text, regex_pattern):
     else:
         total_amount = None
 
-    today = datetime.date.today().strftime('%m-%d-%y') # TODO: not needed anymore
-
-    return regex_num, today, total_amount
+    return regex_num, total_amount
 
 
-
-def extract_doc_type_and_total_target_amt(current_page_text, regex_patterns):
+# WIP: combine w/ extract_info_from_text to return regex_num, total_target_amt, and doc_type; have all three as instance variables; then `self.regex_num` where applicable
+def extract_doc_type_and_total_target_amt(page_text):
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
     doc_type = None
     for pattern in regex_patterns:
-        if re.search(pattern, current_page_text):
+        if re.search(pattern, page_text):
             doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
             break
 
     if doc_type is None:
-        print(f"No matches for regex patterns: {regex_patterns} in\n {current_page_text}")
+        print(f"No matches for regex patterns: {regex_patterns} in\n {page_text}")
         return None, None
 
     # Extract total_target_value
-    total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', current_page_text)
+    total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
     # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
     if total_amount_matches:
         # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')

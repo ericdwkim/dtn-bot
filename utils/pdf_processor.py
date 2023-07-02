@@ -47,7 +47,7 @@ class PdfProcessor:
         }
 
     # ---------------------------------- Instance attributes ----------------------------------
-    # TODO:
+    # WIP:
     @classmethod
     def parse_pdf(cls, filepath):
 
@@ -57,10 +57,7 @@ class PdfProcessor:
             while page_num < len(pdf.pages):
                 print(f'Parsing PDF page number: {page_num + 1}')
                 # parse pdf logic
-        pass
-
-
-
+        # return PdfData(pdf_file_path)
 
     @classmethod
     def get_company_id(cls, company_name):
@@ -69,7 +66,7 @@ class PdfProcessor:
                 return id
         return None
 
-    # TODO:
+    # WIP:
     def get_company_name(self, page_text):
 
         # if str in large string
@@ -101,20 +98,20 @@ class PdfProcessor:
         # return the text for each instance of pdf_data
         return page_text
 
-    def extract_doc_type_and_total_target_amt(self, current_page_text):
+    def extract_doc_type_and_total_target_amt(self, page_text):
         # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
         doc_type = None
         for pattern in regex_patterns:
-            if re.search(pattern, current_page_text):
+            if re.search(pattern, page_text):
                 doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
                 break
 
         if doc_type is None:
-            print(f"No matches for regex patterns: {regex_patterns} in\n {current_page_text}")
+            print(f"No matches for regex patterns: {regex_patterns} in\n {page_text}")
             return None, None
 
         # Extract total_target_value
-        total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', current_page_text)
+        total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
         # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
         if total_amount_matches:
             # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
@@ -210,7 +207,7 @@ class PdfProcessor:
 
         # form list of related strings into large string
         page_text = "".join(current_pages_texts)
-        regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text, pattern)
+        regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
         new_file_name = self.get_new_file_name(regex_num)
         print(
             f'\n*********************************************\n multi new_file_name\n*********************************************\n {new_file_name}')
@@ -221,7 +218,7 @@ class PdfProcessor:
 
     def process_single_page(self, pdf_data, page_text, pattern):
         current_pages = [pdf_data.pages[self.page_num]]
-        regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text, pattern)
+        regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
         new_file_name = self.get_new_file_name(regex_num)
         print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
         single_page_pdf_created_and_saved = self.create_and_save_pdf(current_pages, new_file_name)
