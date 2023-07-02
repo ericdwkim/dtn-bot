@@ -28,10 +28,10 @@ class PdfProcessor:
         self.pdf_file_path = self.get_pdf_file_path()
         self.page_num = 0
         self.pdf_data = self._parse_pdf(self.pdf_file_path)
-        self.page_text = self.current_page_text(self.pdf_data)
+        self.page_text = self.get_page_text(self.pdf_data)
         self.company_name = self.get_company_name(self.page_text)
         self.company_id = self.get_company_id(self.company_name)
-        self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt(self.page_text, regex_patterns)
+        self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt(self.page_text)
 
 
         # Construct the file_path_mappings using doc_type and company_id
@@ -82,21 +82,24 @@ class PdfProcessor:
 
         return str(target_file)
 
-    def get_page_text(self, pdf_data, regex_patterns):
+    def get_page_text(self, pdf_data):
         company_names = get_company_names(company_id_to_company_subdir_map)
         # Extract main large pdf
         page_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
         for company_name in company_names:
-            # conditional for multi pages
-            if company_name in page_text and 'END MSG' not in page_text:
-                for pattern in regex_patterns:
-                    if re.search(pattern, page_text, re.IGNORECASE):
+            for pattern in regex_patterns:
+                if re.search(pattern, page_text, re.IGNORECASE):
+                    # conditional for multi "mini" pdfs
+                    if company_name in page_text and 'END MSG' not in page_text:
                         self.process_multi_page(pdf_data, page_text, pattern)
+                    # conditional for single "mini" pdfs
+                    else:
+                        self.process_single_page(pdf_data, page_text, pattern)
 
         # return the text for each instance of pdf_data
         return page_text
 
-    def extract_doc_type_and_total_target_amt(self, current_page_text, regex_patterns):
+    def extract_doc_type_and_total_target_amt(self, current_page_text):
         # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
         doc_type = None
         for pattern in regex_patterns:
@@ -213,9 +216,9 @@ class PdfProcessor:
         # save the split up multipage pdfs into their own pdfs
         create_and_save_pdf(current_pages)
 
-    def process_single_page(self, pdf, regex_patterns):
+    def process_single_page(self, pdf_data):
         company_names = get_company_names(company_id_to_company_subdir_map)
-        current_page_text = extract_text_from_pdf_page(pdf.pages[page_num])
+        current_page_text = extract_text_from_pdf_page(pdf_data.pages[page_num])
         print(f'Processing page: {page_num + 1}')
 
         for company_name in company_names:
@@ -223,7 +226,7 @@ class PdfProcessor:
             if company_name in current_page_text and 'END MSG' in current_page_text:
                 for pattern in regex_patterns:
                     if re.search(pattern, current_page_text, re.IGNORECASE):
-                        current_pages = [pdf.pages[page_num]]
+                        current_pages = [pdf_data.pages[page_num]]
                         regex_num, self.today, self.total_target_amt = extract_info_from_text(current_page_text, pattern)
                         self.get_new_file_name(regex_num)
                         print(f'\n*********************************************\n single new_file_name\n*********************************************\n {self.new_file_name}')
