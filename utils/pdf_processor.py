@@ -27,8 +27,8 @@ class PdfProcessor:
         self.pdf_file_path = self.get_pdf_file_path()
         self.page_num = 0 
         self.page_text = '' 
-        self.pattern =  ''
         self.doc_type_num = ''
+        self.pattern = self.get_pattern()
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.page_text = self.get_page_text()
         self.company_name = self.get_company_name()
@@ -80,51 +80,41 @@ class PdfProcessor:
             if company_name == company_dir.split('[')[0].strip():
                 return company_id
         return None
-
-
-
-
-
+    def get_pattern(self):
+        for pattern in doc_type_patterns:
+            if re.search(pattern, self.page_text, re.IGNORECASE):
+                self.pattern = pattern
+        return None
 
     def get_page_text(self):
-        company_names = self.get_company_names()
 
-        # while 0 < total length of pdf instance, begin to parse and extract each pdf instance
         while self.page_num < len(self.pdf_data.pages):
-            # print(f'****************************************')
             print(f'Processing page number: {self.page_num + 1}')
-
-            # Extract main large pdf
-            # TODO 7/3 1:40pm - page_text coming up empty and getting stuck in infinite loop on first pg bc first vars cant be found in empty page_text
             self.page_text = extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
             print(f'\n********************************\n{self.page_text}\n********************************\n')
-            for self.company_name in company_names:
-                print(f'------------- company name: {self.company_name}')
-                for self.pattern in doc_type_patterns:
-                    print(f'------------- pattern: {self.pattern}')
-                    if re.search(self.pattern, self.page_text, re.IGNORECASE):
-                        # conditional for multi "mini" pdfs
-                        if self.company_name in self.page_text and 'END MSG' not in self.page_text:
-                            self.process_multi_page(self.pdf_data, self.page_text)
-                        # conditional for single "mini" pdfs
-                        else:
-                            self.process_single_page(self.pdf_data, self.page_text)
+            if self.company_name and 'END MSG' not in self.page_text:
+                self.process_multi_page(self.pdf_data, self.page_text)
 
-        # return the text for each instance of pdf_data
-        return self.page_text
+            elif self.company_name and 'END MSG' in self.page_text:
+                self.process_single_page(self.pdf_data, self.page_text)
+
+            else:
+                print(f'Could not find company name: {self.company_name} in text')
+                # move page cursor
+                self.page_num += 1
+                # exit loop if at last page
+                if self.page_num >= len(self.pdf_data.pages):
+                    break
 
     def extract_doc_type_and_total_target_amt(self):
         print(f'---------------- {self.page_text}')
         # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
-        self.doc_type = None
-        for self.pattern in doc_type_patterns:
-            if re.search(self.pattern, self.page_text):
-                self.doc_type = self.pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
-                print(f'--------------- pattern: {self.pattern} | doc_type: {self.doc_type}')
-                break
+        self.doc_type = None # todo: necessary?
+        self.doc_type = self.pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
+        print(f'--------------- pattern: {self.pattern} | doc_type: {self.doc_type}')
 
         if self.doc_type is None:
-            print(f"No matches for regex patterns: {doc_type_patterns} in\n {self.page_text}")
+            print(f'Could not find document type using pattern {self.pattern} in current text: {self.page_text}')
             return None, None
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', self.page_text)
