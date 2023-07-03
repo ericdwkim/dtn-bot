@@ -26,7 +26,6 @@ class PdfProcessor:
     def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
         self.page_num = 0 
-        self.page_text = ''
         self.doc_type_num = ''
         self.pattern = None
         self.pdf_data = self.get_pdf(self.pdf_file_path)
@@ -102,10 +101,10 @@ class PdfProcessor:
             print(f'\n********************************\n{self.page_text}\n********************************\n')
             print(f'&&&&&&&&&&&&&&&&&& {self.company_name}')
             if self.company_name and 'END MSG' not in self.page_text:
-                self.process_multi_page(self.pdf_data, self.page_text)
+                self.process_multi_page()
 
             elif self.company_name and 'END MSG' in self.page_text:
-                self.process_single_page(self.pdf_data, self.page_text)
+                self.process_single_page()
 
             else:
                 print(f'Could not find company name: {self.company_name} in text')
