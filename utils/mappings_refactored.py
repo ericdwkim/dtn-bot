@@ -34,4 +34,4 @@ doc_type_abbrv_to_doc_type_subdir_map = {
 # company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply',
 #                  'CVR SUPPLY & TRADING, LLC', 'COFFEYVILLE', 'FLINT HILLS', 'FRONTIER',  'FUEL MASTERS', 'JUNIPER', 'LA LOMITA', 'MANSFIELD OIL', 'MERITUM - PICO', 'MOTIVA', 'OFFEN PETROLEUM', 'PHILLIPS', 'SEIFS', 'SUNOCO', 'TEXAS TRANSEASTERN', 'WINTERS OIL']
 
-regex_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
+doc_type_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}

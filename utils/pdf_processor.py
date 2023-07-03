@@ -12,7 +12,7 @@ from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text, extract_doc_type_and_total_target_amt
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
-from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, regex_patterns, company_id_to_company_subdir_map
+from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
 
 class PdfProcessor:
@@ -32,7 +32,7 @@ class PdfProcessor:
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.page_text = self.get_page_text()
         self.company_name = self.get_company_name()
-        self.company_id = self.get_company_id()
+        self.company_id = self.get_company_id(self.company_name)
         self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
 
 
@@ -58,31 +58,32 @@ class PdfProcessor:
 
     def get_pdf(self, filepath):
         if os.path.exists(filepath):
-            with pikepdf.open(filepath) as self.pdf_data:
-                return self.pdf_data
-
-
-    def get_company_id(self):
-        for self.company_id, company_dir in company_id_to_company_subdir_map.items():
-            if self.company_name == company_dir.split('[')[0].strip():
-                return self.company_id
-        return None
+            return pikepdf.open(filepath)
 
     def get_company_names(self):
         company_names = []
         for company_dir in company_id_to_company_subdir_map.values():
             # Slice the string to remove the company id and brackets
-            self.company_name = company_dir.split('[')[0].strip()
-            company_names.append(self.company_name)
+            company_name = company_dir.split('[')[0].strip()
+            company_names.append(company_name)
         return company_names
-
     def get_company_name(self):
         company_names = self.get_company_names()
-        for self.company_name in company_names:
-            if self.company_name in self.page_text:
-                return self.company_name
+        for company_name in company_names:
+            if company_name in self.page_text:
+                return company_name
         # Return None if no company name is found in the page_text
         return None
+
+    def get_company_id(self, company_name):
+        for company_id, company_dir in company_id_to_company_subdir_map.items():
+            if company_name == company_dir.split('[')[0].strip():
+                return company_id
+        return None
+
+
+
+
 
 
     def get_page_text(self):
@@ -99,7 +100,7 @@ class PdfProcessor:
             print(f'\n********************************\n{self.page_text}\n********************************\n')
             for self.company_name in company_names:
                 print(f'------------- company name: {self.company_name}')
-                for self.pattern in regex_patterns:
+                for self.pattern in doc_type_patterns:
                     print(f'------------- pattern: {self.pattern}')
                     if re.search(self.pattern, self.page_text, re.IGNORECASE):
                         # conditional for multi "mini" pdfs
@@ -116,14 +117,14 @@ class PdfProcessor:
         print(f'---------------- {self.page_text}')
         # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
         self.doc_type = None
-        for self.pattern in regex_patterns:
+        for self.pattern in doc_type_patterns:
             if re.search(self.pattern, self.page_text):
                 self.doc_type = self.pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
                 print(f'--------------- pattern: {self.pattern} | doc_type: {self.doc_type}')
                 break
 
         if self.doc_type is None:
-            print(f"No matches for regex patterns: {regex_patterns} in\n {self.page_text}")
+            print(f"No matches for regex patterns: {doc_type_patterns} in\n {self.page_text}")
             return None, None
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', self.page_text)

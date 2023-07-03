@@ -3,7 +3,7 @@ import pdfplumber
 import io
 import re
 import datetime
-from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, regex_patterns, company_id_to_company_subdir_map
+from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
 
 # Take in pikepdf Pdf object, return extracted text
@@ -27,7 +27,7 @@ def extract_text_from_pdf_page(page):
 # TODO: combine w/ extract_doc_type_and_total_target_amt to return regex_num, total_target_amt, and doc_type; have all three as instance variables; then `self.regex_num` where applicable
 def extract_info_from_text(page_text):
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
-    regex_num_matches = re.findall(regex_pattern, page_text)
+    regex_num_matches = re.findall(doc_type_patterns, page_text)
     if regex_num_matches:
         regex_num = regex_num_matches[0]
         # print(f'-------------------------------------------------- regex_num--------------------------------: {regex_num}')
@@ -53,13 +53,13 @@ def extract_info_from_text(page_text):
 def extract_doc_type_and_total_target_amt(page_text):
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
     doc_type = None
-    for pattern in regex_patterns:
+    for pattern in doc_type_patterns:
         if re.search(pattern, page_text):
             doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
             break
 
     if doc_type is None:
-        print(f"No matches for regex patterns: {regex_patterns} in\n {page_text}")
+        print(f"No matches for regex patterns: {doc_type_patterns} in\n {page_text}")
         return None, None
 
     # Extract total_target_value
