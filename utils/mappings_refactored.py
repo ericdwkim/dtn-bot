@@ -24,7 +24,8 @@ company_id_to_company_subdir_map = {
 
 # Mapping from document type to its respective directory under the root directory
 doc_type_abbrv_to_doc_type_subdir_map = {
-    ('CCM', 'LRD'): 'Credit Cards',
+    'CCM': 'Credit Cards',
+    'LRD': 'Credit Cards',
     'EFT': 'Fuel Drafts',
     'INV': 'Fuel Invoices',
 }

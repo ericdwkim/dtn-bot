@@ -41,12 +41,9 @@ def calculate_directory_path(file_prefix, company_id, filename, doc_type_abbrv_t
 
     root_directory = None
     for key, value in doc_type_abbrv_to_doc_type_subdir_map.items():
-        if isinstance(key, tuple):
-            if file_prefix in key:
-                root_directory = value
-                break
-        elif key == file_prefix:
-            root_directory = value
+
+        if key == file_prefix:
+            root_directory =value
             break
 
     if root_directory:

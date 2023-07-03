@@ -85,6 +85,8 @@ class PdfProcessor:
 
     def get_page_text(self, pdf_data):
         company_names = self.get_company_names()
+        print(f'---------------- {company_names} ')
+
         # Extract main large pdf
         page_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
         for company_name in company_names:
@@ -92,10 +94,10 @@ class PdfProcessor:
                 if re.search(pattern, page_text, re.IGNORECASE):
                     # conditional for multi "mini" pdfs
                     if company_name in page_text and 'END MSG' not in page_text:
-                        self.process_multi_page(pdf_data, page_text, pattern)
+                        self.process_multi_page(pdf_data, page_text)
                     # conditional for single "mini" pdfs
                     else:
-                        self.process_single_page(pdf_data, page_text, pattern)
+                        self.process_single_page(pdf_data, page_text)
 
         # return the text for each instance of pdf_data
         return page_text
@@ -106,6 +108,7 @@ class PdfProcessor:
         for pattern in regex_patterns:
             if re.search(pattern, page_text):
                 doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
+                print(f'--------------- pattern: {pattern} | doc_type: {doc_type}')
                 break
 
         if doc_type is None:
@@ -191,7 +194,7 @@ class PdfProcessor:
             self.new_file_name = f'{regex_num}-{self.today}-{self.total_target_amt}.pdf'
         return self.new_file_name
 
-    def process_multi_page(self, pdf_data, page_text, pattern):
+    def process_multi_page(self, pdf_data, page_text):
 
         current_pages = []
         current_pages_texts = []
@@ -218,7 +221,7 @@ class PdfProcessor:
         if not multi_page_pdf_created_and_saved:
             print(f'Could not save multi page pdf {multi_page_pdf_created_and_saved}')
 
-    def process_single_page(self, pdf_data, page_text, pattern):
+    def process_single_page(self, pdf_data, page_text):
         current_pages = [pdf_data.pages[self.page_num]]
         regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
         new_file_name = self.get_new_file_name(regex_num)
