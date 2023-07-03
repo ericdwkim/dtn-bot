@@ -25,7 +25,8 @@ class PdfProcessor:
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
-        self.page_num = 0
+        self.page_num = 0 # init page num; instance var
+        self.page_text = '' # init page text ; instance var
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.page_text = self.get_page_text(self.pdf_data)
         self.company_name = self.get_company_name(self.page_text)
@@ -51,7 +52,6 @@ class PdfProcessor:
     def get_pdf_file_path(cls):
         files = Path(cls.download_dir).glob('*messages*.pdf')
         target_file = max(files, key=lambda x: x.stat().st_mtime)
-
         return str(target_file)
 
     def get_pdf(self, filepath):
@@ -87,31 +87,36 @@ class PdfProcessor:
         company_names = self.get_company_names()
         print(f'---------------- {company_names} ')
 
-        # Extract main large pdf
-        page_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
-        for company_name in company_names:
-            for pattern in regex_patterns:
-                if re.search(pattern, page_text, re.IGNORECASE):
-                    # conditional for multi "mini" pdfs
-                    if company_name in page_text and 'END MSG' not in page_text:
-                        self.process_multi_page(pdf_data, page_text)
-                    # conditional for single "mini" pdfs
-                    else:
-                        self.process_single_page(pdf_data, page_text)
+        # while 0 < total length of pdf instance, begin to parse and extract each pdf instance
+        while self.page_num < len(pdf_data.pages):
+            print(f'****************************************')
+
+            # Extract main large pdf
+            self.page_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
+            for self.company_name in company_names:
+                for pattern in regex_patterns:
+                    if re.search(pattern, self.page_text, re.IGNORECASE):
+                        # conditional for multi "mini" pdfs
+                        if company_name in self.page_text and 'END MSG' not in self.page_text:
+                            self.process_multi_page(pdf_data, self.page_text)
+                        # conditional for single "mini" pdfs
+                        else:
+                            self.process_single_page(pdf_data, self.page_text)
 
         # return the text for each instance of pdf_data
-        return page_text
+        return self.page_text
 
     def extract_doc_type_and_total_target_amt(self, page_text):
+        print(f'---------------- {page_text}')
         # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
-        doc_type = None
+        self.doc_type = None
         for pattern in regex_patterns:
             if re.search(pattern, page_text):
-                doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
-                print(f'--------------- pattern: {pattern} | doc_type: {doc_type}')
+                self.doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
+                print(f'--------------- pattern: {pattern} | doc_type: {self.doc_type}')
                 break
 
-        if doc_type is None:
+        if self.doc_type is None:
             print(f"No matches for regex patterns: {regex_patterns} in\n {page_text}")
             return None, None
 
@@ -196,6 +201,7 @@ class PdfProcessor:
 
     def process_multi_page(self, pdf_data, page_text):
 
+        #todo: turn into instance vars
         current_pages = []
         current_pages_texts = []
         # split large pdf into their smaller, multi page pdfs while keeping track of page nums and texts
@@ -225,10 +231,17 @@ class PdfProcessor:
         current_pages = [pdf_data.pages[self.page_num]]
         regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
         new_file_name = self.get_new_file_name(regex_num)
-        print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
+        # print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
         single_page_pdf_created_and_saved = self.create_and_save_pdf(current_pages, new_file_name)
         if not single_page_pdf_created_and_saved:
             print(f'Could not save single page pdf {single_page_pdf_created_and_saved}')
+        else:
+            # move page cursor to next
+            self.page_num += 1
+            print(f'helooooooo')
+            # todo:
+            # if self.page_num >= len(pdf_data.pages):
+                # break
 
 
     def process_pdfs(self, post_processing=False):
