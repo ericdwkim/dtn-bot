@@ -32,6 +32,8 @@ class PdfProcessor:
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.page_text = self.get_page_text()
         self.company_name = None
+        self.pages = []
+        self.page_texts= []
         self.company_id = self.get_company_id()
         self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
 
@@ -69,9 +71,12 @@ class PdfProcessor:
         return company_names
     def get_company_name(self):
         company_names = self.get_company_names()
+        # print(f'++++++++++++++++++++ {company_names}')
         for company_name in company_names:
+            # print(f'++++++++++++++++++++ {company_name}')
             if company_name in self.page_text:
                 self.company_name = company_name
+                print(f'self.company_name: {self.company_name}|\nself.page_text: {self.page_text}')
                 # return company_name
         # Return None if no company name is found in the page_text
         return None
@@ -199,42 +204,40 @@ class PdfProcessor:
             self.new_file_name = f'{self.doc_type_num}-{self.today}-{self.total_target_amt}.pdf'
         return self.new_file_name
 
-    def process_multi_page(self, pdf_data, page_text):
+    def process_multi_page(self):
 
-        current_pages = []
-        current_pages_texts = []
         # split large pdf into their smaller, multi page pdfs while keeping track of page nums and texts
-        while 'END MSG' not in page_text and self.page_num < len(pdf_data.pages):
-            current_pages.append(pdf_data.pages[self.page_num])
-            current_pages_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
-            current_pages_text.append(page_text)
+        while 'END MSG' not in self.page_text and self.page_num < len(self.pdf_data.pages):
+            self.pages.append(self.pdf_data.pages[self.page_num])
+            self.page_texts = extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
+            self.page_texts.append(self.page_text)
 
             self.page_num += 1
 
             # if at the end of the original pdf, exit loop
-            if self.page_num >= len(pdf_data.pages):
+            if self.page_num >= len(self.pdf_data.pages):
                 break
 
         # form list of related strings into large string
-        self.page_text = "".join(current_pages_texts)
-        self.doc_type_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
+        self.page_text = "".join(self.page_texts)
+        self.doc_type_num, self.today, self.total_target_amt = extract_info_from_text(self.page_text)
         new_file_name = self.get_new_file_name()
         print(
             f'\n*********************************************\n multi new_file_name\n*********************************************\n {new_file_name}')
         # save the split up multipage pdfs into their own pdfs
-        multi_page_pdf_created_and_saved = self.create_and_save_pdf(current_pages, new_file_name)
+        multi_page_pdf_created_and_saved = self.create_and_save_pdf(pages, new_file_name)
         if not multi_page_pdf_created_and_saved:
             print(f'Could not save multi page pdf {multi_page_pdf_created_and_saved}')
 
-    def process_single_page(self, pdf_data, page_text):
-        current_pages = [pdf_data.pages[self.page_num]]
-        self.doc_type_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
+    def process_single_page(self):
+        self.pages = [self.pdf_data.pages[self.page_num]]
+        self.doc_type_num, self.today, self.total_target_amt = extract_info_from_text(self.page_text)
         new_file_name = self.get_new_file_name()
         # print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
-        single_page_pdf_created_and_saved = self.create_and_save_pdf(current_pages, new_file_name)
+        single_page_pdf_created_and_saved = self.create_and_save_pdf(self.pages, new_file_name)
         if single_page_pdf_created_and_saved:
             self.page_num += 1
-            if self.page_num >= len(pdf_data.pages):
+            if self.page_num >= len(self.pdf_data.pages):
                 return
         else:
             print(f'Could not save single page pdf {single_page_pdf_created_and_saved}')
