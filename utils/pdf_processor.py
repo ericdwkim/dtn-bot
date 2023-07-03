@@ -9,7 +9,6 @@ import pikepdf
 from shutil import move
 import datetime
 from pathlib import Path
-from utils.company_getters import get_company_id, get_company_names
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text, extract_doc_type_and_total_target_amt
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
@@ -85,7 +84,7 @@ class PdfProcessor:
 
 
     def get_page_text(self, pdf_data):
-        company_names = get_company_names(company_id_to_company_subdir_map)
+        company_names = self.get_company_names()
         # Extract main large pdf
         page_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
         for company_name in company_names:
