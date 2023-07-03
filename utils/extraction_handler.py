@@ -24,16 +24,16 @@ def extract_text_from_pdf_page(page):
 
     return text
 
-# TODO: combine w/ extract_doc_type_and_total_target_amt to return regex_num, total_target_amt, and doc_type; have all three as instance variables; then `self.regex_num` where applicable
+# TODO: combine w/ extract_doc_type_and_total_target_amt to return doc_type_num, total_target_amt, and doc_type; have all three as instance variables; then `self.doc_type_num` where applicable
 def extract_info_from_text(page_text):
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
-    regex_num_matches = re.findall(doc_type_patterns, page_text)
-    if regex_num_matches:
-        regex_num = regex_num_matches[0]
-        # print(f'-------------------------------------------------- regex_num--------------------------------: {regex_num}')
+    doc_type_num_matches = re.findall(doc_type_patterns, page_text)
+    if doc_type_num_matches:
+        doc_type_num = doc_type_num_matches[0]
+        # print(f'-------------------------------------------------- doc_type_num--------------------------------: {doc_type_num}')
     else:
-        print(f'No matches for regex: {regex_pattern} in\n {page_text}')
-        regex_num = None
+        print(f'No matches for regex: {doc_type_patterns} in\n {page_text}')
+        doc_type_num = None
 
     # Extract total_target_value
     total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
@@ -46,10 +46,10 @@ def extract_info_from_text(page_text):
     else:
         total_amount = None
 
-    return regex_num, total_amount
+    return doc_type_num, total_amount
 
 
-# TODO: combine w/ extract_info_from_text to return regex_num, total_target_amt, and doc_type; have all three as instance variables; then `self.regex_num` where applicable
+# TODO: combine w/ extract_info_from_text to return doc_type_num, total_target_amt, and doc_type; have all three as instance variables; then `self.doc_type_num` where applicable
 def extract_doc_type_and_total_target_amt(page_text):
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
     doc_type = None
