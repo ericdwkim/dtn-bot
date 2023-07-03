@@ -11,17 +11,17 @@ def extract_ccm_data(pdf_file):
     filename = os.path.basename(pdf_file)
     match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', filename)
     if match:
-        regex_num = int(match.group(1))
+        doc_type_num = int(match.group(1))
         total_amount = float(match.group(2).replace(',', ''))
-        return regex_num, total_amount
+        return doc_type_num, total_amount
     return None, None
 
 
 def extract_lrd_data(pdf_file):
     match = re.match(r'LRD-(\d+)-.*\.pdf', pdf_file)
     if match:
-        regex_num = match.group(1)
-        return regex_num, None
+        doc_type_num = match.group(1)
+        return doc_type_num, None
     return None, None
 
 
@@ -33,13 +33,13 @@ def extract_pdf_data(directory):
     total_amount = 0.00
     for pdf_file in pdf_files:
         if pdf_file.startswith('CCM'):
-            regex_num_ccm, amount = extract_ccm_data(pdf_file)
+            doc_type_num_ccm, amount = extract_ccm_data(pdf_file)
             total_amount += amount
             total_amount = round(total_amount, 2)  # Round to two decimal places
-            pdf_data_ccm.append((regex_num_ccm, today, total_amount, os.path.join(directory, pdf_file)))
+            pdf_data_ccm.append((doc_type_num_ccm, today, total_amount, os.path.join(directory, pdf_file)))
         elif pdf_file.startswith('LRD'):
-            regex_num_lrd, _ = extract_lrd_data(pdf_file)
-            pdf_data_lrd.append((regex_num_lrd, today, _, os.path.join(directory, pdf_file)))
+            doc_type_num_lrd, _ = extract_lrd_data(pdf_file)
+            pdf_data_lrd.append((doc_type_num_lrd, today, _, os.path.join(directory, pdf_file)))
     pdf_data_ccm.sort(key=lambda x: x[0])
     pdf_data_lrd.sort(key=lambda x: x[0])
     return pdf_data_ccm, total_amount, pdf_data_lrd

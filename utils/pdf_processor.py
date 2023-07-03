@@ -25,8 +25,10 @@ class PdfProcessor:
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
-        self.page_num = 0 # init page num; instance var
-        self.page_text = '' # init page text ; instance var
+        self.page_num = 0 
+        self.page_text = '' 
+        self.pattern =  ''
+        self.doc_type_num = ''
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.page_text = self.get_page_text(self.pdf_data)
         self.company_name = self.get_company_name(self.page_text)
@@ -85,19 +87,21 @@ class PdfProcessor:
 
     def get_page_text(self, pdf_data):
         company_names = self.get_company_names()
-        print(f'---------------- {company_names} ')
 
         # while 0 < total length of pdf instance, begin to parse and extract each pdf instance
         while self.page_num < len(pdf_data.pages):
             print(f'****************************************')
+            print(f'Processing page number: {self.page_num + 1}')
 
             # Extract main large pdf
             self.page_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
             for self.company_name in company_names:
+                print(f'------------- company name: {self.company_name}')
                 for pattern in regex_patterns:
+                    print(f'------------- pattern: {pattern}')
                     if re.search(pattern, self.page_text, re.IGNORECASE):
                         # conditional for multi "mini" pdfs
-                        if company_name in self.page_text and 'END MSG' not in self.page_text:
+                        if self.company_name in self.page_text and 'END MSG' not in self.page_text:
                             self.process_multi_page(pdf_data, self.page_text)
                         # conditional for single "mini" pdfs
                         else:
@@ -120,17 +124,16 @@ class PdfProcessor:
             print(f"No matches for regex patterns: {regex_patterns} in\n {page_text}")
             return None, None
 
-        # Extract total_target_value
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
         # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
         if total_amount_matches:
             # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
-            total_amount = total_amount_matches[-1]
+            self.total_target_amt = total_amount_matches[-1]
             # print(f'=================================================: {total_amount}')
         else:
-            total_amount = None
+            self.total_target_amt = None
 
-        return doc_type, total_amount
+        return self.doc_type, self.total_target_amt
 
     def rename_and_delete_pdf(self):
         file_deleted = False
@@ -185,23 +188,21 @@ class PdfProcessor:
             print(f"Error occurred while creating and saving PDF: {str(e)}")
             return False  # Return False if an error occurred
 
-    # TODO: turn regex_num into instance var
-    def get_new_file_name(self, regex_num):
-        if re.match(r'EFT-\s*\d+', regex_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
+    def get_new_file_name(self):
+        if re.match(r'EFT-\s*\d+', self.doc_type_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
             if "-" in self.total_target_amt:
                 total_target_amt = self.total_target_amt.replace("-", "")
-                self.new_file_name = f'{regex_num}-{self.today}-({total_target_amt}).pdf'
+                self.new_file_name = f'{self.doc_type_num}-{self.today}-({total_target_amt}).pdf'
             else:
-                self.new_file_name = f'{regex_num}-{self.today}-{self.total_target_amt}.pdf'
-        elif (re.match(r'CBK-\s*\d+', regex_num) or re.match(r'RTV-\s*\d+', regex_num)):
-            self.new_file_name = f'{regex_num}-{self.today}-CHARGEBACK REQUEST.pdf'
+                self.new_file_name = f'{self.doc_type_num}-{self.today}-{self.total_target_amt}.pdf'
+        elif (re.match(r'CBK-\s*\d+', self.doc_type_num) or re.match(r'RTV-\s*\d+', self.doc_type_num)):
+            self.new_file_name = f'{self.doc_type_num}-{self.today}-CHARGEBACK REQUEST.pdf'
         else:
-            self.new_file_name = f'{regex_num}-{self.today}-{self.total_target_amt}.pdf'
+            self.new_file_name = f'{self.doc_type_num}-{self.today}-{self.total_target_amt}.pdf'
         return self.new_file_name
 
     def process_multi_page(self, pdf_data, page_text):
 
-        #todo: turn into instance vars
         current_pages = []
         current_pages_texts = []
         # split large pdf into their smaller, multi page pdfs while keeping track of page nums and texts
@@ -217,20 +218,20 @@ class PdfProcessor:
                 break
 
         # form list of related strings into large string
-        page_text = "".join(current_pages_texts)
-        regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
-        new_file_name = self.get_new_file_name(regex_num)
+        self.page_text = "".join(current_pages_texts)
+        self.doc_type_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
+        new_file_name = self.get_new_file_name()
         print(
             f'\n*********************************************\n multi new_file_name\n*********************************************\n {new_file_name}')
         # save the split up multipage pdfs into their own pdfs
-        multi_page_pdf_created_and_saved = create_and_save_pdf(current_pages, new_file_name)
+        multi_page_pdf_created_and_saved = self.create_and_save_pdf(current_pages, new_file_name)
         if not multi_page_pdf_created_and_saved:
             print(f'Could not save multi page pdf {multi_page_pdf_created_and_saved}')
 
     def process_single_page(self, pdf_data, page_text):
         current_pages = [pdf_data.pages[self.page_num]]
-        regex_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
-        new_file_name = self.get_new_file_name(regex_num)
+        self.doc_type_num, self.today, self.total_target_amt = extract_info_from_text(page_text)
+        new_file_name = self.get_new_file_name()
         # print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
         single_page_pdf_created_and_saved = self.create_and_save_pdf(current_pages, new_file_name)
         if single_page_pdf_created_and_saved:
