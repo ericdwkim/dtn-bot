@@ -30,10 +30,10 @@ class PdfProcessor:
         self.pattern =  ''
         self.doc_type_num = ''
         self.pdf_data = self.get_pdf(self.pdf_file_path)
-        self.page_text = self.get_page_text(self.pdf_data)
-        self.company_name = self.get_company_name(self.page_text)
-        self.company_id = self.get_company_id(self.company_name)
-        self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt(self.page_text)
+        self.page_text = self.get_page_text()
+        self.company_name = self.get_company_name()
+        self.company_id = self.get_company_id()
+        self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
 
 
         # Construct the file_path_mappings using doc_type and company_id
@@ -58,73 +58,75 @@ class PdfProcessor:
 
     def get_pdf(self, filepath):
         if os.path.exists(filepath):
-            with pikepdf.open(filepath) as pdf:
-                return pdf
+            with pikepdf.open(filepath) as self.pdf_data:
+                return self.pdf_data
 
 
-    def get_company_id(self, company_name):
-        for company_id, company_dir in company_id_to_company_subdir_map.items():
-            if company_name == company_dir.split('[')[0].strip():
-                return company_id
+    def get_company_id(self):
+        for self.company_id, company_dir in company_id_to_company_subdir_map.items():
+            if self.company_name == company_dir.split('[')[0].strip():
+                return self.company_id
         return None
 
     def get_company_names(self):
         company_names = []
         for company_dir in company_id_to_company_subdir_map.values():
             # Slice the string to remove the company id and brackets
-            company_name = company_dir.split('[')[0].strip()
-            company_names.append(company_name)
+            self.company_name = company_dir.split('[')[0].strip()
+            company_names.append(self.company_name)
         return company_names
 
-    def get_company_name(self, page_text):
+    def get_company_name(self):
         company_names = self.get_company_names()
-        for company_name in company_names:
-            if company_name in page_text:
-                return company_name
+        for self.company_name in company_names:
+            if self.company_name in self.page_text:
+                return self.company_name
         # Return None if no company name is found in the page_text
         return None
 
 
-    def get_page_text(self, pdf_data):
+    def get_page_text(self):
         company_names = self.get_company_names()
 
         # while 0 < total length of pdf instance, begin to parse and extract each pdf instance
-        while self.page_num < len(pdf_data.pages):
-            print(f'****************************************')
+        while self.page_num < len(self.pdf_data.pages):
+            # print(f'****************************************')
             print(f'Processing page number: {self.page_num + 1}')
 
             # Extract main large pdf
-            self.page_text = extract_text_from_pdf_page(pdf_data.pages[self.page_num])
+            # TODO 7/3 1:40pm - page_text coming up empty and getting stuck in infinite loop on first pg bc first vars cant be found in empty page_text
+            self.page_text = extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
+            print(f'\n********************************\n{self.page_text}\n********************************\n')
             for self.company_name in company_names:
                 print(f'------------- company name: {self.company_name}')
-                for pattern in regex_patterns:
-                    print(f'------------- pattern: {pattern}')
-                    if re.search(pattern, self.page_text, re.IGNORECASE):
+                for self.pattern in regex_patterns:
+                    print(f'------------- pattern: {self.pattern}')
+                    if re.search(self.pattern, self.page_text, re.IGNORECASE):
                         # conditional for multi "mini" pdfs
                         if self.company_name in self.page_text and 'END MSG' not in self.page_text:
-                            self.process_multi_page(pdf_data, self.page_text)
+                            self.process_multi_page(self.pdf_data, self.page_text)
                         # conditional for single "mini" pdfs
                         else:
-                            self.process_single_page(pdf_data, self.page_text)
+                            self.process_single_page(self.pdf_data, self.page_text)
 
         # return the text for each instance of pdf_data
         return self.page_text
 
-    def extract_doc_type_and_total_target_amt(self, page_text):
-        print(f'---------------- {page_text}')
+    def extract_doc_type_and_total_target_amt(self):
+        print(f'---------------- {self.page_text}')
         # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
         self.doc_type = None
-        for pattern in regex_patterns:
-            if re.search(pattern, page_text):
-                self.doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
-                print(f'--------------- pattern: {pattern} | doc_type: {self.doc_type}')
+        for self.pattern in regex_patterns:
+            if re.search(self.pattern, self.page_text):
+                self.doc_type = self.pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
+                print(f'--------------- pattern: {self.pattern} | doc_type: {self.doc_type}')
                 break
 
         if self.doc_type is None:
-            print(f"No matches for regex patterns: {regex_patterns} in\n {page_text}")
+            print(f"No matches for regex patterns: {regex_patterns} in\n {self.page_text}")
             return None, None
 
-        total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
+        total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', self.page_text)
         # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
         if total_amount_matches:
             # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
