@@ -30,7 +30,7 @@ class PdfProcessor:
         self.pattern = None
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.page_text = self.get_page_text()
-        self.company_name = None
+        # self.company_names = self.get_company_names()
         self.pages = []
         self.page_texts= []
         self.company_id = self.get_company_id()
@@ -62,57 +62,60 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def get_company_names(self):
-        company_names = []
         for company_dir in company_id_to_company_subdir_map.values():
             # Slice the string to remove the company id and brackets
             company_name = company_dir.split('[')[0].strip()
             company_names.append(company_name)
-        return company_names
-    def get_company_name(self):
-        company_names = self.get_company_names()
-        # print(f'++++++++++++++++++++ {company_names}')
-        for company_name in company_names:
-            # print(f'++++++++++++++++++++ {company_name}')
-            if company_name in self.page_text:
-                self.company_name = company_name
-                print(f'self.company_name: {self.company_name}|\nself.page_text: {self.page_text}')
-                # return company_name
-        # Return None if no company name is found in the page_text
-        return None
+        return self.company_names
+    # def get_company_name(self):
+    #     # print(f'++++++++++++++++++++ {company_names}')
+    #     for company_name in company_names:
+    #         # print(f'++++++++++++++++++++ {company_name}')
+    #         if company_name in self.page_text:
+    #             self.company_name = company_name
+    #             print(f'self.company_name: {self.company_name}|\nself.page_text: {self.page_text}')
+    #             # return company_name
+    #     # Return None if no company name is found in the page_text
+    #     return None
 
     def get_company_id(self):
         for company_id, company_dir in company_id_to_company_subdir_map.items():
             if company_name == company_dir.split('[')[0].strip():
                 return company_id
         return None
-    def get_pattern(self):
-        for pattern in doc_type_patterns:
-            if re.search(pattern, self.page_text, re.IGNORECASE):
-                self.pattern = pattern
-        return None
+    # def get_pattern(self):
+    #     for pattern in doc_type_patterns:
+    #         if re.search(pattern, self.page_text, re.IGNORECASE):
+    #             self.pattern = pattern
+    #     return None
 
     def get_page_text(self):
+        company_names = []
+        for company_dir in company_id_to_company_subdir_map.values():
+            company_name = company_dir.split('[')[0].strip()
+            company_names.append(company_name)
 
-        self.company_name = self.get_company_name()
+
 
         while self.page_num < len(self.pdf_data.pages):
             print(f'Processing page number: {self.page_num + 1}')
             self.page_text = extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
             print(f'\n********************************\n{self.page_text}\n********************************\n')
-            print(f'&&&&&&&&&&&&&&&&&& {self.company_name}')
-            if self.company_name and 'END MSG' not in self.page_text:
-                self.process_multi_page()
+            for company_name in company_names:
+                for pattern in doc_type_patterns:
+                    if re.search(pattern, self.page_text, re.IGNORECASE):
+                        if company_name in self.page_text and 'END MSG' not in self.page_text:
+                            self.process_multi_page()
+                        else:
+                            self.process_single_page()
 
-            elif self.company_name and 'END MSG' in self.page_text:
-                self.process_single_page()
-
-            else:
-                print(f'Could not find company name: {self.company_name} in text')
-                # move page cursor
-                self.page_num += 1
-                # exit loop if at last page
-                if self.page_num >= len(self.pdf_data.pages):
-                    break
+                    else:
+                        # print(f'Could not find company name: {self.company_name} in text')
+                        # move page cursor
+                        self.page_num += 1
+                        # exit loop if at last page
+                        if self.page_num >= len(self.pdf_data.pages):
+                            break
 
     def extract_doc_type_and_total_target_amt(self):
         self.pattern = self.get_pattern()
