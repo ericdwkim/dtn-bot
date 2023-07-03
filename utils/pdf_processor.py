@@ -27,7 +27,7 @@ class PdfProcessor:
     def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
         self.page_num = 0
-        self.pdf_data = self._parse_pdf(self.pdf_file_path)
+        self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.page_text = self.get_page_text(self.pdf_data)
         self.company_name = self.get_company_name(self.page_text)
         self.company_id = self.get_company_id(self.company_name)
@@ -47,32 +47,6 @@ class PdfProcessor:
         }
 
     # ---------------------------------- Instance attributes ----------------------------------
-    # TODO:
-    @classmethod
-    def parse_pdf(cls, filepath):
-
-    if os.path.exists(filepath):
-        with pikepdf.open(filepath) as pdf:
-            page_num = 0
-            while page_num < len(pdf.pages):
-                print(f'Parsing PDF page number: {page_num + 1}')
-                # parse pdf logic
-        # return PdfData(pdf_file_path)
-
-    @classmethod
-    def get_company_id(cls, company_name):
-        for id, subdir in company_id_to_company_subdir_map.items():
-            if company_name == subdir.split('[')[0].strip():
-                return id
-        return None
-
-    # TODO:
-    def get_company_name(self, page_text):
-
-        # if str in large string
-        if company_name in page_text:
-            return company_name
-
 
     @classmethod
     def get_pdf_file_path(cls):
@@ -80,6 +54,35 @@ class PdfProcessor:
         target_file = max(files, key=lambda x: x.stat().st_mtime)
 
         return str(target_file)
+
+    def get_pdf(self, filepath):
+        if os.path.exists(filepath):
+            with pikepdf.open(filepath) as pdf:
+                return pdf
+
+
+    def get_company_id(self, company_name):
+        for company_id, company_dir in company_id_to_company_subdir_map.items():
+            if company_name == company_dir.split('[')[0].strip():
+                return company_id
+        return None
+
+    def get_company_names(self):
+        company_names = []
+        for company_dir in company_id_to_company_subdir_map.values():
+            # Slice the string to remove the company id and brackets
+            company_name = company_dir.split('[')[0].strip()
+            company_names.append(company_name)
+        return company_names
+
+    def get_company_name(self, page_text):
+        company_names = self.get_company_names()
+        for company_name in company_names:
+            if company_name in page_text:
+                return company_name
+        # Return None if no company name is found in the page_text
+        return None
+
 
     def get_page_text(self, pdf_data):
         company_names = get_company_names(company_id_to_company_subdir_map)
