@@ -26,13 +26,13 @@ class PdfProcessor:
     def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
         self.page_num = 0 
-        self.page_text = '' 
+        self.page_text = ''
         self.doc_type_num = ''
-        self.pattern = self.get_pattern()
+        self.pattern = None
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.page_text = self.get_page_text()
-        self.company_name = self.get_company_name()
-        self.company_id = self.get_company_id(self.company_name)
+        self.company_name = None
+        self.company_id = self.get_company_id()
         self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
 
 
@@ -71,11 +71,12 @@ class PdfProcessor:
         company_names = self.get_company_names()
         for company_name in company_names:
             if company_name in self.page_text:
-                return company_name
+                self.company_name = company_name
+                # return company_name
         # Return None if no company name is found in the page_text
         return None
 
-    def get_company_id(self, company_name):
+    def get_company_id(self):
         for company_id, company_dir in company_id_to_company_subdir_map.items():
             if company_name == company_dir.split('[')[0].strip():
                 return company_id
@@ -88,10 +89,13 @@ class PdfProcessor:
 
     def get_page_text(self):
 
+        self.company_id = self.get_company_name()
+
         while self.page_num < len(self.pdf_data.pages):
             print(f'Processing page number: {self.page_num + 1}')
             self.page_text = extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
             print(f'\n********************************\n{self.page_text}\n********************************\n')
+            print(f'&&&&&&&&&&&&&&&&&& {self.company_name}')
             if self.company_name and 'END MSG' not in self.page_text:
                 self.process_multi_page(self.pdf_data, self.page_text)
 
@@ -107,6 +111,7 @@ class PdfProcessor:
                     break
 
     def extract_doc_type_and_total_target_amt(self):
+        self.pattern = self.get_pattern()
         print(f'---------------- {self.page_text}')
         # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
         self.doc_type = None # todo: necessary?
