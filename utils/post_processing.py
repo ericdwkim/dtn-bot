@@ -58,7 +58,7 @@ def merge_pdfs(pdf_data):
 
 
 def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map):
-    # WIP: toggle this back on after testing
+    # TODO: toggle this back on after testing
     # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
     today = datetime.date.today().strftime('%m-%d-%y')
     if file_prefix == 'CCM':
@@ -94,7 +94,7 @@ def merge_rename_and_summate(directory, doc_type_abbrv_to_doc_type_subdir_map, c
 
     # if it is not the last day
     else:
-        # WIP: toggle back to clean up
+        # TODO: toggle back to clean up
         cleanup_files(pdf_data_ccm)
         # print(f'dont delete plz')
 
@@ -108,6 +108,6 @@ def merge_rename_and_summate(directory, doc_type_abbrv_to_doc_type_subdir_map, c
         cleanup_files(pdf_data_lrd)
 
     else:
-        # WIP: toggle back to clean up
+        # TODO: toggle back to clean up
         cleanup_files(pdf_data_lrd)
         # print(f'dont delete plz')

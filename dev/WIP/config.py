@@ -18,7 +18,7 @@ def setup_config():
     # Set the base directory according to local machine's OS
     # if os_type == 'Windows':
     #     regex_pattern_to_document_type_root_directory_map = {
-            # ('CCM') # WIP: use actual regex syntax pattern as key? does that work?
+            # ('CCM') # TODO: use actual regex syntax pattern as key? does that work?
 
         # }
 

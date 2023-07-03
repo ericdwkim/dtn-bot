@@ -47,7 +47,7 @@ class PdfProcessor:
         }
 
     # ---------------------------------- Instance attributes ----------------------------------
-    # WIP:
+    # TODO:
     @classmethod
     def parse_pdf(cls, filepath):
 
@@ -66,7 +66,7 @@ class PdfProcessor:
                 return id
         return None
 
-    # WIP:
+    # TODO:
     def get_company_name(self, page_text):
 
         # if str in large string
@@ -229,6 +229,7 @@ class PdfProcessor:
     def process_pdfs(self, post_processing=False):
 
         output_path = self.file_path_mappings[self.doc_type][self.company_id]
+        print(f'output_path: {output_path}')
 
         try:
 
@@ -237,6 +238,8 @@ class PdfProcessor:
                 # print(f'Post processing for EXXON CCMs & LRDs')
                 merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map,
                                          company_id_to_company_subdir_map)
+                
+            
 
             else:
                 # Dynamic filesystem mgmt for files that do not need post processing

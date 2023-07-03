@@ -24,7 +24,7 @@ def extract_text_from_pdf_page(page):
 
     return text
 
-# WIP: combine w/ extract_doc_type_and_total_target_amt to return regex_num, total_target_amt, and doc_type; have all three as instance variables; then `self.regex_num` where applicable
+# TODO: combine w/ extract_doc_type_and_total_target_amt to return regex_num, total_target_amt, and doc_type; have all three as instance variables; then `self.regex_num` where applicable
 def extract_info_from_text(page_text):
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
     regex_num_matches = re.findall(regex_pattern, page_text)
@@ -49,7 +49,7 @@ def extract_info_from_text(page_text):
     return regex_num, total_amount
 
 
-# WIP: combine w/ extract_info_from_text to return regex_num, total_target_amt, and doc_type; have all three as instance variables; then `self.regex_num` where applicable
+# TODO: combine w/ extract_info_from_text to return regex_num, total_target_amt, and doc_type; have all three as instance variables; then `self.regex_num` where applicable
 def extract_doc_type_and_total_target_amt(page_text):
     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
     doc_type = None
