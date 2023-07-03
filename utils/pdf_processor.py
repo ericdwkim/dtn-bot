@@ -185,7 +185,7 @@ class PdfProcessor:
             print(f"Error occurred while creating and saving PDF: {str(e)}")
             return False  # Return False if an error occurred
 
-
+    # TODO: turn regex_num into instance var
     def get_new_file_name(self, regex_num):
         if re.match(r'EFT-\s*\d+', regex_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
             if "-" in self.total_target_amt:
@@ -233,15 +233,12 @@ class PdfProcessor:
         new_file_name = self.get_new_file_name(regex_num)
         # print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
         single_page_pdf_created_and_saved = self.create_and_save_pdf(current_pages, new_file_name)
-        if not single_page_pdf_created_and_saved:
-            print(f'Could not save single page pdf {single_page_pdf_created_and_saved}')
-        else:
-            # move page cursor to next
+        if single_page_pdf_created_and_saved:
             self.page_num += 1
-            print(f'helooooooo')
-            # todo:
-            # if self.page_num >= len(pdf_data.pages):
-                # break
+            if self.page_num >= len(pdf_data.pages):
+                return
+        else:
+            print(f'Could not save single page pdf {single_page_pdf_created_and_saved}')
 
 
     def process_pdfs(self, post_processing=False):
