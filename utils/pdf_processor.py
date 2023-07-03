@@ -89,7 +89,7 @@ class PdfProcessor:
 
     def get_page_text(self):
 
-        self.company_id = self.get_company_name()
+        self.company_name = self.get_company_name()
 
         while self.page_num < len(self.pdf_data.pages):
             print(f'Processing page number: {self.page_num + 1}')
