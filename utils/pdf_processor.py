@@ -10,7 +10,7 @@ from shutil import move
 import datetime
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
-from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text, extract_doc_type_and_total_target_amt
+from utils.extraction_handler import extract_text_from_pdf_page
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
 from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
@@ -27,14 +27,15 @@ class PdfProcessor:
         self.pdf_file_path = self.get_pdf_file_path()
         self.page_num = 0 
         self.doc_type_num = ''
-        self.pattern = None
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.page_text = self.get_page_text()
-        # self.company_names = self.get_company_names()
+        self.company_names = self.get_company_names()
+        self.company_name = self.get_company_name()
         self.pages = []
         self.page_texts= []
         self.company_id = self.get_company_id()
         self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
+        self.new_file_name = self.get_new_file_name()
 
 
         # Construct the file_path_mappings using doc_type and company_id
@@ -62,31 +63,35 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def get_company_names(self):
+        company_names = []
         for company_dir in company_id_to_company_subdir_map.values():
             # Slice the string to remove the company id and brackets
             company_name = company_dir.split('[')[0].strip()
             company_names.append(company_name)
-        return self.company_names
-    # def get_company_name(self):
-    #     # print(f'++++++++++++++++++++ {company_names}')
-    #     for company_name in company_names:
-    #         # print(f'++++++++++++++++++++ {company_name}')
-    #         if company_name in self.page_text:
-    #             self.company_name = company_name
-    #             print(f'self.company_name: {self.company_name}|\nself.page_text: {self.page_text}')
-    #             # return company_name
-    #     # Return None if no company name is found in the page_text
-    #     return None
+        print(f'%%%%%%%%%%%%%%%%%% {company_names}')
+
+        return company_names
+
+    def get_company_name(self):
+        print(f'++++++++++++++++++++ {company_names}')
+        for company_name in self.company_names:
+            print(f'++++++++++++++++++++ {company_name}')
+            if company_name in self.page_text:
+                self.company_name = company_name
+                print(f'self.company_name: {self.company_name}|\nself.page_text: {self.page_text}')
+                # return company_name
+        # Return None if no company name is found in the page_text
+        return None
 
     def get_company_id(self):
         for company_id, company_dir in company_id_to_company_subdir_map.items():
-            if company_name == company_dir.split('[')[0].strip():
+            if self.company_name == company_dir.split('[')[0].strip():
                 return company_id
         return None
     # def get_pattern(self):
     #     for pattern in doc_type_patterns:
     #         if re.search(pattern, self.page_text, re.IGNORECASE):
-    #             self.pattern = pattern
+    #             return pattern
     #     return None
 
     def get_page_text(self):
@@ -103,6 +108,7 @@ class PdfProcessor:
             print(f'\n********************************\n{self.page_text}\n********************************\n')
             for company_name in company_names:
                 for pattern in doc_type_patterns:
+                    print(f'-------------pattern--------- {pattern}')
                     if re.search(pattern, self.page_text, re.IGNORECASE):
                         if company_name in self.page_text and 'END MSG' not in self.page_text:
                             self.process_multi_page()
@@ -118,15 +124,17 @@ class PdfProcessor:
                             break
 
     def extract_doc_type_and_total_target_amt(self):
-        self.pattern = self.get_pattern()
-        print(f'---------------- {self.page_text}')
+        self.doc_type = None
+        pattern = ''
+
+        for pattern in doc_type_patterns:
+            if re.search(pattern, self.page_text):
+                self.doc_type = pattern.split('-')[0]
         # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
-        self.doc_type = None # todo: necessary?
-        self.doc_type = self.pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
-        print(f'--------------- pattern: {self.pattern} | doc_type: {self.doc_type}')
+            print(f'--------------- pattern: {pattern} | doc_type: {self.doc_type}')
 
         if self.doc_type is None:
-            print(f'Could not find document type using pattern {self.pattern} in current text: {self.page_text}')
+            print(f'Could not find document type using pattern {pattern} in current text: {self.page_text}')
             return None, None
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', self.page_text)
@@ -181,12 +189,12 @@ class PdfProcessor:
                 move(source_file, destination_file)
                 break
 
-    def create_and_save_pdf(self, pages, new_file_name):
+    def create_and_save_pdf(self):
         try:
             new_pdf = pikepdf.Pdf.new()
-            new_pdf.pages.extend(pages)
+            new_pdf.pages.extend(self.pages)
             output_path = self.file_path_mappings[self.doc_type][self.company_id]
-            output_path = os.path.join(output_path, new_file_name)
+            output_path = os.path.join(output_path, self.new_file_name)
             new_pdf.save(output_path)
             return True  # Return True if the file was saved successfully
         except Exception as e:
@@ -194,6 +202,7 @@ class PdfProcessor:
             return False  # Return False if an error occurred
 
     def get_new_file_name(self):
+        print(f'******************** {self.doc_type_num}')
         if re.match(r'EFT-\s*\d+', self.doc_type_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
             if "-" in self.total_target_amt:
                 total_target_amt = self.total_target_amt.replace("-", "")
@@ -222,21 +231,21 @@ class PdfProcessor:
 
         # form list of related strings into large string
         self.page_text = "".join(self.page_texts)
-        self.doc_type_num, self.today, self.total_target_amt = extract_info_from_text(self.page_text)
-        new_file_name = self.get_new_file_name()
+        self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
         print(
             f'\n*********************************************\n multi new_file_name\n*********************************************\n {new_file_name}')
         # save the split up multipage pdfs into their own pdfs
-        multi_page_pdf_created_and_saved = self.create_and_save_pdf(pages, new_file_name)
+        multi_page_pdf_created_and_saved = self.create_and_save_pdf()
         if not multi_page_pdf_created_and_saved:
             print(f'Could not save multi page pdf {multi_page_pdf_created_and_saved}')
 
     def process_single_page(self):
-        self.pages = [self.pdf_data.pages[self.page_num]]
-        self.doc_type_num, self.today, self.total_target_amt = extract_info_from_text(self.page_text)
+        self.pages = self.pdf_data.pages[self.page_num]
+        print(f'$$$$$$$$$$$$$$$$$$$$$ {self.pages}')
+        self.doc_type_num, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
         new_file_name = self.get_new_file_name()
         # print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
-        single_page_pdf_created_and_saved = self.create_and_save_pdf(self.pages, new_file_name)
+        single_page_pdf_created_and_saved = self.create_and_save_pdf()
         if single_page_pdf_created_and_saved:
             self.page_num += 1
             if self.page_num >= len(self.pdf_data.pages):

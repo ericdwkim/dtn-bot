@@ -24,52 +24,52 @@ def extract_text_from_pdf_page(page):
 
     return text
 
-# TODO: combine w/ extract_doc_type_and_total_target_amt to return doc_type_num, total_target_amt, and doc_type; have all three as instance variables; then `self.doc_type_num` where applicable
-def extract_info_from_text(page_text):
-    # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
-    doc_type_num_matches = re.findall(doc_type_patterns, page_text)
-    if doc_type_num_matches:
-        doc_type_num = doc_type_num_matches[0]
-        # print(f'-------------------------------------------------- doc_type_num--------------------------------: {doc_type_num}')
-    else:
-        print(f'No matches for regex: {doc_type_patterns} in\n {page_text}')
-        doc_type_num = None
-
-    # Extract total_target_value
-    total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
-    # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
-    if total_amount_matches:
-        # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
-        total_amount = total_amount_matches[-1]
-        # print(f'=================================================: {total_amount}')
-
-    else:
-        total_amount = None
-
-    return doc_type_num, total_amount
-
-
-# TODO: combine w/ extract_info_from_text to return doc_type_num, total_target_amt, and doc_type; have all three as instance variables; then `self.doc_type_num` where applicable
-def extract_doc_type_and_total_target_amt(page_text):
-    # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
-    doc_type = None
-    for pattern in doc_type_patterns:
-        if re.search(pattern, page_text):
-            doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
-            break
-
-    if doc_type is None:
-        print(f"No matches for regex patterns: {doc_type_patterns} in\n {page_text}")
-        return None, None
-
-    # Extract total_target_value
-    total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
-    # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
-    if total_amount_matches:
-        # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
-        total_amount = total_amount_matches[-1]
-        # print(f'=================================================: {total_amount}')
-    else:
-        total_amount = None
-
-    return doc_type, total_amount
+# # TODO: combine w/ extract_doc_type_and_total_target_amt to return doc_type_num, total_target_amt, and doc_type; have all three as instance variables; then `self.doc_type_num` where applicable
+# def extract_info_from_text():
+#     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
+#     doc_type_num_matches = re.findall()
+#     if doc_type_num_matches:
+#         doc_type_num = doc_type_num_matches[0]
+#         # print(f'-------------------------------------------------- doc_type_num--------------------------------: {doc_type_num}')
+#     else:
+#         print(f'No matches for regex: {doc_type_patterns} in\n {page_text}')
+#         doc_type_num = None
+#
+#     # Extract total_target_value
+#     total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
+#     # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
+#     if total_amount_matches:
+#         # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
+#         total_amount = total_amount_matches[-1]
+#         # print(f'=================================================: {total_amount}')
+#
+#     else:
+#         total_amount = None
+#
+#     return doc_type_num, total_amount
+#
+#
+# # TODO: combine w/ extract_info_from_text to return doc_type_num, total_target_amt, and doc_type; have all three as instance variables; then `self.doc_type_num` where applicable
+# def extract_doc_type_and_total_target_amt(page_text):
+#     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
+#     doc_type = None
+#     for pattern in doc_type_patterns:
+#         if re.search(pattern, page_text):
+#             doc_type = pattern.split('-')[0]  # Extracting the document type prefix from the pattern.
+#             break
+#
+#     if doc_type is None:
+#         print(f"No matches for regex patterns: {doc_type_patterns} in\n {page_text}")
+#         return None, None
+#
+#     # Extract total_target_value
+#     total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', page_text)
+#     # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
+#     if total_amount_matches:
+#         # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
+#         total_amount = total_amount_matches[-1]
+#         # print(f'=================================================: {total_amount}')
+#     else:
+#         total_amount = None
+#
+#     return doc_type, total_amount
