@@ -50,21 +50,22 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def assign_file_path_mappings(self):
-        print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
+        # print(f'-------------------------- {self.company_names}')
+        # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
         if self.doc_type is None:
             print("Error: Document type is None. File path mappings could not be assigned.")
             return None
-
-        if self.company_id is None:
-            print("Error: Company ID is None. File path mappings could not be assigned.")
-            return None
+        #
+        # if self.company_id is None:
+        #     print("Error: Company ID is None. File path mappings could not be assigned.")
+        #     return None
 
         self.file_path_mappings = {
             self.doc_type: {
-                self.company_id: os.path.join(
+               os.path.join(
                     self.root_dir,
-                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
-                    company_id_to_company_subdir_map[self.company_id]
+                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type]
+                    # company_id_to_company_subdir_map[self.company_id]
                 )
             }
         }
@@ -81,7 +82,8 @@ class PdfProcessor:
 
     def get_company_name(self):
         for company_name in self.company_names:
-            # print(f'######################################## {self.page_text}')
+            print(f'######################################## {self.page_text}')
+            # todo: self.page_text is None
             if company_name in self.page_text:
                 self.company_name = company_name
                 print(f'self.company_name: {self.company_name}|\nself.page_text: {self.page_text}')
