@@ -27,8 +27,9 @@ doc_type_abbrv_to_doc_type_subdir_map = {
     'CCM': 'Credit Cards',
     'LRD': 'Credit Cards',
     'EFT': 'Fuel Drafts',
-    'INV': 'Fuel Invoices'
-    # 'CBK': 'Fuel Invoices'
+    'INV': 'Fuel Invoices',
+    'CBK': 'Credit Cards',
+    'RBK': 'Credit Cards'
 }
 
 
