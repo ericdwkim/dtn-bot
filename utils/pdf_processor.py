@@ -29,24 +29,13 @@ class PdfProcessor:
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.company_names = self.get_company_names()
         self.page_text = self.get_page_text()
-        # self.company_name = self.get_company_name()
+        self.company_name = self.get_company_name() # TODO: fix this before able to get company_id
         # self.pages = []
         self.company_id = self.get_company_id()
         self.doc_type, self.total_target_amt = (None, None)
+        self.file_path_mappings = None
+        self.assign_file_path_mappings()
         # self.new_file_name = self.get_new_file_name()
-
-
-        # Construct the file_path_mappings using doc_type and company_id
-        self.file_path_mappings = {
-            self.doc_type: {
-                self.company_id: os.path.join
-                    (
-                    self.root_dir,
-                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
-                    company_id_to_company_subdir_map[self.company_id]
-                )
-            }
-        }
 
     # ---------------------------------- Instance attributes ----------------------------------
 
@@ -60,6 +49,27 @@ class PdfProcessor:
         if os.path.exists(filepath):
             return pikepdf.open(filepath)
 
+    def assign_file_path_mappings(self):
+        print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
+        if self.doc_type is None:
+            print("Error: Document type is None. File path mappings could not be assigned.")
+            return None
+
+        if self.company_id is None:
+            print("Error: Company ID is None. File path mappings could not be assigned.")
+            return None
+
+        self.file_path_mappings = {
+            self.doc_type: {
+                self.company_id: os.path.join(
+                    self.root_dir,
+                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
+                    company_id_to_company_subdir_map[self.company_id]
+                )
+            }
+        }
+
+        return self.file_path_mappings
 
     def get_company_names(self):
         company_names = []
@@ -74,18 +84,20 @@ class PdfProcessor:
             # print(f'######################################## {self.page_text}')
             if company_name in self.page_text:
                 self.company_name = company_name
-                # print(f'self.company_name: {self.company_name}|\nself.page_text: {self.page_text}')
+                print(f'self.company_name: {self.company_name}|\nself.page_text: {self.page_text}')
                 # return company_name
         # Return None if no company name is found in the page_text
         return None
 
     def get_company_id(self):
-        while self.page_num < len(self.pdf_data.pages):
-            for company_id, company_dir in company_id_to_company_subdir_map.items():
-                if self.company_name == company_dir.split('[')[0].strip():
-                    self.company_id = company_id
-        return None
-
+        company_subdir_to_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
+        print(company_subdir_to_id_map)
+        self.company_name = self.company_name.lower()
+        for company_dir, company_id in company_subdir_to_id_map.items():
+            if self.company_name in key.lower():
+                self.company_id = company_id
+            else:
+                return None
     def get_page_text(self):
         while self.page_num < len(self.pdf_data.pages):
             print(f'Processing page number: {self.page_num + 1}')
@@ -233,6 +245,8 @@ class PdfProcessor:
                         cur_page_text = "".join(page_text_strings)
                         self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt(pattern, cur_page_text)
                         new_file_name = self.get_new_file_name()
+                        output_path = self.assign_file_path_mappings()
+                        print(f'---------------------------------------- {output_path}')
 
 
         # save the split up multipage pdfs into their own pdfs
