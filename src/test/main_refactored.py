@@ -41,9 +41,7 @@ def user_journey():
             return
         draft_notices_processed_and_filed = process_pdfs()
 
-
-
-        processor = PdfProcessor(file_path, doc_type, company_id, total_target_amt)
+        processor = PdfProcessor()
 
         draft_notices_processed_and_filed = processor.process_pdfs(regex_patterns, doc_type_abbrv_to_doc_type_subdir_map,company_id_to_company_subdir_map, post_processing=False)
 

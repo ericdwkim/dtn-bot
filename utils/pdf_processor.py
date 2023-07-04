@@ -31,22 +31,22 @@ class PdfProcessor:
         self.page_text = self.get_page_text()
         # self.company_name = self.get_company_name()
         # self.pages = []
-        # self.company_id = self.get_company_id()
+        self.company_id = self.get_company_id()
         self.doc_type, self.total_target_amt = (None, None)
         # self.new_file_name = self.get_new_file_name()
 
 
         # Construct the file_path_mappings using doc_type and company_id
-        # self.file_path_mappings = {
-        #     self.doc_type: {
-        #         self.company_id: os.path.join
-        #             (
-        #             self.root_dir,
-        #             doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
-        #             company_id_to_company_subdir_map[self.company_id]
-        #         )
-        #     }
-        # }
+        self.file_path_mappings = {
+            self.doc_type: {
+                self.company_id: os.path.join
+                    (
+                    self.root_dir,
+                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
+                    company_id_to_company_subdir_map[self.company_id]
+                )
+            }
+        }
 
     # ---------------------------------- Instance attributes ----------------------------------
 
@@ -83,7 +83,7 @@ class PdfProcessor:
         while self.page_num < len(self.pdf_data.pages):
             for company_id, company_dir in company_id_to_company_subdir_map.items():
                 if self.company_name == company_dir.split('[')[0].strip():
-                    return self.company_id
+                    self.company_id = company_id
         return None
 
     def get_page_text(self):
@@ -233,7 +233,6 @@ class PdfProcessor:
                         cur_page_text = "".join(page_text_strings)
                         self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt(pattern, cur_page_text)
                         new_file_name = self.get_new_file_name()
-                        print(f'------------------------------------ {new_file_name}')
 
 
         # save the split up multipage pdfs into their own pdfs
