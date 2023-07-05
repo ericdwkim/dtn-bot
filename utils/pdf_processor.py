@@ -50,27 +50,31 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def assign_file_path_mappings(self):
-        # print(f'-------------------------- {self.company_names}')
         print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
-        if self.doc_type is None:
-            print("Error: Document type is None. File path mappings could not be assigned.")
-            return None
-        #
-        # if self.company_id is None:
-        #     print("Error: Company ID is None. File path mappings could not be assigned.")
-        #     return None
+        print(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
 
         self.file_path_mappings = {
             self.doc_type: {
-               os.path.join(
+                self.company_id: os.path.join
+                    (
                     self.root_dir,
-                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type]
-                    # company_id_to_company_subdir_map[self.company_id]
+                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
+                    company_id_to_company_subdir_map[self.company_id]
                 )
             }
         }
 
-        return self.file_path_mappings
+        # print(f'-------------------------- {self.company_names}')
+        # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
+        if self.doc_type is None:
+            print("Error: Document type is None. File path mappings could not be assigned.")
+            return None
+
+        elif self.company_id is None:
+            print("Error: Company ID is None. File path mappings could not be assigned.")
+            return None
+        else:
+            return self.file_path_mappings
 
     def get_company_names(self):
         company_names = []
@@ -95,6 +99,7 @@ class PdfProcessor:
         self.company_name = self.company_name.lower()
         for company_dir, company_id in company_subdir_to_id_map.items():
             if self.company_name in company_dir.lower():
+                print(f'For company: {self.company_name}, we got company id:  {company_id}')
                 self.company_id = company_id
             else:
                 return None
@@ -212,7 +217,6 @@ class PdfProcessor:
             if company_name in cur_page_text and 'END MSG' not in cur_page_text:
                 for pattern in doc_type_patterns:
                     if re.search(pattern, cur_page_text, re.IGNORECASE):
-
                         page_objs = []
                         page_text_strings = []
                         while 'END MSG' not in cur_page_text and self.page_num < len(self.pdf_data.pages):
@@ -229,7 +233,7 @@ class PdfProcessor:
                         self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt(pattern, cur_page_text)
                         new_file_name = self.get_new_file_name()
                         output_path = self.assign_file_path_mappings()
-                        print(f'---------------------------------------- {output_path}')
+                        print(f'----------------------------------------output_path: {output_path}\n ------------------------ new_file_name: {new_file_name}')
 
 
         # save the split up multipage pdfs into their own pdfs
