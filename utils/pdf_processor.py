@@ -51,7 +51,7 @@ class PdfProcessor:
 
     def assign_file_path_mappings(self):
         # print(f'-------------------------- {self.company_names}')
-        # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
+        print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
         if self.doc_type is None:
             print("Error: Document type is None. File path mappings could not be assigned.")
             return None
@@ -82,12 +82,10 @@ class PdfProcessor:
 
     def get_company_name(self):
         for company_name in self.company_names:
-            print(f'######################################## {self.page_text}')
-            # todo: self.page_text is None
+            print(f'\n########################################\n{self.page_text}\n########################################\n')
             if company_name in self.page_text:
                 self.company_name = company_name
-                print(f'self.company_name: {self.company_name}|\nself.page_text: {self.page_text}')
-                # return company_name
+                return self.company_name
         # Return None if no company name is found in the page_text
         return None
 
@@ -96,7 +94,7 @@ class PdfProcessor:
         print(company_subdir_to_id_map)
         self.company_name = self.company_name.lower()
         for company_dir, company_id in company_subdir_to_id_map.items():
-            if self.company_name in key.lower():
+            if self.company_name in company_dir.lower():
                 self.company_id = company_id
             else:
                 return None
@@ -117,24 +115,7 @@ class PdfProcessor:
             self.page_num += 1
             if self.page_num >= len(self.pdf_data.pages):
                 break
-        #     for company_name in self.company_names:
-        #         for pattern in doc_type_patterns:
-        #             if re.search(pattern, self.page_text, re.IGNORECASE):
-        #                 if company_name in self.page_text and 'END MSG' not in self.page_text:
-        #                     print(f'{company_name} | {pattern}')
-        #                     self.process_multi_page()
-        #                 else:
-        #                     self.process_single_page()
-        #
-        #             else:
-        #                 # print(f'Could not find company name: {self.company_name} in text')
-        #                 # move page cursor
-        #                 self.page_num += 1
-        #                 # exit loop if at last page
-        #                 if self.page_num >= len(self.pdf_data.pages):
-        #                     break
-        #
-        # return self.page_text
+        return self.page_text
 
     # @dev: replaces `extract_info_from_text`
     def extract_doc_type_and_total_target_amt(self, pattern, cur_page_text):
