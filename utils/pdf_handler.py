@@ -3,12 +3,9 @@ import re
 import time
 import pikepdf
 import shutil
-import pdfplumber
 import datetime
-from utils.post_processing import merge_rename_and_summate, end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
-from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text
-# from utils.TODO_filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
-
+from utils.post_processing import merge_rename_and_summate, calculate_directory_path, is_last_day_of_month, end_of_month_operations
+from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text, extract_company_dir_from_map
 
 
 def rename_and_delete_pdf(file_path):
@@ -16,35 +13,35 @@ def rename_and_delete_pdf(file_path):
     today = datetime.date.today().strftime('%m-%d-%y')
 
     if os.path.exists(file_path):
-        with pikepdf.open(file_path) as pdf:
-            if len(pdf.pages) > 0:
-                first_page = extract_text_from_pdf_page(pdf.pages[0])
+        pdf = pikepdf.open(file_path)  # Open the PDF file
+        if len(pdf.pages) > 0:
+            first_page = extract_text_from_pdf_page(pdf.pages[0])
 
-                if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
-                    if re.search(r'EFT-\d+', first_page):
-                        new_file_name = f'EFT-{today}-TO-BE-DELETED.pdf'
-                    else:
-                        new_file_name = f'CCM-{today}-TO-BE-DELETED.pdf'
+            if re.search(r'EFT-\d+', first_page) or re.search(r'CMB-\d+ | CCM-\d+ | LRD-\d+', first_page):
+                if re.search(r'EFT-\d+', first_page):
+                    new_file_name = f'EFT-{today}-TO-BE-DELETED.pdf'
+                else:
+                    new_file_name = f'CCM-{today}-TO-BE-DELETED.pdf'
 
-                    file_directory = os.path.dirname(file_path)
-                    new_file_path = os.path.join(file_directory, new_file_name)
+                file_directory = os.path.dirname(file_path)
+                new_file_path = os.path.join(file_directory, new_file_name)
 
-                    print(f"Renaming file: {file_path} to {new_file_path}")
-                    os.rename(file_path, new_file_path)
-                    file_deleted = True
-                    print("File renamed successfully.")
-                    time.sleep(3)
+                print(f"Renaming file: {file_path} to {new_file_path}")
+                pdf.close()  # Close the PDF file
+                os.rename(file_path, new_file_path)
+                file_deleted = True
+                print("File renamed successfully.")
+                time.sleep(3)
 
-                    if os.path.exists(new_file_path):
-                        print(f"Deleting file: {new_file_path}")
-                        os.remove(new_file_path)
-                        print("File deleted successfully.")
+                if os.path.exists(new_file_path):
+                    print(f"Deleting file: {new_file_path}")
+                    os.remove(new_file_path)
+                    print("File deleted successfully.")
 
     return file_deleted
 
 # Invoices
-# todo: TypeError: rename_and_move_pdf() missing 1 required positional argument: 'target_dir';
-def rename_and_move_pdf(file_name, source_dir, target_dir):
+def rename_and_move_pdf(file_name, source_dir):
     # Get today's date and format it as MM-DD-YY
     today = datetime.date.today().strftime('%m-%d-%y')
 
@@ -53,11 +50,25 @@ def rename_and_move_pdf(file_name, source_dir, target_dir):
         if file.endswith('.pdf') and file_name in file:
             source_file = os.path.join(source_dir, file)
             # Rename file
-            destination_file = os.path.join(target_dir, f'{today}.pdf')
+            new_file_name = today + '.pdf'
+            new_file_path = os.path.join(source_dir, new_file_name)
+            os.rename(source_file, new_file_path)
+
+            # Get output path from filename
+            month_dir = calculate_directory_path('INV')
+
             # Move the file
-            print(f'Moving {destination_file} to {target_dir}')
-            shutil.move(source_file, destination_file)
-            break  # Only expecting one file, so exit loop after first one is found
+            print(f'Moving {new_file_path} to {month_dir}')
+            try:
+                shutil.move(new_file_path, month_dir)
+                return True  # file moved successfully
+            except Exception as e:
+                print(f"An error occurred while moving the file: {e}")
+                return False  # file could not be moved
+
+    # If the function has not yet returned, the file was not found
+    print(f"No PDF file containing '{file_name}' was found in the directory {source_dir}.")
+    return False
 
 
 def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
@@ -65,19 +76,28 @@ def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
     return full_path_to_downloaded_pdf
 
 
-def create_and_save_pdf(pages, new_file_name, destination_dir):
+def create_and_save_pdf(pages, new_file_name, company_dir):
+    file_prefix = new_file_name.split("-")[0]
     try:
         new_pdf = pikepdf.Pdf.new()
         new_pdf.pages.extend(pages)
-        dest_dir_with_new_file_name = os.path.join(destination_dir, new_file_name)
-        new_pdf.save(dest_dir_with_new_file_name)
+        # Dynamic filesystem management for Fuel Drafts
+        if file_prefix == 'EFT':
+            month_dir = calculate_directory_path(file_prefix, None, company_dir)
+            output_filepath = os.path.join(month_dir, new_file_name)
+            # print(f'!!!!!!!!!!!!!!!! output_filepath: {output_filepath}')
+
+        # CCM, LRD temp saving in company dir prior to post-processing
+        else:
+            output_filepath = os.path.join(company_dir, new_file_name)
+            # print(f'-------------- output_filepath: {output_filepath}')
+        new_pdf.save(output_filepath)
         return True  # Return True if the file was saved successfully
     except Exception as e:
         print(f"Error occurred while creating and saving PDF: {str(e)}")
         return False  # Return False if an error occurred
 
 def get_new_file_name(regex_num, today, total_target_amt):
-    # @dev: only EFTs that follow this convention
     # File naming convention for total_target_amt preceding/succeeding with a hyphen indicative of a balance owed
     if re.match(r'EFT-\s*\d+', regex_num) and re.match(r'-?[\d,]+\.\d+-?', total_target_amt):
         if "-" in total_target_amt:  # Checks if "-" exists anywhere in total_target_amt
@@ -127,8 +147,8 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     new_file_name = get_new_file_name(regex_num, today, total_amount)
                     print(f'\n*********************************************\n multi new_file_name\n*********************************************\n {new_file_name}')
-                    destination_dir = company_name_to_company_subdir_mapping[company_name]
-                    create_and_save_pdf(current_pages, new_file_name, destination_dir)
+                    company_dir = company_name_to_company_subdir_mapping[company_name]
+                    create_and_save_pdf(current_pages, new_file_name, company_dir)
 
     return page_num
 
@@ -146,8 +166,8 @@ def process_single_page(pdf, page_num, company_names, regex_patterns, company_na
                     regex_num, today, total_amount = extract_info_from_text(current_page_text, pattern)
                     new_file_name = get_new_file_name(regex_num, today, total_amount)
                     print(f'\n*********************************************\n single new_file_name\n*********************************************\n {new_file_name}')
-                    destination_dir = company_name_to_company_subdir_mapping[company_name]
-                    create_and_save_pdf(current_pages, new_file_name, destination_dir)
+                    company_dir = company_name_to_company_subdir_mapping[company_name]
+                    create_and_save_pdf(current_pages, new_file_name, company_dir)
 
                     page_num += 1
 
@@ -189,7 +209,7 @@ def process_pages(filepath, company_name_to_company_subdir_mapping, company_name
         return False
 
 
-def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map,
+def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names, regex_patterns,
                  post_processing=False):
     try:
         print(f'----------------------------- {filepath}')
@@ -208,15 +228,19 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
         # Conditional post processing only for EXXON CCMs and LRDs
         if single_pages_processed and multi_pages_processed and post_processing is True:
             print(f'Post processing for EXXON CCMs & LRDs')
-            output_directory_exxon = company_name_to_company_subdir_mapping['EXXONMOBIL']
-            merge_rename_and_summate(output_directory_exxon, doc_type_abbrv_to_doc_type_map, company_id_to_company_subdir_map)
+            exxon_company_dir = company_name_to_company_subdir_mapping['EXXONMOBIL']
+            merge_rename_and_summate(exxon_company_dir)
 
-        # Dynamic filesystem mgmt when post processing is False and
-        elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month():
-            end_of_month_operations(directory, filename)
+        elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month() is True:
 
-        else:
-            return single_pages_processed and multi_pages_processed
+            # todo: suspicous of this block preventing credit cards and invoices from getting dynamically managed
+            # End of month operations for EFTs
+            company_dirs = extract_company_dir_from_map()
+            for company_name, company_dir in zip(company_names, company_dirs):
+                print(f"The subdirectory for {company_name} is: {company_dir}")
+                end_of_month_operations(company_dir)
+
+        return single_pages_processed and multi_pages_processed
 
     except Exception as e:
         print(f'An error occurred: {str(e)}')
