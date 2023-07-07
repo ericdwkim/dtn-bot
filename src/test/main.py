@@ -10,91 +10,90 @@ from utils.mappings import (dest_dir_invoices, keyword_in_dl_file_name, download
                       company_name_to_subdir_full_path_mapping_credit_cards, doc_type_abbrv_to_doc_type_dir_map, company_id_to_company_subdir_map)
 
 
+
+# Run the shell script to delete PDF files from previous session
+run(["../scripts/delete_pdf_files.sh"], shell=True)
+print(f'===========================================================================================')
+
+# Set environmental variables
+username = os.getenv('DTN_EMAIL_ADDRESS')
+password = os.getenv('DTN_PASSWORD')
+
 def user_journey():
+    driver = setup_driver()
 
-    # Run the shell script to delete PDF files from previous session
-    run(["../scripts/delete_pdf_files.sh"], shell=True)
-    print(f'===========================================================================================')
+    full_path_to_downloaded_pdf = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
 
-    # Set environmental variables
-    username = os.getenv('DTN_EMAIL_ADDRESS')
-    password = os.getenv('DTN_PASSWORD')
+    try:
+        # Visit site and login
+        login_page = LoginPage(driver)
+        login_page.visit_and_login(username, password)
 
-    def user_journey():
-        driver = setup_driver()
+        """
+        # DataConnect 1st Flow - Invoices
+        """
 
-        full_path_to_downloaded_pdf = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
+        data_connect = DataConnectPage(driver)
+        data_connect.switch_tab_set_filters_and_download_invoices(third_flow=False)
+        rename_and_move_pdf(keyword_in_dl_file_name, download_dir)
 
-        try:
-            # Visit site and login
-            login_page = LoginPage(driver)
-            login_page.visit_and_login(username, password)
+        """
+        # DataConnect 2nd Flow - Draft Notice
+        """
 
-            """
-            # DataConnect 1st Flow - Invoices
-            """
+        group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice(third_flow=False)
+        if not group_filter_set_to_draft_notice:
+            return
+        draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf,
+                                                         company_name_to_subdir_full_path_mapping_fuel_drafts,
+                                                         company_names, regex_patterns, post_processing=False)
+        if not draft_notices_processed_and_filed:
+            return
 
-            data_connect = DataConnectPage(driver)
-            data_connect.switch_tab_set_filters_and_download_invoices(third_flow=False)
-            rename_and_move_pdf(keyword_in_dl_file_name, download_dir)
+        print(f'draft_notices_processed_and_filed: {draft_notices_processed_and_filed}')
 
-            """
-            # DataConnect 2nd Flow - Draft Notice
-            """
+        """
+        # DataConnect 3rd Flow - Credit Cards
+        """
 
-            group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice(third_flow=False)
-            if not group_filter_set_to_draft_notice:
-                return
-            draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf,
-                                                             company_name_to_subdir_full_path_mapping_fuel_drafts,
-                                                             company_names, regex_patterns, post_processing=False)
-            if not draft_notices_processed_and_filed:
-                return
+        if draft_notices_processed_and_filed:
+            original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
 
-            print(f'draft_notices_processed_and_filed: {draft_notices_processed_and_filed}')
+            print(f'original_eft_messages_pdf_is_deleted: {original_eft_messages_pdf_is_deleted}')
+        # Switch date from yesterday's to today's
+        date_set_to_today = data_connect.set_date_filter(third_flow=True)
+        if not date_set_to_today:
+            return
 
-            """
-            # DataConnect 3rd Flow - Credit Cards
-            """
+        # Reset Translated to No
+        translated_set_to_no = data_connect.set_translated_filter_to_no(third_flow=True)
+        print(f'translated_set_to_no: {translated_set_to_no}')
+        if not translated_set_to_no:
+            return
 
-            if draft_notices_processed_and_filed:
-                original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
+        # Set Group filter to CC
+        group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card(third_flow=True)
+        print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
+        if not group_filter_set_to_credit_card:
+            return
 
-                print(f'original_eft_messages_pdf_is_deleted: {original_eft_messages_pdf_is_deleted}')
-            # Switch date from yesterday's to today's
-            date_set_to_today = data_connect.set_date_filter(third_flow=True)
-            if not date_set_to_today:
-                return
+        # Download CC PDF
+        ccm_files_downloaded = data_connect.check_all_then_click_print()
+        print(f'ccm_files_downloaded: {ccm_files_downloaded}')
+        if not ccm_files_downloaded:
+            return
 
-            # Reset Translated to No
-            translated_set_to_no = data_connect.set_translated_filter_to_no(third_flow=True)
-            print(f'translated_set_to_no: {translated_set_to_no}')
-            if not translated_set_to_no:
-                return
+        # CCM, LRD files
+        ccm_files_processed = process_pdfs(full_path_to_downloaded_pdf,
+                                           company_name_to_subdir_full_path_mapping_credit_cards, company_names,
+                                           regex_patterns, post_processing=True)
+        if ccm_files_processed:
+            original_ccm_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
+            print(f'Finished! original_ccm_messages_pdf_is_deleted: {original_ccm_messages_pdf_is_deleted}')
 
-            # Set Group filter to CC
-            group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card(third_flow=True)
-            print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
-            if not group_filter_set_to_credit_card:
-                return
+    finally:
+        teardown_driver(driver)
 
-            # Download CC PDF
-            ccm_files_downloaded = data_connect.check_all_then_click_print()
-            print(f'ccm_files_downloaded: {ccm_files_downloaded}')
-            if not ccm_files_downloaded:
-                return
-
-            # CCM, LRD files
-            ccm_files_processed = process_pdfs(full_path_to_downloaded_pdf,
-                                               company_name_to_subdir_full_path_mapping_credit_cards, company_names,
-                                               regex_patterns, post_processing=True)
-            if ccm_files_processed:
-                original_ccm_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
-                print(f'Finished! original_ccm_messages_pdf_is_deleted: {original_ccm_messages_pdf_is_deleted}')
-
-        finally:
-            teardown_driver(driver)
-
-    if __name__ == '__main__':
-        user_journey()
+if __name__ == '__main__':
+    user_journey()
 
