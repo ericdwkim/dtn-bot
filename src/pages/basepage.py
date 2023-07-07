@@ -85,8 +85,14 @@ class BasePage(object):
         :param locator_type:
         :return: Tuple(bool, WebElement)
         """
+        print(f'************************************ find_element_and_click1 ************************ ')
+
         try:
+            print(f'************************************ find_element_and_click 2 ************************ ')
+            print(f'TYPE LOCATOR: {type(locator)}')
+            print(f' LOCATOR: {locator}')
             element = self.driver.find_element(locator_type, locator)
+            print(f'$$$$$$$$$$$$$$$$: {element}')
             element.click()
             return True, element
         except NoSuchElementException:

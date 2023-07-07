@@ -25,12 +25,14 @@ class DataConnectPage(BasePage):
         except Exception as e:
             print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False):
         if third_flow:
-            print(f'---------- testing -------------')
             date_locator = '#date > option:nth-child(1)'
         try:
+            print(f'11111 @@@@@@@@@@@@@@@@@@@@@@@@@@@@ type date locator @@@@@@@@@@ {type(date_locator)}')
+            print(f'22222 @@@@@@@@@@@@@@@@@@@@@@@@@@@@  date locator @@@@@@@@@@ {date_locator}')
+
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
             print(f'************ was_clicked , element_selector_clicked : {was_clicked}  {element_selector_clicked }')
 
@@ -372,7 +374,7 @@ class DataConnectPage(BasePage):
             return False
 
 
-        if not self.set_date_filter(third_flow):
+        if not self.set_date_filter():
             return False
 
         try:
