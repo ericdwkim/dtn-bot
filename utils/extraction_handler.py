@@ -3,7 +3,16 @@ import pdfplumber
 import io
 import re
 import datetime
+from .mappings import company_name_to_subdir_full_path_mapping_fuel_drafts, company_names
 
+
+def extract_company_dir_from_map():
+    company_subdirs = []
+    for name in company_names:
+        company_subdir = company_name_to_subdir_full_path_mapping_fuel_drafts.get(name)
+        if company_subdir:
+            company_subdirs.append(company_subdir)
+    return company_subdirs
 
 # Take in pikepdf Pdf object, return extracted text
 def extract_text_from_pdf_page(page):
