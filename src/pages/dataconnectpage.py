@@ -32,7 +32,6 @@ class DataConnectPage(BasePage):
         try:
 
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
-            print(f'************ was_clicked , element_selector_clicked : {was_clicked}  {element_selector_clicked }')
 
             if was_clicked and element_selector_clicked:
                 time.sleep(5)  # Wait for filter heads to load on DOM
@@ -206,7 +205,7 @@ class DataConnectPage(BasePage):
         return True, True, True
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def set_translated_filter_to_no(self, third_flow=False):
+    def set_translated_filter_to_no(self, third_flow):
 
 
         """
@@ -220,7 +219,7 @@ class DataConnectPage(BasePage):
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
             filter_btn_elem_idx=3,
-            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[7]/button',
+            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[7777]/button',
             target_elem_idx=3,
             src_locator="//li[@title='No']"
         )
@@ -230,6 +229,7 @@ class DataConnectPage(BasePage):
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
             print(f'Could not set Translated filter with retries. Reloading page....')
             reload_status = self.reload_page()
+            time.sleep(15)
 
             if reload_status:
                 print(f'Successfully reloaded page!')
@@ -367,7 +367,7 @@ class DataConnectPage(BasePage):
             raise Exception("Failed to set Group filter to Credit Cards")
 
 
-    def switch_tab_set_filters_and_download_invoices(self, third_flow=False):
+    def switch_tab_set_filters_and_download_invoices(self):
         if not self.switch_tab():
             return False
 
@@ -376,13 +376,13 @@ class DataConnectPage(BasePage):
             return False
 
         try:
-            self.set_translated_filter_to_no(third_flow)
+            self.set_translated_filter_to_no(third_flow=False)
         except Exception as e:
             print(f"set_translated_filter_to_no failed with error: {str(e)}")
             return False
 
         try:
-            self.set_group_filter_to_invoice(third_flow)
+            self.set_group_filter_to_invoice(third_flow=False)
         except Exception as e:
             print(f'set_group_filter_to_invoice failed with error: {str(e)}')
             return False
