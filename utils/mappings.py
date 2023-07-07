@@ -18,7 +18,10 @@ company_name_to_subdir_full_path_mapping_fuel_drafts = {
 
     'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]',
 
-    'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]'
+    'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]',
+
+    'CONCORD FIRST DATA RETRIEVAL': r'/Users/ekima/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/First Data',
+
 }
 
 # Mapping for company name to Credit Cards subdir full path
@@ -28,7 +31,9 @@ company_name_to_subdir_full_path_mapping_credit_cards = {
 
     'CONCORD FIRST DATA RETRIEVAL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/First Data',
 
-    'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL [10005]'
+    'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL [10005]',
+
+    'U.S. OIL COMPANY': r'/Users/ekima/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/U S VENTURE - U S OIL COMPANY [12262]'
 
 }
 
