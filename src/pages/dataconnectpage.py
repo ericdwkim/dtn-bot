@@ -25,16 +25,17 @@ class DataConnectPage(BasePage):
         except Exception as e:
             print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
-    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False):
         if third_flow:
+            print(f'---------- testing -------------')
             date_locator = '#date > option:nth-child(1)'
         try:
-
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
+            print(f'************ was_clicked , element_selector_clicked : {was_clicked}  {element_selector_clicked }')
 
             if was_clicked and element_selector_clicked:
-                time.sleep(5)  # Wait for filter heads to load on DOM
+                time.sleep(10)  # Wait for filter heads to load on DOM
 
                 translated_filter_head_located = self.wait_for_presence_of_elements_located(
                     r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
@@ -50,7 +51,7 @@ class DataConnectPage(BasePage):
                 # if successful reload, recursively call current function and continue with flow
                 if reload_status:
                     print(f'Successfully reloaded page! Resetting date filter....')
-                    time.sleep(5)
+                    time.sleep(15)
                     return self.set_date_filter(date_locator)
                 else:
                     print(f'Could not reload page. Something went wrong!')
@@ -219,7 +220,7 @@ class DataConnectPage(BasePage):
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
             filter_btn_elem_idx=3,
-            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[7777]/button',
+            filter_header_locator=r'//*[@id="messageTable"]/thead/tr/th[7]/button',
             target_elem_idx=3,
             src_locator="//li[@title='No']"
         )
