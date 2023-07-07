@@ -30,14 +30,12 @@ class DataConnectPage(BasePage):
         if third_flow:
             date_locator = '#date > option:nth-child(1)'
         try:
-            print(f'11111 @@@@@@@@@@@@@@@@@@@@@@@@@@@@ type date locator @@@@@@@@@@ {type(date_locator)}')
-            print(f'22222 @@@@@@@@@@@@@@@@@@@@@@@@@@@@  date locator @@@@@@@@@@ {date_locator}')
 
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
             print(f'************ was_clicked , element_selector_clicked : {was_clicked}  {element_selector_clicked }')
 
             if was_clicked and element_selector_clicked:
-                time.sleep(10)  # Wait for filter heads to load on DOM
+                time.sleep(5)  # Wait for filter heads to load on DOM
 
                 translated_filter_head_located = self.wait_for_presence_of_elements_located(
                     r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
@@ -53,7 +51,7 @@ class DataConnectPage(BasePage):
                 # if successful reload, recursively call current function and continue with flow
                 if reload_status:
                     print(f'Successfully reloaded page! Resetting date filter....')
-                    time.sleep(30)
+                    time.sleep(5)
                     return self.set_date_filter(date_locator)
                 else:
                     print(f'Could not reload page. Something went wrong!')
