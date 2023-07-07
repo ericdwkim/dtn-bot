@@ -1,4 +1,3 @@
-# from config import setup_config
 import os
 from subprocess import run
 from ..pages.loginpage import LoginPage
@@ -34,7 +33,7 @@ def user_journey():
         """
 
         data_connect = DataConnectPage(driver)
-        data_connect.switch_tab_set_filters_and_download_invoices(third_flow=False)
+        data_connect.switch_tab_set_filters_and_download_invoices()
         rename_and_move_pdf(keyword_in_dl_file_name, download_dir)
 
         """
@@ -44,9 +43,7 @@ def user_journey():
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice(third_flow=False)
         if not group_filter_set_to_draft_notice:
             return
-        draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf,
-                                                         company_name_to_subdir_full_path_mapping_fuel_drafts,
-                                                         company_names, regex_patterns, post_processing=False)
+        draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
         if not draft_notices_processed_and_filed:
             return
 
@@ -84,9 +81,7 @@ def user_journey():
             return
 
         # CCM, LRD files
-        ccm_files_processed = process_pdfs(full_path_to_downloaded_pdf,
-                                           company_name_to_subdir_full_path_mapping_credit_cards, company_names,
-                                           regex_patterns, post_processing=True)
+        ccm_files_processed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
         if ccm_files_processed:
             original_ccm_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
             print(f'Finished! original_ccm_messages_pdf_is_deleted: {original_ccm_messages_pdf_is_deleted}')
