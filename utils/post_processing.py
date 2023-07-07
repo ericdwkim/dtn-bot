@@ -3,7 +3,8 @@ import re
 import datetime
 import pikepdf
 import shutil
-from .mappings import company_id_to_subdir_mapping, root_directory_mapping
+from .mappings import company_id_to_company_subdir_map, root_directory_mapping
+
 def cleanup_files(pdf_data):
     """
     Given a list of tuples. Loop and delete all file_path files in the 4th element of each tuple

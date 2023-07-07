@@ -61,7 +61,7 @@ company_id_to_company_subdir_map = {
     '10778': 'WINTERS OIL [10778]',
 }
 
-doc_type_abbrv_to_doc_type_dir_map = {
+root_directory_mapping = {
     ('CCM', 'LRD'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
     'EFT': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/',
     'INV': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/',
