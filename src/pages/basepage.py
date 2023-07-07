@@ -77,8 +77,7 @@ class BasePage(object):
             return False
 
 
-
-    def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
+    def find_element_and_click(self, locator, locator_type=By.CSS_SELECTOR):
         """
         Finds element and clicks it using `WebElement.click()`
         :param locator:
