@@ -47,11 +47,10 @@ class DataConnectPage(BasePage):
             elif not was_clicked and not element_selector_clicked:
                 print(f'Could not set date filter with retries. Reloading page....')
                 reload_status = self.reload_page()
-
                 # if successful reload, recursively call current function and continue with flow
                 if reload_status:
                     print(f'Successfully reloaded page! Resetting date filter....')
-                    time.sleep(15)
+                    time.sleep(30)
                     return self.set_date_filter(date_locator)
                 else:
                     print(f'Could not reload page. Something went wrong!')

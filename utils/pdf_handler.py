@@ -43,6 +43,7 @@ def rename_and_delete_pdf(file_path):
     return file_deleted
 
 # Invoices
+# todo: TypeError: rename_and_move_pdf() missing 1 required positional argument: 'target_dir';
 def rename_and_move_pdf(file_name, source_dir, target_dir):
     # Get today's date and format it as MM-DD-YY
     today = datetime.date.today().strftime('%m-%d-%y')
