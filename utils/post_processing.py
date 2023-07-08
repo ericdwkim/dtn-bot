@@ -85,7 +85,8 @@ def end_of_month_operations(company_dir=None):
     """
     # Handles INV case
     if company_dir is None:
-        company_dir = ''
+        # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
+        company_dir = root_directory_mapping['INV']
 
     # Get today's date
     # today = datetime.datetime.strptime(datetime.date.today().strftime('%m-%d-%y'), '%m-%d-%y') #todo: toggle back on
@@ -98,6 +99,8 @@ def end_of_month_operations(company_dir=None):
     # If it's December, create the next year's directory and the next month's directory inside it
     if next_month == '01-Jan':
         os.makedirs(os.path.join(company_dir, next_year, next_month), exist_ok=True)
+        print(f'{company_dir} + {next_year} + {next_month}') # dtn-reports/src/
+
     else:  # If not December, just create the next month's directory inside the current year's directory
         os.makedirs(os.path.join(company_dir, current_year, next_month), exist_ok=True)
 

@@ -1,5 +1,4 @@
 # Directory paths
-dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/6-June'
 keyword_in_dl_file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf` on mac
 download_dir = r'/Users/ekim/Downloads'
 
