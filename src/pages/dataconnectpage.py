@@ -43,6 +43,12 @@ class DataConnectPage(BasePage):
                     r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
                 translated_filter_head_clickable = self.wait_for_element_clickable(
                     r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
+
+                if not translated_filter_head_located and not translated_filter_head_clickable:
+                    self.reload_page()
+                    time.sleep(30)
+                    return self.set_date_filter(date_locator, third_flow, max_retries)
+
                 time.sleep(5)
                 return True
 
