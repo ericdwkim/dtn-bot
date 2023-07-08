@@ -372,7 +372,7 @@ class DataConnectPage(BasePage):
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Group filter to Credit Cards")
 
-
+    # TODO: logic to ensure all steps are mandatory and sequential. ie: group filter = invoice and then print.
     def switch_tab_set_filters_and_download_invoices(self):
         if not self.switch_tab():
             return False
