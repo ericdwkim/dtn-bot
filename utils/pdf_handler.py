@@ -63,7 +63,7 @@ def rename_and_move_pdf(file_name, source_dir):
                 shutil.move(new_file_path, month_dir)
                 return True  # file moved successfully
             except Exception as e:
-                print(f"An error occurred while moving the file: {e}")
+                print(f"An error occurred while moving the file: {e}") # TODO: filename conflict; if file with same name already exists then delete the one that was just made to prevent clutering the downloads directory
                 return False  # file could not be moved
 
     # If the function has not yet returned, the file was not found
