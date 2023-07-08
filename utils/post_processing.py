@@ -133,14 +133,9 @@ def calculate_directory_path(file_prefix, company_id=None, company_dir=None):
     if not root_directory:
         raise ValueError(f"No root directory found for file prefix '{file_prefix}'")
 
-    # Handle EFT cases
-    if file_prefix == 'EFT' and company_id is None and company_dir:
+    # Handle EFT and CMB cases
+    if (file_prefix == 'EFT' or file_prefix == 'CMB') and company_id is None and company_dir:
         root_directory = company_dir
-
-    if file_prefix == 'CMB' and company_id is None and company_dir:
-        print(f'CALCULATING DIR PATH FOR CMB FILES!!!!!!!!!!!!!!!!!!!!!!')
-        root_directory = company_dir
-
 
     # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
     elif root_directory and company_id:

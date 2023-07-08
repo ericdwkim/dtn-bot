@@ -81,18 +81,11 @@ def create_and_save_pdf(pages, new_file_name, company_dir):
     try:
         new_pdf = pikepdf.Pdf.new()
         new_pdf.pages.extend(pages)
-        # Dynamic filesystem management for Fuel Drafts
+        # Dynamic filesystem management for Fuel Drafts and Combined Message type
         if file_prefix == 'EFT' or file_prefix == 'CMB':
             month_dir = calculate_directory_path(file_prefix, None, company_dir)
             output_filepath = os.path.join(month_dir, new_file_name)
             print(f'!!!!!!!!!!!!!!!! output_filepath: {output_filepath}')
-
-        elif file_prefix == 'CMB':
-            print(f'CMB file getting created and saved as pdf!!!!!!!!!!!!!!!!!!!!!!!!!!\n new_file_name: {new_file_name}\ncompany_dir: {company_dir}')
-            month_dir = calculate_directory_path(file_prefix, None, company_dir)
-            output_filepath = os.path.join(month_dir, new_file_name)
-            print(f'!!!!!!!!!!!!!!!! output_filepath: {output_filepath}')
-
 
         # CCM, LRD temp saving in company dir prior to post-processing
         else:
