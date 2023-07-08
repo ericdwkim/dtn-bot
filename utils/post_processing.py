@@ -139,7 +139,7 @@ def calculate_directory_path(file_prefix, company_id=None, company_dir=None):
 
     # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
     elif root_directory and company_id:
-        company_directory = company_id_to_subdir_mapping.get(company_id, '')
+        company_directory = company_id_to_company_subdir_map.get(company_id, '')
         root_directory = os.path.join(root_directory, company_directory)
 
     # Create and return path to the relevant year and month directories
