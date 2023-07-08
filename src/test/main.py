@@ -33,8 +33,12 @@ def user_journey():
         """
 
         data_connect = DataConnectPage(driver)
-        data_connect.switch_tab_set_filters_and_download_invoices()
-        invoices_renamed_and_filed_away = rename_and_move_pdf(keyword_in_dl_file_name, download_dir)
+        downloaded_invoices_successfully = data_connect.switch_tab_set_filters_and_download_invoices()
+        if not downloaded_invoices_successfully:
+            return
+        else:
+            invoices_renamed_and_filed_away = rename_and_move_pdf(keyword_in_dl_file_name, download_dir)
+
         if invoices_renamed_and_filed_away and is_last_day_of_month():
             end_of_month_operations()
 
@@ -74,7 +78,7 @@ def user_journey():
 
 
         # Reset Translated to No
-        translated_set_to_no = data_connect.set_translated_filter_to_no(third_flow=True)
+        translated_set_to_no = data_connect.set_translated_filter_to_no()
         print(f'translated_set_to_no: {translated_set_to_no}')
         if not translated_set_to_no:
             return
