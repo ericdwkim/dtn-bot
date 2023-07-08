@@ -62,7 +62,7 @@ def check_file_exists(output_path):
 
 def is_last_day_of_month():
     # today = datetime.date.today()  # TODO toggle back on after testing
-    today = datetime.date(2023, 12, 31) #todo: test for new year/new month dirs
+    today = datetime.date(2023, 12, 30) #todo: test for new year/new month dirs
 
     tomorrow = today + datetime.timedelta(days=1)
     return tomorrow.day == 1
