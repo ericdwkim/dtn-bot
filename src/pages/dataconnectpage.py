@@ -25,8 +25,8 @@ class DataConnectPage(BasePage):
         except Exception as e:
             print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
-    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False):
+
+    def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False, max_retries=3):
         print(f'*********************date_locator1 ***********: {date_locator}')
         if third_flow:
             print(f'---------- testing -------------')
@@ -53,8 +53,12 @@ class DataConnectPage(BasePage):
                 if reload_status:
                     print(f'Successfully reloaded page! Resetting date filter....')
                     time.sleep(30)
-                    return self.set_date_filter(date_locator, third_flow)
-
+                    if max_retries > 1:
+                        return self.set_date_filter(date_locator, third_flow, max_retries - 1)
+                    else:
+                        print(
+                            "Could not set the date after 3 attempts of reloading the page. Please restart the script.")
+                        return False
                 else:
                     print(f'Could not reload page. Something went wrong!')
                     return False
@@ -62,7 +66,6 @@ class DataConnectPage(BasePage):
         except Exception as e:
             print(f'An error occurred trying to set date filter: {str(e)}')
             return False
-
 
     def reload_page(self, max_retries=3):
         for attempt in range(max_retries):
