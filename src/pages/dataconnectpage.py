@@ -235,16 +235,16 @@ class DataConnectPage(BasePage):
             return True
 
         #TODO: test and implement reload page
-        elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-                print(f'Could not set translated filter. Resetting date filter to reload page.')
-
-                # Recall to set date to correct one
-                reset_date_filter = self.set_date_filter(date_locator, third_flow)
-                if reset_date_filter:
-                    time.sleep(15)
-                    recall_translated_filter = self.set_translated_filter_to_no(third_flow)
-                    if reset_date_filter and recall_translated_filter:
-                        return True
+        # elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
+        #         print(f'Could not set translated filter. Resetting date filter to reload page.')
+        #
+        #         # Recall to set date to correct one
+        #         reset_date_filter = self.set_date_filter(date_locator, third_flow)
+        #         if reset_date_filter:
+        #             time.sleep(15)
+        #             recall_translated_filter = self.set_translated_filter_to_no(third_flow)
+        #             if reset_date_filter and recall_translated_filter:
+        #                 return True
 
         else:
             print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: '
