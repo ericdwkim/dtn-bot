@@ -74,7 +74,7 @@ def user_journey():
 
 
         # Reset Translated to No
-        translated_set_to_no = data_connect.set_translated_filter_to_no()
+        translated_set_to_no = data_connect.set_translated_filter_to_no(third_flow=True)
         print(f'translated_set_to_no: {translated_set_to_no}')
         if not translated_set_to_no:
             return

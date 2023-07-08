@@ -208,7 +208,7 @@ class DataConnectPage(BasePage):
         return True, True, True
 
     # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def set_translated_filter_to_no(self):
+    def set_translated_filter_to_no(self, third_flow):
 
 
         """
@@ -217,7 +217,7 @@ class DataConnectPage(BasePage):
         """
 
         # initialize req'd param
-        # date_locator = ''
+        date_locator = ''
 
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
@@ -229,18 +229,18 @@ class DataConnectPage(BasePage):
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
 
+        #TODO: test and implement reload page
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set Translated filter with retries. Please restart script.')
-            # reload_status = self.reload_page()
-            # time.sleep(15)
-            #
-            # if reload_status:
-            #     print(f'Successfully reloaded page!')
-            #     # Recall to set date to correct one
-            #     reset_date_filter = self.set_date_filter(date_locator, third_flow)
-            #     # Recursive call
-            #     if reset_date_filter:
-            #         return self.set_translated_filter_to_no(third_flow)
+                print(f'Could not set translated filter. Resetting date filter to reload page.')
+
+                # Recall to set date to correct one
+                reset_date_filter = self.set_date_filter(date_locator, third_flow)
+                if reset_date_filter:
+                    time.sleep(15)
+                    recall_translated_filter = self.set_translated_filter_to_no(third_flow)
+                    if reset_date_filter and recall_translated_filter:
+                        return True
+
         else:
             print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: '
                   f'{src_elem_dragged_and_dropped_to_target_elem}'
@@ -379,7 +379,7 @@ class DataConnectPage(BasePage):
             return False
 
         try:
-            self.set_translated_filter_to_no()
+            self.set_translated_filter_to_no(third_flow=False)
         except Exception as e:
             print(f"set_translated_filter_to_no failed with error: {str(e)}")
             return False

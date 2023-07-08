@@ -234,7 +234,6 @@ def process_pdfs(filepath, company_name_to_company_subdir_mapping, company_names
 
         elif single_pages_processed and multi_pages_processed and post_processing is False and is_last_day_of_month() is True:
 
-            # todo: suspicous of this block preventing credit cards and invoices from getting dynamically managed
             # End of month operations for EFTs
             company_dirs = extract_company_dir_from_map()
             for company_name, company_dir in zip(company_names, company_dirs):
