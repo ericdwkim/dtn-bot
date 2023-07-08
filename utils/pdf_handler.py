@@ -82,7 +82,7 @@ def create_and_save_pdf(pages, new_file_name, company_dir):
         new_pdf = pikepdf.Pdf.new()
         new_pdf.pages.extend(pages)
         # Dynamic filesystem management for Fuel Drafts
-        if file_prefix == 'EFT':
+        if file_prefix == 'EFT' or file_prefix == 'CMB':
             month_dir = calculate_directory_path(file_prefix, None, company_dir)
             output_filepath = os.path.join(month_dir, new_file_name)
             # print(f'!!!!!!!!!!!!!!!! output_filepath: {output_filepath}')
