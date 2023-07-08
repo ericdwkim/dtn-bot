@@ -49,20 +49,13 @@ class DataConnectPage(BasePage):
             elif not was_clicked and not element_selector_clicked:
                 print(f'Could not set date filter with retries. Reloading page....')
                 reload_status = self.reload_page()
-                # if successful reload, recursively call current function and continue with flow
-                if reload_status:
-                    print(f'Successfully reloaded page! Resetting date filter....')
-                    time.sleep(30)
-                    if max_retries > 1:
-                        reset_date_filter = self.set_date_filter(date_locator, third_flow, max_retries - 1)
-                        if reset_date_filter:
-                            return True
-                    else:
-                        print(
-                            "Could not set the date after 3 attempts of reloading the page. Please restart the script.")
-                        return # exit and do not continue to next step
+                time.sleep(30)
+                if max_retries > 1:
+                    time.sleep(10)
+                    return self.set_date_filter(date_locator, third_flow, max_retries)
+                # depleted retries
                 else:
-                    print(f'Could not reload page. Something went wrong!')
+                    print("Could not set the date after 3 attempts of reloading the page. Please restart the script.")
                     return False
 
         except Exception as e:
@@ -213,7 +206,7 @@ class DataConnectPage(BasePage):
         return True, True, True
 
     # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def set_translated_filter_to_no(self, third_flow):
+    def set_translated_filter_to_no(self):
 
 
         """
@@ -376,15 +369,15 @@ class DataConnectPage(BasePage):
 
     # TODO: logic to ensure all steps are mandatory and sequential. ie: group filter = invoice and then print.
     def switch_tab_set_filters_and_download_invoices(self):
+
         if not self.switch_tab():
             return False
 
-
-        if not self.set_date_filter():
+        if not self.set_date_filter(third_flow=False):
             return False
 
         try:
-            self.set_translated_filter_to_no(third_flow=False)
+            self.set_translated_filter_to_no()
         except Exception as e:
             print(f"set_translated_filter_to_no failed with error: {str(e)}")
             return False
