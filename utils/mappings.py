@@ -62,7 +62,7 @@ company_id_to_company_subdir_map = {
 }
 
 root_directory_mapping = {
-    ('CCM', 'LRD'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
+    ('CCM', 'LRD', 'CMB'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
     'EFT': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/',
     'INV': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/',
 }
