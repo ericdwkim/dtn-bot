@@ -54,11 +54,13 @@ class DataConnectPage(BasePage):
                     print(f'Successfully reloaded page! Resetting date filter....')
                     time.sleep(30)
                     if max_retries > 1:
-                        return self.set_date_filter(date_locator, third_flow, max_retries - 1)
+                        reset_date_filter = self.set_date_filter(date_locator, third_flow, max_retries - 1)
+                        if reset_date_filter:
+                            return True
                     else:
                         print(
                             "Could not set the date after 3 attempts of reloading the page. Please restart the script.")
-                        return False
+                        return # exit and do not continue to next step
                 else:
                     print(f'Could not reload page. Something went wrong!')
                     return False
