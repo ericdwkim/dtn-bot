@@ -101,7 +101,8 @@ def end_of_month_operations(company_dir=None):
 
 
 def cur_month_and_year_from_today():
-    today = datetime.date.today().strftime('%m-%d-%y')
+    # today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on
+    today = datetime.date(2023, 12, 30).strftime('%m-%d-%y')
     current_month = datetime.datetime.strptime(today, '%m-%d-%y').strftime('%m-%b')
     current_year = datetime.datetime.strptime(today, '%m-%d-%y').strftime('%Y')
 
@@ -158,8 +159,8 @@ def merge_pdfs(pdf_data):
 
 
 def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
-    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
-    today = datetime.date.today().strftime('%m-%d-%y')
+    today = datetime.date(2023, 12, 30).strftime('%m-%d-%y')
+    # today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on after testing
     if file_prefix == 'CCM':
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
     else:
