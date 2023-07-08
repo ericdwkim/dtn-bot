@@ -38,7 +38,8 @@ def extract_lrd_data(pdf_file):
 
 
 def extract_pdf_data(company_dir):
-    today = datetime.date.today().strftime('%m-%d-%y')
+    # today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on
+    today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
     pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
     pdf_data_ccm = []
     pdf_data_lrd = []
@@ -62,7 +63,7 @@ def check_file_exists(output_path):
 
 def is_last_day_of_month():
     # today = datetime.date.today()  # TODO toggle back on after testing
-    today = datetime.date(2023, 12, 30) #todo: test for new year/new month dirs
+    today = datetime.date(2023, 12, 31) #todo: test for new year/new month dirs
 
     tomorrow = today + datetime.timedelta(days=1)
     return tomorrow.day == 1
@@ -87,7 +88,8 @@ def end_of_month_operations(company_dir=None):
         company_dir = ''
 
     # Get today's date
-    today = datetime.datetime.strptime(datetime.date.today().strftime('%m-%d-%y'), '%m-%d-%y')
+    # today = datetime.datetime.strptime(datetime.date.today().strftime('%m-%d-%y'), '%m-%d-%y') #todo: toggle back on
+    today = datetime.datetime.strptime('12-31-23', '%m-%d-%y')
 
     current_year = today.strftime('%Y')
     next_month = (today.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
@@ -102,7 +104,7 @@ def end_of_month_operations(company_dir=None):
 
 def cur_month_and_year_from_today():
     # today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on
-    today = datetime.date(2023, 12, 30).strftime('%m-%d-%y')
+    today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
     current_month = datetime.datetime.strptime(today, '%m-%d-%y').strftime('%m-%b')
     current_year = datetime.datetime.strptime(today, '%m-%d-%y').strftime('%Y')
 
@@ -159,7 +161,7 @@ def merge_pdfs(pdf_data):
 
 
 def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
-    today = datetime.date(2023, 12, 30).strftime('%m-%d-%y')
+    today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
     # today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on after testing
     if file_prefix == 'CCM':
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
