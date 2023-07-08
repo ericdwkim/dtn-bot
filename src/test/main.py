@@ -44,7 +44,7 @@ def user_journey():
         """
         print(f'*********************** STARTING 2nd FLOW ***********************')
 
-        group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice(third_flow=False)
+        group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
             return
         print(f'*********************** group_filter_set_to_draft_notice *********************** {group_filter_set_to_draft_notice}')
@@ -74,14 +74,14 @@ def user_journey():
 
 
         # Reset Translated to No
-        translated_set_to_no = data_connect.set_translated_filter_to_no(third_flow=True)
+        translated_set_to_no = data_connect.set_translated_filter_to_no()
         print(f'translated_set_to_no: {translated_set_to_no}')
         if not translated_set_to_no:
             return
         print(f'translated_set_to_no *********************** {translated_set_to_no}')
 
         # Set Group filter to CC
-        group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card(third_flow=True)
+        group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
         print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
         if not group_filter_set_to_credit_card:
             return

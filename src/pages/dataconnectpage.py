@@ -207,8 +207,8 @@ class DataConnectPage(BasePage):
 
         return True, True, True
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def set_translated_filter_to_no(self, third_flow):
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    def set_translated_filter_to_no(self):
 
 
         """
@@ -217,7 +217,7 @@ class DataConnectPage(BasePage):
         """
 
         # initialize req'd param
-        date_locator = ''
+        # date_locator = ''
 
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
@@ -248,14 +248,14 @@ class DataConnectPage(BasePage):
             raise Exception("Failed to set Translated filter.")
 
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def set_group_filter_to_invoice(self, third_flow=False):
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    def set_group_filter_to_invoice(self):
         """
         set_filter wrapper specific to Group filter to `Invoice`
         :return: bool
         """
         # initialize req'd param
-        date_locator = ''
+        # date_locator = ''
 
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
@@ -287,15 +287,15 @@ class DataConnectPage(BasePage):
                 f'{src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Group filter to Invoice")
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def set_group_filter_to_draft_notice(self, third_flow=False):
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    def set_group_filter_to_draft_notice(self):
         """
         set_filter wrapper specific to Group filter to Draft Notice
         :return: bool
         """
 
         # initialize req'd param
-        date_locator = ''
+        # date_locator = ''
 
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
@@ -329,14 +329,14 @@ class DataConnectPage(BasePage):
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Group filter to Draft Notice")
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def set_group_filter_to_credit_card(self, third_flow=True):
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    def set_group_filter_to_credit_card(self):
         """
         set_filter wrapper specific to Group filter to Credit Card
         :return: bool
         """
         # initialize req'd param
-        date_locator = ''
+        # date_locator = ''
 
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
@@ -379,13 +379,13 @@ class DataConnectPage(BasePage):
             return False
 
         try:
-            self.set_translated_filter_to_no(third_flow=False)
+            self.set_translated_filter_to_no()
         except Exception as e:
             print(f"set_translated_filter_to_no failed with error: {str(e)}")
             return False
 
         try:
-            self.set_group_filter_to_invoice(third_flow=False)
+            self.set_group_filter_to_invoice()
         except Exception as e:
             print(f'set_group_filter_to_invoice failed with error: {str(e)}')
             return False
