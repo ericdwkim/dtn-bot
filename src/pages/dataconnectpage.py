@@ -25,12 +25,14 @@ class DataConnectPage(BasePage):
         except Exception as e:
             print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False):
+        print(f'*********************date_locator1 ***********: {date_locator}')
         if third_flow:
             print(f'---------- testing -------------')
             date_locator = '#date > option:nth-child(1)'
         try:
+            print(f'*********************date_locator2 ***********: {date_locator}')
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
             print(f'************ was_clicked , element_selector_clicked : {was_clicked}  {element_selector_clicked }')
 
@@ -51,7 +53,8 @@ class DataConnectPage(BasePage):
                 if reload_status:
                     print(f'Successfully reloaded page! Resetting date filter....')
                     time.sleep(30)
-                    return self.set_date_filter(date_locator)
+                    return self.set_date_filter(date_locator, third_flow)
+
                 else:
                     print(f'Could not reload page. Something went wrong!')
                     return False
@@ -227,17 +230,17 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set Translated filter with retries. Reloading page....')
-            reload_status = self.reload_page()
-            time.sleep(15)
-
-            if reload_status:
-                print(f'Successfully reloaded page!')
-                # Recall to set date to correct one
-                reset_date_filter = self.set_date_filter(date_locator, third_flow)
-                # Recursive call
-                if reset_date_filter:
-                    return self.set_translated_filter_to_no(third_flow)
+            print(f'Could not set Translated filter with retries. Please restart script.')
+            # reload_status = self.reload_page()
+            # time.sleep(15)
+            #
+            # if reload_status:
+            #     print(f'Successfully reloaded page!')
+            #     # Recall to set date to correct one
+            #     reset_date_filter = self.set_date_filter(date_locator, third_flow)
+            #     # Recursive call
+            #     if reset_date_filter:
+            #         return self.set_translated_filter_to_no(third_flow)
         else:
             print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: '
                   f'{src_elem_dragged_and_dropped_to_target_elem}'
@@ -265,18 +268,18 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set group filter to invoice with retries. Reloading page....')
-            reload_status = self.reload_page()
-
-            if reload_status:
-                print(f'Successfully reloaded page!')
-                # Recall to set date to correct one
-                reset_date_filter = self.set_date_filter(date_locator, third_flow)
-                # Recall to set translated filter
-                reset_translated_filter = self.set_translated_filter_to_no(third_flow)
-                # Recursive call
-                if reset_date_filter and reset_translated_filter:
-                    return self.set_group_filter_to_invoice(third_flow)
+            print(f'Could not set group filter to invoice with retries. Please restart script.')
+            # reload_status = self.reload_page()
+            #
+            # if reload_status:
+            #     print(f'Successfully reloaded page!')
+            #     # Recall to set date to correct one
+            #     reset_date_filter = self.set_date_filter(date_locator, third_flow)
+            #     # Recall to set translated filter
+            #     reset_translated_filter = self.set_translated_filter_to_no(third_flow)
+            #     # Recursive call
+            #     if reset_date_filter and reset_translated_filter:
+            #         return self.set_group_filter_to_invoice(third_flow)
         else:
             print(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
@@ -306,18 +309,18 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set group filter to draft notice with retries. Reloading page....')
-            reload_status = self.reload_page()
-
-            if reload_status:
-                print(f'Successfully reloaded page!')
-                # Recall to set date to correct one
-                reset_date_filter = self.set_date_filter(date_locator, third_flow)
-                # Recall to set translated filter
-                reset_translated_filter = self.set_translated_filter_to_no(third_flow)
-                # Recursive call
-                if reset_date_filter and reset_translated_filter:
-                    return self.set_group_filter_to_draft_notice(third_flow)
+            print(f'Could not set group filter to draft notice with retries. Please restart script.')
+            # reload_status = self.reload_page()
+            #
+            # if reload_status:
+            #     print(f'Successfully reloaded page!')
+            #     # Recall to set date to correct one
+            #     reset_date_filter = self.set_date_filter(date_locator, third_flow)
+            #     # Recall to set translated filter
+            #     reset_translated_filter = self.set_translated_filter_to_no(third_flow)
+            #     # Recursive call
+            #     if reset_date_filter and reset_translated_filter:
+            #         return self.set_group_filter_to_draft_notice(third_flow)
 
         else:
             print(
@@ -346,18 +349,18 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set group filter to draft notice with retries. Reloading page....')
-            reload_status = self.reload_page()
-
-            if reload_status:
-                print(f'Successfully reloaded page!')
-                # Recall to set date to correct one
-                reset_date_filter = self.set_date_filter(date_locator, third_flow)
-                # Recall to set translated filter
-                reset_translated_filter = self.set_translated_filter_to_no(third_flow)
-                # Recursive call
-                if reset_date_filter and reset_translated_filter:
-                    return self.set_group_filter_to_credit_card(third_flow)
+            print(f'Could not set group filter to draft notice with retries. Please restart script.')
+            # reload_status = self.reload_page()
+            #
+            # if reload_status:
+            #     print(f'Successfully reloaded page!')
+            #     # Recall to set date to correct one
+            #     reset_date_filter = self.set_date_filter(date_locator, third_flow)
+            #     # Recall to set translated filter
+            #     reset_translated_filter = self.set_translated_filter_to_no(third_flow)
+            #     # Recursive call
+            #     if reset_date_filter and reset_translated_filter:
+            #         return self.set_group_filter_to_credit_card(third_flow)
 
         else:
             print(
