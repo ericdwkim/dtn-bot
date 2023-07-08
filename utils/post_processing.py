@@ -137,6 +137,11 @@ def calculate_directory_path(file_prefix, company_id=None, company_dir=None):
     if file_prefix == 'EFT' and company_id is None and company_dir:
         root_directory = company_dir
 
+    if file_prefix == 'CMB' and company_id is None and company_dir:
+        print(f'CALCULATING DIR PATH FOR CMB FILES!!!!!!!!!!!!!!!!!!!!!!')
+        root_directory = company_dir
+
+
     # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
     elif root_directory and company_id:
         company_directory = company_id_to_company_subdir_map.get(company_id, '')

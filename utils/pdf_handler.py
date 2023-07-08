@@ -85,7 +85,14 @@ def create_and_save_pdf(pages, new_file_name, company_dir):
         if file_prefix == 'EFT' or file_prefix == 'CMB':
             month_dir = calculate_directory_path(file_prefix, None, company_dir)
             output_filepath = os.path.join(month_dir, new_file_name)
-            # print(f'!!!!!!!!!!!!!!!! output_filepath: {output_filepath}')
+            print(f'!!!!!!!!!!!!!!!! output_filepath: {output_filepath}')
+
+        elif file_prefix == 'CMB':
+            print(f'CMB file getting created and saved as pdf!!!!!!!!!!!!!!!!!!!!!!!!!!\n new_file_name: {new_file_name}\ncompany_dir: {company_dir}')
+            month_dir = calculate_directory_path(file_prefix, None, company_dir)
+            output_filepath = os.path.join(month_dir, new_file_name)
+            print(f'!!!!!!!!!!!!!!!! output_filepath: {output_filepath}')
+
 
         # CCM, LRD temp saving in company dir prior to post-processing
         else:
@@ -148,6 +155,7 @@ def process_multi_page(pdf, page_num, company_names, regex_patterns, company_nam
                     new_file_name = get_new_file_name(regex_num, today, total_amount)
                     print(f'\n*********************************************\n multi new_file_name\n*********************************************\n {new_file_name}')
                     company_dir = company_name_to_company_subdir_mapping[company_name]
+                    print(f'####### company_dir: {company_dir}')
                     create_and_save_pdf(current_pages, new_file_name, company_dir)
 
     return page_num
