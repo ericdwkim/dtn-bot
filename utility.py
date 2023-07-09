@@ -5,9 +5,9 @@ from selenium.webdriver.chrome.service import Service
 
 def setup_driver():
     options = webdriver.ChromeOptions()
-    # options.add_argument('--headless=new')
-    options.add_argument('--start-maximized')
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    options.add_argument('--headless=new')
+    # options.add_argument('--start-maximized')
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
 def teardown_driver(driver):
