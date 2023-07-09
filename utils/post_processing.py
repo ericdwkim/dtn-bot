@@ -99,7 +99,6 @@ def end_of_month_operations(company_dir=None):
     # If it's December, create the next year's directory and the next month's directory inside it
     if next_month == '01-Jan':
         os.makedirs(os.path.join(company_dir, next_year, next_month), exist_ok=True)
-        print(f'{company_dir} + {next_year} + {next_month}') # dtn-reports/src/
 
     else:  # If not December, just create the next month's directory inside the current year's directory
         os.makedirs(os.path.join(company_dir, current_year, next_month), exist_ok=True)

@@ -26,14 +26,11 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
 
-    def set_date_filter(self, date_locator='#date > option:nth-child(2222)', third_flow=False, max_retries=3):
+    def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False, max_retries=3):
         print(f'*********************date_locator1 ***********: {date_locator}')
         if third_flow:
             print(f'---------- testing -------------')
             date_locator = '#date > option:nth-child(1)'
-        print(f'max_retries counter: {max_retries}')
-        if max_retries == 2:
-            date_locator = '#date > option:nth-child(2)'
         try:
             print(f'*********************date_locator2 ***********: {date_locator}')
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
@@ -49,7 +46,6 @@ class DataConnectPage(BasePage):
                     self.reload_page()
                     time.sleep(30)
                     return self.set_date_filter(date_locator, third_flow, max_retries)
-
                 time.sleep(5)
                 return True
 
