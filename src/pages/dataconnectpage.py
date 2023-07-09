@@ -42,9 +42,7 @@ class DataConnectPage(BasePage):
             if was_clicked and element_selector_clicked:
                 time.sleep(10)  # Wait for filter heads to load on DOM
 
-                translated_filter_head_located = self.wait_for_presence_of_elements_located(
-                    r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
-                translated_filter_head_clickable = self.wait_for_element_clickable(
+                translated_filter_head_located, translated_filter_head_clickable = self.find_and_wait_for_elem_to_be_clickable(
                     r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
 
                 if not translated_filter_head_located and not translated_filter_head_clickable:
