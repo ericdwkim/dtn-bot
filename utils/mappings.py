@@ -1,5 +1,4 @@
 # Directory paths
-dest_dir_invoices = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/6-June'
 keyword_in_dl_file_name = 'messages'  # downloaded file is defaulted to filename `messages.pdf` on mac
 download_dir = r'/Users/ekim/Downloads'
 
@@ -18,7 +17,10 @@ company_name_to_subdir_full_path_mapping_fuel_drafts = {
 
     'VALERO': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/VALERO [10006]',
 
-    'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]'
+    'DK Trading & Supply': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/DK TRADING [12293]',
+
+    'CONCORD FIRST DATA RETRIEVAL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/First Data',
+
 }
 
 # Mapping for company name to Credit Cards subdir full path
@@ -28,7 +30,9 @@ company_name_to_subdir_full_path_mapping_credit_cards = {
 
     'CONCORD FIRST DATA RETRIEVAL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/First Data',
 
-    'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL [10005]'
+    'EXXONMOBIL': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL [10005]',
+
+    'U.S. OIL COMPANY': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/U S VENTURE - U S OIL COMPANY [12262]'
 
 }
 
@@ -56,8 +60,8 @@ company_id_to_company_subdir_map = {
     '10778': 'WINTERS OIL [10778]',
 }
 
-doc_type_abbrv_to_doc_type_dir_map = {
-    ('CCM', 'LRD'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
+root_directory_mapping = {
+    ('CCM', 'LRD', 'CMB'): r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/',
     'EFT': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Drafts/',
     'INV': r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Fuel Invoices/',
 }

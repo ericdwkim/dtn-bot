@@ -11,6 +11,15 @@ class BasePage(object):
         self.driver = driver
         self.action = ActionChains(self.driver)
 
+    def find_and_wait_for_elem_to_be_clickable(self, locator, locator_type):
+        try:
+            element_located = self.wait_for_presence_of_elements_located(locator, locator_type)
+            element_clickable = self.wait_for_element_clickable(locator, locator_type)
+            return element_located, element_clickable
+        except Exception as e:
+            print(f'An error occurred trying to locate and click element: {str(e)}')
+            return None, None
+
     def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
         """
         Find and wait for single source WebElement to be clickable\n
@@ -77,14 +86,14 @@ class BasePage(object):
             return False
 
 
-
-    def find_element_and_click(self, locator ,locator_type=By.CSS_SELECTOR):
+    def find_element_and_click(self, locator, locator_type=By.CSS_SELECTOR):
         """
         Finds element and clicks it using `WebElement.click()`
         :param locator:
         :param locator_type:
         :return: Tuple(bool, WebElement)
         """
+
         try:
             element = self.driver.find_element(locator_type, locator)
             element.click()

@@ -26,39 +26,49 @@ class DataConnectPage(BasePage):
             print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
 
-    def set_date_filter(self, date_locator='#date > option:nth-child(2)', max_retries=3):
+    def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False, max_retries=3):
+        print(f'*********************date_locator1 ***********: {date_locator}')
+        if third_flow:
+            print(f'---------- testing -------------')
+            date_locator = '#date > option:nth-child(1)'
+        try:
+            print(f'*********************date_locator2 ***********: {date_locator}')
+            was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
+            print(f'************ was_clicked , element_selector_clicked : {was_clicked}  {element_selector_clicked }')
+
+            if was_clicked and element_selector_clicked:
+                time.sleep(10)  # Wait for filter heads to load on DOM
+
+                translated_filter_head_located, translated_filter_head_clickable = self.find_and_wait_for_elem_to_be_clickable(
+                    r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
+
+                if not translated_filter_head_located and not translated_filter_head_clickable:
+                    self.reload_page()
+                    time.sleep(30)
+                    return self.set_date_filter(date_locator, third_flow, max_retries)
+                time.sleep(5)
+                return True
+
+            elif not was_clicked and not element_selector_clicked:
+                print(f'Could not set date filter with retries. Reloading page....')
+                reload_status = self.reload_page()
+                time.sleep(30)
+                if max_retries > 1:
+                    time.sleep(10)
+                    return self.set_date_filter(date_locator, third_flow, max_retries - 1)
+                # depleted retries
+                else:
+                    print("Could not set the date after 3 attempts of reloading the page. Please restart the script.")
+                    return False
+
+        except Exception as e:
+            print(f'An error occurred trying to set date filter: {str(e)}')
+            return False
+
+    def reload_page(self, max_retries=3):
         for attempt in range(max_retries):
             try:
-                was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
-                time.sleep(15) # Wait for filter heads to load on DOM
-
-                # Handles DOM glitch where filter header elements don't load properly; might be worth just having user restart script or
-                # add a page reload function here
-                translated_filter_head_located = self.wait_for_presence_of_elements_located(
-                    r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
-                translated_filter_head_clickable = self.wait_for_element_clickable(
-                    r'//*[@id="messageTable"]/thead/tr/th[7]/button', locator_type=By.XPATH)
-                if was_clicked and element_selector_clicked and translated_filter_head_located and translated_filter_head_clickable:
-                    time.sleep(15)  # wait for UI to update
-                    return True
-                # TODO: add reload_page() in elif conditions? if so, may have to redo from beginning of script
-                elif was_clicked and element_selector_clicked and not translated_filter_head_located and not translated_filter_head_clickable:
-                    print(
-                        f'Unable to locate and wait for Translated filter head to be interactable after setting date filter to yesterday')
-                elif was_clicked and element_selector_clicked and translated_filter_head_located and not translated_filter_head_clickable:
-                    print(
-                        f'Date set to yesterday and Translated filter head was located, but not could not wait for filter head to be interactable')
-            except Exception as e:
-                print(f'An error occurred trying to set date filter: {str(e)}')
-                if attempt < max_retries - 1:  # No need to sleep on the last attempt
-                    time.sleep(2)  # Wait a bit before retrying, adjust as needed
-                continue  # Try again
-        return False  # Failed after max_retries attempts
-
-    def reload_page(self, driver, max_retries=3):
-        for attempt in range(max_retries):
-            try:
-                driver.refresh()
+                self.driver.refresh()
                 return True
             except Exception as e:
                 print(f"Error during refresh: {str(e)}. Attempt: {attempt + 1}")
@@ -75,16 +85,7 @@ class DataConnectPage(BasePage):
             return True
         else:
             print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
-
-            # Call page reload function and get the result
-            reload_success = self.reload_page(self.driver)
-
-            # If reload was successful, try clicking the filter header again
-            if reload_success and self.wait_for_find_then_click(filter_header_locator, locator_type):
-                return True
-            else:
-                print(f'Could not click filter header: {filter_header_locator} even after reload')
-                return False
+            return False
 
     def click_filter_button_at_idx(self, filter_btn_elem_idx, timeout=10):
         """
@@ -207,12 +208,17 @@ class DataConnectPage(BasePage):
 
         return True, True, True
 
-    @retry(stop=stop_after_attempt(5), wait=wait_fixed(10))
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_translated_filter_to_no(self):
+
+
         """
         set_filter wrapper specific to Translated filter to `No`
         :return: bool
         """
+
+        # initialize req'd param
+        # date_locator = ''
 
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
@@ -223,18 +229,34 @@ class DataConnectPage(BasePage):
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
+
+        #TODO: test and implement reload page
+        # elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
+        #         print(f'Could not set translated filter. Resetting date filter to reload page.')
+        #
+        #         # Recall to set date to correct one
+        #         reset_date_filter = self.set_date_filter(date_locator, third_flow)
+        #         if reset_date_filter:
+        #             time.sleep(15)
+        #             recall_translated_filter = self.set_translated_filter_to_no(third_flow)
+        #             if reset_date_filter and recall_translated_filter:
+        #                 return True
+
         else:
             print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: '
                   f'{src_elem_dragged_and_dropped_to_target_elem}'
                   f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Translated filter.")
 
-    @retry(stop=stop_after_attempt(5), wait=wait_fixed(10))
+
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_group_filter_to_invoice(self):
         """
         set_filter wrapper specific to Group filter to `Invoice`
         :return: bool
         """
+        # initialize req'd param
+        # date_locator = ''
 
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
@@ -245,6 +267,20 @@ class DataConnectPage(BasePage):
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
+
+        elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
+            print(f'Could not set group filter to invoice with retries. Please restart script.')
+            # reload_status = self.reload_page()
+            #
+            # if reload_status:
+            #     print(f'Successfully reloaded page!')
+            #     # Recall to set date to correct one
+            #     reset_date_filter = self.set_date_filter(date_locator, third_flow)
+            #     # Recall to set translated filter
+            #     reset_translated_filter = self.set_translated_filter_to_no(third_flow)
+            #     # Recursive call
+            #     if reset_date_filter and reset_translated_filter:
+            #         return self.set_group_filter_to_invoice(third_flow)
         else:
             print(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
@@ -252,12 +288,16 @@ class DataConnectPage(BasePage):
                 f'{src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Group filter to Invoice")
 
-    @retry(stop=stop_after_attempt(5), wait=wait_fixed(10))
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_group_filter_to_draft_notice(self):
         """
         set_filter wrapper specific to Group filter to Draft Notice
         :return: bool
         """
+
+        # initialize req'd param
+        # date_locator = ''
+
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
             filter_btn_elem_idx=1,
@@ -268,6 +308,21 @@ class DataConnectPage(BasePage):
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
+
+        elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
+            print(f'Could not set group filter to draft notice with retries. Please restart script.')
+            # reload_status = self.reload_page()
+            #
+            # if reload_status:
+            #     print(f'Successfully reloaded page!')
+            #     # Recall to set date to correct one
+            #     reset_date_filter = self.set_date_filter(date_locator, third_flow)
+            #     # Recall to set translated filter
+            #     reset_translated_filter = self.set_translated_filter_to_no(third_flow)
+            #     # Recursive call
+            #     if reset_date_filter and reset_translated_filter:
+            #         return self.set_group_filter_to_draft_notice(third_flow)
+
         else:
             print(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
@@ -275,12 +330,15 @@ class DataConnectPage(BasePage):
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Group filter to Draft Notice")
 
-    @retry(stop=stop_after_attempt(5), wait=wait_fixed(10))
+    # @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def set_group_filter_to_credit_card(self):
         """
         set_filter wrapper specific to Group filter to Credit Card
         :return: bool
         """
+        # initialize req'd param
+        # date_locator = ''
+
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
             filter_btn_elem_idx=1,
@@ -290,6 +348,21 @@ class DataConnectPage(BasePage):
         )
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
+
+        elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
+            print(f'Could not set group filter to draft notice with retries. Please restart script.')
+            # reload_status = self.reload_page()
+            #
+            # if reload_status:
+            #     print(f'Successfully reloaded page!')
+            #     # Recall to set date to correct one
+            #     reset_date_filter = self.set_date_filter(date_locator, third_flow)
+            #     # Recall to set translated filter
+            #     reset_translated_filter = self.set_translated_filter_to_no(third_flow)
+            #     # Recursive call
+            #     if reset_date_filter and reset_translated_filter:
+            #         return self.set_group_filter_to_credit_card(third_flow)
+
         else:
             print(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
@@ -297,13 +370,13 @@ class DataConnectPage(BasePage):
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Group filter to Credit Cards")
 
-
+    # TODO: logic to ensure all steps are mandatory and sequential. ie: group filter = invoice and then print.
     def switch_tab_set_filters_and_download_invoices(self):
+
         if not self.switch_tab():
             return False
 
-
-        if not self.set_date_filter():
+        if not self.set_date_filter(third_flow=False):
             return False
 
         try:
