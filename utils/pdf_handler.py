@@ -10,8 +10,8 @@ from utils.extraction_handler import extract_text_from_pdf_page, extract_info_fr
 
 def rename_and_delete_pdf(file_path):
     file_deleted = False
-    # today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on
-    today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
+    today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on
+    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
 
 
     if os.path.exists(file_path):
@@ -46,8 +46,8 @@ def rename_and_delete_pdf(file_path):
 # Invoices
 def rename_and_move_pdf(file_name, source_dir):
     # Get today's date and format it as MM-DD-YY
-    # today = datetime.date.today().strftime('%m-%d-%y') #todo: toggle back on
-    today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
+    today = datetime.date.today().strftime('%m-%d-%y') #todo: toggle back on
+    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
 
     # Find the downloaded PDF
     for file in os.listdir(source_dir):

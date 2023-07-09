@@ -53,8 +53,8 @@ def extract_info_from_text(current_page_text, regex_pattern):
     else:
         total_amount = None
 
-    # today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on after testing.
-    today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
+    today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on after testing.
+    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
 
 
     return regex_num, today, total_amount
