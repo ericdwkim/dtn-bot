@@ -218,7 +218,7 @@ class DataConnectPage(BasePage):
         """
 
         # initialize req'd param
-        date_locator = ''
+        # date_locator = ''
 
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
             filter_button_is_clicked = self.set_filter(
