@@ -31,6 +31,7 @@ class DataConnectPage(BasePage):
         if third_flow:
             print(f'---------- testing -------------')
             date_locator = '#date > option:nth-child(1)'
+        print(f'max_retries counter: {max_retries}')
         if max_retries == 2:
             date_locator = '#date > option:nth-child(2)'
         try:
@@ -60,7 +61,7 @@ class DataConnectPage(BasePage):
                 time.sleep(30)
                 if max_retries > 1:
                     time.sleep(10)
-                    return self.set_date_filter(date_locator, third_flow, max_retries)
+                    return self.set_date_filter(date_locator, third_flow, max_retries - 1)
                 # depleted retries
                 else:
                     print("Could not set the date after 3 attempts of reloading the page. Please restart the script.")
