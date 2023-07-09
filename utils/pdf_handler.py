@@ -19,6 +19,7 @@ def rename_and_delete_pdf(file_path):
         if len(pdf.pages) > 0:
             first_page = extract_text_from_pdf_page(pdf.pages[0])
 
+            # todo: clean this up; very confusing. why double ccm?
             if re.search(r'EFT-\d+', first_page) or re.search(r'CMB-\d+ | CCM-\d+ | LRD-\d+', first_page):
                 if re.search(r'EFT-\d+', first_page):
                     new_file_name = f'EFT-{today}-TO-BE-DELETED.pdf'
@@ -46,7 +47,7 @@ def rename_and_delete_pdf(file_path):
 def rename_and_move_pdf(file_name, source_dir):
     # Get today's date and format it as MM-DD-YY
     # today = datetime.date.today().strftime('%m-%d-%y') #todo: toggle back on
-    today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
+    today = datetime.date(2023, 12, 30).strftime('%m-%d-%y')
 
     # Find the downloaded PDF
     for file in os.listdir(source_dir):
