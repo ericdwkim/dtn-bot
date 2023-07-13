@@ -5,6 +5,7 @@ class FlowManager:
         self.login_page_driver = LoginPageDriver()
         self.data_connect = DataConnectDriver()
 
+    # @dev: what all flows should do in sequence regardless of what flow number
     def start_flow(self):
         site_visited_and_logged_in = self.login_page_driver.visit_and_login()
         if not site_visited_and_logged_in:

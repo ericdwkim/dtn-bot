@@ -5,7 +5,7 @@ def first_flow():
 
     try:
         flow_manager.start_flow()
-        # ... Rest of first_flow logic ...
+        # first flow specific logic
     finally:
         flow_manager.end_flow()
 
@@ -22,6 +22,8 @@ def second_flow():
 
 
 def third_flow():
+
+    # third flow specific logic
     pass
 
 
