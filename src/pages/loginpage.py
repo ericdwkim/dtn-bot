@@ -2,12 +2,14 @@ import os
 from selenium.webdriver.common.by import By
 from .basepage import BasePage
 
-# Environmental variables
-dtn_url = os.getenv('DTN_URL')
 
+# TODO: change `driver` to `base_driver`
 class LoginPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
+        self.url = os.getenv('DTN_URL')
+        self.username = os.getenv('DTN_EMAIL_ADDRESS')
+        self.password = os.getenv('DTN_PASSWORD')
 
     def visit(self):
         """
@@ -15,7 +17,7 @@ class LoginPage(BasePage):
         :return: bool
         """
         try:
-            self.driver.get(dtn_url)
+            self.driver.get(self.url)
             return True
         except Exception as e:
             print(f'An error occurred: {str(e)}')
