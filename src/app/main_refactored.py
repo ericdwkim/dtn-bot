@@ -15,11 +15,7 @@ def user_journey():
     run(["../scripts/delete_pdf_files.sh"], shell=True)
     print(f'===========================================================================================')
 
-    # Set environmental variables
-    username = os.getenv('DTN_EMAIL_ADDRESS')
-    password = os.getenv('DTN_PASSWORD')
-
-    # Create processor instance
+    # Create processor instance; downloads dir path is part of PdfProcessor class to separate from main.py
     dl_dir = PdfProcessor.download_dir
     file_path = dl_dir + '/messages.pdf'
 
