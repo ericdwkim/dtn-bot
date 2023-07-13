@@ -24,9 +24,9 @@ class LoginPage(BasePage):
             return False
 
 
-    def enter_username(self, username):
+    def enter_username(self):
         try:
-            was_clicked = self.find_element_and_click_and_send_keys('#username', username)
+            was_clicked = self.find_element_and_click_and_send_keys('#username', self.username)
             if was_clicked:
                 return True
             else:
@@ -36,9 +36,9 @@ class LoginPage(BasePage):
             return False
 
 
-    def enter_password(self, password):
+    def enter_password(self):
         try:
-            was_clicked = self.find_element_and_click_and_send_keys('.loginContent > form:nth-child(3) > div:nth-child(2) > input:nth-child(1)', password)
+            was_clicked = self.find_element_and_click_and_send_keys('.loginContent > form:nth-child(3) > div:nth-child(2) > input:nth-child(1)', self.password)
             if was_clicked:
                 return True
             else:
@@ -58,13 +58,13 @@ class LoginPage(BasePage):
             else:
                 return False
         except Exception as e:
-            print(f'An error ocurred: {str(e)}')
+            print(f'An error occurred: {str(e)}')
             return False
 
-    def login(self, username, password):
+    def login(self):
         try:
-            username_entered = self.enter_username(username)
-            password_entered = self.enter_password(password)
+            username_entered = self.enter_username()
+            password_entered = self.enter_password()
             login_btn_clicked = self.click_login_button()
             if username_entered and password_entered and login_btn_clicked:
                 return True
@@ -74,12 +74,12 @@ class LoginPage(BasePage):
             print(f'An error occurred: {str(e)}')
             return False
 
-    def visit_and_login(self, username, password):
+    def visit_and_login(self):
         try:
             if self.visit():
                 print('Browser launched\nLoading site...')
                 print('Logging in with provided credentials...')
-                logged_in = self.login(username, password)
+                logged_in = self.login()
                 if logged_in:
                     return True
                 else:
