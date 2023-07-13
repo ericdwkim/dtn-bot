@@ -3,7 +3,7 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from ..pages.loginpage import LoginPage
-from ..pages.dataconnectpage import
+from ..pages.dataconnectpage import DataConnectPage
 
 class BaseDriver:
     def __init__(self):
@@ -20,48 +20,31 @@ class BaseDriver:
 class LoginPageDriver(BaseDriver):
     def __init__(self):
         super().__init__()
-        self.login_page = LoginPage(BaseDriver)
+        self.login_page = LoginPage(self)
 
-        login_page.visit_and_login()
 
     def visit_and_login(self):
-        try:
-            # implementation of visit_and_login
-            return True
-        except Exception as e:
-            logging.error('Failed to visit and login: %s', e)
-            return False
+        self.login_page.visit_and_login()
 
 
 class DataConnectDriver(BaseDriver):
     def __init__(self):
         super().__init__()
+        self.data_connect_page = DataConnectPage(self)
+
 
     def switch_tab(self):
-        try:
-            # implementation of switch_tab
-            return True
-        except Exception as e:
-            logging.error('Failed to switch tab: %s', e)
-            return False
+        self.data_connect_page.switch_tab()
+
+    def set_date_filter(self):
+        self.data_connect_page.set_date_filter()
+
+    def set_translated_filter_to_no(self):
+        self.data_connect_page.set_translated_filter_to_no()
+
+    def set_group_filter_to_invoice(self):
+        self.data_connect_page.set_group_filter_to_invoice()
 
 
-def visit_login_and_switch_tab_to_data_connect(username, password):
-    try:
-        loginDriver = LoginPageDriver(username, password)
-        siteVisitedAndLoggedIn = loginDriver.visit_and_login()
-        if not siteVisitedAndLoggedIn:
-            raise RuntimeError('Something went wrong')
 
-        dataConnect = DataConnectDriver()
-        tabSwitchedToDataConnect = dataConnect.switch_tab()
-        if not tabSwitchedToDataConnect:
-            raise RuntimeError('Something went wrong')
 
-    except Exception as e:
-        logging.error('Something went wrong: %s', e)
-        return False
-
-    finally:
-        loginDriver.teardown_driver()
-        dataConnect.teardown_driver()
