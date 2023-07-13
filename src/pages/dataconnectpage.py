@@ -229,6 +229,7 @@ class DataConnectPage(BasePage):
                   f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Translated filter.")
 
+    # TODO: abstract group_filter setter into a single function with "//li[@title'{doc_type}']" as `src_locator`
     @retry(stop=stop_after_attempt(5), wait=wait_fixed(10))
     def set_group_filter_to_invoice(self):
         """
@@ -298,10 +299,7 @@ class DataConnectPage(BasePage):
             raise Exception("Failed to set Group filter to Credit Cards")
 
 
-    def switch_tab_set_filters_and_download_invoices(self):
-        if not self.switch_tab():
-            return False
-
+    def set_filters_and_download_invoices(self):
 
         if not self.set_date_filter():
             return False
