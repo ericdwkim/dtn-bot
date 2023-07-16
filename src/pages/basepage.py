@@ -7,8 +7,8 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 
 class BasePage(object):
-    def __init__(self, driver):
-        self.driver = driver
+    def __init__(self, base_driver):
+        self.driver = base_driver.driver
         self.action = ActionChains(self.driver)
 
     def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
