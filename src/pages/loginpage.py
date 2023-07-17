@@ -20,7 +20,7 @@ class LoginPage(BasePage):
             self.driver.get(self.url)
             return True
         except Exception as e:
-            print(f'An error occurred: {str(e)}')
+            print(f'Browser could not be launched\nAn error occurred: {str(e)} ')
             return False
 
 
@@ -69,6 +69,7 @@ class LoginPage(BasePage):
             if username_entered and password_entered and login_btn_clicked:
                 return True
             else:
+                print(f'Could not login with provided credentials')
                 return False
         except Exception as e:
             print(f'An error occurred: {str(e)}')
@@ -77,19 +78,12 @@ class LoginPage(BasePage):
     # todo: refactor with `if not self.visit() if not logged_in` format to reduce nesting
     def visit_and_login(self):
         try:
-            if self.visit():
-                print('Browser launched\nLoading site...')
-                print('Logging in with provided credentials...')
-                logged_in = self.login()
-                if logged_in:
-                    return True
-                else:
-                    print('Unable to log in with provided credentials')
-                    return False
+            site_visited = self.visit()
+            # TODO: fix format but with login capability and test
+            if not self.visit():
+            if not self.login():
             else:
-                print('Unable to launch and visit the site')
-                return False
+                print('Browser launched!')
+                return True
         except Exception as e:
-            print('An error occurred:', str(e))
-            return False
-
+            print(f'exception: {e}')
