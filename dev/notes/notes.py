@@ -123,7 +123,7 @@ Using python, how to do the following:
 
     - NEED: under "Draft Notice" directory, I need the list of all company names and their company id numbers
         - create mapping of company_id: company_name (or just company names as an array
-        - use mapping or array to search ETF files for company_name as string instead of having each company name variable initalized in main.py
+        - use mapping or array to search ETF files for company_name as string instead of having each company name variable initalized in run_flow.py
 
 
 Refactoring rename_and_move_etf() to be reuseable for all ETF files:

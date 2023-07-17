@@ -15,7 +15,7 @@ def user_journey():
     run(["../scripts/delete_pdf_files.sh"], shell=True)
     print(f'===========================================================================================')
 
-    # Create processor instance; downloads dir path is part of PdfProcessor class to separate from main.py
+    # Create processor instance; downloads dir path is part of PdfProcessor class to separate from run_flow.py
     dl_dir = PdfProcessor.download_dir
     file_path = dl_dir + '/messages.pdf'
 
