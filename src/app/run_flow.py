@@ -1,7 +1,7 @@
 from src.app.flow_manager import FlowManager
 def first_flow():
     flow_manager = FlowManager()
-
+    print(f'starting first flow')
     try:
         flow_manager.start_flow()
         # first flow specific logic
