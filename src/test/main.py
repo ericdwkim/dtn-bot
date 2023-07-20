@@ -55,8 +55,7 @@ def user_journey():
 
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
-            return
-        print(f'*********************** group_filter_set_to_draft_notice *********************** {group_filter_set_to_draft_notice}')
+            print(f'No draft notices were downloaded. group_filter_set_to_draft_notice: {group_filter_set_to_draft_notice}')
 
         draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
         if not draft_notices_processed_and_filed:

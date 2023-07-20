@@ -275,7 +275,7 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set group filter to invoice with retries. Please restart script.')
+            print(f'Could not set group filter to Invoice. Proceeding to Draft Notice...')
 
         else:
             print(
@@ -286,7 +286,7 @@ class DataConnectPage(BasePage):
 
     def set_group_filter_to_draft_notice(self):
         """
-        set_filter wrapper specific to Group filter to Draft Notice
+        set_filter wrapper specific to Group filter to `Draft Notice`
         :return: bool
         """
         filter_header_is_clicked, src_elem_dragged_and_dropped_to_target_elem, \
@@ -301,7 +301,8 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set group filter to draft notice with retries. Please restart script.')
+            print(f'Could not set group filter to Draft Notice. Proceeding to Credit Cards...')
+            return False
 
         else:
             print(
