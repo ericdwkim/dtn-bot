@@ -328,7 +328,8 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set group filter to draft notice with retries. Please restart script.')
+            print(f'Could not set group filter to Credit Cards. Proceeding to the end of script.')
+            return False
         else:
             print(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
