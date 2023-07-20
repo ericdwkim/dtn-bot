@@ -60,7 +60,7 @@ def extract_info_from_text(current_page_text, regex_pattern):
     total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', current_page_text)
     # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
     if total_amount_matches:
-        # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
+        # @dev: Assumes the last total_amount match is the correct, target total amount from string text
         total_amount = total_amount_matches[-1]
 
     else:
