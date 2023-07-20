@@ -70,13 +70,21 @@ def rename_and_move_pdf(file_name, source_dir):
             # Get output path from filename
             month_dir = calculate_directory_path('INV')
 
+            # Prepare for the move
+            target_file_path = os.path.join(month_dir, new_file_name)
+
+            # If file with same name exists in the target directory, delete it
+            if os.path.isfile(target_file_path):
+                print(f"File with same name exists at {target_file_path}. Overwriting it.")
+                os.remove(target_file_path)
+
             # Move the file
             print(f'Moving {new_file_path} to {month_dir}')
             try:
                 shutil.move(new_file_path, month_dir)
                 return True  # file moved successfully
             except Exception as e:
-                print(f"An error occurred while moving the file: {e}") # TODO: filename conflict; if file with same name already exists then delete the one that was just made to prevent clutering the downloads directory
+                print(f"An error occurred while moving the file: {e}")
                 return False  # file could not be moved
 
     # If the function has not yet returned, the file was not found
