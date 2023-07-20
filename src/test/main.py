@@ -1,10 +1,10 @@
+# from config import setup_config
 import os
 from subprocess import run
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
 from utils.pdf_handler import process_pdfs, rename_and_move_pdf, get_full_path_to_dl_dir, rename_and_delete_pdf
-import subprocess
 from utils.post_processing import is_last_day_of_month, end_of_month_operations
 from utils.mappings import (keyword_in_dl_file_name, download_dir, company_names,
                       regex_patterns, company_name_to_subdir_full_path_mapping_fuel_drafts,
@@ -19,8 +19,13 @@ username = os.getenv('DTN_EMAIL_ADDRESS')
 password = os.getenv('DTN_PASSWORD')
 
 def user_journey():
+    """
+    Main wrapper function to begin user journey from accessing to closing target Web app
+    :return: None
+    """
     driver = setup_driver()
 
+    # @dev: Will be deprecated in next version
     full_path_to_downloaded_pdf = get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name)
 
     try:
@@ -84,14 +89,14 @@ def user_journey():
             return
         print(f'translated_set_to_no *********************** {translated_set_to_no}')
 
-        # Set Group filter to CC
+        # Set Group filter to Credit Cards
         group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
         print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
         if not group_filter_set_to_credit_card:
             return
         print(f'group_filter_set_to_credit_card *********************** {group_filter_set_to_credit_card}')
 
-        # Download CC PDF
+        # Download Credit Cards PDF
         ccm_files_downloaded = data_connect.check_all_then_click_print()
         print(f'ccm_files_downloaded: {ccm_files_downloaded}')
         if not ccm_files_downloaded:
@@ -103,7 +108,7 @@ def user_journey():
         print(f'**********************  ccm_files_processed: {ccm_files_processed} ***********************')
         if ccm_files_processed:
             original_ccm_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
-            print(f'Finished! original_ccm_messages_pdf_is_deleted: {original_ccm_messages_pdf_is_deleted}')
+            print("DTN Reports filing has been finished!")
 
     finally:
         teardown_driver(driver)
