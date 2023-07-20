@@ -7,6 +7,10 @@ from .mappings import company_name_to_subdir_full_path_mapping_fuel_drafts, comp
 
 
 def extract_company_dir_from_map():
+    """
+    Loops through company_names list and fetches all company name directories in a list
+    :return: List of `company_subdirs`
+    """
     company_subdirs = []
     for name in company_names:
         company_subdir = company_name_to_subdir_full_path_mapping_fuel_drafts.get(name)
@@ -14,8 +18,12 @@ def extract_company_dir_from_map():
             company_subdirs.append(company_subdir)
     return company_subdirs
 
-# Take in pikepdf Pdf object, return extracted text
 def extract_text_from_pdf_page(page):
+    """
+    Takes in a pikePdf Page object and returns extracted text from page object
+    :param page: pikePdf Page object with a specified page number
+    :return: extracted text as string
+    """
     # Create a BytesIO buffer
     pdf_stream = io.BytesIO()
 
@@ -33,11 +41,17 @@ def extract_text_from_pdf_page(page):
     return text
 
 def extract_info_from_text(current_page_text, regex_pattern):
-    # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
+    """
+    Extracts target data from text string
+    :param current_page_text: string text
+    :param regex_pattern: document types(EFT, CCM, CMB, RTV, CBK)
+    :return: Tuple (Any | None, `today`, Any | None)
+    """
+    # Extract regex pattern
     regex_num_matches = re.findall(regex_pattern, current_page_text)
     if regex_num_matches:
+        # @dev: Assumes the first regex_num match is the correct, target regex_num from string text
         regex_num = regex_num_matches[0]
-        # print(f'-------------------------------------------------- regex_num--------------------------------: {regex_num}')
     else:
         print(f'No matches for regex: {regex_pattern} in\n {current_page_text}')
         regex_num = None
@@ -48,13 +62,11 @@ def extract_info_from_text(current_page_text, regex_pattern):
     if total_amount_matches:
         # print(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: {total_amount_matches}')
         total_amount = total_amount_matches[-1]
-        # print(f'=================================================: {total_amount}')
 
     else:
         total_amount = None
 
-    today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on after testing.
-    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
+    today = datetime.date.today().strftime('%m-%d-%y')
 
 
     return regex_num, today, total_amount
