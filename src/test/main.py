@@ -40,12 +40,12 @@ def user_journey():
         data_connect = DataConnectPage(driver)
         downloaded_invoices_successfully = data_connect.switch_tab_set_filters_and_download_invoices()
         if not downloaded_invoices_successfully:
-            return
+            print(f'No invoices were downloaded. downloaded_invoices_successfully: {downloaded_invoices_successfully}')
         else:
             invoices_renamed_and_filed_away = rename_and_move_pdf(keyword_in_dl_file_name, download_dir)
 
-        if invoices_renamed_and_filed_away and is_last_day_of_month():
-            end_of_month_operations()
+            if invoices_renamed_and_filed_away and is_last_day_of_month():
+                end_of_month_operations()
 
 
         """
@@ -60,20 +60,16 @@ def user_journey():
 
         draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
         if not draft_notices_processed_and_filed:
-            print(
-                f'*********************** draft_notices_processed_and_filed *********************** {draft_notices_processed_and_filed}')
-            return
-
-        print(f'draft_notices_processed_and_filed: {draft_notices_processed_and_filed}')
+            print(f'No Draft Notices were downloaded. draft_notices_processed_and_filed: {draft_notices_processed_and_filed}')
+        else:
+            print(f'Draft Notices were processed and filed successfully!\ndraft_notices_processed_and_filed: {draft_notices_processed_and_filed}\nRenaming and deleting original PDF in Downloads directory....')
+            original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
+            print(f'original_eft_messages_pdf_is_deleted: {original_eft_messages_pdf_is_deleted}')
 
         """
         # DataConnect 3rd Flow - Credit Cards
         """
 
-        if draft_notices_processed_and_filed:
-            original_eft_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
-
-            print(f'original_eft_messages_pdf_is_deleted: {original_eft_messages_pdf_is_deleted}')
         # Switch date from yesterday's to today's
         print(f'STARTING 3RD FLOW ***********************')
         date_set_to_today = data_connect.set_date_filter(third_flow=True)
@@ -100,15 +96,14 @@ def user_journey():
         ccm_files_downloaded = data_connect.check_all_then_click_print()
         print(f'ccm_files_downloaded: {ccm_files_downloaded}')
         if not ccm_files_downloaded:
-            return
-        print(f'ccm_files_downloaded *********************** {ccm_files_downloaded}')
-
-        # CCM, LRD files
-        ccm_files_processed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
-        print(f'**********************  ccm_files_processed: {ccm_files_processed} ***********************')
-        if ccm_files_processed:
-            original_ccm_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
-            print("DTN Reports filing has been finished!")
+            print(f'No Credit Card documents were downloaded. ccm_files_downloaded: {ccm_files_downloaded}')
+        else:
+            # CCM, LRD files
+            ccm_files_processed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_credit_cards, company_names, regex_patterns, post_processing=True)
+            print(f'**********************  ccm_files_processed: {ccm_files_processed} ***********************')
+            if ccm_files_processed:
+                original_ccm_messages_pdf_is_deleted = rename_and_delete_pdf(full_path_to_downloaded_pdf)
+                print("DTN Reports filing has been finished!")
 
     finally:
         teardown_driver(driver)
