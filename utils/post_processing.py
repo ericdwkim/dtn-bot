@@ -9,7 +9,7 @@ def cleanup_files(pdf_data):
     """
     Given a list of tuples. Loop and delete all file_path files in the 4th element of each tuple
     :param pdf_data:
-    :return:
+    :return: bool
     """
     files_deleted = False
     for _, _, _, file_path in pdf_data:
@@ -20,6 +20,11 @@ def cleanup_files(pdf_data):
 
 
 def extract_ccm_data(pdf_file):
+    """
+    Extracts CCM relevant data from List of tuples with target data
+    :param pdf_file:
+    :return:
+    """
     filename = os.path.basename(pdf_file)
     match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', filename)
     if match:
@@ -30,6 +35,11 @@ def extract_ccm_data(pdf_file):
 
 
 def extract_lrd_data(pdf_file):
+    """
+    Extracts LRD relevant data from list of tuples
+    :param pdf_file:
+    :return:
+    """
     match = re.match(r'LRD-(\d+)-.*\.pdf', pdf_file)
     if match:
         regex_num = match.group(1)
@@ -38,9 +48,14 @@ def extract_lrd_data(pdf_file):
 
 
 def extract_pdf_data(company_dir):
-    today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on
-    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
+    """
+    Extracts target data from filenames for calculation for post-processing
+    :param company_dir: path to company name directory
+    :return: Tuple (List, Int, List) where each List contains tuples of pre-extracted data relevant for CCM and LRD, respectively.
+    """
+    today = datetime.date.today().strftime('%m-%d-%y')
     pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
+    print(f'************************ pdf_files ******************** : {pdf_files}\n')
     pdf_data_ccm = []
     pdf_data_lrd = []
     total_amount = 0.00
@@ -54,26 +69,47 @@ def extract_pdf_data(company_dir):
             regex_num_lrd, _ = extract_lrd_data(pdf_file)
             pdf_data_lrd.append((regex_num_lrd, today, _, os.path.join(company_dir, pdf_file)))
     pdf_data_ccm.sort(key=lambda x: x[0])
+    print(f'*********************************** pdf_data_ccm {pdf_data_ccm}\n')
     pdf_data_lrd.sort(key=lambda x: x[0])
-    return pdf_data_ccm, total_amount, pdf_data_lrd
+    print(f'*********************************** pdf_data_lrd {pdf_data_lrd}\n')
 
+    return pdf_data_ccm, total_amount, pdf_data_lrd
 def check_file_exists(output_path):
+    """
+    :param output_path:
+    :return: bool
+    """
     file_path = os.path.join(output_path)
     return os.path.isfile(file_path)
 
 def is_last_day_of_month():
-    today = datetime.date.today()  # TODO toggle back on after testing
-    # today = datetime.date(2023, 12, 31) #todo: test for new year/new month dirs
+    """
+    Relative to today's date, it checks if tomorrow's date would be the start of a new month,\n
+    if so, then it will return True indicating that today is the last day of the month
+    :return: bool
+    """
+    today = datetime.date.today()
 
     tomorrow = today + datetime.timedelta(days=1)
     return tomorrow.day == 1
 
 def move_directory_to_another(src_dir, dst_dir):
+    """
+    Files away from src_dir to dst_dir for management
+    :param src_dir:
+    :param dst_dir:
+    :return: None
+    """
     if not os.path.exists(dst_dir):
         os.makedirs(dst_dir)
     shutil.move(src_dir, dst_dir)
 
 def create_directory(directory):
+    """
+    Checks if `directory` path exists, if not, it creates `directory`
+    :param directory: year or month directory
+    :return: Any
+    """
     if not os.path.exists(directory):
         os.makedirs(directory)
     return directory
@@ -81,7 +117,9 @@ def create_directory(directory):
 
 def end_of_month_operations(company_dir=None):
     """
-    Create the new month and year directories at the end of the month.
+    Creates the new month and new year directories if it is the last day of the month
+    :param company_dir: defaulted to None
+    :return: None
     """
     # Handles INV case
     if company_dir is None:
@@ -89,8 +127,7 @@ def end_of_month_operations(company_dir=None):
         company_dir = root_directory_mapping['INV']
 
     # Get today's date
-    today = datetime.datetime.strptime(datetime.date.today().strftime('%m-%d-%y'), '%m-%d-%y') #todo: toggle back on
-    # today = datetime.datetime.strptime('12-31-23', '%m-%d-%y')
+    today = datetime.datetime.strptime(datetime.date.today().strftime('%m-%d-%y'), '%m-%d-%y')
 
     current_year = today.strftime('%Y')
     next_month = (today.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
@@ -105,14 +142,22 @@ def end_of_month_operations(company_dir=None):
 
 
 def cur_month_and_year_from_today():
-    today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on
-    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
+    """
+    Helper function to calculate current month and current year relative to today's date
+    :return: Tuple(cur_month, cur_yr)
+    """
+    today = datetime.date.today().strftime('%m-%d-%y')
     current_month = datetime.datetime.strptime(today, '%m-%d-%y').strftime('%m-%b')
     current_year = datetime.datetime.strptime(today, '%m-%d-%y').strftime('%Y')
 
     return current_month, current_year
 
-def get_root_directory(file_prefix, root_directory_mapping):
+def get_root_directory(file_prefix):
+    """
+    Given a file prefix, it unpacks the root_directory mapping to return file_prefix matching root directory aka the document type directory path
+    :param file_prefix:
+    :return: str | None
+    """
     for key, value in root_directory_mapping.items():
         if (isinstance(key, tuple) and file_prefix in key) or key == file_prefix:
             return value
@@ -120,6 +165,14 @@ def get_root_directory(file_prefix, root_directory_mapping):
 
 
 def create_and_return_directory_path(root_directory, current_year, current_month):
+    """
+    Given the root dir (aka document type dir), cur_yr, cur_month,\n
+    it returns the final output path `month_dir` which is constructed appropriately based on current date
+    :param root_directory:
+    :param current_year:
+    :param current_month:
+    :return: `month_dir` final output path to save PDFs to
+    """
     year_dir = os.path.join(root_directory, current_year)
     create_directory(year_dir)
 
@@ -128,18 +181,25 @@ def create_and_return_directory_path(root_directory, current_year, current_month
 
     return month_dir
 def calculate_directory_path(file_prefix, company_id=None, company_dir=None):
+    """
+    Given the file_prefix as minimum param, it returns the constructed final output path\ndepending on document type
+    :param file_prefix:
+    :param company_id:
+    :param company_dir:
+    :return:
+    """
     # Extract month and year from helper
     current_month, current_year = cur_month_and_year_from_today()
 
     # Determine root directory
-    root_directory = get_root_directory(file_prefix, root_directory_mapping)
+    root_directory = get_root_directory(file_prefix)
 
     # If root directory not found, raise exception
     if not root_directory:
         raise ValueError(f"No root directory found for file prefix '{file_prefix}'")
 
-    # Handle EFT and CMB cases
-    if (file_prefix == 'EFT' or file_prefix == 'CMB') and company_id is None and company_dir:
+    # Handle EFT and CMB cases and non-exxon CCM files
+    if (file_prefix == 'EFT' or file_prefix == 'CMB' or file_prefix == 'CCM') and company_id is None and company_dir:
         root_directory = company_dir
 
     # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
@@ -151,6 +211,11 @@ def calculate_directory_path(file_prefix, company_id=None, company_dir=None):
     return create_and_return_directory_path(root_directory, current_year, current_month)
 
 def merge_pdfs(pdf_data):
+    """
+    Merges PDFs by fetching 4th element in tuple `file_path` by looping, opening each file_path\nand creating them as pikePDF pages to combine and merge them all into a single PDF object
+    :param pdf_data:
+    :return: `merged_pdf` a pikePDF object | None
+    """
     merged_pdf = pikepdf.Pdf.new()
     for _, _, _, file_path in pdf_data:
         try:
@@ -163,8 +228,15 @@ def merge_pdfs(pdf_data):
 
 
 def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
-    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
-    today = datetime.date.today().strftime('%m-%d-%y') # todo: toggle back on after testing
+    """
+    Saves pre-merged pike PDF object with constructed filename dependent on doc type with provided target data.
+    :param file_prefix: CCM or LRD ; only these for post-processing
+    :param merged_pdf:
+    :param total_amount_sum:
+    :param company_id:
+    :return: Bool
+    """
+    today = datetime.date.today().strftime('%m-%d-%y')
     if file_prefix == 'CCM':
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
     else:
@@ -183,7 +255,14 @@ def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
 
 
 def merge_rename_and_summate(company_dir):
+    """
+    Main post-processing wrapper function. Accounts for end of month operations if last day of the month.
+    :param company_dir: path to company name directory
+    :return: None
+    """
     pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(company_dir)
+    print(
+        f'********************* pdf_data_ccm: {pdf_data_ccm}\n total_amount_sum_ccm: {total_amount_sum_ccm}\n *********** pdf_data_lrd {pdf_data_lrd}  ')
 
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
     merged_ccm_pdf_is_saved = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005')
