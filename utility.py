@@ -1,9 +1,12 @@
 from selenium import webdriver
-import undetected_chromedriver as uc
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 
 def setup_driver():
+    """
+    Sets up driver instance with preferred options.
+    :return: `driver` of WebDriver class
+    """
     options = webdriver.ChromeOptions()
     options.add_argument('--headless=new')
     # options.add_argument('--start-maximized')
@@ -11,5 +14,9 @@ def setup_driver():
     return driver
 
 def teardown_driver(driver):
+    """
+    Breaks down and closes driver instance
+    :param driver:
+    :return: None
+    """
     driver.quit()
-    # Other cleanup code here...
