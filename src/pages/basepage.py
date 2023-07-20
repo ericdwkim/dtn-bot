@@ -12,6 +12,12 @@ class BasePage(object):
         self.action = ActionChains(self.driver)
 
     def find_and_wait_for_elem_to_be_clickable(self, locator, locator_type):
+        """
+        wait_for_presence_of_elements_located and wait_for_element_clickable wrapper
+        :param locator:
+        :param locator_type:
+        :return:
+        """
         try:
             element_located = self.wait_for_presence_of_elements_located(locator, locator_type)
             element_clickable = self.wait_for_element_clickable(locator, locator_type)
@@ -183,7 +189,8 @@ class BasePage(object):
             print(f'Tried to wait for element: {mark} to be clickable')
             return False
 
-    def is_web_element(self, obj):
+    @staticmethod
+    def is_web_element(obj):
         """
         Checks for common attributes/methods a WebElement instance has, such as `tag_name`\nas a workaround since `WebElement` is not a directly importable class in Selenium module. There is no direct way to check if an obj is a WebElement via isintance() method.
         :param obj:
@@ -205,7 +212,6 @@ class BasePage(object):
             WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_all_elements_located((locator_type, locator))
             )
-            # print(f'element {locator} is present!')
             return True
         except (NoSuchElementException, TimeoutException):
             print(f'Tried to check visibility of list WebElements: {locator} using locator type: {locator_type}')
@@ -214,7 +220,8 @@ class BasePage(object):
     def wait_for_find_then_click(self, locator, locator_type=By.CSS_SELECTOR):
         """
         `wait_for_element()` + `find_element_and_click()`\n wrapper using `WebElement.click()`
-        :param locator:
+        :param locator_type: default to CSS SELECTOR
+        :param locator: locator string for element to wait and click
         :return: bool
         """
         try:
