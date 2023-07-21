@@ -127,7 +127,7 @@ def end_of_month_operations(company_dir=None):
         company_dir = root_directory_mapping['INV']
 
     # Get today's date
-    today = datetime.datetime.strptime(datetime.date.today().strftime('%m-%d-%y'), '%m-%d-%y')
+    today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')
 
     current_year = today.strftime('%Y')
     next_month = (today.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
@@ -147,8 +147,8 @@ def cur_month_and_year_from_today():
     :return: Tuple(cur_month, cur_yr)
     """
     today = datetime.today().strftime('%m-%d-%y')
-    current_month = datetime.datetime.strptime(today, '%m-%d-%y').strftime('%m-%b')
-    current_year = datetime.datetime.strptime(today, '%m-%d-%y').strftime('%Y')
+    current_month = datetime.strptime(today, '%m-%d-%y').strftime('%m-%b')
+    current_year = datetime.strptime(today, '%m-%d-%y').strftime('%Y')
 
     return current_month, current_year
 
