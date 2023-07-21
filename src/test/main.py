@@ -14,8 +14,8 @@ from utils.mappings import (keyword_in_dl_file_name, download_dir, company_names
 # run(["../scripts/delete_for_accpt_test.sh"], shell=True)
 
 # Delete all PDFs in Downloads directory
-# run(["../scripts/clean_slate.sh"], shell=True)
-# print(f'===========================================================================================')
+run(["../scripts/clean_slate.sh"], shell=True)
+print(f'===========================================================================================')
 
 # Set environmental variables
 username = os.getenv('DTN_EMAIL_ADDRESS')
