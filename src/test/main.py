@@ -10,8 +10,12 @@ from utils.mappings import (keyword_in_dl_file_name, download_dir, company_names
                       regex_patterns, company_name_to_subdir_full_path_mapping_fuel_drafts,
                       company_name_to_subdir_full_path_mapping_credit_cards)
 
-# Run the shell script to delete PDF files from previous session
+# Delete all PDF files in all directories; TESTING PURPOSES
 # run(["../scripts/delete_for_accpt_test.sh"], shell=True)
+
+# Delete all PDFs in Downloads directory
+# run(["../scripts/clean_slate.sh"], shell=True)
+
 # print(f'===========================================================================================')
 
 # Set environmental variables
