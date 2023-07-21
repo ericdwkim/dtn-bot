@@ -11,12 +11,11 @@ from utils.mappings import (keyword_in_dl_file_name, download_dir, company_names
                       company_name_to_subdir_full_path_mapping_credit_cards)
 
 # Delete all PDF files in all directories; TESTING PURPOSES
-# run(["../scripts/delete_for_accpt_test.sh"], shell=True)
+run(["../scripts/delete_for_accpt_test.sh"], shell=True)
 
 # Delete all PDFs in Downloads directory
 # run(["../scripts/clean_slate.sh"], shell=True)
-
-# print(f'===========================================================================================')
+print(f'===========================================================================================')
 
 # Set environmental variables
 username = os.getenv('DTN_EMAIL_ADDRESS')

@@ -118,12 +118,12 @@ def create_and_save_pdf(pages, new_file_name, company_dir):
 
         # Use file_prefix as key to get doc type `root_dir` from map; "subtract" company_dir to root_dir to get company name var; use company_name as conditional check to separate CCM EXXONMOBIL files to company_dir for post-processing and non ExxonMobil ccm files to month_dir pathing as expected
         # @dev: CCM, LRD files are temporarily saved in company_dir prior to post-processing to prepare for merge_rename_and_summate
-
+        # TODO: easier way to have company name var?
         credit_cards_doc_type_dir = get_root_directory('CCM')
         print(f'credit_cards_doc_type_dir: {credit_cards_doc_type_dir}')
         company_name = company_dir.replace(credit_cards_doc_type_dir, '')
         print(f'company_name: {company_name}')
-        if (file_prefix == 'CCM' or file_prefix == 'LRD') and company_name == '/EXXONMOBIL [10005]':
+        if (file_prefix == 'CCM' or file_prefix == 'LRD') and company_name == 'EXXONMOBIL [10005]':
             print('***************************************')
             output_filepath = os.path.join(company_dir, new_file_name)
             print(f' CCM EXXON ONLY - output filepath ------- {output_filepath}')

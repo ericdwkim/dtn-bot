@@ -8,8 +8,8 @@ def setup_driver():
     :return: `driver` of WebDriver class
     """
     options = webdriver.ChromeOptions()
-    # options.add_argument('--headless=new')
-    options.add_argument('--start-maximized')
+    options.add_argument('--headless=new')
+    # options.add_argument('--start-maximized')
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
