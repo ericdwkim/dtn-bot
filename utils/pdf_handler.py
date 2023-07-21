@@ -47,7 +47,66 @@ def rename_and_delete_pdf(file_path):
 
     return file_deleted
 
-# Invoices
+# Renaming helper func for Invoices PDF
+def rename_invoices_pdf(file_path):
+    """
+    Find `messages.pdf` for Invoices in Downloads directory and rename it
+    :param file_name:
+    :param source_dir:
+    :return:
+    """
+    today = datetime.date.today().strftime('%m-%d-%y')
+    if os.path.exists(file_path):
+        pdf = pikepdf.open(file_path) # open Invoices PDF as pikePDF object
+        new_file_name = today + '.pdf'
+
+        file_directory = os.path.dirname(file_path)
+        new_file_path = os.path.join(file_directory, new_file_name)
+
+        print(f'Renaming file {file_path} to {new_file_path}')
+        pdf.close() # Close PDF file
+        os.rename(file_path, new_file_path)
+        if os.path.exists(new_file_path):
+           print("File renamed successfully.")
+           time.sleep(3)
+           return True, new_file_path, new_file_name
+        else:
+            print(f'Could not rename Invoices `messages.pdf` file in Downloads directory')
+            return False, None, None
+
+# Refactored `rename_and_move_pdf`
+def rename_and_move_or_overwrite_invoices_pdf(file_path):
+
+    renamed_file, new_file_path, new_file_name = rename_invoices_pdf(file_path)
+    if not renamed_file and not new_file_path and not new_file_name:
+        return False
+    else:
+        # Get final output directory from file prefix
+        month_dir = calculate_directory_path('INV')
+
+        # Construct target_file_path variable
+        target_file_path = os.path.join(month_dir, new_file_name)
+
+        # If file with same name does NOT exist in target directory, move renamed Invoices pdf
+        if not os.path.isfile(target_file_path):
+            print(f'Moving {new_file_path} to {month_dir}...')
+            try:
+                shutil.move(new_file_path, month_dir)
+                return True # File moved successfully
+            except Exception as e:
+                print(f'An error occurred while moving the file: {e}')
+                return False # File could not be moved
+
+        # if file with same name does exist in target directory, delete and replace with latest Invoices PDF "overwrite"
+        else:
+            print(f'File with name: {new_file_name} already exists at {target_file_path}. Overwriting...')
+            os.remove(target_file_path)
+
+        # File renamed, moved or overwritten
+        return True
+
+
+
 def rename_and_move_pdf(file_name, source_dir):
     """
     Given a substring and source directory, it renames file from source to target directory
