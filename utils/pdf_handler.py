@@ -75,36 +75,56 @@ def rename_invoices_pdf(file_path):
             return False, None, None
 
 # Refactored `rename_and_move_pdf`
+from datetime import datetime
+import os
+import shutil
+
+
+def get_file_timestamps(file_path):
+    """
+    Helper function to get creation and modification times of a file
+    """
+    mod_time = os.path.getmtime(file_path)
+    cre_time = os.path.getctime(file_path)
+
+    # convert the time from seconds since the epoch to a datetime object
+    mod_time = datetime.fromtimestamp(mod_time)
+    cre_time = datetime.fromtimestamp(cre_time)
+
+    return mod_time, cre_time
+
+
 def rename_and_move_or_overwrite_invoices_pdf(file_path):
-
     renamed_file, new_file_path, new_file_name = rename_invoices_pdf(file_path)
-    if not renamed_file and not new_file_path and not new_file_name:
+
+    if not (renamed_file and new_file_path and new_file_name):
         return False
-    else:
-        # Get final output directory from file prefix
-        month_dir = calculate_directory_path('INV')
 
-        # Construct target_file_path variable
-        target_file_path = os.path.join(month_dir, new_file_name)
+    # Get final output directory from file prefix
+    month_dir = calculate_directory_path('INV')
 
-        # If file with same name does NOT exist in target directory, move renamed Invoices pdf
-        if not os.path.isfile(target_file_path):
-            print(f'Moving {new_file_path} to {month_dir}...')
-            try:
-                shutil.move(new_file_path, month_dir)
-                return True # File moved successfully
-            except Exception as e:
-                print(f'An error occurred while moving the file: {e}')
-                return False # File could not be moved
+    # Construct target_file_path variable
+    target_file_path = os.path.join(month_dir, new_file_name)
 
-        # if file with same name does exist in target directory, delete and replace with latest Invoices PDF "overwrite"
-        else:
-            print(f'File with name: {new_file_name} already exists at {target_file_path}. Overwriting...')
-            os.remove(target_file_path)
+    # If file with same name exists in target directory
+    if os.path.isfile(target_file_path):
+        mod_time_old, cre_time_old = get_file_timestamps(target_file_path)
 
-        # File renamed, moved or overwritten
-        return True
+        print(
+            f'File with name: {new_file_name} already exists at {target_file_path}\nLast modified: {mod_time_old}\nCreated: {cre_time_old}. Deleting older file...')
+        os.remove(target_file_path)
 
+    # Get timestamps for new file
+    mod_time_new, cre_time_new = get_file_timestamps(new_file_path)
+
+    print(f'Overwriting with latest file\nLast modified: {mod_time_new}\nCreated: {cre_time_new}')
+
+    try:
+        shutil.move(new_file_path, month_dir)
+        return True  # File moved successfully
+    except Exception as e:
+        print(f'An error occurred while moving the file: {e}')
+        return False  # File could not be moved
 
 
 def rename_and_move_pdf(file_name, source_dir):
