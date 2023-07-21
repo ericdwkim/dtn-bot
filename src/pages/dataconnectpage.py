@@ -276,6 +276,7 @@ class DataConnectPage(BasePage):
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
             print(f'Could not set group filter to Invoice. Proceeding to Draft Notice...')
+            return False
 
         else:
             print(
