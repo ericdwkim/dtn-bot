@@ -2,6 +2,8 @@
 
 # Directory to search for PDF files
 directory="/Users/ekim/Downloads"
+# Production
+#directory="C:\\Users\\ekima\\Downloads"
 
 # Check if the directory exists
 if [ -d "$directory" ]; then
