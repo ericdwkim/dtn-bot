@@ -4,7 +4,7 @@ from subprocess import run
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 from utility import setup_driver, teardown_driver
-from utils.pdf_handler import process_pdfs, rename_and_move_pdf, get_full_path_to_dl_dir, rename_and_delete_pdf, rename_and_move_or_overwrite_invoices_pdf
+from utils.pdf_handler import process_pdfs, get_full_path_to_dl_dir, rename_and_delete_pdf, rename_and_move_or_overwrite_invoices_pdf
 from utils.post_processing import is_last_day_of_month, end_of_month_operations
 from utils.mappings import (keyword_in_dl_file_name, download_dir, company_names,
                       regex_patterns, company_name_to_subdir_full_path_mapping_fuel_drafts,
@@ -45,7 +45,6 @@ def user_journey():
         if not downloaded_invoices_successfully:
             print(f'No invoices were downloaded. downloaded_invoices_successfully: {downloaded_invoices_successfully}')
         else:
-            # invoices_renamed_and_filed_away = rename_and_move_pdf(keyword_in_dl_file_name, download_dir)
             invoices_renamed_and_filed_away = rename_and_move_or_overwrite_invoices_pdf(full_path_to_downloaded_pdf)
 
             if invoices_renamed_and_filed_away and is_last_day_of_month():

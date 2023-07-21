@@ -2,7 +2,7 @@ from pikepdf import Pdf
 import pdfplumber
 import io
 import re
-import datetime
+from datetime import datetime
 from .mappings import company_name_to_subdir_full_path_mapping_fuel_drafts, company_names
 
 

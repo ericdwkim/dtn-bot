@@ -3,7 +3,7 @@ import re
 import time
 import pikepdf
 import shutil
-import datetime
+from datetime import datetime
 from utils.post_processing import merge_rename_and_summate, calculate_directory_path, is_last_day_of_month, end_of_month_operations, get_root_directory
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text, extract_company_dir_from_map
 
@@ -74,12 +74,6 @@ def rename_invoices_pdf(file_path):
             print(f'Could not rename Invoices `messages.pdf` file in Downloads directory')
             return False, None, None
 
-# Refactored `rename_and_move_pdf`
-from datetime import datetime
-import os
-import shutil
-
-
 def get_file_timestamps(file_path):
     """
     Helper function to get creation and modification times of a file
@@ -93,7 +87,7 @@ def get_file_timestamps(file_path):
 
     return mod_time, cre_time
 
-
+# Refactored `rename_and_move_pdf`
 def rename_and_move_or_overwrite_invoices_pdf(file_path):
     renamed_file, new_file_path, new_file_name = rename_invoices_pdf(file_path)
 
