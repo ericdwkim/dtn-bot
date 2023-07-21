@@ -111,7 +111,7 @@ def rename_and_move_or_overwrite_invoices_pdf(file_path):
         mod_time_old, cre_time_old = get_file_timestamps(target_file_path)
 
         print(
-            f'File with name: {new_file_name} already exists at {target_file_path}\nLast modified: {mod_time_old}\nCreated: {cre_time_old}. Deleting older file...')
+            f'File with name: "{new_file_name}" already exists at {target_file_path}\nLast modified: {mod_time_old}\nCreated: {cre_time_old}.')
         os.remove(target_file_path)
 
     # Get timestamps for new file
@@ -121,55 +121,11 @@ def rename_and_move_or_overwrite_invoices_pdf(file_path):
 
     try:
         shutil.move(new_file_path, month_dir)
+        print(f'Moved latest Invoices pdf created on "{cre_time_new}" to "{month_dir}"')
         return True  # File moved successfully
     except Exception as e:
         print(f'An error occurred while moving the file: {e}')
         return False  # File could not be moved
-
-
-def rename_and_move_pdf(file_name, source_dir):
-    """
-    Given a substring and source directory, it renames file from source to target directory
-    :param file_name: substring to search in target filename
-    :param source_dir:
-    :return:
-    """
-    # Get today's date and format it as MM-DD-YY
-    today = datetime.date.today().strftime('%m-%d-%y')
-
-    # Find the downloaded PDF
-    for file in os.listdir(source_dir):
-        if file.endswith('.pdf') and file_name in file:
-            source_file = os.path.join(source_dir, file)
-            # Rename file
-            new_file_name = today + '.pdf'
-            new_file_path = os.path.join(source_dir, new_file_name)
-            os.rename(source_file, new_file_path)
-
-            # Get output path from filename
-            month_dir = calculate_directory_path('INV')
-
-            # Prepare for the move
-            target_file_path = os.path.join(month_dir, new_file_name)
-
-            # If file with same name exists in the target directory, delete it
-            if os.path.isfile(target_file_path):
-                print(f"File with same name exists at {target_file_path}. Overwriting it.")
-                os.remove(target_file_path)
-
-            # Move the file
-            print(f'Moving {new_file_path} to {month_dir}')
-            try:
-                shutil.move(new_file_path, month_dir)
-                return True  # file moved successfully
-            except Exception as e:
-                print(f"An error occurred while moving the file: {e}")
-                return False  # file could not be moved
-
-    # If the function has not yet returned, the file was not found
-    print(f"No PDF file containing '{file_name}' was found in the directory {source_dir}.")
-    return False
-
 
 def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
     """
