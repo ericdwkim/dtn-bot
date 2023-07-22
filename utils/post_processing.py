@@ -1,6 +1,6 @@
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 import pikepdf
 import shutil
 from .mappings import company_id_to_company_subdir_map, root_directory_mapping
@@ -90,7 +90,7 @@ def is_last_day_of_month():
     """
     today = datetime.today()
 
-    tomorrow = today + datetime.timedelta(days=1)
+    tomorrow = today + timedelta(days=1)
     return tomorrow.day == 1
 
 def move_directory_to_another(src_dir, dst_dir):
