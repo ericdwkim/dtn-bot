@@ -88,7 +88,7 @@ def is_last_day_of_month():
     if so, then it will return True indicating that today is the last day of the month
     :return: bool
     """
-    today = datetime.date.today()
+    today = datetime.today()
 
     tomorrow = today + datetime.timedelta(days=1)
     return tomorrow.day == 1
