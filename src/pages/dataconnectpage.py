@@ -301,10 +301,17 @@ class DataConnectPage(BasePage):
         if filter_header_is_clicked and src_elem_dragged_and_dropped_to_target_elem and filter_button_is_clicked:
             return True
 
+        # if all 3 bool conditions returned false
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set group filter to Draft Notice. Proceeding to Credit Cards...')
-            return False
+            print(f'Could not click on Group filter header for Draft Notice. Consider retrying the script.')
+            return False # Go to third flow
 
+        # Group filter head was clicked, but could not drag and drop filter and therefore could not click `Filter` button to confirm. Possibly due to unavailable `Draft Notice` draggable bar.
+        elif filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
+            print(f'Group filter header was clicked for Draft Notice: {filter_header_is_clicked}. Draft Notice possibly unavailable. Skipping to Credit Cards....')
+            return False  # Go to third flow
+
+        # something unexpected occurred
         else:
             print(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
@@ -329,8 +336,14 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set group filter to Credit Cards. Proceeding to the end of script.')
+            print(f'Could not click on Group filter header for Credit Card. Consider retrying the script.')
             return False
+
+        # Group filter header was clicked, but could not drag/drop and therefore could not confirm Filter setting. Possibly due to unavailable `Credit Card` draggable bar
+        elif filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
+            print(f'Group filter header was clicked for Credit Card: {filter_header_is_clicked}. Credit Card docs possibly unavailable. Proceeding with rest of the script...')
+            return False  # Continue
+
         else:
             print(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'

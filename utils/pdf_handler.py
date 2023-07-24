@@ -14,7 +14,9 @@ def rename_and_delete_pdf(file_path):
     :return: `file_deleted` Bool
     """
     file_deleted = False
-    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = datetime.today().strftime('%m-%d-%y')  # @today
+    today = '07-23-23'
+
 
 
     if os.path.exists(file_path):
@@ -55,7 +57,10 @@ def rename_invoices_pdf(file_path):
     :param source_dir:
     :return:
     """
-    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = datetime.today().strftime('%m-%d-%y')  # @today
+    today = '07-23-23'
+
+
     if os.path.exists(file_path):
         pdf = pikepdf.open(file_path) # open Invoices PDF as pikePDF object
         new_file_name = today + '.pdf'
