@@ -3,7 +3,6 @@ from selenium.webdriver.common.by import By
 from .basepage import BasePage
 
 
-# TODO: change `driver` to `base_driver`
 class LoginPage(BasePage):
     def __init__(self, base_driver):
         super().__init__(base_driver)
@@ -75,13 +74,12 @@ class LoginPage(BasePage):
             print(f'An error occurred: {str(e)}')
             return False
 
-    # todo: refactor with `if not self.visit() if not logged_in` format to reduce nesting
     def visit_and_login(self):
         try:
-            site_visited = self.visit()
-            # TODO: fix format but with login capability and test
             if not self.visit():
+                return False
             if not self.login():
+                return False
             else:
                 print('Browser launched!')
                 return True
