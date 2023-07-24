@@ -105,13 +105,13 @@ def rename_and_move_or_overwrite_invoices_pdf(file_path):
         mod_time_old, cre_time_old = get_file_timestamps(target_file_path)
 
         print(
-            f'File with name: "{new_file_name}" already exists at {target_file_path}\nLast modified: {mod_time_old}\nCreated: {cre_time_old}.')
+            f'File with name: "{new_file_name}" already exists at "{target_file_path}"\nLast modified (old): {mod_time_old}\nCreated (old): {cre_time_old}.')
         os.remove(target_file_path)
 
     # Get timestamps for new file
     mod_time_new, cre_time_new = get_file_timestamps(new_file_path)
 
-    print(f'Overwriting with latest file\nLast modified: {mod_time_new}\nCreated: {cre_time_new}')
+    print(f'Overwriting with latest file\nLast modified (new): {mod_time_new}\nCreated (new): {cre_time_new}')
 
     try:
         shutil.move(new_file_path, month_dir)
