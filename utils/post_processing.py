@@ -53,8 +53,8 @@ def extract_pdf_data(company_dir):
     :param company_dir: path to company name directory
     :return: Tuple (List, Int, List) where each List contains tuples of pre-extracted data relevant for CCM and LRD, respectively.
     """
-    # today = datetime.today().strftime('%m-%d-%y')  # @today
-    today = '07-23-23'
+    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = '07-23-23'
 
     pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
     print(f'************************ pdf_files ******************** : {pdf_files}\n')
@@ -90,8 +90,8 @@ def is_last_day_of_month():
     if so, then it will return True indicating that today is the last day of the month
     :return: bool
     """
-    today = datetime.today()  # @today
-    # today = datetime.strptime('07-23-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
+    # today = datetime.today()  # @today
+    today = datetime.strptime('07-23-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
 
 
     tomorrow = today + timedelta(days=1)
@@ -131,8 +131,8 @@ def end_of_month_operations(company_dir=None):
         company_dir = root_directory_mapping['INV']
 
     # Get today's date
-    today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')  # @today
-    # today = datetime.strptime('07-23-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
+    # today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')  # @today
+    today = datetime.strptime('07-23-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
 
 
     current_year = today.strftime('%Y')
@@ -152,8 +152,8 @@ def cur_month_and_year_from_today():
     Helper function to calculate current month and current year relative to today's date
     :return: Tuple(cur_month, cur_yr)
     """
-    # today = datetime.today().strftime('%m-%d-%y')  # @today
-    today = '07-23-23'
+    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = '07-23-23'
 
     current_month = datetime.strptime(today, '%m-%d-%y').strftime('%m-%b')
     current_year = datetime.strptime(today, '%m-%d-%y').strftime('%Y')
@@ -244,8 +244,8 @@ def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
     :param company_id:
     :return: Bool
     """
-    # today = datetime.today().strftime('%m-%d-%y')  # @today
-    today = '07-23-23'
+    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = '07-23-23'
 
     if file_prefix == 'CCM':
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
