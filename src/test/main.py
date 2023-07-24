@@ -58,7 +58,7 @@ def user_journey():
 
         group_filter_set_to_draft_notice = data_connect.set_group_filter_to_draft_notice()
         if not group_filter_set_to_draft_notice:
-            print(f'No draft notices were downloaded. group_filter_set_to_draft_notice: {group_filter_set_to_draft_notice}')
+            print(f'group_filter_set_to_draft_notice: {group_filter_set_to_draft_notice}')
 
         draft_notices_processed_and_filed = process_pdfs(full_path_to_downloaded_pdf, company_name_to_subdir_full_path_mapping_fuel_drafts, company_names, regex_patterns, post_processing=False)
         if not draft_notices_processed_and_filed:
@@ -75,9 +75,9 @@ def user_journey():
         # Switch date from yesterday's to today's
         print(f'STARTING 3RD FLOW ***********************')
         date_set_to_today = data_connect.set_date_filter(third_flow=True)
+        print(f'date_set_to_today {date_set_to_today}')
         if not date_set_to_today:
             return
-        print(f'date_set_to_today *********************** {date_set_to_today}')
 
 
         # Reset Translated to No
@@ -85,14 +85,12 @@ def user_journey():
         print(f'translated_set_to_no: {translated_set_to_no}')
         if not translated_set_to_no:
             return
-        print(f'translated_set_to_no *********************** {translated_set_to_no}')
 
         # Set Group filter to Credit Cards
         group_filter_set_to_credit_card = data_connect.set_group_filter_to_credit_card()
         print(f'group_filter_set_to_credit_card: {group_filter_set_to_credit_card}')
         if not group_filter_set_to_credit_card:
             return
-        print(f'group_filter_set_to_credit_card *********************** {group_filter_set_to_credit_card}')
 
         # Download Credit Cards PDF
         ccm_files_downloaded = data_connect.check_all_then_click_print()
