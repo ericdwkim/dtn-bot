@@ -3,7 +3,7 @@ import re
 import time
 import pikepdf
 import shutil
-import datetime
+from datetime import datetime
 from utils.post_processing import merge_rename_and_summate, calculate_directory_path, is_last_day_of_month, end_of_month_operations, get_root_directory
 from utils.extraction_handler import extract_text_from_pdf_page, extract_info_from_text, extract_company_dir_from_map
 
@@ -14,7 +14,9 @@ def rename_and_delete_pdf(file_path):
     :return: `file_deleted` Bool
     """
     file_deleted = False
-    today = datetime.date.today().strftime('%m-%d-%y')
+    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = '07-23-23'
+
 
 
     if os.path.exists(file_path):
@@ -47,50 +49,82 @@ def rename_and_delete_pdf(file_path):
 
     return file_deleted
 
-# Invoices
-def rename_and_move_pdf(file_name, source_dir):
+# Renaming helper func for Invoices PDF
+def rename_invoices_pdf(file_path):
     """
-    Given a substring and source directory, it renames file from source to target directory
-    :param file_name: substring to search in target filename
+    Find `messages.pdf` for Invoices in Downloads directory and rename it
+    :param file_name:
     :param source_dir:
     :return:
     """
-    # Get today's date and format it as MM-DD-YY
-    today = datetime.date.today().strftime('%m-%d-%y')
+    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = '07-23-23'
 
-    # Find the downloaded PDF
-    for file in os.listdir(source_dir):
-        if file.endswith('.pdf') and file_name in file:
-            source_file = os.path.join(source_dir, file)
-            # Rename file
-            new_file_name = today + '.pdf'
-            new_file_path = os.path.join(source_dir, new_file_name)
-            os.rename(source_file, new_file_path)
 
-            # Get output path from filename
-            month_dir = calculate_directory_path('INV')
+    if os.path.exists(file_path):
+        pdf = pikepdf.open(file_path) # open Invoices PDF as pikePDF object
+        new_file_name = today + '.pdf'
 
-            # Prepare for the move
-            target_file_path = os.path.join(month_dir, new_file_name)
+        file_directory = os.path.dirname(file_path)
+        new_file_path = os.path.join(file_directory, new_file_name)
 
-            # If file with same name exists in the target directory, delete it
-            if os.path.isfile(target_file_path):
-                print(f"File with same name exists at {target_file_path}. Overwriting it.")
-                os.remove(target_file_path)
+        print(f'Renaming file {file_path} to {new_file_path}')
+        pdf.close() # Close PDF file
+        os.rename(file_path, new_file_path)
+        if os.path.exists(new_file_path):
+           print("File renamed successfully.")
+           time.sleep(3)
+           return True, new_file_path, new_file_name
+        else:
+            print(f'Could not rename Invoices `messages.pdf` file in Downloads directory')
+            return False, None, None
 
-            # Move the file
-            print(f'Moving {new_file_path} to {month_dir}')
-            try:
-                shutil.move(new_file_path, month_dir)
-                return True  # file moved successfully
-            except Exception as e:
-                print(f"An error occurred while moving the file: {e}")
-                return False  # file could not be moved
+def get_file_timestamps(file_path):
+    """
+    Helper function to get creation and modification times of a file
+    """
+    mod_time = os.path.getmtime(file_path)
+    cre_time = os.path.getctime(file_path)
 
-    # If the function has not yet returned, the file was not found
-    print(f"No PDF file containing '{file_name}' was found in the directory {source_dir}.")
-    return False
+    # convert the time from seconds since the epoch to a datetime object
+    mod_time = datetime.fromtimestamp(mod_time)
+    cre_time = datetime.fromtimestamp(cre_time)
 
+    return mod_time, cre_time
+
+# Refactored `rename_and_move_pdf`
+def rename_and_move_or_overwrite_invoices_pdf(file_path):
+    renamed_file, new_file_path, new_file_name = rename_invoices_pdf(file_path)
+
+    if not (renamed_file and new_file_path and new_file_name):
+        return False
+
+    # Get final output directory from file prefix
+    month_dir = calculate_directory_path('INV')
+
+    # Construct target_file_path variable
+    target_file_path = os.path.join(month_dir, new_file_name)
+
+    # If file with same name exists in target directory
+    if os.path.isfile(target_file_path):
+        mod_time_old, cre_time_old = get_file_timestamps(target_file_path)
+
+        print(
+            f'File with name: "{new_file_name}" already exists at "{target_file_path}"\nLast modified (old): {mod_time_old}\nCreated (old): {cre_time_old}.')
+        os.remove(target_file_path)
+
+    # Get timestamps for new file
+    mod_time_new, cre_time_new = get_file_timestamps(new_file_path)
+
+    print(f'Overwriting with latest file\nLast modified (new): {mod_time_new}\nCreated (new): {cre_time_new}')
+
+    try:
+        shutil.move(new_file_path, month_dir)
+        print(f'Moved latest Invoices pdf created on "{cre_time_new}" to "{month_dir}"')
+        return True  # File moved successfully
+    except Exception as e:
+        print(f'An error occurred while moving the file: {e}')
+        return False  # File could not be moved
 
 def get_full_path_to_dl_dir(download_dir, keyword_in_dl_file_name):
     """

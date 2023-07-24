@@ -2,7 +2,7 @@ from pikepdf import Pdf
 import pdfplumber
 import io
 import re
-import datetime
+from datetime import datetime
 from .mappings import company_name_to_subdir_full_path_mapping_fuel_drafts, company_names
 
 
@@ -66,7 +66,9 @@ def extract_info_from_text(current_page_text, regex_pattern):
     else:
         total_amount = None
 
-    today = datetime.date.today().strftime('%m-%d-%y')
+    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = '07-23-23'
+
 
 
     return regex_num, today, total_amount
