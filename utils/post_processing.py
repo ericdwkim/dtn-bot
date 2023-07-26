@@ -1,13 +1,16 @@
 import os
 import re
-import datetime
+from datetime import datetime
 import pikepdf
 import shutil
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
 
-
-
 def extract_ccm_data(pdf_file):
+    """
+    Extracts CCM relevant data from List of tuples with target data
+    :param pdf_file:
+    :return:
+    """
     filename = os.path.basename(pdf_file)
     match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', filename)
     if match:
@@ -18,6 +21,11 @@ def extract_ccm_data(pdf_file):
 
 
 def extract_lrd_data(pdf_file):
+    """
+    Extracts LRD relevant data from list of tuples
+    :param pdf_file:
+    :return:
+    """
     match = re.match(r'LRD-(\d+)-.*\.pdf', pdf_file)
     if match:
         doc_type_num = match.group(1)
@@ -25,9 +33,17 @@ def extract_lrd_data(pdf_file):
     return None, None
 
 
-def extract_pdf_data(directory):
-    today = datetime.date.today().strftime('%m-%d-%y')
-    pdf_files = [f for f in os.listdir(directory) if f.endswith('.pdf')]
+def extract_pdf_data(company_dir):
+    """
+    Extracts target data from filenames for calculation for post-processing
+    :param company_dir: path to company name directory
+    :return: Tuple (List, Int, List) where each List contains tuples of pre-extracted data relevant for CCM and LRD, respectively.
+    """
+    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = '07-23-23'
+
+    pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
+    print(f'************************ pdf_files ******************** : {pdf_files}\n')
     pdf_data_ccm = []
     pdf_data_lrd = []
     total_amount = 0.00
@@ -36,16 +52,24 @@ def extract_pdf_data(directory):
             doc_type_num_ccm, amount = extract_ccm_data(pdf_file)
             total_amount += amount
             total_amount = round(total_amount, 2)  # Round to two decimal places
-            pdf_data_ccm.append((doc_type_num_ccm, today, total_amount, os.path.join(directory, pdf_file)))
+            pdf_data_ccm.append((doc_type_num_ccm, today, total_amount, os.path.join(company_dir, pdf_file)))
         elif pdf_file.startswith('LRD'):
             doc_type_num_lrd, _ = extract_lrd_data(pdf_file)
-            pdf_data_lrd.append((doc_type_num_lrd, today, _, os.path.join(directory, pdf_file)))
+            pdf_data_lrd.append((doc_type_num_lrd, today, _, os.path.join(company_dir, pdf_file)))
     pdf_data_ccm.sort(key=lambda x: x[0])
+    print(f'*********************************** pdf_data_ccm {pdf_data_ccm}\n')
     pdf_data_lrd.sort(key=lambda x: x[0])
+    print(f'*********************************** pdf_data_lrd {pdf_data_lrd}\n')
+
     return pdf_data_ccm, total_amount, pdf_data_lrd
 
 
 def merge_pdfs(pdf_data):
+    """
+    Merges PDFs by fetching 4th element in tuple `file_path` by looping, opening each file_path\nand creating them as pikePDF pages to combine and merge them all into a single PDF object
+    :param pdf_data:
+    :return: `merged_pdf` a pikePDF object | None
+    """
     merged_pdf = pikepdf.Pdf.new()
     for _, _, _, file_path in pdf_data:
         try:
@@ -55,59 +79,58 @@ def merge_pdfs(pdf_data):
             return False
     return merged_pdf
 
+def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
+    """
+    Saves pre-merged pike PDF object with constructed filename dependent on doc type with provided target data.
+    :param file_prefix: CCM or LRD ; only these for post-processing
+    :param merged_pdf:
+    :param total_amount_sum:
+    :param company_id:
+    :return: Bool
+    """
+    today = datetime.today().strftime('%m-%d-%y')  # @today
+    # today = '07-23-23'
 
-
-def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map):
-    # TODO: toggle this back on after testing
-    # today = datetime.date(2023, 12, 31).strftime('%m-%d-%y')
-    today = datetime.date.today().strftime('%m-%d-%y')
     if file_prefix == 'CCM':
         new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
     else:
         new_file_name = f'{today}-Loyalty.pdf'
 
-    month_directory = calculate_directory_path(file_prefix, company_id, new_file_name, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
-    print(f'----------------------------------------- {month_directory} -----------------------------')
+    month_directory = calculate_directory_path(file_prefix, company_id)
     output_path = os.path.join(month_directory, new_file_name)
 
     try:
         merged_pdf.save(output_path)
         merged_pdf.close()
         print(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
-        return True, new_file_name
+        return True
     except Exception:
-        return False, None
+        return False
 
 
-def merge_rename_and_summate(directory, doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map):
-    pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(directory)
+def merge_rename_and_summate(company_dir):
+    """
+    Main post-processing wrapper function. Accounts for end of month operations if last day of the month.
+    :param company_dir: path to company name directory
+    :return: None
+    """
+    pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(company_dir)
+    print(
+        f'********************* pdf_data_ccm: {pdf_data_ccm}\n total_amount_sum_ccm: {total_amount_sum_ccm}\n *********** pdf_data_lrd {pdf_data_lrd}  ')
 
     merged_pdf_ccm = merge_pdfs(pdf_data_ccm)
-    # @dev: Hardcoded to '10005' == Exxon
-    merged_ccm_pdf_is_saved, filename = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005', doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
-    # print(f'merged_pdf_ccm / merged_ccm_pdf_is_saved: {merged_pdf_ccm} / {merged_ccm_pdf_is_saved}')
-    # PDFs were merged, saved, and renamed with a new filename and it is currently the last day of the month, then perform end of month filesystem management
-    if merged_pdf_ccm and merged_ccm_pdf_is_saved and filename and is_last_day_of_month():
-        print(f'CCM PDFs have been merged and saved!')
-        end_of_month_operations(directory, filename)
-        cleanup_files(pdf_data_ccm)
-
-    # if it is not the last day
-    else:
-        # TODO: toggle back to clean up
-        cleanup_files(pdf_data_ccm)
-        # print(f'dont delete plz')
+    merged_ccm_pdf_is_saved = save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005')
+    print(f'merged_pdf_ccm / merged_ccm_pdf_is_saved: {merged_pdf_ccm} / {merged_ccm_pdf_is_saved}')
+    # Clean up pre-merged PDFs in EXXON company_dir; loops through file_path (4th elem in tuple) to delete
+    cleanup_files(pdf_data_ccm)
+    # PDFs were merged, saved w/ new filename. If it is currently the last day of the month, then perform end of month filesystem management
+    if merged_pdf_ccm and merged_ccm_pdf_is_saved and is_last_day_of_month():
+        end_of_month_operations(company_dir)
 
     merged_pdf_lrd = merge_pdfs(pdf_data_lrd)
-    # @dev: Hardcoded to '10005' == Exxon
-    merged_lrd_pdf_is_saved, filename = save_merged_pdf('LRD', merged_pdf_lrd, None, '10005', doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map)
-
-    if merged_pdf_lrd and merged_lrd_pdf_is_saved and filename:
-
-        end_of_month_operations(directory, filename)
-        cleanup_files(pdf_data_lrd)
-
-    else:
-        # TODO: toggle back to clean up
-        cleanup_files(pdf_data_lrd)
-        # print(f'dont delete plz')
+    merged_lrd_pdf_is_saved = save_merged_pdf('LRD', merged_pdf_lrd, None, '10005')
+    # Clean up pre-merged PDFs in EXXON company_dir; loops through file_path (4th elem in tuple) to delete
+    cleanup_files(pdf_data_lrd)
+    # PDFs were merged, saved w/ new filename. If it is currently the last day of the month, then perform end of month filesystem management
+    if merged_pdf_lrd and merged_lrd_pdf_is_saved and is_last_day_of_month():
+        end_of_month_operations(company_dir)
