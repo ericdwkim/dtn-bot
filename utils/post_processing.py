@@ -5,6 +5,7 @@ import pikepdf
 import shutil
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
 
+# TODO: move all `extract_` helpers to extraction_handler.py as class `PDFExtractor` instance method
 def extract_ccm_data(pdf_file):
     """
     Extracts CCM relevant data from List of tuples with target data
@@ -63,7 +64,7 @@ def extract_pdf_data(company_dir):
 
     return pdf_data_ccm, total_amount, pdf_data_lrd
 
-
+# TODO: class PDFPostProcessorMerger that inherits from class PDFExtractor (extraction_handler.py); call post processing relevant extraction methods via an instance of PDFPostProcessorMerger object, such as: `post_procecssor_merger = PDFPostProcessorMerger()` then `post_procecssor_merger.extract_pdf_data()`
 def merge_pdfs(pdf_data):
     """
     Merges PDFs by fetching 4th element in tuple `file_path` by looping, opening each file_path\nand creating them as pikePDF pages to combine and merge them all into a single PDF object

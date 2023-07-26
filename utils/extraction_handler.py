@@ -5,6 +5,8 @@ import re
 import datetime
 from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
+# TODO: create class PDFExtractor; migrate extraction helpers from post_processing.py as instance methods for this class
+
 
 # Take in pikepdf Pdf object, return extracted text
 def extract_text_from_pdf_page(page):
