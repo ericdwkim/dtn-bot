@@ -1,13 +1,10 @@
 import os
 import re
-import io
-import pdfplumber
 from glob import glob
 from time import sleep
-from pikepdf import open, Pdf
 import pikepdf
-from shutil import move
-import datetime
+import shutil
+from datetime import datetime
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import extract_text_from_pdf_page
@@ -25,7 +22,7 @@ class PdfProcessor:
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
-        self.page_num = 0 
+        self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.company_names = self.get_company_names()
         self.page_text = self.get_page_text()
@@ -180,7 +177,7 @@ class PdfProcessor:
                 target_dir = os.path.join(self.root_dir, self.doc_type_abbrv_to_doc_type_subdir_map[self.doc_type])
                 destination_file = os.path.join(target_dir, f'{self.today}.pdf')
                 print(f'Moving {destination_file} to {target_dir}')
-                move(source_file, destination_file)
+                shutil.move(source_file, destination_file)
                 break
 
     # def create_and_save_pdf(self, pages):
@@ -269,8 +266,8 @@ class PdfProcessor:
                 # print(f'Post processing for EXXON CCMs & LRDs')
                 merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map,
                                          company_id_to_company_subdir_map)
-                
-            
+
+
 
             else:
                 # Dynamic filesystem mgmt for files that do not need post processing
