@@ -25,8 +25,14 @@ class LoginPageDriver:
 
 
     def visit_and_login(self):
-        visit_and_login = self.login_page.visit_and_login()
-        print(f'visit_and_login: {visit_and_login}')
+        try:
+            visit_and_login = self.login_page.visit_and_login()
+            if not visit_and_login:
+                return False
+            else:
+                return True
+        except Exception as e:
+            print(f'An error occurred trying to visit_and_login: {e}')
 
 
 
@@ -37,10 +43,16 @@ class DataConnectDriver:
 
 
     def switch_tab(self):
-        self.data_connect_page.switch_tab()
-
+        try:
+            switch_tab = self.data_connect_page.switch_tab()
+            if not switch_tab:
+                return False
+            else:
+                return True
+        except Exception as e:
+            print(f'An error occurred trying to switch_tab: {e}')
     def set_date_filter(self):
-        self.data_connect_page.set_date_filter()
+        set_date_filter = self.data_connect_page.set_date_filter()
 
     def set_translated_filter_to_no(self):
         self.data_connect_page.set_translated_filter_to_no()
