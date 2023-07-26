@@ -26,6 +26,13 @@ class DataConnectPage(BasePage):
             return False
 
     def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False, max_retries=3):
+        """
+        Sets `Date` element
+        :param date_locator: element locator string; defaulted to yesterday's date
+        :param third_flow: Flag to determine `date_locator` depending on which Flow phase
+        :param max_retries: defaulted to 3 attempts
+        :return:
+        """
         print(f'*********************date_locator1 ***********: {date_locator}')
         if third_flow:
             print(f'---------- testing -------------')
