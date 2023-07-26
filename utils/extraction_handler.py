@@ -7,6 +7,9 @@ from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc
 
 # TODO: create class PDFExtractor; migrate extraction helpers from post_processing.py as instance methods for this class
 
+class PDFExtractor():
+    def __init__(self):
+
 
 # Take in pikepdf Pdf object, return extracted text
 def extract_text_from_pdf_page(page):
@@ -27,6 +30,7 @@ def extract_text_from_pdf_page(page):
     return text
 
 # # TODO: combine w/ extract_doc_type_and_total_target_amt to return doc_type_num, total_target_amt, and doc_type; have all three as instance variables; then `self.doc_type_num` where applicable
+
 # def extract_info_from_text():
 #     # Extract regex pattern (EFT, CCM, CMB, RTV, CBK)
 #     doc_type_num_matches = re.findall()

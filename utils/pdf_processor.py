@@ -120,6 +120,7 @@ class PdfProcessor:
         return self.page_text
 
     # @dev: replaces `extract_info_from_text`
+    # TODO: move to extraction_handler.py as instance method
     def extract_doc_type_and_total_target_amt(self, pattern, cur_page_text):
 
         if re.search(pattern, cur_page_text):
