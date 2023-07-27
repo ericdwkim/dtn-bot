@@ -7,7 +7,8 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
-from utils.extraction_handler import extract_text_from_pdf_page
+from extraction_handler import PDFExtractor
+# from utils.extraction_handler import extract_text_from_pdf_page
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
 from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
@@ -25,7 +26,7 @@ class PdfProcessor:
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.company_names = self.get_company_names()
-        self.page_text = self.get_page_text()
+        self.extractor = PDFExtractor()
         self.company_name = self.get_company_name() # TODO: fix this before able to get company_id
         # self.pages = []
         self.company_id = self.get_company_id()
@@ -83,11 +84,11 @@ class PdfProcessor:
 
     def get_company_name(self):
         for company_name in self.company_names:
-            print(f'\n########################################\n{self.page_text}\n########################################\n')
-            if company_name in self.page_text:
+            print(f'\n########################################\n{self.cur_page_text}\n########################################\n')
+            if company_name in self.cur_page_text:
                 self.company_name = company_name
                 return self.company_name
-        # Return None if no company name is found in the page_text
+        # Return None if no company name is found in the cur_page_text
         return None
 
     def get_company_id(self):
@@ -103,13 +104,13 @@ class PdfProcessor:
     def get_page_text(self):
         while self.page_num < len(self.pdf_data.pages):
             print(f'Processing page number: {self.page_num + 1}')
-            self.page_text = extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
-            # print(f'\n********************************\n{self.page_text}\n********************************\n')
+            self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
+            # print(f'\n********************************\n{self.cur_page_text}\n********************************\n')
 
             for company_name in self.company_names:
                 for pattern in doc_type_patterns:
-                    if re.search(pattern, self.page_text, re.IGNORECASE):
-                        if company_name in self.page_text and 'END MSG' not in self.page_text:
+                    if re.search(pattern, self.cur_page_text, re.IGNORECASE):
+                        if company_name in self.cur_page_text and 'END MSG' not in self.cur_page_text:
                             self.process_multi_page()
 
 
@@ -117,28 +118,9 @@ class PdfProcessor:
             self.page_num += 1
             if self.page_num >= len(self.pdf_data.pages):
                 break
-        return self.page_text
+        return self.cur_page_text
 
-    # @dev: replaces `extract_info_from_text`
-    # TODO: move to extraction_handler.py as instance method
-    def extract_doc_type_and_total_target_amt(self, pattern, cur_page_text):
 
-        if re.search(pattern, cur_page_text):
-            self.doc_type = pattern.split('-')[0]
-
-        if self.doc_type is None:
-            print(f'Could not find document type using pattern {pattern} in current text: {cur_page_text}')
-            return None, None
-
-        total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', cur_page_text)
-
-        print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
-        if total_amount_matches:
-            self.total_target_amt = total_amount_matches[-1]
-        else:
-            self.total_target_amt = None
-
-        return self.doc_type, self.total_target_amt
 
     def rename_and_delete_pdf(self):
         file_deleted = False

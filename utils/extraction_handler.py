@@ -29,9 +29,7 @@ class PDFExtractor():
 
         return cur_page_text
 
-#  TODO: combine w/ extract_doc_type_and_total_target_amt to return doc_type_num, total_target_amt, and doc_type; have all three as instance variables; then `self.doc_type_num` where applicable
     # @dev: replaces `extract_info_from_text`
-
     def extract_doc_type_and_total_target_amt(self, pattern, cur_page_text):
 
         if re.search(pattern, cur_page_text):
