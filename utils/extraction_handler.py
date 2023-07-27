@@ -30,7 +30,6 @@ class PDFExtractor():
         with pdfplumber.open(pdf_stream) as pdf:
             pdf_page = pdf.pages[0]
             cur_page_text = pdf_page.extract_text()
-        print(f'cur_page_text: {cur_page_text}')
         return cur_page_text
 
     def extract_doc_type_and_total_target_amt(self, pattern, cur_page_text):

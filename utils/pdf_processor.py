@@ -25,7 +25,7 @@ class PdfProcessor:
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.extractor = PDFExtractor()
-        self.cur_page_text = self.get_page_text()
+        # self.cur_page_text = self.get_page_text()
         # self.pages = []
         # self.company_id = self.get_company_id()
         # self.doc_type, self.total_target_amt = (None, None)
@@ -116,25 +116,17 @@ class PdfProcessor:
 
     def get_page_text(self):
         while self.page_num < len(self.pdf_data.pages):
-            print(f'Processing page number: {self.page_num}')
+            print(f'Processing page number: {self.page_num + 1}')
             self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
             self.company_name = self.get_company_name(self.cur_page_text)
-            print(f'self.company_name: {self.company_name}\ntype: {type(self.company_name)}')
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
 
-            print(f'----------------- DATA TYPES -----------------\n')
-            print(f'self.company_name: {type(self.company_name)}')
-            print(f'company_name: {type(self.company_name)}')
-            print(f'self.cur_page_text: {type(self.cur_page_text)}')
-            print(f'self.doc_type_pattern: {type(self.doc_type_pattern)}')
-            print(f'----------------- DATA TYPES -----------------\n')
-
+        #
             if (self.company_name in self.cur_page_text) and (re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE)) and ('END MSG' not in self.cur_page_text):
                 self.process_multi_page()
+            else:
+                self.page_num += 1
 
-            # print(f'Processing page number B: {self.page_num}')
-            self.page_num += 1
-            # print(f'Processing page number C: {self.page_num}')
             if self.page_num >= len(self.pdf_data.pages):
                 break
         return self.cur_page_text
@@ -233,33 +225,23 @@ class PdfProcessor:
         return new_file_name
 
     def process_multi_page(self):
-        # self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
-        print(f'Processing multi page number: {self.page_num}')
         page_objs = []
         page_text_strings = []
         while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
             page_objs.append(self.pdf_data.pages[self.page_num])
             self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
             page_text_strings.append(self.cur_page_text)
-            # print(f'!!!!!!!!!!!!!!!!!!! {page_text_strings} !!!!!!!!!!!!!!!!!!!')
-
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
-
-            # print(f'Processing page multi B: {self.page_num}')
             self.page_num += 1
-            # print(f'Processing page multi C: {self.page_num}')
             if self.page_num >= len(self.pdf_data.pages):
                 break
-
         self.cur_page_text = "".join(page_text_strings)
-        # print(f'$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ : {self.cur_page_text} $$$$$$$$$$$$$$$$$$$$$$$')
         self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-
-        print(f'self.doc_type: {self.doc_type}\nself.tot_tar_amt: {self.total_target_amt}')
-
-        new_file_name = self.get_new_file_name()
-        output_path = self.assign_file_path_mappings()
-        print(f'----------------------------------------output_path: {output_path}\n ------------------------ new_file_name: {new_file_name}')
+        # print(f'self.doc_type: {self.doc_type}\nself.tot_tar_amt: {self.total_target_amt}')
+        #
+        # new_file_name = self.get_new_file_name()
+        # output_path = self.assign_file_path_mappings()
+        # print(f'----------------------------------------output_path: {output_path}\n ------------------------ new_file_name: {new_file_name}')
 
 
         # save the split up multipage pdfs into their own pdfs
