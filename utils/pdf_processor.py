@@ -25,19 +25,17 @@ class PdfProcessor:
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.extractor = PDFExtractor()
-        # self.cur_page_text = self.get_page_text()
         # self.pages = []
         # self.company_id = self.get_company_id()
         # self.doc_type, self.total_target_amt = (None, None)
         # self.file_path_mappings = None
         # self.assign_file_path_mappings()
-        # self.new_file_name = self.get_new_file_name()
 
     # ---------------------------------- Instance attributes ----------------------------------
     # todo: wip; testing to see if better as instance method to reuse for full path messages.pdf in `rename_and_move` refactor update from prod changes
     # @classmethod
     # def get_pdf_file_path(cls):
-    #     files = Path(cls.download_dir).glob('*messages*.pdf')
+    #     files = Path(cls.download_dir).glob('*messages.pdf')
     #     target_file = max(files, key=lambda x: x.stat().st_mtime)
     #     return str(target_file)
 
@@ -51,7 +49,7 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def assign_file_path_mappings(self):
-        print('assign_file_path_mappings was called')
+        print('assign_file_path_mappings was called') # TODO
     # def assign_file_path_mappings(self):
     #     print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
     #     print(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
@@ -166,7 +164,9 @@ class PdfProcessor:
 
     def rename_and_move_refactor(self):
         for file in os.listdir(self.download_dir): # loop through Downloads dir
-            source_file = os.path.join(self.download_dir, 'messages.pdf') #construct full path to downloaded `messages.pdf` file
+            source_file = self.get_pdf_file_path()
+            print(f'************ {source_file}')
+            # source_file = os.path.join(self.download_dir, 'messages.pdf') #construct full path to downloaded `messages.pdf` file
     # Invoices
     def rename_and_move(self):
         """Helper function to rename and move a PDF file"""
@@ -238,10 +238,10 @@ class PdfProcessor:
         self.cur_page_text = "".join(page_text_strings)
         self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
         # print(f'self.doc_type: {self.doc_type}\nself.tot_tar_amt: {self.total_target_amt}')
-        #
-        # new_file_name = self.get_new_file_name()
-        # output_path = self.assign_file_path_mappings()
-        # print(f'----------------------------------------output_path: {output_path}\n ------------------------ new_file_name: {new_file_name}')
+
+        self.new_file_name = self.get_new_file_name()
+        output_path = self.assign_file_path_mappings()
+        print(f'----------------------------------------output_path: {output_path}\n ------------------------ new_file_name: {self.new_file_name}')
 
 
         # save the split up multipage pdfs into their own pdfs

@@ -26,10 +26,13 @@ from pdf_processor import PdfProcessor
 
 processor = PdfProcessor()
 
-cur_page_txt = processor.get_page_text()
+processor.rename_and_move_refactor()
+
+# cur_page_txt = processor.get_page_text()
 
 # tar_file = processor.get_pdf_file_path()
 # print(tar_file)
+# /Users/ekim/Downloads/messages.pdf
 
 # for company_name in PdfProcessor.get_company_names():
 #     print(company_name)
