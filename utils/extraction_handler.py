@@ -28,9 +28,9 @@ class PDFExtractor():
         # Use pdfplumber to read the page from the buffer
         pdf_stream.seek(0)
         with pdfplumber.open(pdf_stream) as pdf:
-            page = pdf.pages[0]
-            cur_page_text = page.extract_text()
-
+            pdf_page = pdf.pages[0]
+            cur_page_text = pdf_page.extract_text()
+        print(f'cur_page_text: {cur_page_text}')
         return cur_page_text
 
     def extract_doc_type_and_total_target_amt(self, pattern, cur_page_text):
@@ -50,7 +50,7 @@ class PDFExtractor():
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', cur_page_text)
 
-        print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
+        # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
         if total_amount_matches:
             self.total_target_amt = total_amount_matches[-1]
         else:

@@ -26,8 +26,10 @@ from pdf_processor import PdfProcessor
 
 processor = PdfProcessor()
 
-tar_file = processor.get_pdf_file_path()
-print(tar_file)
+cur_page_txt = processor.get_page_text()
+
+# tar_file = processor.get_pdf_file_path()
+# print(tar_file)
 
 # for company_name in PdfProcessor.get_company_names():
 #     print(company_name)

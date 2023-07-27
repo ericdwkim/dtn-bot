@@ -25,13 +25,12 @@ class PdfProcessor:
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.extractor = PDFExtractor()
-        self.company_name = None
         self.cur_page_text = self.get_page_text()
         # self.pages = []
-        self.company_id = self.get_company_id()
-        self.doc_type, self.total_target_amt = (None, None)
-        self.file_path_mappings = None
-        self.assign_file_path_mappings()
+        # self.company_id = self.get_company_id()
+        # self.doc_type, self.total_target_amt = (None, None)
+        # self.file_path_mappings = None
+        # self.assign_file_path_mappings()
         # self.new_file_name = self.get_new_file_name()
 
     # ---------------------------------- Instance attributes ----------------------------------
@@ -43,7 +42,7 @@ class PdfProcessor:
     #     return str(target_file)
 
     def get_pdf_file_path(self):
-        files = Path(self.download_dir).glob('*messages*.pdf')
+        files = Path(self.download_dir).glob('*messages.pdf')
         target_file = max(files, key=lambda x: x.stat().st_mtime)
         return str(target_file)
 
@@ -52,30 +51,32 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def assign_file_path_mappings(self):
-        print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
-        print(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
-
-        self.file_path_mappings = {
-            self.doc_type: {
-                self.company_id: os.path.join
-                    (
-                    self.root_dir,
-                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
-                    company_id_to_company_subdir_map[self.company_id]
-                )
-            }
-        }
-
-        # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
-        if self.doc_type is None:
-            print("Error: Document type is None. File path mappings could not be assigned.")
-            return None
-
-        elif self.company_id is None:
-            print("Error: Company ID is None. File path mappings could not be assigned.")
-            return None
-        else:
-            return self.file_path_mappings
+        print('assign_file_path_mappings was called')
+    # def assign_file_path_mappings(self):
+    #     print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
+    #     print(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
+    #
+    #     self.file_path_mappings = {
+    #         self.doc_type: {
+    #             self.company_id: os.path.join
+    #                 (
+    #                 self.root_dir,
+    #                 doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
+    #                 company_id_to_company_subdir_map[self.company_id]
+    #             )
+    #         }
+    #     }
+    #
+    #     # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
+    #     if self.doc_type is None:
+    #         print("Error: Document type is None. File path mappings could not be assigned.")
+    #         return None
+    #
+    #     elif self.company_id is None:
+    #         print("Error: Company ID is None. File path mappings could not be assigned.")
+    #         return None
+    #     else:
+    #         return self.file_path_mappings
 
     @staticmethod
     def get_company_names():
@@ -84,6 +85,7 @@ class PdfProcessor:
             # Slice the string to remove the company id and brackets
             company_name = company_dir.split('[')[0].strip()
             company_names.append(company_name)
+        # print(f'******** {company_names} *******')
         return company_names
 
     def get_company_name(self, cur_page_text):
@@ -92,8 +94,10 @@ class PdfProcessor:
         :param cur_page_text:
         :return:
         """
+        # print(
+            # f'\n########################################\n{self.cur_page_text}\n########################################\n')
         for company_name in PdfProcessor.get_company_names():
-            # print(f'\n########################################\n{self.cur_page_text}\n########################################\n')
+            # print(f'Checking company_name: {company_name}')
             if company_name in cur_page_text:
                 return company_name
         # Return None if no company name is found in the cur_page_text
@@ -112,15 +116,25 @@ class PdfProcessor:
 
     def get_page_text(self):
         while self.page_num < len(self.pdf_data.pages):
-            print(f'Processing page number: {self.page_num + 1}')
+            print(f'Processing page number: {self.page_num}')
             self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
             self.company_name = self.get_company_name(self.cur_page_text)
+            print(f'self.company_name: {self.company_name}\ntype: {type(self.company_name)}')
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
 
-            if self.company_name in self.cur_page_text and re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and 'END MSG' not in self.cur_page_text:
+            print(f'----------------- DATA TYPES -----------------\n')
+            print(f'self.company_name: {type(self.company_name)}')
+            print(f'company_name: {type(self.company_name)}')
+            print(f'self.cur_page_text: {type(self.cur_page_text)}')
+            print(f'self.doc_type_pattern: {type(self.doc_type_pattern)}')
+            print(f'----------------- DATA TYPES -----------------\n')
+
+            if (self.company_name in self.cur_page_text) and (re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE)) and ('END MSG' not in self.cur_page_text):
                 self.process_multi_page()
 
+            # print(f'Processing page number B: {self.page_num}')
             self.page_num += 1
+            # print(f'Processing page number C: {self.page_num}')
             if self.page_num >= len(self.pdf_data.pages):
                 break
         return self.cur_page_text
@@ -219,28 +233,33 @@ class PdfProcessor:
         return new_file_name
 
     def process_multi_page(self):
-        cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
-        for company_name in PdfProcessor.get_company_names():
-            if company_name in cur_page_text and 'END MSG' not in cur_page_text:
-                for pattern in doc_type_patterns:
-                    if re.search(pattern, cur_page_text, re.IGNORECASE):
-                        page_objs = []
-                        page_text_strings = []
-                        while 'END MSG' not in cur_page_text and self.page_num < len(self.pdf_data.pages):
-                            page_objs.append(self.pdf_data.pages[self.page_num])
-                            cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
-                            page_text_strings.append(cur_page_text)
+        # self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
+        print(f'Processing multi page number: {self.page_num}')
+        page_objs = []
+        page_text_strings = []
+        while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
+            page_objs.append(self.pdf_data.pages[self.page_num])
+            self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
+            page_text_strings.append(self.cur_page_text)
+            # print(f'!!!!!!!!!!!!!!!!!!! {page_text_strings} !!!!!!!!!!!!!!!!!!!')
 
-                            self.page_num += 1
-                            if self.page_num >= len(self.pdf_data.pages):
-                                break
+            self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
 
+            # print(f'Processing page multi B: {self.page_num}')
+            self.page_num += 1
+            # print(f'Processing page multi C: {self.page_num}')
+            if self.page_num >= len(self.pdf_data.pages):
+                break
 
-                        cur_page_text = "".join(page_text_strings)
-                        self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(pattern, cur_page_text)
-                        new_file_name = self.get_new_file_name()
-                        output_path = self.assign_file_path_mappings()
-                        print(f'----------------------------------------output_path: {output_path}\n ------------------------ new_file_name: {new_file_name}')
+        self.cur_page_text = "".join(page_text_strings)
+        # print(f'$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ : {self.cur_page_text} $$$$$$$$$$$$$$$$$$$$$$$')
+        self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
+
+        print(f'self.doc_type: {self.doc_type}\nself.tot_tar_amt: {self.total_target_amt}')
+
+        new_file_name = self.get_new_file_name()
+        output_path = self.assign_file_path_mappings()
+        print(f'----------------------------------------output_path: {output_path}\n ------------------------ new_file_name: {new_file_name}')
 
 
         # save the split up multipage pdfs into their own pdfs
@@ -248,7 +267,7 @@ class PdfProcessor:
         # if not multi_page_pdf_created_and_saved:
         #     print(f'Could not save multi page pdf {multi_page_pdf_created_and_saved}')
 
-    # def process_single_page(self):
+    # def process_single_page(self):2
     #     self.pages = [self.pdf_data.pages[self.page_num]]
     #     self.doc_type_num, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
         # single_page_pdf_created_and_saved = self.create_and_save_pdf(self.pages)
