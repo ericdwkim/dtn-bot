@@ -8,7 +8,6 @@ from datetime import datetime
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
 from extraction_handler import PDFExtractor
-# from utils.extraction_handler import extract_text_from_pdf_page
 from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
 from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
@@ -25,7 +24,6 @@ class PdfProcessor:
         self.pdf_file_path = self.get_pdf_file_path()
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path)
-        self.company_names = self.get_company_names()
         self.extractor = PDFExtractor()
         self.company_name = self.get_company_name() # TODO: fix this before able to get company_id
         # self.pages = []
@@ -62,7 +60,6 @@ class PdfProcessor:
             }
         }
 
-        # print(f'-------------------------- {self.company_names}')
         # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
         if self.doc_type is None:
             print("Error: Document type is None. File path mappings could not be assigned.")
@@ -74,7 +71,8 @@ class PdfProcessor:
         else:
             return self.file_path_mappings
 
-    def get_company_names(self):
+    @staticmethod
+    def get_company_names():
         company_names = []
         for company_dir in company_id_to_company_subdir_map.values():
             # Slice the string to remove the company id and brackets
@@ -83,7 +81,7 @@ class PdfProcessor:
         return company_names
 
     def get_company_name(self):
-        for company_name in self.company_names:
+        for company_name in PdfProcessor.get_company_names():
             print(f'\n########################################\n{self.cur_page_text}\n########################################\n')
             if company_name in self.cur_page_text:
                 self.company_name = company_name
@@ -107,7 +105,7 @@ class PdfProcessor:
             self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
             # print(f'\n********************************\n{self.cur_page_text}\n********************************\n')
 
-            for company_name in self.company_names:
+            for company_name in PdfProcessor.get_company_names():
                 for pattern in doc_type_patterns:
                     if re.search(pattern, self.cur_page_text, re.IGNORECASE):
                         if company_name in self.cur_page_text and 'END MSG' not in self.cur_page_text:
@@ -127,7 +125,7 @@ class PdfProcessor:
         if os.path.exists(self.file_path):
             with pikepdf.open(self.file_path) as pdf:
                 if len(pdf.pages) > 0:
-                    first_page = extract_text_from_pdf_page(pdf.pages[0])
+                    first_page = self.extractor.extract_text_from_pdf_page(pdf.pages[0])
 
                     if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
                         if re.search(r'EFT-\d+', first_page):
@@ -192,8 +190,8 @@ class PdfProcessor:
         return new_file_name
 
     def process_multi_page(self):
-        cur_page_text = extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
-        for company_name in self.company_names:
+        cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
+        for company_name in PdfProcessor.get_company_names():
             if company_name in cur_page_text and 'END MSG' not in cur_page_text:
                 for pattern in doc_type_patterns:
                     if re.search(pattern, cur_page_text, re.IGNORECASE):
@@ -201,7 +199,7 @@ class PdfProcessor:
                         page_text_strings = []
                         while 'END MSG' not in cur_page_text and self.page_num < len(self.pdf_data.pages):
                             page_objs.append(self.pdf_data.pages[self.page_num])
-                            cur_page_text = extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
+                            cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
                             page_text_strings.append(cur_page_text)
 
                             self.page_num += 1
@@ -210,7 +208,7 @@ class PdfProcessor:
 
 
                         cur_page_text = "".join(page_text_strings)
-                        self.doc_type, self.total_target_amt = self.extract_doc_type_and_total_target_amt(pattern, cur_page_text)
+                        self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(pattern, cur_page_text)
                         new_file_name = self.get_new_file_name()
                         output_path = self.assign_file_path_mappings()
                         print(f'----------------------------------------output_path: {output_path}\n ------------------------ new_file_name: {new_file_name}')
@@ -237,26 +235,26 @@ class PdfProcessor:
 
         # print('processing single page function called!')
 
-    def process_pdfs(self, post_processing=False):
-
-        output_path = self.file_path_mappings[self.doc_type][self.company_id]
-        print(f'output_path: {output_path}')
-
-        try:
-
-            # Conditional post processing only for EXXON CCMs and LRDs
-            if post_processing is True:
-                # print(f'Post processing for EXXON CCMs & LRDs')
-                merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map,
-                                         company_id_to_company_subdir_map)
-
-
-
-            else:
-                # Dynamic filesystem mgmt for files that do not need post processing
-                end_of_month_operations(output_path, self.new_file_name)
-                return True
-
-        except Exception as e:
-            print(f'An error occurred: {str(e)}')
-            return False
+    # def process_pdfs(self, post_processing=False):
+    #
+    #     output_path = self.file_path_mappings[self.doc_type][self.company_id]
+    #     print(f'output_path: {output_path}')
+    #
+    #     try:
+    #
+    #         # Conditional post processing only for EXXON CCMs and LRDs
+    #         if post_processing is True:
+    #             # print(f'Post processing for EXXON CCMs & LRDs')
+    #             merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map,
+    #                                      company_id_to_company_subdir_map)
+    #
+    #
+    #
+    #         else:
+    #             # Dynamic filesystem mgmt for files that do not need post processing
+    #             end_of_month_operations(output_path, self.new_file_name)
+    #             return True
+    #
+    #     except Exception as e:
+    #         print(f'An error occurred: {str(e)}')
+    #         return False
