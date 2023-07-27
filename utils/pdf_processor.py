@@ -14,7 +14,7 @@ from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
-    today = datetime.date.today().strftime('%m-%d-%y')
+    today = datetime.today().strftime('%m-%d-%y')
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
     download_dir = str(Path.home() / "Downloads")
     # ----------------------------------  Class Attributes ----------------------------------
