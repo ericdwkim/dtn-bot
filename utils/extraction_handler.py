@@ -11,8 +11,12 @@ class PDFExtractor():
     def __init__(self):
         self.doc_type, self.total_target_amt = (None, None)
 
-    # Take in pikepdf Pdf object, return extracted text from current instance pdf page
     def extract_text_from_pdf_page(self, pdf_page):
+        """
+        Take in pikepdf Pdf page object, return extracted text from current instance pdf page
+        :param pdf_page:
+        :return:
+        """
         # Create a BytesIO buffer
         pdf_stream = io.BytesIO()
 
@@ -29,8 +33,13 @@ class PDFExtractor():
 
         return cur_page_text
 
-    # @dev: replaces `extract_info_from_text`
     def extract_doc_type_and_total_target_amt(self, pattern, cur_page_text):
+        """
+        replaces deprecated `extract_info_from_text`
+        :param pattern:
+        :param cur_page_text:
+        :return:
+        """
 
         if re.search(pattern, cur_page_text):
             self.doc_type = pattern.split('-')[0]
