@@ -35,10 +35,15 @@ class PdfProcessor:
         # self.new_file_name = self.get_new_file_name()
 
     # ---------------------------------- Instance attributes ----------------------------------
+    # todo: wip; testing to see if better as instance method to reuse for full path messages.pdf in `rename_and_move` refactor update from prod changes
+    # @classmethod
+    # def get_pdf_file_path(cls):
+    #     files = Path(cls.download_dir).glob('*messages*.pdf')
+    #     target_file = max(files, key=lambda x: x.stat().st_mtime)
+    #     return str(target_file)
 
-    @classmethod
-    def get_pdf_file_path(cls):
-        files = Path(cls.download_dir).glob('*messages*.pdf')
+    def get_pdf_file_path(self):
+        files = Path(self.download_dir).glob('*messages*.pdf')
         target_file = max(files, key=lambda x: x.stat().st_mtime)
         return str(target_file)
 
@@ -149,6 +154,13 @@ class PdfProcessor:
 
                 return file_deleted
 
+    # todo: wip
+    # Invoices PDF rename helper
+    # def rename_invoices_pdf(self):
+
+    def rename_and_move_refactor(self):
+        for file in os.listdir(self.download_dir): # loop through Downloads dir
+            source_file = os.path.join(self.download_dir, 'messages.pdf') #construct full path to downloaded `messages.pdf` file
     # Invoices
     def rename_and_move(self):
         """Helper function to rename and move a PDF file"""
@@ -161,6 +173,23 @@ class PdfProcessor:
                 shutil.move(source_file, destination_file)
                 break
 
+    # TODO: turn into a regular helper function to be used within `assign_file_path_mappings` such that `self.company_id = self.assign_file_path_mappings()
+    # def get_company_id(self):
+    #     company_subdir_to_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
+    #     print(f'-------------- company_subdir_to_id_map----------------\n {company_subdir_to_id_map}\n----------------')
+    #     self.company_name = self.company_name.lower()
+    #     for company_dir, company_id in company_subdir_to_id_map.items():
+    #         if self.company_name in company_dir.lower():
+    #             print(f'For company: {self.company_name}, we got company id:  {company_id}')
+    #             self.company_id = company_id
+    #         else:
+    #             return None
+    #
+    # def get_company_id_fixed(self, company_name):
+    #     company_subdir_to_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
+    #
+
+    # TODO:
     # def create_and_save_pdf(self, pages):
     #     # print(f'\n##########self.pages##########:\n {self.pages}\n##########self.pages##########:\n')
     #     # print(f'\n##########self.pages##########:\n {type(self.pages)}\n##########self.pages##########:\n')

@@ -24,7 +24,10 @@ from pdf_processor import PdfProcessor
 #
 # print(f'doc_type: {doc_type}, tot_tar_amt: {tot_tar_amt}')
 
-# processor = PdfProcessor()
+processor = PdfProcessor()
 
-for company_name in PdfProcessor.get_company_names():
-    print(company_name)
+tar_file = processor.get_pdf_file_path()
+print(tar_file)
+
+# for company_name in PdfProcessor.get_company_names():
+#     print(company_name)
