@@ -25,7 +25,8 @@ class PdfProcessor:
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         self.extractor = PDFExtractor()
-        self.company_name = self.get_company_name() # TODO: fix this before able to get company_id
+        self.company_name = None
+        self.cur_page_text = self.get_page_text()
         # self.pages = []
         self.company_id = self.get_company_id()
         self.doc_type, self.total_target_amt = (None, None)
@@ -80,45 +81,44 @@ class PdfProcessor:
             company_names.append(company_name)
         return company_names
 
-    def get_company_name(self):
+    def get_company_name(self, cur_page_text):
+        """
+        Helper func for getting company_name instance
+        :param cur_page_text:
+        :return:
+        """
         for company_name in PdfProcessor.get_company_names():
-            print(f'\n########################################\n{self.cur_page_text}\n########################################\n')
-            if company_name in self.cur_page_text:
-                self.company_name = company_name
-                return self.company_name
+            # print(f'\n########################################\n{self.cur_page_text}\n########################################\n')
+            if company_name in cur_page_text:
+                return company_name
         # Return None if no company name is found in the cur_page_text
         return None
 
-    def get_company_id(self):
-        company_subdir_to_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
-        print(company_subdir_to_id_map)
-        self.company_name = self.company_name.lower()
-        for company_dir, company_id in company_subdir_to_id_map.items():
-            if self.company_name in company_dir.lower():
-                print(f'For company: {self.company_name}, we got company id:  {company_id}')
-                self.company_id = company_id
-            else:
-                return None
+    def get_doc_type(self, cur_page_text):
+        """
+        Helper func for getting doc_type_pattern instance
+        :param cur_page_text:
+        :return:
+        """
+        for doc_type_pattern in doc_type_patterns:
+            if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
+                return doc_type_pattern
+        return None
+
     def get_page_text(self):
         while self.page_num < len(self.pdf_data.pages):
             print(f'Processing page number: {self.page_num + 1}')
             self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
-            # print(f'\n********************************\n{self.cur_page_text}\n********************************\n')
+            self.company_name = self.get_company_name(self.cur_page_text)
+            self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
 
-            for company_name in PdfProcessor.get_company_names():
-                for pattern in doc_type_patterns:
-                    if re.search(pattern, self.cur_page_text, re.IGNORECASE):
-                        if company_name in self.cur_page_text and 'END MSG' not in self.cur_page_text:
-                            self.process_multi_page()
-
-
+            if self.company_name in self.cur_page_text and re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and 'END MSG' not in self.cur_page_text:
+                self.process_multi_page()
 
             self.page_num += 1
             if self.page_num >= len(self.pdf_data.pages):
                 break
         return self.cur_page_text
-
-
 
     def rename_and_delete_pdf(self):
         file_deleted = False
