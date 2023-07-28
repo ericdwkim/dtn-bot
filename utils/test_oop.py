@@ -26,7 +26,7 @@ from pdf_processor import PdfProcessor
 
 processor = PdfProcessor()
 
-processor.rename_and_move_refactor()
+processor.rename_invoices_pdf()
 
 # cur_page_txt = processor.get_page_text()
 

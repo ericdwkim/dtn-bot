@@ -1,7 +1,7 @@
 import os
 import re
+import time
 from glob import glob
-from time import sleep
 import pikepdf
 import shutil
 from datetime import datetime
@@ -23,7 +23,7 @@ class PdfProcessor:
     def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
         self.page_num = 0
-        self.pdf_data = self.get_pdf(self.pdf_file_path)
+        self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
         self.extractor = PDFExtractor()
         # self.pages = []
         # self.company_id = self.get_company_id()
@@ -32,17 +32,13 @@ class PdfProcessor:
         # self.assign_file_path_mappings()
 
     # ---------------------------------- Instance attributes ----------------------------------
-    # todo: wip; testing to see if better as instance method to reuse for full path messages.pdf in `rename_and_move` refactor update from prod changes
-    # @classmethod
-    # def get_pdf_file_path(cls):
-    #     files = Path(cls.download_dir).glob('*messages.pdf')
-    #     target_file = max(files, key=lambda x: x.stat().st_mtime)
-    #     return str(target_file)
-
     def get_pdf_file_path(self):
-        files = Path(self.download_dir).glob('*messages.pdf')
-        target_file = max(files, key=lambda x: x.stat().st_mtime)
-        return str(target_file)
+        try:
+            files = Path(self.download_dir).glob('*messages.pdf')
+            tar_file = max(files, key=lambda x: x.stat().st_mtime)
+            return str(tar_file)
+        except ValueError as e:
+            print(f'An error occurred: {e}. Check if `messages.pdf` exists?')
 
     def get_pdf(self, filepath):
         if os.path.exists(filepath):
@@ -158,15 +154,42 @@ class PdfProcessor:
 
                 return file_deleted
 
-    # todo: wip
-    # Invoices PDF rename helper
-    # def rename_invoices_pdf(self):
 
-    def rename_and_move_refactor(self):
-        for file in os.listdir(self.download_dir): # loop through Downloads dir
-            source_file = self.get_pdf_file_path()
-            print(f'************ {source_file}')
-            # source_file = os.path.join(self.download_dir, 'messages.pdf') #construct full path to downloaded `messages.pdf` file
+    # Invoices PDF rename helper
+    def rename_invoices_pdf(self):
+
+        # Pass `/Users/ekim/Downloads/messages.pdf` to get PikePDf object
+        pdf = self.get_pdf(self.pdf_file_path)
+
+
+        self.new_file_name = self.today + '.pdf'
+        # given the original `messages.pdf` full filepath, return new full filepath
+        file_dir = os.path.dirname(self.pdf_file_path)
+        new_file_path = os.path.join(file_dir, self.new_file_name)
+        print(f'Renaming original Invoices PDF file "{self.pdf_file_path}" to {new_file_path}')
+
+        pdf.close() # Close PDF
+        os.rename(self.pdf_file_path, new_file_path)
+        # Check file got saved correctly
+        if os.path.exists(new_file_path):
+            print(f'File renamed successfully.')
+            time.sleep(3)
+            return True
+        else:
+            print(f'Could not rename Invoices PDF')
+            return False
+
+
+
+
+
+
+
+
+
+
+    # def rename_and_move_refactor(self):
+
     # Invoices
     def rename_and_move(self):
         """Helper function to rename and move a PDF file"""
