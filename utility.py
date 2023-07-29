@@ -11,7 +11,8 @@ def setup_driver():
     # options.add_argument('--start-maximized')
     # @dev: 7/28/23 - Selenium Manager (selenium==4.10.0) includes ChromeDriver upgrade. Deprecated ChromeDriverManager due to v114 cap
     # https://stackoverflow.com/questions/76724939/there-is-no-such-driver-by-url-https-chromedriver-storage-googleapis-com-lates
-    driver = webdriver.Chrome(service=Service(executable_path='./chromedriver.exe'), options=options)
+    # https://github.com/titusfortner/webdrivers/issues/247 ; No need to require web
+    driver = webdriver.Chrome(service=Service(), options=options)
     return driver
 
 def teardown_driver(driver):
