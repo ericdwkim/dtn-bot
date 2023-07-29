@@ -1,16 +1,24 @@
 from selenium import webdriver
-import undetected_chromedriver as uc
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 
 def setup_driver():
+    """
+    Sets up driver instance with preferred options.
+    :return: `driver` of WebDriver class
+    """
     options = webdriver.ChromeOptions()
     options.add_argument('--headless=new')
     # options.add_argument('--start-maximized')
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-
+    # @dev: 7/28/23 - Selenium Manager (selenium==4.10.0) includes ChromeDriver upgrade. Deprecated ChromeDriverManager due to v114 cap
+    # https://stackoverflow.com/questions/76724939/there-is-no-such-driver-by-url-https-chromedriver-storage-googleapis-com-lates
+    # https://github.com/titusfortner/webdrivers/issues/247 ; No need to require web
+    driver = webdriver.Chrome(service=Service(), options=options)
     return driver
 
 def teardown_driver(driver):
+    """
+    Breaks down and closes driver instance
+    :param driver:
+    :return: None
+    """
     driver.quit()
-    # Other cleanup code here...
