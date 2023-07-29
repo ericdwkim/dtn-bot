@@ -3,4 +3,5 @@
 __pycache__/
 dev.TODOs
 /dev/
-.idea/*
+.idea/workspace.xml
+/.idea/dtn-bot.iml
