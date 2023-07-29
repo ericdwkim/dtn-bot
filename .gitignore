@@ -5,3 +5,4 @@ dev.TODOs
 *.idea/*
 *.xml
 .idea/inspectionProfiles
+/.idea/workspace.xml
