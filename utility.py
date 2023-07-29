@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
-# test
 def setup_driver():
     """
     Sets up driver instance with preferred options.
