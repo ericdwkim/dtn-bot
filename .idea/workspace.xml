@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0354abe7-f468-4e63-963a-96f4582b0fed" name="Changes" comment="ModuleRootManager config">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="0354abe7-f468-4e63-963a-96f4582b0fed" name="Changes" comment="ModuleRootManager config" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -80,36 +78,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "ShowUsagesActions.previewPropertyKey": "true",
-    "TODO_SCOPE": "All Places",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "oop",
-    "last_opened_file_path": "/Users/ekim/workspace/personal/dtn-bot/scripts",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PythonContentEntriesConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
+    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;oop&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/ekim/workspace/personal/dtn-bot/scripts&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PythonContentEntriesConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "ChangesTree.GroupingKeys": [
-      "directory"
+  &quot;keyToStringList&quot;: {
+    &quot;ChangesTree.GroupingKeys&quot;: [
+      &quot;directory&quot;
     ],
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "TEXT",
-      "Python",
-      "Jupyter",
-      "JavaScript"
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;TEXT&quot;,
+      &quot;Python&quot;,
+      &quot;Jupyter&quot;,
+      &quot;JavaScript&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/scripts" />
@@ -307,7 +305,7 @@
       <workItem from="1690583333928" duration="1359000" />
       <workItem from="1690584739682" duration="415000" />
       <workItem from="1690590729373" duration="191000" />
-      <workItem from="1690591742122" duration="33000" />
+      <workItem from="1690591742122" duration="124000" />
     </task>
     <task id="LOCAL-00154" summary="Bumped wait_for_element timeout to 30 secs.">
       <created>1687449540082</created>
@@ -652,7 +650,7 @@
       <option name="project" value="LOCAL" />
       <updated>1687590631300</updated>
     </task>
-    <option name="localTasksCounter" value="544" />
+    <option name="localTasksCounter" value="545" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -680,7 +678,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Merge post_processing.py from prod." />
     <MESSAGE value="Merging pdf_processor.py imports from oop with prod branch." />
     <MESSAGE value="Update filesystem_manager.py from prod post_processing.py" />
     <MESSAGE value="Merge post_processing.py from prod. NOTE: deprecated `reegx_num` for `doc_type_num`." />
@@ -705,7 +702,8 @@
     <MESSAGE value="Updated requirements.txt to not use @ file for libs." />
     <MESSAGE value="workspace.xml for oop branch to initiate test_oop.py" />
     <MESSAGE value="Gitignore workspace.xml, merge requirements.txt, last workspace.xml commit." />
-    <option name="LAST_COMMIT_MESSAGE" value="Gitignore workspace.xml, merge requirements.txt, last workspace.xml commit." />
+    <MESSAGE value="ModuleRootManager config" />
+    <option name="LAST_COMMIT_MESSAGE" value="ModuleRootManager config" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/dtn_bot$scratch_1.coverage" NAME="scratch_1 Coverage Results" MODIFIED="1687902632910" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

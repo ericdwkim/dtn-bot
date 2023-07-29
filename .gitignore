@@ -2,7 +2,6 @@
 *.DS_Store
 __pycache__/
 dev.TODOs
-*.idea/*
 *.xml
 .idea/inspectionProfiles
-/.idea/workspace.xml
+.idea/*
