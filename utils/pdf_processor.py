@@ -221,15 +221,26 @@ class PdfProcessor:
         company_subdir_to_company_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
         print(f'-------------- company_subdir_to_company_id_map----------------\n {company_subdir_to_company_id_map}\n----------------')
         for company_dir, company_id in company_subdir_to_company_id_map.items():
+            print(f'Using {company_name} to fetch matching company_id: {company_id}')
+
+            cleaned_comp_dir = company_dir.split('[')[0].strip()
+
+            print(f'if "{company_name}" == "{cleaned_comp_dir}"')
+            print('-----------')
+
+
             # substring comparison matching with company_name instance to company_dir
-            if company_name in company_dir.lower():
-                print(f'Company Name: {company_name} has Company ID: {company_id}')
+
+
+
+
+            if company_name == company_dir.split('[')[0].strip():
+                print(f'Match found!\nCompany Name: {company_name} has Company ID: {company_id}')
                 # Turn local var to instance var for dynamic file path construction
                 self.company_id = company_id
                 return self.company_id
-            else:
-                print(f'Could not retrieve Company ID from Company Name: {company_name}.')
-                return None
+        print(f'Could not retrieve Company ID from Company Name: {company_name}.')
+        return None
 
 
 
