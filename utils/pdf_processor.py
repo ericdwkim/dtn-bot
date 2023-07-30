@@ -178,12 +178,12 @@ class PdfProcessor:
             print(f'Could not rename Invoices PDF')
             return False
 
-    def get_file_timestamps(self):
+    def get_file_timestamps(self, file_path):
         """
         Helper function to get creation and modification times of a file
         """
-        mod_time = os.path.getmtime(self.pdf_file_path)
-        cre_time = os.path.getctime(self.pdf_file_path)
+        mod_time = os.path.getmtime(file_path)
+        cre_time = os.path.getctime(file_path)
 
         # convert the time from seconds since the epoch to a datetime object
         mod_time = datetime.fromtimestamp(mod_time)
@@ -198,26 +198,30 @@ class PdfProcessor:
         if not renamed_file:
             return False
 
-        else:
-            # Get final output dir from file prefix
-            month_dir = calculate_directory_path('INV')
+        # Get final output dir from file prefix
+        month_dir = calculate_directory_path('INV')
 
-            # Construct
+        # Construct final output path
+        target_file_path = os.path.join(month_dir, self.new_file_name)
 
+        # Get timestamps for new Invoices file
+        mod_time_new, cre_time_new = self.get_file_timestamps(self.pdf_file_path)
 
+        # If conflicting filename exists in target directory, replace with newest
+        if os.path.isfile(target_file_path):
+            mod_time_old, cre_time_old = self.get_file_timestamps(target_file_path)
 
+            print(
+                f'File with name: "{new_file_name}" already exists at "{target_file_path}"\nLast modified (old): {mod_time_old} | Last modified (new): {mod_time_new}\nCreated (old): {cre_time_old} | Created (new): {cre_time_new}\nOverwriting duplicate file with latest modified/created...')
+            os.remove(target_file_path)
 
-
-    def rename_and_move(self):
-        """Helper function to rename and move a PDF file"""
-        for file in os.listdir(self.download_dir):
-            if file.endswith('.pdf') and "messages" in file:  # static string "messages" for now
-                source_file = os.path.join(self.download_dir, file)
-                target_dir = os.path.join(self.root_dir, self.doc_type_abbrv_to_doc_type_subdir_map[self.doc_type])
-                destination_file = os.path.join(target_dir, f'{self.today}.pdf')
-                print(f'Moving {destination_file} to {target_dir}')
-                shutil.move(source_file, destination_file)
-                break
+        try:
+            shutil.move(self.pdf_file_path, month_dir)
+            print(f'Moved latest Invoices pdf created on "{cre_time_new}" to "{month_dir}"')
+            return True  # File moved successfully
+        except Exception as e:
+            print(f'An error occurred while moving the file: {e}')
+            return False  # File could not be moved
 
     def get_company_id_fixed(self, company_name):
         company_subdir_to_company_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
