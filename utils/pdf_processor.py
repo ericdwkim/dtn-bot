@@ -67,7 +67,8 @@ class PdfProcessor:
             print("Error: Company ID is None. File path mappings could not be assigned.")
             return None
         else:
-            return self.file_path_mappings
+            # Return output path from nested value in nested mapping
+            return self.file_path_mappings[self.doc_type][self.company_id]
 
     @staticmethod
     def get_company_names():
@@ -219,21 +220,11 @@ class PdfProcessor:
 
     def get_company_id_fixed(self, company_name):
         company_subdir_to_company_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
-        print(f'-------------- company_subdir_to_company_id_map----------------\n {company_subdir_to_company_id_map}\n----------------')
+        # print(f'-------------- company_subdir_to_company_id_map----------------\n {company_subdir_to_company_id_map}\n----------------')
         for company_dir, company_id in company_subdir_to_company_id_map.items():
             print(f'Using {company_name} to fetch matching company_id: {company_id}')
 
-            cleaned_comp_dir = company_dir.split('[')[0].strip()
-
-            print(f'if "{company_name}" == "{cleaned_comp_dir}"')
-            print('-----------')
-
-
-            # substring comparison matching with company_name instance to company_dir
-
-
-
-
+            # print(f'if "{company_name}" == "{cleaned_comp_dir}"')
             if company_name == company_dir.split('[')[0].strip():
                 print(f'Match found!\nCompany Name: {company_name} has Company ID: {company_id}')
                 # Turn local var to instance var for dynamic file path construction
@@ -290,9 +281,16 @@ class PdfProcessor:
         self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
         print(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
 
+        # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
+        # Construct final output path instance
         self.output_path = self.assign_file_path_mappings()
+
         print(f'----------------------------------------output_path: {self.output_path}\n ------------------------ new_file_name: {self.new_file_name}')
+
+        # Move (save) new file to output path
+        # file_saved = self.create_and_save_pdf()
+
 
 
         # save the split up multipage pdfs into their own pdfs
