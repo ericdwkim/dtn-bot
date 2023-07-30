@@ -41,6 +41,7 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def assign_file_path_mappings(self):
+        # TODO: `calculate_directory_path`, `create_and_save_pdf` `month_dir`. Construct to month_dir as final output path in mapping?
 
         # fetch company_id from company_name using helper instance method
         self.company_id = self.get_company_id_fixed(self.company_name)
