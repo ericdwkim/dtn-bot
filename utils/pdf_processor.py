@@ -42,6 +42,7 @@ class PdfProcessor:
 
     def assign_file_path_mappings(self):
         # TODO: `calculate_directory_path`, `create_and_save_pdf` `month_dir`. Construct to month_dir as final output path in mapping?
+        # @dev: currently only set to company_dir
 
         # fetch company_id from company_name using helper instance method
         self.company_id = self.get_company_id_fixed(self.company_name)
@@ -241,21 +242,21 @@ class PdfProcessor:
 
 
 
-    # TODO:
-    # def create_and_save_pdf(self, pages):
-    #     # print(f'\n##########self.pages##########:\n {self.pages}\n##########self.pages##########:\n')
-    #     # print(f'\n##########self.pages##########:\n {type(self.pages)}\n##########self.pages##########:\n')
-    #     try:
-    #         new_pdf = pikepdf.Pdf.new()
-    #         new_pdf.pages.extend(pages)
-    #         print(f'$$$$$$$$$$$$$$$$$$ {self.doc_type} | {self.company_id}')
-    #         output_path = self.file_path_mappings[self.doc_type][self.company_id]
-    #         output_path = os.path.join(output_path, self.new_file_name)
-    #         new_pdf.save(output_path)
-    #         return True  # Return True if the file was saved successfully
-    #     except Exception as e:
-    #         print(f"Error occurred while creating and saving PDF: {str(e)}")
-    #         return False  # Return False if an error occurred
+    # TODO: WIP - this func should be reuseable for all doc types and both multi and single page processing
+    def create_and_save_pdf(self, pages):
+        try:
+            new_pdf = pikepdf.Pdf.new()
+            new_pdf.pages.extend(pages)
+            print(f'$$$$$$$$$$$$$$$$$$ {self.doc_type} | {self.company_id}')
+            output_path = self.file_path_mappings[self.doc_type][self.company_id]
+            output_path = os.path.join(output_path, self.new_file_name)
+            new_pdf.save(output_path)
+            return True  # Return True if the file was saved successfully
+        except Exception as e:
+            print(f"Error occurred while creating and saving PDF: {str(e)}")
+            return False  # Return False if an error occurred
+
+
 
     def get_new_file_name(self):
         if re.match(r'EFT-\s*\d+', self.doc_type) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
@@ -303,7 +304,7 @@ class PdfProcessor:
         # if not multi_page_pdf_created_and_saved:
         #     print(f'Could not save multi page pdf {multi_page_pdf_created_and_saved}')
 
-    # def process_single_page(self):2
+    # def process_single_page(self):
     #     self.pages = [self.pdf_data.pages[self.page_num]]
     #     self.doc_type_num, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
         # single_page_pdf_created_and_saved = self.create_and_save_pdf(self.pages)
