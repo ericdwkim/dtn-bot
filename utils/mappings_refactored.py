@@ -32,7 +32,8 @@ doc_type_abbrv_to_doc_type_subdir_map = {
     'EFT': 'Fuel Drafts',
     'INV': 'Fuel Invoices',
     'CBK': 'Credit Cards',
-    'RBK': 'Credit Cards'
+    'RBK': 'Credit Cards',
+    'CMB': 'Credit Cards'
 }
 
 
