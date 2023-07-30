@@ -26,9 +26,9 @@ from pdf_processor import PdfProcessor
 
 processor = PdfProcessor()
 
-processor.rename_invoices_pdf()
-
-# cur_page_txt = processor.get_page_text()
+# processor.rename_invoices_pdf()
+#
+cur_page_txt = processor.get_page_text()
 
 # tar_file = processor.get_pdf_file_path()
 # print(tar_file)

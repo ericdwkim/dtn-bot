@@ -25,11 +25,7 @@ class PdfProcessor:
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
         self.extractor = PDFExtractor()
-        # self.pages = []
-        # self.company_id = self.get_company_id()
-        # self.doc_type, self.total_target_amt = (None, None)
-        # self.file_path_mappings = None
-        # self.assign_file_path_mappings()
+        self.doc_type, self.total_target_amt = ('', '')
 
     # ---------------------------------- Instance attributes ----------------------------------
     def get_pdf_file_path(self):
@@ -45,32 +41,33 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def assign_file_path_mappings(self):
-        print('assign_file_path_mappings was called') # TODO
-    # def assign_file_path_mappings(self):
-    #     print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
-    #     print(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
-    #
-    #     self.file_path_mappings = {
-    #         self.doc_type: {
-    #             self.company_id: os.path.join
-    #                 (
-    #                 self.root_dir,
-    #                 doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
-    #                 company_id_to_company_subdir_map[self.company_id]
-    #             )
-    #         }
-    #     }
-    #
-    #     # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
-    #     if self.doc_type is None:
-    #         print("Error: Document type is None. File path mappings could not be assigned.")
-    #         return None
-    #
-    #     elif self.company_id is None:
-    #         print("Error: Company ID is None. File path mappings could not be assigned.")
-    #         return None
-    #     else:
-    #         return self.file_path_mappings
+
+        # fetch company_id from company_name using helper instance method
+        self.company_id = self.get_company_id_fixed(self.company_name)
+
+        print(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
+
+        self.file_path_mappings = {
+            self.doc_type: {
+                self.company_id: os.path.join
+                    (
+                    self.root_dir,
+                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
+                    company_id_to_company_subdir_map[self.company_id]
+                )
+            }
+        }
+
+        # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
+        if self.doc_type is None:
+            print("Error: Document type is None. File path mappings could not be assigned.")
+            return None
+
+        elif self.company_id is None:
+            print("Error: Company ID is None. File path mappings could not be assigned.")
+            return None
+        else:
+            return self.file_path_mappings
 
     @staticmethod
     def get_company_names():
@@ -179,18 +176,36 @@ class PdfProcessor:
             print(f'Could not rename Invoices PDF')
             return False
 
+    def get_file_timestamps(self):
+        """
+        Helper function to get creation and modification times of a file
+        """
+        mod_time = os.path.getmtime(self.pdf_file_path)
+        cre_time = os.path.getctime(self.pdf_file_path)
+
+        # convert the time from seconds since the epoch to a datetime object
+        mod_time = datetime.fromtimestamp(mod_time)
+        cre_time = datetime.fromtimestamp(cre_time)
+
+        return mod_time, cre_time
+
+    # Refactored `rename_and_move_pdf` with OOP
+    def rename_and_move_or_overwrite_invoices_pdf(self):
+        renamed_file= self.rename_invoices_pdf()
+
+        if not renamed_file:
+            return False
+
+        else:
+            # Get final output dir from file prefix
+            month_dir = calculate_directory_path('INV')
+
+            # Construct
 
 
 
 
 
-
-
-
-
-    # def rename_and_move_refactor(self):
-
-    # Invoices
     def rename_and_move(self):
         """Helper function to rename and move a PDF file"""
         for file in os.listdir(self.download_dir):
@@ -202,21 +217,22 @@ class PdfProcessor:
                 shutil.move(source_file, destination_file)
                 break
 
-    # TODO: turn into a regular helper function to be used within `assign_file_path_mappings` such that `self.company_id = self.assign_file_path_mappings()
-    # def get_company_id(self):
-    #     company_subdir_to_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
-    #     print(f'-------------- company_subdir_to_id_map----------------\n {company_subdir_to_id_map}\n----------------')
-    #     self.company_name = self.company_name.lower()
-    #     for company_dir, company_id in company_subdir_to_id_map.items():
-    #         if self.company_name in company_dir.lower():
-    #             print(f'For company: {self.company_name}, we got company id:  {company_id}')
-    #             self.company_id = company_id
-    #         else:
-    #             return None
-    #
-    # def get_company_id_fixed(self, company_name):
-    #     company_subdir_to_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
-    #
+    def get_company_id_fixed(self, company_name):
+        company_subdir_to_company_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
+        print(f'-------------- company_subdir_to_company_id_map----------------\n {company_subdir_to_company_id_map}\n----------------')
+        for company_dir, company_id in company_subdir_to_company_id_map.items():
+            # substring comparison matching with company_name instance to company_dir
+            if company_name in company_dir.lower():
+                print(f'Company Name: {company_name} has Company ID: {company_id}')
+                # Turn local var to instance var for dynamic file path construction
+                self.company_id = company_id
+                return self.company_id
+            else:
+                print(f'Could not retrieve Company ID from Company Name: {company_name}.')
+                return None
+
+
+
 
     # TODO:
     # def create_and_save_pdf(self, pages):
@@ -259,12 +275,13 @@ class PdfProcessor:
             if self.page_num >= len(self.pdf_data.pages):
                 break
         self.cur_page_text = "".join(page_text_strings)
+        print(f'Extracting Document Type and Total Target Amount....')
         self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-        # print(f'self.doc_type: {self.doc_type}\nself.tot_tar_amt: {self.total_target_amt}')
+        print(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
 
         self.new_file_name = self.get_new_file_name()
-        output_path = self.assign_file_path_mappings()
-        print(f'----------------------------------------output_path: {output_path}\n ------------------------ new_file_name: {self.new_file_name}')
+        self.output_path = self.assign_file_path_mappings()
+        print(f'----------------------------------------output_path: {self.output_path}\n ------------------------ new_file_name: {self.new_file_name}')
 
 
         # save the split up multipage pdfs into their own pdfs
