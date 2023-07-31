@@ -129,6 +129,7 @@ def create_and_return_directory_path(root_directory, current_year, current_month
 
     return month_dir
 
+# TODO: refactor to only return dynamic cur_yr and cur_month dirs (to be added to company_dir w/ `final_output_path` wrapper func
 def calculate_directory_path(file_prefix, company_id=None, company_dir=None):
     """
     Given the file_prefix as minimum param, it returns the constructed final output path\ndepending on document type
