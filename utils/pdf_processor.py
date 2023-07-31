@@ -277,6 +277,8 @@ class PdfProcessor:
     def create_and_save_pdf_refactored(self):
         # todo: pass in self.page_objs & self.page_text_strings instances; we will need to merge via `.extend(self.page_objs)`
 
+        # WIP - merge/update from scratch_14.py (v1)
+
         try:
             self.company_dir = self.assign_file_path_mappings()
         except Exception as e:
