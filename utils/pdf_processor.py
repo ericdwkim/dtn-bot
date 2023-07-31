@@ -272,6 +272,13 @@ class PdfProcessor:
             print(f"Error occurred while creating and saving PDF: {str(e)}")
             return False  # Return False if an error occurred
 
+    def create_and_save_pdf_refactored(self):
+
+        try:
+            # @dev: test if `self.company_dir = self.assign_file_path_mappings()` is posible as it will be an instance var depending on doc_type and company_id
+            self.company_dir = self.assign_file_path_mappings()
+        except Exception as e:
+            print(f'Something went wrong~')
 
 
     def get_new_file_name(self):
@@ -311,6 +318,7 @@ class PdfProcessor:
 
         # Move (save) new file to output path
         # file_saved = self.create_and_save_pdf()
+        self.create_and_save_pdf_refactored()
 
 
 # ------------------------------------------------------------------------------------
