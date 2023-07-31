@@ -65,6 +65,7 @@ def extract_pdf_data(company_dir):
     return pdf_data_ccm, total_amount, pdf_data_lrd
 
 # TODO: class PDFPostProcessorMerger that inherits from class PDFExtractor (extraction_handler.py); call post processing relevant extraction methods via an instance of PDFPostProcessorMerger object, such as: `post_procecssor_merger = PDFPostProcessorMerger()` then `post_procecssor_merger.extract_pdf_data()`
+# TODO: PDFPostProcessorMerger with class attribute `self.new_pdf = pikepdf.Pdf.new()` to be used within class easily as it is commonly used in other areas such as `create_and_save_pdf`; similar to `today` instance, we don't want to repeat this and be able to just use `self.new_pdf` in order to `self.new_pdf.pages.extend(self.page_objs) for `create_and_save_pdf_refactored`
 def merge_pdfs(pdf_data):
     """
     Merges PDFs by fetching 4th element in tuple `file_path` by looping, opening each file_path\nand creating them as pikePDF pages to combine and merge them all into a single PDF object
