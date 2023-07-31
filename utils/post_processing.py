@@ -136,7 +136,7 @@ def end_of_month_operations(company_dir=None):
 
 
     current_year = today.strftime('%Y')
-    next_month = (today.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
+    next_month = (today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
     next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
 
     # If it's December, create the next year's directory and the next month's directory inside it
