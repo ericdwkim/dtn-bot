@@ -26,6 +26,8 @@ class PdfProcessor:
         self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
         self.extractor = PDFExtractor()
         self.doc_type, self.total_target_amt = ('', '')
+        self.page_objs = []
+        self.page_text_strings = []
 
     # ---------------------------------- Instance attributes ----------------------------------
     def get_pdf_file_path(self):
@@ -286,17 +288,15 @@ class PdfProcessor:
         return new_file_name
 
     def process_multi_page(self):
-        page_objs = []
-        page_text_strings = []
         while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
-            page_objs.append(self.pdf_data.pages[self.page_num])
+            self.page_objs.append(self.pdf_data.pages[self.page_num])
             self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
-            page_text_strings.append(self.cur_page_text)
+            self.page_text_strings.append(self.cur_page_text)
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
             self.page_num += 1
             if self.page_num >= len(self.pdf_data.pages):
                 break
-        self.cur_page_text = "".join(page_text_strings)
+        self.cur_page_text = "".join(self.page_text_strings)
         print(f'Extracting Document Type and Total Target Amount....')
         self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
         print(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
@@ -307,9 +307,11 @@ class PdfProcessor:
         # Construct final output path using wrapper
         self.final_output_path = self.construct_final_output_path()
 
+        # @dev: seeing how page_objs and page_text_strings looks when turned into instance var instead of kept as local var b/c we need to pass it to `self.create_and_save_pdf() as an instance var
+        print(f'\n*********************\n{self.page_objs}\n*********************\n')
+        # print(f'\n*********************\n{page_text_strings}\n*********************\n')
 
-        # Construct final output path instance
-        # self.output_path = self.assign_file_path_mappings()
+
 
         print(f'----------------------------------------final_output_path: {self.final_output_path}\n ------------------------ new_file_name: {self.new_file_name}')
 
@@ -317,7 +319,7 @@ class PdfProcessor:
         # file_saved = self.create_and_save_pdf()
 
 
-
+# ------------------------------------------------------------------------------------
         # save the split up multipage pdfs into their own pdfs
         # multi_page_pdf_created_and_saved = self.create_and_save_pdf(pages)
         # if not multi_page_pdf_created_and_saved:
