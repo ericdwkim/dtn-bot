@@ -74,7 +74,7 @@ class PdfProcessor:
 
     # assign_file_path_mappings & calculate_directory_path wrapper to construct dynamic final output paths for both company_dir and month_dir; allows flexibility for both up to company_dir or up to month_dir --> BUT, ideally have assign_file_path_mappings construct up to month_dir and perform post processing in memory and not on disk
 
-    def final_output_path(self, ):
+    # def final_output_path(self, ):
 
     @staticmethod
     def get_company_names():
@@ -198,6 +198,8 @@ class PdfProcessor:
 
     # Refactored `rename_and_move_pdf` with OOP
     def rename_and_move_or_overwrite_invoices_pdf(self):
+        print(f'**********************: {self.doc_type}')
+
         renamed_file= self.rename_invoices_pdf()
 
         if not renamed_file:
