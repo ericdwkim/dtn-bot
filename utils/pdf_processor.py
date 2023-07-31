@@ -74,7 +74,20 @@ class PdfProcessor:
 
     # assign_file_path_mappings & calculate_directory_path wrapper to construct dynamic final output paths for both company_dir and month_dir; allows flexibility for both up to company_dir or up to month_dir --> BUT, ideally have assign_file_path_mappings construct up to month_dir and perform post processing in memory and not on disk
 
-    # def final_output_path(self, ):
+    def final_output_path(self,):
+        company_dir = self.assign_file_path_mappings()
+        month_dir = calculate_directory_path(self.doc_type)
+
+        if not company_dir and not month_dir:
+            return
+        else:
+            final_output_path = os.path.join(company_dir, month_dir, self.new_file_name)
+            return final_output_path
+
+
+
+
+
 
     @staticmethod
     def get_company_names():
@@ -198,7 +211,6 @@ class PdfProcessor:
 
     # Refactored `rename_and_move_pdf` with OOP
     def rename_and_move_or_overwrite_invoices_pdf(self):
-        print(f'**********************: {self.doc_type}')
 
         renamed_file= self.rename_invoices_pdf()
 
@@ -206,8 +218,7 @@ class PdfProcessor:
             return False
 
         # Get final output dir from file prefix
-        # month_dir = calculate_directory_path('INV')
-        month_dir = calculate_directory_path(self.doc_type)
+        month_dir = calculate_directory_path('INV')
 
         # Construct final output path
         target_file_path = os.path.join(month_dir, self.new_file_name)
@@ -296,10 +307,15 @@ class PdfProcessor:
 
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
-        # Construct final output path instance
-        self.output_path = self.assign_file_path_mappings()
 
-        print(f'----------------------------------------output_path: {self.output_path}\n ------------------------ new_file_name: {self.new_file_name}')
+        # Construct final output path using wrapper
+        self.final_output_path = self.final_output_path()
+
+
+        # Construct final output path instance
+        # self.output_path = self.assign_file_path_mappings()
+
+        print(f'----------------------------------------final_output_path: {self.final_output_path}\n ------------------------ new_file_name: {self.new_file_name}')
 
         # Move (save) new file to output path
         # file_saved = self.create_and_save_pdf()
