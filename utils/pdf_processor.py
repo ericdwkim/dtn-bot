@@ -304,13 +304,10 @@ class PdfProcessor:
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
 
-        # Construct final output path using wrapper
-        self.final_output_path = self.construct_final_output_filepath()
+        # Construct final output filepath using wrapper
+        self.final_output_filepath = self.construct_final_output_filepath()
 
-
-
-
-        print(f'----------------------------------------final_output_path: {self.final_output_path}\n ------------------------ new_file_name: {self.new_file_name}')
+        print(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
 
         # Move (save) new file to output path
         # file_saved = self.create_and_save_pdf()
