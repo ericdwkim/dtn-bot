@@ -74,6 +74,8 @@ class PdfProcessor:
 
     # @dev: assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir; allows flexibility for both up to company_dir or up to month_dir --> BUT, ideally have assign_file_path_mappings construct up to month_dir and perform post processing in memory and not on disk
 
+    # @icebox: within an hr could not implement in memory > on disk for post-processing as best approach would require OOP refactors of new class `MiniPDF`. See `/dev/mini_pdf.py for high level skeleton structure
+
     def construct_final_output_filepath(self):
         company_dir = self.assign_file_path_mappings()
         month_dir = construct_month_dir_from_company_dir(company_dir)
@@ -273,12 +275,12 @@ class PdfProcessor:
             return False  # Return False if an error occurred
 
     def create_and_save_pdf_refactored(self):
+        # todo: pass in self.page_objs & self.page_text_strings instances; we will need to merge via `.extend(self.page_objs)`
 
         try:
-            # @dev: test if `self.company_dir = self.assign_file_path_mappings()` is posible as it will be an instance var depending on doc_type and company_id
             self.company_dir = self.assign_file_path_mappings()
         except Exception as e:
-            print(f'Something went wrong~')
+            print(f'An error occurred: {e}')
 
 
     def get_new_file_name(self):
