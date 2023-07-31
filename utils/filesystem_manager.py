@@ -153,7 +153,7 @@ def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=Non
     # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
     elif doc_type_dir and company_id:
         company_directory = company_id_to_company_subdir_map.get(company_id, '')
-        root_directory = os.path.join(doc_type_dir, company_directory)
+        doc_type_dir = os.path.join(doc_type_dir, company_directory)
 
     # Create and return path to the relevant year and month directories
     return create_and_return_directory_path(doc_type_dir, current_year, current_month)
