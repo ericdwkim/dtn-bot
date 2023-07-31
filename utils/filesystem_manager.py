@@ -159,7 +159,7 @@ def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=Non
     return create_and_return_directory_path(doc_type_dir, current_year, current_month)
 
 """
-construct_final_output_path():
+construct_final_output_filepath():
 /Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/CONCORD FIRST DATA RETRIEVAL [11111]
 
 

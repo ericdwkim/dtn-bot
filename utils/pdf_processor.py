@@ -74,7 +74,7 @@ class PdfProcessor:
 
     # @dev: assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir; allows flexibility for both up to company_dir or up to month_dir --> BUT, ideally have assign_file_path_mappings construct up to month_dir and perform post processing in memory and not on disk
 
-    def construct_final_output_path(self):
+    def construct_final_output_filepath(self):
         company_dir = self.assign_file_path_mappings()
         month_dir = construct_month_dir_from_company_dir(company_dir)
 
@@ -305,11 +305,8 @@ class PdfProcessor:
         self.new_file_name = self.get_new_file_name()
 
         # Construct final output path using wrapper
-        self.final_output_path = self.construct_final_output_path()
+        self.final_output_path = self.construct_final_output_filepath()
 
-        # @dev: seeing how page_objs and page_text_strings looks when turned into instance var instead of kept as local var b/c we need to pass it to `self.create_and_save_pdf() as an instance var
-        print(f'\n*********************\n{self.page_objs}\n*********************\n')
-        # print(f'\n*********************\n{page_text_strings}\n*********************\n')
 
 
 
