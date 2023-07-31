@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 import pikepdf
 import shutil
-from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
+from utils.filesystem_manager import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files
 
 # TODO: move all `extract_` helpers to extraction_handler.py as class `PDFExtractor` instance method
 def extract_ccm_data(pdf_file):
@@ -97,7 +97,7 @@ def save_merged_pdf(file_prefix, merged_pdf, total_amount_sum, company_id):
     else:
         new_file_name = f'{today}-Loyalty.pdf'
 
-    month_directory = calculate_directory_path(file_prefix, company_id)
+    month_directory = construct_month_dir_from_doc_type(file_prefix, company_id)
     output_path = os.path.join(month_directory, new_file_name)
 
     try:

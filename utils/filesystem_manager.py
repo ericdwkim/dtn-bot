@@ -92,7 +92,7 @@ def cur_month_and_year_from_today():
     Helper function to calculate current month and current year relative to today's date
     :return: Tuple(cur_month, cur_yr)
     """
-    today = datetime.today().strftime('%m-%d-%y')  # @today
+    today = datetime.today().strftime('%m-%d-%y')  # @today # todo: turn filesystem_manager.py into OOP to be able to `self.today` ?
     # today = '07-23-23'
 
     current_month = datetime.strptime(today, '%m-%d-%y').strftime('%m-%b')
@@ -100,28 +100,27 @@ def cur_month_and_year_from_today():
 
     return current_month, current_year
 
-def get_root_directory(file_prefix):
+def get_doc_type_dir(doc_type):
     """
-    Given a file prefix, it unpacks the root_directory mapping to return file_prefix matching root directory aka the document type directory path
-    :param file_prefix:
+    Given a file prefix, it unpacks the root_directory mapping to return doc_type matching root directory aka the document type directory path
+    :param doc_type:
     :return: str | None
     """
     for key, value in doc_type_abbrv_to_doc_type_subdir_map.items():
-        if (isinstance(key, tuple) and file_prefix in key) or key == file_prefix:
+        if (isinstance(key, tuple) and doc_type in key) or key == doc_type:
             return value
     return None
 
-
-def create_and_return_directory_path(root_directory, current_year, current_month):
+def create_and_return_directory_path(doc_type_dir, current_year, current_month):
     """
     Given the root dir (aka document type dir), cur_yr, cur_month,\n
     it returns the final output path `month_dir` which is constructed appropriately based on current date
-    :param root_directory:
+    :param doc_type_dir:
     :param current_year:
     :param current_month:
     :return: `month_dir` final output path to save PDFs to
     """
-    year_dir = os.path.join(root_directory, current_year)
+    year_dir = os.path.join(doc_type_dir, current_year)
     create_directory(year_dir)
 
     month_dir = os.path.join(year_dir, current_month)
@@ -129,11 +128,10 @@ def create_and_return_directory_path(root_directory, current_year, current_month
 
     return month_dir
 
-# TODO: refactor to only return dynamic cur_yr and cur_month dirs (to be added to company_dir w/ `final_output_path` wrapper func
-def calculate_directory_path(file_prefix, company_id=None, company_dir=None):
+def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=None):
     """
-    Given the file_prefix as minimum param, it returns the constructed final output path\ndepending on document type
-    :param file_prefix:
+    Given the doc_type as minimum param, it returns the constructed final output path\ndepending on document type
+    :param doc_type:
     :param company_id:
     :param company_dir:
     :return:
@@ -142,20 +140,44 @@ def calculate_directory_path(file_prefix, company_id=None, company_dir=None):
     current_month, current_year = cur_month_and_year_from_today()
 
     # Determine root directory
-    root_directory = get_root_directory(file_prefix)
+    doc_type_dir = get_doc_type_dir(doc_type)
 
     # If root directory not found, raise exception
-    if not root_directory:
-        raise ValueError(f"No root directory found for file prefix '{file_prefix}'")
+    if not doc_type_dir:
+        raise ValueError(f"No root directory found for document type '{doc_type}'")
 
     # Handle EFT and CMB cases and non-exxon CCM files
-    if (file_prefix == 'EFT' or file_prefix == 'CMB' or file_prefix == 'CCM') and company_id is None and company_dir:
-        root_directory = company_dir
+    if (doc_type == 'EFT' or doc_type == 'CMB' or doc_type == 'CCM') and company_id is None and company_dir:
+        doc_type_dir = company_dir
 
     # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
-    elif root_directory and company_id:
+    elif doc_type_dir and company_id:
         company_directory = company_id_to_company_subdir_map.get(company_id, '')
-        root_directory = os.path.join(root_directory, company_directory)
+        root_directory = os.path.join(doc_type_dir, company_directory)
 
     # Create and return path to the relevant year and month directories
-    return create_and_return_directory_path(root_directory, current_year, current_month)
+    return create_and_return_directory_path(doc_type_dir, current_year, current_month)
+
+"""
+construct_final_output_path():
+/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/CONCORD FIRST DATA RETRIEVAL [11111]
+
+
+/
+construct_month_dir_from_doc_type():
+
+Credit Cards/2023/07-Jul/CMB-07-31-23-64136.12.pdf
+
+"""
+
+def construct_month_dir_from_company_dir(company_dir):
+
+    # Extract cur_yr and cur_month
+    cur_month, cur_yr = cur_month_and_year_from_today()
+
+    # Construct month directory
+    month_dir = create_and_return_directory_path(company_dir, cur_yr, cur_month)
+
+    return month_dir
+
+

@@ -30,7 +30,7 @@ processor = PdfProcessor()
 #
 cur_page_txt = processor.get_page_text()
 
-# test to see if calculate_directory_path can simply take self.doc_type and still work
+# test to see if construct_month_dir_from_doc_type can simply take self.doc_type and still work
 # invoices_downloaded = processor.rename_and_move_or_overwrite_invoices_pdf()
 
 

@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
 from extraction_handler import PDFExtractor
-from utils.filesystem_manager import end_of_month_operations, calculate_directory_path, is_last_day_of_month, cleanup_files
+from utils.filesystem_manager import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files, construct_month_dir_from_company_dir
 from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
 
@@ -41,7 +41,7 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def assign_file_path_mappings(self):
-        # TODO: `calculate_directory_path`, `create_and_save_pdf` `month_dir`. Construct to month_dir as final output path in mapping?
+        # TODO: `construct_month_dir_from_doc_type`, `create_and_save_pdf` `month_dir`. Construct to month_dir as final output path in mapping?
         # @dev: currently only set to company_dir
 
         # fetch company_id from company_name using helper instance method
@@ -72,21 +72,19 @@ class PdfProcessor:
             # Return output path from nested value in nested mapping
             return self.file_path_mappings[self.doc_type][self.company_id]
 
-    # assign_file_path_mappings & calculate_directory_path wrapper to construct dynamic final output paths for both company_dir and month_dir; allows flexibility for both up to company_dir or up to month_dir --> BUT, ideally have assign_file_path_mappings construct up to month_dir and perform post processing in memory and not on disk
+    # assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir; allows flexibility for both up to company_dir or up to month_dir --> BUT, ideally have assign_file_path_mappings construct up to month_dir and perform post processing in memory and not on disk
 
-    def final_output_path(self,):
+    def construct_final_output_path(self):
         company_dir = self.assign_file_path_mappings()
-        month_dir = calculate_directory_path(self.doc_type)
+        month_dir = construct_month_dir_from_company_dir(company_dir)
 
-        if not company_dir and not month_dir:
+        if not company_dir or not month_dir:
+            print('Company directory or month directory could not be constructed')
             return
+
         else:
             final_output_path = os.path.join(company_dir, month_dir, self.new_file_name)
             return final_output_path
-
-
-
-
 
 
     @staticmethod
@@ -218,7 +216,7 @@ class PdfProcessor:
             return False
 
         # Get final output dir from file prefix
-        month_dir = calculate_directory_path('INV')
+        month_dir = construct_month_dir_from_doc_type('INV')
 
         # Construct final output path
         target_file_path = os.path.join(month_dir, self.new_file_name)
@@ -309,7 +307,7 @@ class PdfProcessor:
         self.new_file_name = self.get_new_file_name()
 
         # Construct final output path using wrapper
-        self.final_output_path = self.final_output_path()
+        self.final_output_path = self.construct_final_output_path()
 
 
         # Construct final output path instance
