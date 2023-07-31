@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta
+from mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map
 
 def check_file_exists(output_path):
     """
@@ -68,7 +69,7 @@ def end_of_month_operations(company_dir=None):
     # Handles INV case
     if company_dir is None:
         # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
-        company_dir = root_directory_mapping['INV']
+        company_dir = doc_type_abbrv_to_doc_type_subdir_map['INV']
 
     # Get today's date
     today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')  # @today
@@ -105,7 +106,7 @@ def get_root_directory(file_prefix):
     :param file_prefix:
     :return: str | None
     """
-    for key, value in root_directory_mapping.items():
+    for key, value in doc_type_abbrv_to_doc_type_subdir_map.items():
         if (isinstance(key, tuple) and file_prefix in key) or key == file_prefix:
             return value
     return None
