@@ -41,8 +41,6 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     def assign_file_path_mappings(self):
-        # TODO: `construct_month_dir_from_doc_type`, `create_and_save_pdf` `month_dir`. Construct to month_dir as final output path in mapping?
-        # @dev: currently only set to company_dir
 
         # fetch company_id from company_name using helper instance method
         self.company_id = self.get_company_id_fixed(self.company_name)
@@ -72,7 +70,7 @@ class PdfProcessor:
             # Return output path from nested value in nested mapping
             return self.file_path_mappings[self.doc_type][self.company_id]
 
-    # assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir; allows flexibility for both up to company_dir or up to month_dir --> BUT, ideally have assign_file_path_mappings construct up to month_dir and perform post processing in memory and not on disk
+    # @dev: assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir; allows flexibility for both up to company_dir or up to month_dir --> BUT, ideally have assign_file_path_mappings construct up to month_dir and perform post processing in memory and not on disk
 
     def construct_final_output_path(self):
         company_dir = self.assign_file_path_mappings()
