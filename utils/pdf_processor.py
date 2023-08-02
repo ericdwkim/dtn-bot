@@ -85,8 +85,8 @@ class PdfProcessor:
             return
 
         else:
-            final_output_path = os.path.join(company_dir, month_dir, self.new_file_name)
-            return final_output_path
+            final_output_filepath = os.path.join(company_dir, month_dir, self.new_file_name)
+            return final_output_filepath
 
 
     @staticmethod
@@ -281,6 +281,15 @@ class PdfProcessor:
 
         try:
             self.company_dir = self.assign_file_path_mappings()
+            # TODO: cleaner way to do this if check?
+            if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
+                print('******************************')
+                final_output_filepath = self.company_dir
+                print(f'final_output_filepath: {final_output_filepath}') # final_output_filepath: /Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL [10005]
+                # sent to company_dir as we did in v1
+
+
+
         except Exception as e:
             print(f'An error occurred: {e}')
 
