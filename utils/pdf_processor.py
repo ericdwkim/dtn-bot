@@ -280,19 +280,28 @@ class PdfProcessor:
         # WIP - merge/update from scratch_14.py (v1)
 
         try:
+            # Merge multi page spanning pdfs w/ page objs instance
+            # TODO: self.new_pdf instance variable to replace --> `self.new_pdf.pages.extend(self.page_objs)`
+            new_pdf = pikepdf.Pdf.new()
+            new_pdf.pages.extend(self.page_objs)
             self.company_dir = self.assign_file_path_mappings()
-            # TODO: cleaner way to do this if check?
+            # TODO: conditional to check doc_type for page text
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
                 print('******************************')
-                final_output_filepath = self.company_dir
-                print(f'final_output_filepath: {final_output_filepath}') # final_output_filepath: /Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/EXXONMOBIL [10005]
                 # sent to company_dir as we did in v1
+                final_output_file_path = os.path.join(self.company_dir, self.new_file_name)
 
-
+            else:
+                # send to month_dir for all other doc types
+                month_dir = self.construct_final_output_filepath()
+                final_output_file_path = os.path.join(month_dir, self.new_file_name)
+            new_pdf.save(final_output_file_path)
+            print(f'%%%%%%%%%%%%%%%%%%%%%%%%%% {final_output_file_path} %%%%%%%%%%%%%%%%%%%%%%%%%%')
+            return True
 
         except Exception as e:
-            print(f'An error occurred: {e}')
-
+            print(f'An error occurred while creating and saving PDF: {e}')
+            return False
 
     def get_new_file_name(self):
         if re.match(r'EFT-\s*\d+', self.doc_type) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
