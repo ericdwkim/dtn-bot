@@ -128,32 +128,22 @@ class PdfProcessor:
                 return doc_type_pattern
         return None
 
-    def process_pages(self):
+    def get_page_text(self):
         while self.page_num < len(self.pdf_data.pages):
             print(f'Processing page number: {self.page_num + 1}')
-            page = self.pdf_data.pages[self.page_num]
-            self.cur_page_text = self.extractor.extract_text_from_pdf_page(page)
+            self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
             self.company_name = self.get_company_name(self.cur_page_text)
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
 
         #
             if (self.company_name in self.cur_page_text) and (re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE)) and ('END MSG' not in self.cur_page_text):
-
-                multi_page_pdf_processed = self.process_multi_page()
-
-            elif (self.company_name in self.cur_page_text) and (re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE)) and ('END MSG' in self.cur_page_text):
-
-                single_page_pdf_processed = self.process_single_page() # TODO
+                self.process_multi_page()
             else:
                 self.page_num += 1
 
             if self.page_num >= len(self.pdf_data.pages):
                 break
-
-            if multi_page_pdf_processed and single_page_pdf_processed:
-                return True
-            else:
-                return False
+        return self.cur_page_text
 
     def rename_and_delete_pdf(self):
         file_deleted = False
@@ -316,9 +306,11 @@ class PdfProcessor:
         while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
             cur_page = self.pdf_data.pages[self.page_num]
             page_objs.append(cur_page)
-            # print(f'----------page_objs----------------------\n')
-            # print(page_objs)
-            # print(f'\n--------------------------------')
+            print(f'----------page_objs----------------------\n')
+            print(page_objs)
+            print(f'\n--------------------------------')
+
+
             self.cur_page_text = self.extractor.extract_text_from_pdf_page(cur_page)
             page_text_strings.append(self.cur_page_text)
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
@@ -333,15 +325,18 @@ class PdfProcessor:
         self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
         print(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
 
-        # Move (save) new file to final output path w/ new file name
-        multi_page_pdf_created_and_saved = self.create_and_save_pdf(page_objs)
-        if not multi_page_pdf_created_and_saved:
-            print(f'Could not create and save multi pages spanning PDF')
-            return False
-        else:
-            return multi_page_pdf_created_and_saved
-        # print('\n--------------------------------------------------------------------')
+        # Construct new file name instance
+        self.new_file_name = self.get_new_file_name()
 
+        # Construct final output filepath using wrapper
+        self.final_output_filepath = self.construct_final_output_filepath()
+
+        print(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
+
+        # Move (save) new file to final output path
+        multi_page_pdf_created_and_saved = self.create_and_save_pdf(page_objs)
+        # print('\n--------------------------------------------------------------------')
+        return multi_page_pdf_created_and_saved
 
 
     # def process_single_page(self):
