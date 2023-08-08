@@ -22,13 +22,10 @@ class PdfProcessor:
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
-        self.new_pdf = pikepdf.Pdf.new()
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
         self.extractor = PDFExtractor()
         self.doc_type, self.total_target_amt = ('', '')
-        self.page_objs = []
-        self.page_text_strings = []
 
     # ---------------------------------- Instance attributes ----------------------------------
     def get_pdf_file_path(self):
@@ -77,17 +74,22 @@ class PdfProcessor:
 
     # @icebox: within an hr could not implement in memory > on disk for post-processing as best approach would require OOP refactors of new class `MiniPDF`. See `/dev/mini_pdf.py for high level skeleton structure
 
-    def construct_final_output_filepath(self):
+    def construct_final_output_filepath(self, post_processing=False):
         company_dir = self.assign_file_path_mappings()
         month_dir = construct_month_dir_from_company_dir(company_dir)
+
 
         if not company_dir or not month_dir:
             print('Company directory or month directory could not be constructed')
             return
 
+        elif post_processing is True:
+            output_file_path = os.path.join(company_dir, self.new_file_name)
+            return output_file_path
+
         else:
-            final_output_filepath = os.path.join(company_dir, month_dir, self.new_file_name)
-            return final_output_filepath
+            output_file_path = os.path.join(company_dir, month_dir, self.new_file_name)
+            return output_file_path
 
 
     @staticmethod
@@ -258,47 +260,24 @@ class PdfProcessor:
         print(f'Could not retrieve Company ID from Company Name: {company_name}.')
         return None
 
-
-
-
-    # TODO: WIP - this func should be reuseable for all doc types and both multi and single page processing
     def create_and_save_pdf(self, pages):
+
+
         try:
             new_pdf = pikepdf.Pdf.new()
-            new_pdf.pages.extend(pages)
-            print(f'$$$$$$$$$$$$$$$$$$ {self.doc_type} | {self.company_id}')
-            output_path = self.file_path_mappings[self.doc_type][self.company_id]
-            output_path = os.path.join(output_path, self.new_file_name)
-            new_pdf.save(output_path)
-            return True  # Return True if the file was saved successfully
-        except Exception as e:
-            print(f"Error occurred while creating and saving PDF: {str(e)}")
-            return False  # Return False if an error occurred
-
-    def create_and_save_pdf_refactored(self):
-
-
-        try:
             # Merge multi page spanning pdfs w/ page objs instance
-            # TODO: current issue is `page_objs` instance concates all current iteration page objects in the same ds. need to distinguish page objs for each instance (for each doc_type) so we can `.save` on a per instance level.
-            self.new_pdf.pages.extend(self.page_objs)
-            self.company_dir = self.assign_file_path_mappings()
-            print('******************************\n')
-            print(f'self.new_pdf.pages: {self.new_pdf.pages}')
-            print('\n******************************')
+            new_pdf.pages.extend(pages)
 
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
-                # print('******************************')
-                # sent to company_dir as we did in v1
-                final_output_file_path = os.path.join(self.company_dir, self.new_file_name)
-                print(f'final_output_file_path: {final_output_file_path}')
+                # send to company_dir for post processing
+                output_file_path = self.construct_final_output_filepath(post_processing=True)
+                print(f'1output_file_path: {output_file_path}')
 
             else:
                 # send to month_dir for all other doc types
-                month_dir = self.construct_final_output_filepath()
-                final_output_file_path = month_dir
-            self.new_pdf.save(final_output_file_path)
-            print(f'\n%%%%%%%%%%%%%%%%%%%%%%%%%% {final_output_file_path} %%%%%%%%%%%%%%%%%%%%%%%%%%')
+                output_file_path = self.construct_final_output_filepath()
+                print(f'2output_file_path: {output_file_path}')
+            new_pdf.save(output_file_path)
             return True
 
         except Exception as e:
@@ -318,16 +297,30 @@ class PdfProcessor:
             new_file_name = f'{self.doc_type}-{self.today}-{self.total_target_amt}.pdf'
         return new_file_name
 
+
     def process_multi_page(self):
+        page_objs = []
+        page_text_strings = []
+
+
         while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
-            self.page_objs.append(self.pdf_data.pages[self.page_num])
-            self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
-            self.page_text_strings.append(self.cur_page_text)
+            cur_page = self.pdf_data.pages[self.page_num]
+            page_objs.append(cur_page)
+            print(f'----------page_objs----------------------\n')
+            print(page_objs)
+            print(f'\n--------------------------------')
+
+
+            self.cur_page_text = self.extractor.extract_text_from_pdf_page(cur_page)
+            page_text_strings.append(self.cur_page_text)
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
             self.page_num += 1
             if self.page_num >= len(self.pdf_data.pages):
                 break
-        self.cur_page_text = "".join(self.page_text_strings)
+        self.cur_page_text = "".join(page_text_strings)
+        # print(f'------------cur_page_text--------------------\n')
+        # print(self.cur_page_text)
+        # print(f'\n--------------------------------')
         print(f'Extracting Document Type and Total Target Amount....')
         self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
         print(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
@@ -340,10 +333,10 @@ class PdfProcessor:
 
         print(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
 
-        # Move (save) new file to output path
-        # file_saved = self.create_and_save_pdf()
-        self.create_and_save_pdf_refactored()
-        print('--------------------------------------------------------------------')
+        # Move (save) new file to final output path
+        file_saved = self.create_and_save_pdf(page_objs)
+        print('\n--------------------------------------------------------------------')
+
 
 
 # ------------------------------------------------------------------------------------
