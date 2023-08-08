@@ -271,12 +271,12 @@ class PdfProcessor:
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
                 # send to company_dir for post processing
                 output_file_path = self.construct_final_output_filepath(post_processing=True)
-                print(f'1output_file_path: {output_file_path}')
+                # print(f'1output_file_path: {output_file_path}')
 
             else:
                 # send to month_dir for all other doc types
                 output_file_path = self.construct_final_output_filepath()
-                print(f'2output_file_path: {output_file_path}')
+                # print(f'2output_file_path: {output_file_path}')
             new_pdf.save(output_file_path)
             return True
 
@@ -334,16 +334,10 @@ class PdfProcessor:
         print(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
 
         # Move (save) new file to final output path
-        file_saved = self.create_and_save_pdf(page_objs)
-        print('\n--------------------------------------------------------------------')
+        multi_page_pdf_created_and_saved = self.create_and_save_pdf(page_objs)
+        # print('\n--------------------------------------------------------------------')
+        return multi_page_pdf_created_and_saved
 
-
-
-# ------------------------------------------------------------------------------------
-        # save the split up multipage pdfs into their own pdfs
-        # multi_page_pdf_created_and_saved = self.create_and_save_pdf(pages)
-        # if not multi_page_pdf_created_and_saved:
-        #     print(f'Could not save multi page pdf {multi_page_pdf_created_and_saved}')
 
     # def process_single_page(self):
     #     self.pages = [self.pdf_data.pages[self.page_num]]
