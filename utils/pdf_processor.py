@@ -343,7 +343,7 @@ class PdfProcessor:
         # Move (save) new file to output path
         # file_saved = self.create_and_save_pdf()
         self.create_and_save_pdf_refactored()
-        print('$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+        print('--------------------------------------------------------------------')
 
 
 # ------------------------------------------------------------------------------------
