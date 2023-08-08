@@ -275,28 +275,33 @@ class PdfProcessor:
             return False  # Return False if an error occurred
 
     def create_and_save_pdf_refactored(self):
-        # todo: pass in self.page_objs & self.page_text_strings instances; we will need to merge via `.extend(self.page_objs)`
 
-        # WIP - merge/update from scratch_14.py (v1)
 
         try:
             # Merge multi page spanning pdfs w/ page objs instance
-            # TODO: self.new_pdf instance variable to replace --> `self.new_pdf.pages.extend(self.page_objs)`
+            # TODO: self.new_pdf instance variable to replace `pikepdf.Pdf.new()`--> `self.new_pdf.pages.extend(self.page_objs)`
             new_pdf = pikepdf.Pdf.new()
+
             new_pdf.pages.extend(self.page_objs)
             self.company_dir = self.assign_file_path_mappings()
-            # TODO: conditional to check doc_type for page text
+            print('******************************')
+            print(f'self.company_dir: {self.company_dir}\n')
+            print(f'self.new_file_name: {self.new_file_name}')
+            print('******************************')
+
+            # TODO @DEV: 8/8/23 - issue is we are using `new_pdf` as local var which gets overwritten. we need to use it as an instance variable within this func.
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
-                print('******************************')
+                # print('******************************')
                 # sent to company_dir as we did in v1
                 final_output_file_path = os.path.join(self.company_dir, self.new_file_name)
+                print(f'final_output_file_path: {final_output_file_path}')
 
             else:
                 # send to month_dir for all other doc types
                 month_dir = self.construct_final_output_filepath()
                 final_output_file_path = os.path.join(month_dir, self.new_file_name)
             new_pdf.save(final_output_file_path)
-            print(f'%%%%%%%%%%%%%%%%%%%%%%%%%% {final_output_file_path} %%%%%%%%%%%%%%%%%%%%%%%%%%')
+            print(f'\n%%%%%%%%%%%%%%%%%%%%%%%%%% {final_output_file_path} %%%%%%%%%%%%%%%%%%%%%%%%%%')
             return True
 
         except Exception as e:
@@ -341,6 +346,7 @@ class PdfProcessor:
         # Move (save) new file to output path
         # file_saved = self.create_and_save_pdf()
         self.create_and_save_pdf_refactored()
+        print('$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
 
 # ------------------------------------------------------------------------------------
