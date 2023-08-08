@@ -11,6 +11,7 @@ from extraction_handler import PDFExtractor
 from utils.filesystem_manager import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files, construct_month_dir_from_company_dir
 from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
@@ -128,22 +129,41 @@ class PdfProcessor:
                 return doc_type_pattern
         return None
 
-    def get_page_text(self):
-        while self.page_num < len(self.pdf_data.pages):
-            print(f'Processing page number: {self.page_num + 1}')
-            self.cur_page_text = self.extractor.extract_text_from_pdf_page(self.pdf_data.pages[self.page_num])
-            self.company_name = self.get_company_name(self.cur_page_text)
-            self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
+    def process_pages(self):
+        try:
+            while self.page_num < len(self.pdf_data.pages):
+                logging.info(f'Processing page number: {self.page_num + 1}')
+                page = self.pdf_data.pages[self.page_num]
+                self.cur_page_text = self.extractor.extract_text_from_pdf_page(page)
+                self.company_name = self.get_company_name(self.cur_page_text)
+                self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
 
-        #
-            if (self.company_name in self.cur_page_text) and (re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE)) and ('END MSG' not in self.cur_page_text):
-                self.process_multi_page()
-            else:
-                self.page_num += 1
+                if self.company_name not in self.cur_page_text:
+                    logging.warning(f"Company name '{self.company_name}' not found in current page.")
+                    self.page_num += 1
+                    continue
 
-            if self.page_num >= len(self.pdf_data.pages):
-                break
-        return self.cur_page_text
+                if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
+                        'END MSG' not in self.cur_page_text):
+                    if not self.process_multi_page():
+                        raise ValueError(f"Failed processing multi-page PDF at page {self.page_num + 1}.")
+                # elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
+                #         'END MSG' in self.cur_page_text):
+                #     if not self.process_single_page():
+                #         raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
+                else:
+                    logging.warning(f"Pattern '{self.doc_type_pattern}' not found in current page.")
+                    self.page_num += 1
+
+                if self.page_num >= len(self.pdf_data.pages):
+                    break
+
+            logging.info("Completed processing all pages.")
+            return True
+
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
 
     def rename_and_delete_pdf(self):
         file_deleted = False
