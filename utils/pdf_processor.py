@@ -22,6 +22,7 @@ class PdfProcessor:
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
         self.pdf_file_path = self.get_pdf_file_path()
+        self.new_pdf = pikepdf.Pdf.new()
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
         self.extractor = PDFExtractor()
@@ -279,15 +280,11 @@ class PdfProcessor:
 
         try:
             # Merge multi page spanning pdfs w/ page objs instance
-            # TODO: self.new_pdf instance variable to replace `pikepdf.Pdf.new()`--> `self.new_pdf.pages.extend(self.page_objs)`
-            new_pdf = pikepdf.Pdf.new()
-
-            new_pdf.pages.extend(self.page_objs)
+            self.new_pdf.pages.extend(self.page_objs)
             self.company_dir = self.assign_file_path_mappings()
-            print('******************************')
-            print(f'self.company_dir: {self.company_dir}\n')
-            print(f'self.new_file_name: {self.new_file_name}')
-            print('******************************')
+            print('******************************\n')
+            print(f'self.new_pdf.pages: {self.new_pdf.pages}')
+            print('\n******************************')
 
             # TODO @DEV: 8/8/23 - issue is we are using `new_pdf` as local var which gets overwritten. we need to use it as an instance variable within this func.
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
@@ -300,7 +297,7 @@ class PdfProcessor:
                 # send to month_dir for all other doc types
                 month_dir = self.construct_final_output_filepath()
                 final_output_file_path = os.path.join(month_dir, self.new_file_name)
-            new_pdf.save(final_output_file_path)
+            self.new_pdf.save(final_output_file_path)
             print(f'\n%%%%%%%%%%%%%%%%%%%%%%%%%% {final_output_file_path} %%%%%%%%%%%%%%%%%%%%%%%%%%')
             return True
 
