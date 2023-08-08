@@ -280,13 +280,13 @@ class PdfProcessor:
 
         try:
             # Merge multi page spanning pdfs w/ page objs instance
+            # TODO: current issue is `page_objs` instance concates all current iteration page objects in the same ds. need to distinguish page objs for each instance (for each doc_type) so we can `.save` on a per instance level.
             self.new_pdf.pages.extend(self.page_objs)
             self.company_dir = self.assign_file_path_mappings()
             print('******************************\n')
             print(f'self.new_pdf.pages: {self.new_pdf.pages}')
             print('\n******************************')
 
-            # TODO @DEV: 8/8/23 - issue is we are using `new_pdf` as local var which gets overwritten. we need to use it as an instance variable within this func.
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
                 # print('******************************')
                 # sent to company_dir as we did in v1
@@ -296,7 +296,7 @@ class PdfProcessor:
             else:
                 # send to month_dir for all other doc types
                 month_dir = self.construct_final_output_filepath()
-                final_output_file_path = os.path.join(month_dir, self.new_file_name)
+                final_output_file_path = month_dir
             self.new_pdf.save(final_output_file_path)
             print(f'\n%%%%%%%%%%%%%%%%%%%%%%%%%% {final_output_file_path} %%%%%%%%%%%%%%%%%%%%%%%%%%')
             return True
