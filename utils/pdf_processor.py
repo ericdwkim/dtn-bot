@@ -72,11 +72,14 @@ class PdfProcessor:
             # Return output path from nested value in nested mapping
             return self.file_path_mappings[self.doc_type][self.company_id]
 
-    # @dev: assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir; allows flexibility for both up to company_dir or up to month_dir --> BUT, ideally have assign_file_path_mappings construct up to month_dir and perform post processing in memory and not on disk
-
-    # @icebox: within an hr could not implement in memory > on disk for post-processing as best approach would require OOP refactors of new class `MiniPDF`. See `/dev/mini_pdf.py for high level skeleton structure
 
     def construct_final_output_filepath(self, post_processing=False):
+        """
+        assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir;
+        allows flexibility for both up to company_dir or up to month_dir
+     ideally have assign_file_path_mappings construct up to month_dir and # TODO: perform post processing in memory and not on disk; requires breaking into smaller classes
+
+        """
         company_dir = self.assign_file_path_mappings()
         month_dir = construct_month_dir_from_company_dir(company_dir)
 
@@ -131,6 +134,9 @@ class PdfProcessor:
         return None
 
     def process_pages(self):
+        """
+        main processing func
+        """
         try:
             while self.page_num < len(self.pdf_data.pages):
                 logging.info(f'Processing page number: {self.page_num + 1}')
@@ -166,34 +172,35 @@ class PdfProcessor:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def rename_and_delete_pdf(self):
-        file_deleted = False
-        if os.path.exists(self.file_path):
-            with pikepdf.open(self.file_path) as pdf:
-                if len(pdf.pages) > 0:
-                    first_page = self.extractor.extract_text_from_pdf_page(pdf.pages[0])
-
-                    if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
-                        if re.search(r'EFT-\d+', first_page):
-                            self.new_file_name = f'EFT-{self.today}-TO-BE-DELETED.pdf'
-                        else:
-                            self.new_file_name = f'CCM-{self.today}-TO-BE-DELETED.pdf'
-
-                        file_directory = os.path.dirname(self.file_path)
-                        new_file_path = os.path.join(file_directory, self.new_file_name)
-
-                        print(f"Renaming file: {self.file_path} to {new_file_path}")
-                        os.rename(self.file_path, new_file_path)
-                        file_deleted = True
-                        print("File renamed successfully.")
-                        sleep(3)
-
-                        if os.path.exists(new_file_path):
-                            print(f"Deleting file: {new_file_path}")
-                            os.remove(new_file_path)
-                            print("File deleted successfully.")
-
-                return file_deleted
+    # TODO: test implementation in `end_flow()`
+    # def rename_and_delete_pdf(self):
+    #     file_deleted = False
+    #     if os.path.exists(self.file_path):
+    #         with pikepdf.open(self.file_path) as pdf:
+    #             if len(pdf.pages) > 0:
+    #                 first_page = self.extractor.extract_text_from_pdf_page(pdf.pages[0])
+    #
+    #                 if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
+    #                     if re.search(r'EFT-\d+', first_page):
+    #                         self.new_file_name = f'EFT-{self.today}-TO-BE-DELETED.pdf'
+    #                     else:
+    #                         self.new_file_name = f'CCM-{self.today}-TO-BE-DELETED.pdf'
+    #
+    #                     file_directory = os.path.dirname(self.file_path)
+    #                     new_file_path = os.path.join(file_directory, self.new_file_name)
+    #
+    #                     print(f"Renaming file: {self.file_path} to {new_file_path}")
+    #                     os.rename(self.file_path, new_file_path)
+    #                     file_deleted = True
+    #                     print("File renamed successfully.")
+    #                     sleep(3)
+    #
+    #                     if os.path.exists(new_file_path):
+    #                         print(f"Deleting file: {new_file_path}")
+    #                         os.remove(new_file_path)
+    #                         print("File deleted successfully.")
+    #
+    #             return file_deleted
 
 
     # Invoices PDF rename helper
