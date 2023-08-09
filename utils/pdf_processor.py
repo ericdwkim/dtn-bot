@@ -4,6 +4,7 @@ import time
 from glob import glob
 import pikepdf
 import shutil
+import logging
 from datetime import datetime
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
