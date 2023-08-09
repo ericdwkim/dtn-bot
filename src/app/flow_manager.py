@@ -31,4 +31,5 @@ class FlowManager:
             print(f'An error occurred trying to start_flow: {e}')
 
     def end_flow(self):
+        # todo: clean up via `rename_and_delete_pdf()`?
         self.base_driver.teardown_driver()
