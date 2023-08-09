@@ -51,15 +51,41 @@ class DataConnectDriver:
                 return True
         except Exception as e:
             print(f'An error occurred trying to switch_tab: {e}')
+
+    # todo: flip to return false first instead of true
     def set_date_filter(self):
-        set_date_filter = self.data_connect_page.set_date_filter()
+        try:
+            set_date_filter = self.data_connect_page.set_date_filter()
+            if set_date_filter:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(f'An error occurred trying to set date filter: {e}')
 
+    # todo: flip to return false first instead of true
     def set_translated_filter_to_no(self):
-        self.data_connect_page.set_translated_filter_to_no()
+        try:
+            set_translated_filter_to_no = self.data_connect_page.set_translated_filter_to_no()
+            if set_translated_filter_to_no:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(f'An error occurred trying to set translated filter: {e}')
 
+    # todo: flip to return false first instead of true
     def set_group_filter_to_invoice(self):
-        self.data_connect_page.set_group_filter_to_invoice()
+        try:
+            set_group_filter_to_invoice = self.data_connect_page.set_group_filter_to_invoice()
+            if set_group_filter_to_invoice:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(f'An error occurred trying to set group filter to invoice: {e}')
+
 
 #
-#     # todo: fill out with required instance methods to be used in flow_manager.py
+#     # todo: fill out with other required instance methods to be used in flow_manager.py
 #
