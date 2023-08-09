@@ -147,10 +147,10 @@ class PdfProcessor:
                         'END MSG' not in self.cur_page_text):
                     if not self.process_multi_page():
                         raise ValueError(f"Failed processing multi-page PDF at page {self.page_num + 1}.")
-                # elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
-                #         'END MSG' in self.cur_page_text):
-                #     if not self.process_single_page():
-                #         raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
+                elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
+                        'END MSG' in self.cur_page_text):
+                    if not self.process_single_page():
+                        raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
                 else:
                     logging.warning(f"Pattern '{self.doc_type_pattern}' not found in current page.")
                     self.page_num += 1
@@ -281,6 +281,9 @@ class PdfProcessor:
         return None
 
     def create_and_save_pdf(self, pages):
+        """
+        pages - single or list of pike pdf page objects
+        """
 
 
         try:
@@ -322,7 +325,7 @@ class PdfProcessor:
         page_objs = []
         page_text_strings = []
 
-
+        # Enter loop by checking for absence of end marker in first page of multi page spanning text
         while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
             cur_page = self.pdf_data.pages[self.page_num]
             page_objs.append(cur_page)
@@ -359,21 +362,38 @@ class PdfProcessor:
         return multi_page_pdf_created_and_saved
 
 
-    # def process_single_page(self):
-    #     self.pages = [self.pdf_data.pages[self.page_num]]
-    #     self.doc_type_num, self.total_target_amt = self.extract_doc_type_and_total_target_amt()
-        # single_page_pdf_created_and_saved = self.create_and_save_pdf(self.pages)
+    def process_single_page(self):
 
 
-        #
-        # if not single_page_pdf_created_and_saved:
-        #     print(f'Could not save single page pdf {single_page_pdf_created_and_saved}')
-        #
-        # self.page_num += 1
-        # if self.page_num >= len(self.pdf_data.pages):
-        #     return
+        # end marker and current instance company name in text
+        if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
+            cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj
 
-        # print('processing single page function called!')
+            # @dev: cur_page_text instance is the same instance to extract text from b/c single page
+            self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
+            # move page cursor
+            self.page_num +=1
+            # fetch target data
+            self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
+            print(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
+
+            if self.page_num >= len(self.pdf_data.pages):
+                return # exit func b/c finished with pdf
+
+            # fetch file name
+            self.new_file_name = self.get_new_file_name()
+
+            #  fetch output filepath
+            self.final_output_filepath = self.construct_final_output_filepath()
+
+            print(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
+
+            #
+            single_page_pdf_created_and_saved = self.create_and_save_pdf(cur_page)
+            print(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
+            return single_page_pdf_created_and_saved
+
+
 
     # def process_pdfs(self, post_processing=False):
     #
