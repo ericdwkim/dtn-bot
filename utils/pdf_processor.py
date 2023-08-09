@@ -375,8 +375,6 @@ class PdfProcessor:
             cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj
             # @dev: cur_page_text instance is the same instance to extract text from b/c single page
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
-            # move page cursor
-            self.page_num +=1
             # fetch target data
             self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
             print(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
@@ -384,6 +382,8 @@ class PdfProcessor:
             if self.page_num >= len(self.pdf_data.pages):
                 return # exit func b/c finished with pdf
 
+            # move page cursor after check; ensures that when last_page_num == len(last_page), it exits and prevents misleading final "error" message that last_page_num + 1 could not be processed
+            self.page_num +=1
             # fetch file name
             self.new_file_name = self.get_new_file_name()
 
@@ -392,7 +392,7 @@ class PdfProcessor:
 
             print(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
 
-            #
+            # Create single page pdf and save in correct dir
             single_page_pdf_created_and_saved = self.create_and_save_pdf(cur_page)
             print(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
             return single_page_pdf_created_and_saved
