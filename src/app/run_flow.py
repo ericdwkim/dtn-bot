@@ -1,7 +1,10 @@
 from src.app.flow_manager import FlowManager
+from config import setup_config
+import logging
+
 def first_flow():
     flow_manager = FlowManager()
-    print(f'\n---------------------------\n Initiating First Flow  \n---------------------------\n')
+    logging.info(f'\n---------------------------\nInitiating First Flow\n---------------------------\n')
     try:
         flow_manager.start_flow()
         # first flow specific logic
