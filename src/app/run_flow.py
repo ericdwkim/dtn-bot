@@ -1,5 +1,4 @@
 from src.app.flow_manager import FlowManager
-from config import setup_config
 import logging
 
 def first_flow():
