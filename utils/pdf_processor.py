@@ -289,8 +289,13 @@ class PdfProcessor:
 
         try:
             new_pdf = pikepdf.Pdf.new()
-            # Merge multi page spanning pdfs w/ page objs instance
-            new_pdf.pages.extend(pages)
+            if isinstance(pages, list):
+                # Merge multi page spanning pdfs w/ page objs instance
+                new_pdf.pages.extend(pages)
+            else:
+                # Create single page pdf from page obj instance
+                new_pdf.pages.append(pages)
+
 
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
                 # send to company_dir for post processing
@@ -365,11 +370,9 @@ class PdfProcessor:
 
     def process_single_page(self):
 
-
         # end marker and current instance company name in text
         if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
             cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj
-
             # @dev: cur_page_text instance is the same instance to extract text from b/c single page
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
             # move page cursor
