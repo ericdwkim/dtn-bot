@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta
-from mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map
+from utils.mappings import doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map
 
 def check_file_exists(output_path):
     """
@@ -158,17 +158,6 @@ def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=Non
     # Create and return path to the relevant year and month directories
     return create_and_return_directory_path(doc_type_dir, current_year, current_month)
 
-"""
-construct_final_output_filepath():
-/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports/Credit Cards/CONCORD FIRST DATA RETRIEVAL [11111]
-
-
-/
-construct_month_dir_from_doc_type():
-
-Credit Cards/2023/07-Jul/CMB-07-31-23-64136.12.pdf
-
-"""
 
 def construct_month_dir_from_company_dir(company_dir):
 
