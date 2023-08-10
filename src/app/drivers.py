@@ -1,18 +1,17 @@
 import logging
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 
 class BaseDriver:
     def __init__(self):
-        print(f'Creating new basedriver instance')
+        print(f'Constructing BaseDriver class')
         options = webdriver.ChromeOptions()
         # TODO: argument flag to toggle b/w headless or maximized; less repo changes/commits
         # options.add_argument('--headless=new')
         options.add_argument('--start-maximized')
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        self.driver = webdriver.Chrome(service=Service(), options=options)
 
     def teardown_driver(self):
         self.driver.quit()
