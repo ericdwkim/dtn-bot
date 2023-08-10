@@ -41,8 +41,8 @@ def is_last_day_of_month():
     if so, then it will return True indicating that today is the last day of the month
     :return: bool
     """
-    today = datetime.today()  # @today
-    # today = datetime.strptime('07-23-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
+    # today = datetime.today()  # @today
+    today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
 
 
     tomorrow = today + timedelta(days=1)
@@ -71,12 +71,12 @@ def end_of_month_operations(company_dir=None):
         company_dir = doc_type_abbrv_to_doc_type_subdir_map['INV']
 
     # Get today's date
-    today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')  # @today
-    # today = datetime.strptime('07-23-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
+    # today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')  # @today
+    today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
 
 
     current_year = today.strftime('%Y')
-    next_month = (today.replace(day=1) + datetime.timedelta(days=32)).replace(day=1).strftime('%m-%b')
+    next_month = (today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
     next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
 
     # If it's December, create the next year's directory and the next month's directory inside it
@@ -91,8 +91,8 @@ def cur_month_and_year_from_today():
     Helper function to calculate current month and current year relative to today's date
     :return: Tuple(cur_month, cur_yr)
     """
-    today = datetime.today().strftime('%m-%d-%y')  # @today # todo: turn filesystem_manager.py into OOP to be able to `self.today` ?
-    # today = '07-23-23'
+    # today = datetime.today().strftime('%m-%d-%y')  # @today # todo: turn filesystem_manager.py into OOP to be able to `self.today` ?
+    today = '08-31-23'
 
     current_month = datetime.strptime(today, '%m-%d-%y').strftime('%m-%b')
     current_year = datetime.strptime(today, '%m-%d-%y').strftime('%Y')

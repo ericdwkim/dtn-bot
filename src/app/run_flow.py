@@ -1,6 +1,7 @@
 from src.app.flow_manager import FlowManager
 from utils.pdf_processor import PdfProcessor
 import logging
+from utils.filesystem_manager import is_last_day_of_month, end_of_month_operations
 
 def first_flow():
     flow_manager = FlowManager()
@@ -24,6 +25,10 @@ def first_flow():
 
             if not invoices_renamed_and_filed_away:
                 logging.error('Could not rename and file away invoices. Does the Invoices PDF exist?')
+            elif invoices_renamed_and_filed_away and is_last_day_of_month():
+                print(f'last day of the month\nPerforming end of month operations....')
+                end_of_month_operations()
+
 
     finally:
         flow_manager.end_flow()
