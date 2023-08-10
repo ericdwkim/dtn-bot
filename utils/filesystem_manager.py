@@ -58,8 +58,7 @@ def create_directory(directory):
         os.makedirs(directory)
     return directory
 
-#TODO (WIP): refactor to not require company_dir param, but take assign_file_path_mappings output as `company_dir` instance to concat dynamic cur or next yr/next_month dirs
-# TODO: keep company_dir as optional param and in run_flow just pass `company_dir = processor.assign_file_path_mappings()` so that it can dynamically pass in company_dirs depending on each flow instance BUT not sure how it will resolve for first flow since company_dir needs to be none. I guess i can just override it by `            end_of_month_operations(processor.root_dir, company_dir=None) :)
+# TODO: currently only viable for invoices as we need to dynamically construct `doc_type` and `company_name`. we have access to `root_dir` which goes up to "DTN Reports" and this func constructs YYYY/MM-MMM.
 def end_of_month_operations(root_dir, company_dir=None):
     """
     Creates the new month and new year directories if it is the last day of the month
@@ -70,8 +69,7 @@ def end_of_month_operations(root_dir, company_dir=None):
     if company_dir is None:
         # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
         doc_type_full = doc_type_abbrv_to_doc_type_subdir_map['INV']
-        # todo: testing to see if passing processor.root_dir actually makes the next month dir in current_year dir
-        company_dir = os.path.join(root_dir, doc_type_full)
+        company_dir = os.path.join(root_dir, doc_type_full) #todo: rename to `doc_type_dir`
         print(f'******************* company_dir ******************** {company_dir}')
 
     # Get today's date
