@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
-from extraction_handler import PDFExtractor
+from utils.extraction_handler import PDFExtractor
 from utils.filesystem_manager import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files, construct_month_dir_from_company_dir
 from utils.mappings_refactored import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
@@ -244,7 +244,7 @@ class PdfProcessor:
     # Refactored `rename_and_move_pdf` with OOP
     def rename_and_move_or_overwrite_invoices_pdf(self):
 
-        renamed_file= self.rename_invoices_pdf()
+        renamed_file = self.rename_invoices_pdf()
 
         if not renamed_file:
             return False
@@ -256,7 +256,7 @@ class PdfProcessor:
         target_file_path = os.path.join(month_dir, self.new_file_name)
 
         # Get timestamps for new Invoices file
-        mod_time_new, cre_time_new = self.get_file_timestamps(self.pdf_file_path)
+        mod_time_new, cre_time_new = self.get_file_timestamps(renamed_file)
 
         # If conflicting filename exists in target directory, replace with newest
         if os.path.isfile(target_file_path):
@@ -267,7 +267,7 @@ class PdfProcessor:
             os.remove(target_file_path)
 
         try:
-            shutil.move(self.pdf_file_path, month_dir)
+            shutil.move(renamed_file, month_dir)
             print(f'Moved latest Invoices pdf created on "{cre_time_new}" to "{month_dir}"')
             return True  # File moved successfully
         except Exception as e:
