@@ -28,7 +28,7 @@ def first_flow():
         # WIP - needs to create Sept dir in `Fuel Invoices/2023`
         elif invoices_renamed_and_filed_away and is_last_day_of_month():
             print(f'last day of the month\nPerforming end of month operations....')
-            end_of_month_operations()
+            end_of_month_operations(processor.root_dir)
             print(f'done!---------------------------------')
 
 

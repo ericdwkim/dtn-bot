@@ -59,7 +59,8 @@ def create_directory(directory):
     return directory
 
 #TODO (WIP): refactor to not require company_dir param, but take assign_file_path_mappings output as `company_dir` instance to concat dynamic cur or next yr/next_month dirs
-def end_of_month_operations(company_dir=None):
+# TODO: keep company_dir as optional param and in run_flow just pass `company_dir = processor.assign_file_path_mappings()` so that it can dynamically pass in company_dirs depending on each flow instance BUT not sure how it will resolve for first flow since company_dir needs to be none. I guess i can just override it by `            end_of_month_operations(processor.root_dir, company_dir=None) :)
+def end_of_month_operations(root_dir, company_dir=None):
     """
     Creates the new month and new year directories if it is the last day of the month
     :param company_dir: defaulted to None
@@ -68,8 +69,10 @@ def end_of_month_operations(company_dir=None):
     # Handles INV case
     if company_dir is None:
         # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
-        company_dir = doc_type_abbrv_to_doc_type_subdir_map['INV']
-        print(f'************* company_dir ****************** {company_dir}')
+        doc_type_full = doc_type_abbrv_to_doc_type_subdir_map['INV']
+        # todo: testing to see if passing processor.root_dir actually makes the next month dir in current_year dir
+        company_dir = os.path.join(root_dir, doc_type_full)
+        print(f'******************* company_dir ******************** {company_dir}')
 
     # Get today's date
     # today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')  # @today
@@ -79,7 +82,7 @@ def end_of_month_operations(company_dir=None):
     current_year = today.strftime('%Y')
     next_month = (today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
     next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
-    print(f'current_year: {current_year} | next_month: {next_month} | next_year: {next_year} ')
+    print(f'current_year: {current_year} | next_month: {next_month} |')
 
     # If it's December, create the next year's directory and the next month's directory inside it
     if next_month == '01-Jan':
