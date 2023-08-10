@@ -20,14 +20,16 @@ def first_flow():
         if not invoices_downloaded:
             logging.error('Could not download Invoices')
 
-        else:
-            invoices_renamed_and_filed_away = processor.rename_and_move_or_overwrite_invoices_pdf()
+        invoices_renamed_and_filed_away = processor.rename_and_move_or_overwrite_invoices_pdf()
 
-            if not invoices_renamed_and_filed_away:
-                logging.error('Could not rename and file away invoices. Does the Invoices PDF exist?')
-            elif invoices_renamed_and_filed_away and is_last_day_of_month():
-                print(f'last day of the month\nPerforming end of month operations....')
-                end_of_month_operations()
+        if not invoices_renamed_and_filed_away:
+            logging.error('Could not rename and file away invoices. Does the Invoices PDF exist?')
+
+        # WIP - needs to create Sept dir in `Fuel Invoices/2023`
+        elif invoices_renamed_and_filed_away and is_last_day_of_month():
+            print(f'last day of the month\nPerforming end of month operations....')
+            end_of_month_operations()
+            print(f'done!---------------------------------')
 
 
     finally:
