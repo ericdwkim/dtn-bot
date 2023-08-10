@@ -129,6 +129,7 @@ def create_and_return_directory_path(doc_type_dir, current_year, current_month):
 
     return month_dir
 
+# @dev: renamed `calculate_directory_path` to `construct_month_dir_from_doc_type`
 def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=None):
     """
     Given the doc_type as minimum param, it returns the constructed final output path\ndepending on document type
