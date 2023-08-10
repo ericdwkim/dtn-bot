@@ -9,8 +9,8 @@ class BaseDriver:
         print(f'Constructing BaseDriver class')
         options = webdriver.ChromeOptions()
         # TODO: argument flag to toggle b/w headless or maximized; less repo changes/commits
-        # options.add_argument('--headless=new')
-        options.add_argument('--start-maximized')
+        options.add_argument('--headless=new')
+        # options.add_argument('--start-maximized')
         self.driver = webdriver.Chrome(service=Service(), options=options)
 
     def teardown_driver(self):
