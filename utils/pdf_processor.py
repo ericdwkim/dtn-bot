@@ -18,6 +18,7 @@ class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
     today = datetime.today().strftime('%m-%d-%y')
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
+    # root_dir_prod = r'K:/DTN Reports'
     download_dir = str(Path.home() / "Downloads")
     # ----------------------------------  Class Attributes ----------------------------------
 
