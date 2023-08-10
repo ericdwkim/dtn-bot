@@ -33,9 +33,8 @@ def cleanup_files(pdf_data):
             os.remove(file_path)
             files_deleted = True
     return files_deleted
+# TODO: consider creating a wrapper func for `is_last_day_of_month` then `end_of_month_operations`
 
-
-# TODO: if this fn returns true, then just call end_of_month_operations() ?
 def is_last_day_of_month():
     """
     Relative to today's date, it checks if tomorrow's date would be the start of a new month,\n
@@ -59,7 +58,7 @@ def create_directory(directory):
         os.makedirs(directory)
     return directory
 
-# TODO: wrap is_last_day_of_month() with this function since this operation should only be done if is_last_day_of_month() returns True
+#TODO (WIP): refactor to not require company_dir param, but take assign_file_path_mappings output as `company_dir` instance to concat dynamic cur or next yr/next_month dirs
 def end_of_month_operations(company_dir=None):
     """
     Creates the new month and new year directories if it is the last day of the month
@@ -100,6 +99,8 @@ def cur_month_and_year_from_today():
 
     return current_month, current_year
 
+# @dev: renamed `get_root_directory` to `get_doc_type_dir`
+# TODO: rename func and associated vars as it only returns type of document in full `Credit Credits`, not the directory up to doc_type as suggested `K:/DTN Reports/Credit Cards`
 def get_doc_type_dir(doc_type):
     """
     Given a file prefix, it unpacks the root_directory mapping to return doc_type matching root directory aka the document type directory path
@@ -139,16 +140,17 @@ def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=Non
     # Extract month and year from helper
     current_month, current_year = cur_month_and_year_from_today()
 
-    # Determine root directory
+    # Determine root directory; #todo: rename var to doc_type_full ? b/c not a directory!
     doc_type_dir = get_doc_type_dir(doc_type)
 
     # If root directory not found, raise exception
+    # todo: update as it is no longer a root directory, just document type in full aka `Fuel Invoices`
     if not doc_type_dir:
         raise ValueError(f"No root directory found for document type '{doc_type}'")
 
     # Handle EFT and CMB cases and non-exxon CCM files
     if (doc_type == 'EFT' or doc_type == 'CMB' or doc_type == 'CCM') and company_id is None and company_dir:
-        doc_type_dir = company_dir
+        doc_type_dir = company_dir # todo: change var name;; doesn't make sense to say that company directory is now doc type directory. if anything, it is now the new "root" directory /doc_type/company; NOTE: called the same var to only have a single return instead of having three separate returns
 
     # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
     elif doc_type_dir and company_id:
@@ -156,6 +158,7 @@ def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=Non
         doc_type_dir = os.path.join(doc_type_dir, company_directory)
 
     # Create and return path to the relevant year and month directories
+    # @dev: for INV doc_type, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
     return create_and_return_directory_path(doc_type_dir, current_year, current_month)
 
 
