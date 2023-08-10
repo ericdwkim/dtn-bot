@@ -24,20 +24,22 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
-        self.pdf_file_path = self.get_pdf_file_path()
+        # self.pdf_file_path = self.get_pdf_file_path()
+        self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
         self.extractor = PDFExtractor()
         self.doc_type, self.total_target_amt = ('', '')
 
     # ---------------------------------- Instance attributes ----------------------------------
-    def get_pdf_file_path(self):
-        try:
-            files = Path(self.download_dir).glob('*messages.pdf')
-            tar_file = max(files, key=lambda x: x.stat().st_mtime)
-            return str(tar_file)
-        except ValueError as e:
-            print(f'An error occurred: {e}. Check if `messages.pdf` exists?')
+    # TODO: remove?
+    # def get_pdf_file_path(self):
+    #     try:
+    #         files = Path(self.download_dir).glob('*messages.pdf')
+    #         tar_file = max(files, key=lambda x: x.stat().st_mtime)
+    #         return str(tar_file)
+    #     except ValueError as e:
+    #         print(f'An error occurred: {e}. Check if `messages.pdf` exists?')
 
     def get_pdf(self, filepath):
         if os.path.exists(filepath):
