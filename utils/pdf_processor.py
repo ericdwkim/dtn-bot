@@ -244,9 +244,9 @@ class PdfProcessor:
     # Refactored `rename_and_move_pdf` with OOP
     def rename_and_move_or_overwrite_invoices_pdf(self):
 
-        renamed_file = self.rename_invoices_pdf()
+        invoices_file_has_been_renamed = self.rename_invoices_pdf()
 
-        if not renamed_file:
+        if not invoices_file_has_been_renamed:
             return False
 
         # Get final output dir from file prefix
