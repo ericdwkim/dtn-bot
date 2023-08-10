@@ -266,7 +266,7 @@ class PdfProcessor:
             mod_time_old, cre_time_old = self.get_file_timestamps(target_file_path)
 
             print(
-                f'File with name: "{new_file_name}" already exists at "{target_file_path}"\nLast modified (old): {mod_time_old} | Last modified (new): {mod_time_new}\nCreated (old): {cre_time_old} | Created (new): {cre_time_new}\nOverwriting duplicate file with latest modified/created...')
+                f'File with name: "{self.new_file_name}" already exists at "{target_file_path}"\nLast modified (old): {mod_time_old} | Last modified (new): {mod_time_new}\nCreated (old): {cre_time_old} | Created (new): {cre_time_new}\nOverwriting duplicate file with latest modified/created...')
             os.remove(target_file_path)
 
         try:
