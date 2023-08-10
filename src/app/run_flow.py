@@ -1,13 +1,21 @@
 from src.app.flow_manager import FlowManager
+from src.app.drivers import DataConnectDriver
+from src.pages import DataConnectPage
 import logging
 
 def first_flow():
     flow_manager = FlowManager()
+    data_connect_page = DataConnectDriver()
     logging.info(f'\n---------------------------\nInitiating First Flow\n---------------------------\n')
     try:
         flow_manager.start_flow()
         # first flow specific logic
-        # TODO: left off at translated filter working.
+        group_filter_set_to_invoice = data_connect_page.set_group_filter_to_invoice()
+        if not group_filter_set_to_invoice:
+            logging.error('Could not set group filter to invoice')
+
+
+
     finally:
         flow_manager.end_flow()
 
