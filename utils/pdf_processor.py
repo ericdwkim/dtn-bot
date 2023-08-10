@@ -216,13 +216,13 @@ class PdfProcessor:
         self.new_file_name = self.today + '.pdf'
         # given the original `messages.pdf` full filepath, return new full filepath
         file_dir = os.path.dirname(self.pdf_file_path)
-        new_file_path = os.path.join(file_dir, self.new_file_name)
-        print(f'Renaming original Invoices PDF file "{self.pdf_file_path}" to {new_file_path}')
+        self.new_file_path = os.path.join(file_dir, self.new_file_name)
+        print(f'Renaming original Invoices PDF file "{self.pdf_file_path}" to {self.new_file_path}')
 
         pdf.close() # Close PDF
-        os.rename(self.pdf_file_path, new_file_path)
+        os.rename(self.pdf_file_path, self.new_file_path)
         # Check file got saved correctly
-        if os.path.exists(new_file_path):
+        if os.path.exists(self.new_file_path):
             print(f'File renamed successfully.')
             time.sleep(3)
             return True
@@ -255,10 +255,10 @@ class PdfProcessor:
         month_dir = construct_month_dir_from_doc_type('INV')
 
         # Construct final output path
-        target_file_path = os.path.join(month_dir, self.new_file_name)
+        target_file_path = os.path.join(self.root_dir, month_dir, self.new_file_name)
 
         # Get timestamps for new Invoices file
-        mod_time_new, cre_time_new = self.get_file_timestamps(renamed_file)
+        mod_time_new, cre_time_new = self.get_file_timestamps(self.new_file_path)
 
         # If conflicting filename exists in target directory, replace with newest
         if os.path.isfile(target_file_path):
@@ -269,8 +269,8 @@ class PdfProcessor:
             os.remove(target_file_path)
 
         try:
-            shutil.move(renamed_file, month_dir)
-            print(f'Moved latest Invoices pdf created on "{cre_time_new}" to "{month_dir}"')
+            shutil.move(self.new_file_path, target_file_path)
+            print(f'Moved latest Invoices pdf created on "{cre_time_new}" to "{target_file_path}"')
             return True  # File moved successfully
         except Exception as e:
             print(f'An error occurred while moving the file: {e}')
