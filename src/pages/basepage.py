@@ -8,6 +8,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 class BasePage(object):
     def __init__(self, base_driver):
+        """
+        @dev:
+        `base_driver` refers to an instance of `BaseDriver`, and `base_driver.driver` refers to the ChromeDriver instance.
+        """
         self.driver = base_driver.driver
         self.action = ActionChains(self.driver)
 
