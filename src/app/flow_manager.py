@@ -1,9 +1,10 @@
 from src.app.drivers import BaseDriver, LoginPageDriver, DataConnectDriver
 class FlowManager:
     def __init__(self):
+        # @dev: subclass drivers have and use base_driver
         self.base_driver = BaseDriver()
         self.login_page_driver = LoginPageDriver(self.base_driver)
-        self.data_connect = DataConnectDriver(self.base_driver)
+        self.data_connect_driver = DataConnectDriver(self.base_driver)
 
     # @dev: what all flows should do in sequence regardless of what flow number assuming they are independently ran
     def start_flow(self):
@@ -14,17 +15,17 @@ class FlowManager:
             else:
                 print(f'logged in successfully!')
 
-            tab_switched_to_data_connect = self.data_connect.switch_tab()
+            tab_switched_to_data_connect = self.data_connect_driver.switch_tab()
             if not tab_switched_to_data_connect:
                 raise RuntimeError('tab_switched_to_data_connect returned false')
 
 
             # todo: not sure what changes will need to made, but it will be needed for all three flows, just different for third flow using `third_flow` bool
-            date_filter_set = self.data_connect.set_date_filter()
+            date_filter_set = self.data_connect_driver.set_date_filter()
             if not date_filter_set:
                 raise RuntimeError('Something went wrong3')
 
-            translated_set_to_no = self.data_connect.set_translated_filter_to_no()
+            translated_set_to_no = self.data_connect_driver.set_translated_filter_to_no()
             if not translated_set_to_no:
                 raise RuntimeError('Something went wrong')
         except Exception as e:
