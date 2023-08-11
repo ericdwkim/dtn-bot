@@ -16,8 +16,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
-    # today = datetime.today().strftime('%m-%d-%y')  # @today
-    today = '08-31-23'  # testing purposes
+    # today = datetime.today().strftime('%m-%d-%y')  # @today original in `string`
+    # today = datetime.today()  # @today; original in `datetime`
+    # today_datetime = datetime.today()  # @today; renamed original in `datetime`
+    # today_string = today_datetime.strftime('%m-%d-%y') # @today `string`
+
+    today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
     # root_dir_prod = r'K:/DTN Reports'
     download_dir = str(Path.home() / "Downloads")
@@ -214,7 +218,7 @@ class PdfProcessor:
         pdf = self.get_pdf(self.pdf_file_path)
 
 
-        self.new_file_name = self.today + '.pdf'
+        self.new_file_name = self.today.strftime('%m-%d-%y') + '.pdf'
         # given the original `messages.pdf` full filepath, return new full filepath
         file_dir = os.path.dirname(self.pdf_file_path)
         self.new_file_path = os.path.join(file_dir, self.new_file_name)
@@ -325,16 +329,17 @@ class PdfProcessor:
             return False
 
     def get_new_file_name(self):
+        today_str = self.today.strftime('%m-%d-%y')
         if re.match(r'EFT-\s*\d+', self.doc_type) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
             if "-" in self.total_target_amt:
                 total_target_amt = self.total_target_amt.replace("-", "")
-                new_file_name = f'{self.doc_type}-{self.today}-({total_target_amt}).pdf'
+                new_file_name = f'{self.doc_type}-{today_str}-({total_target_amt}).pdf'
             else:
-                new_file_name = f'{self.doc_type}-{self.today}-{self.total_target_amt}.pdf'
+                new_file_name = f'{self.doc_type}-{today_str}-{self.total_target_amt}.pdf'
         elif (re.match(r'CBK-\s*\d+', self.doc_type) or re.match(r'RTV-\s*\d+', self.doc_type)):
-            new_file_name = f'{self.doc_type}-{self.today}-CHARGEBACK REQUEST.pdf'
+            new_file_name = f'{self.doc_type}-{today_str}-CHARGEBACK REQUEST.pdf'
         else:
-            new_file_name = f'{self.doc_type}-{self.today}-{self.total_target_amt}.pdf'
+            new_file_name = f'{self.doc_type}-{today_str}-{self.total_target_amt}.pdf'
         return new_file_name
 
 
@@ -407,6 +412,39 @@ class PdfProcessor:
             single_page_pdf_created_and_saved = self.create_and_save_pdf(cur_page)
             print(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
             return single_page_pdf_created_and_saved
+
+    def end_of_month_operations(self):
+
+        """
+        Creates the new month and new year directories if it is the last day of the month
+        :param company_dir: defaulted to None
+        :return: None
+        """
+
+        self.company_dir = self.assign_file_path_mappings() #TODO : "AttributeError: 'PdfProcessor' object has no attribute 'company_name'. Did you mean: 'get_company_name'"
+
+        current_year = self.today.strftime('%Y')
+        next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
+        next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
+        print(f'current_year: {current_year} | next_month: {next_month} |')
+
+
+        # Handles INV case
+        # if first_flow is True: # TODO: not sure what self.company_Dir will result in for first flow...
+        #     # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
+        #     doc_type_full = doc_type_abbrv_to_doc_type_subdir_map['INV']
+        #     company_dir = os.path.join(self.root_dir, doc_type_full) #todo: rename to `doc_type_dir`
+        #     print(f'******************* company_dir ******************** {company_dir}')
+        #
+
+        # If it's December, create the next year's directory and the next month's directory inside it
+        if next_month == '01-Jan':
+            os.makedirs(os.path.join(self.company_dir, next_year, next_month), exist_ok=True)
+
+        else:  # If not December, just create the next month's directory inside the current year's directory
+            print(f'Joining {self.company_dir} + {current_year} + {next_month}')
+            os.makedirs(os.path.join(self.company_dir, current_year, next_month), exist_ok=True)
+
 
 
 # TODO: clean up pdf_processor.py, perform live tests to ensure both mutli and single pages are getting correctly processed and filed away;

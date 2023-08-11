@@ -1,7 +1,7 @@
 from src.app.flow_manager import FlowManager
 from utils.pdf_processor import PdfProcessor
 import logging
-from utils.filesystem_manager import is_last_day_of_month, end_of_month_operations
+from utils.filesystem_manager import is_last_day_of_month
 
 flow_manager = FlowManager()
 processor = PdfProcessor()
@@ -31,7 +31,7 @@ def first_flow():
         # WIP - needs to create Sept dir in `Fuel Invoices/2023`
         elif invoices_renamed_and_filed_away and is_last_day_of_month():
             print(f'last day of the month\nPerforming end of month operations....')
-            end_of_month_operations(processor.root_dir, company_dir=None)
+            processor.end_of_month_operations()
             print(f'done!---------------------------------')
 
 
