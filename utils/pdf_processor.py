@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import PDFExtractor
-from utils.filesystem_manager import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files, construct_month_dir_from_company_dir
+from utils.filesystem_manager import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files, construct_month_dir_from_company_dir, create_and_return_directory_path, get_doc_type_dir
 from utils.mappings import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -418,38 +418,50 @@ class PdfProcessor:
             print(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
             return single_page_pdf_created_and_saved
 
+    # def end_of_month_operations(self):
+    #
+    #     """
+    #     Creates the new month and new year directories if it is the last day of the month
+    #     :param company_dir: defaulted to None
+    #     :return: None
+    #     """
+    #
+    #     current_year = self.today.strftime('%Y')
+    #     next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
+    #     next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
+    #     print(f'current_year: {current_year} | next_month: {next_month} |')
+    #
+    #
+    #     # If it's December, create the next year's directory and the next month's directory inside it
+    #     if next_month == '01-Jan':
+    #         os.makedirs(os.path.join(self.company_dir, next_year, next_month), exist_ok=True)
+    #
+    #     else:  # If not December, just create the next month's directory inside the current year's directory
+    #         print(f'Joining {self.company_dir} + {current_year} + {next_month}')
+    #         os.makedirs(os.path.join(self.company_dir, current_year, next_month), exist_ok=True)
+    #
     def end_of_month_operations(self):
-
-        """
-        Creates the new month and new year directories if it is the last day of the month
-        :param company_dir: defaulted to None
-        :return: None
-        """
-
-        # todo wip: test to see what company_dir resolves to for invoices pdf. need it to be none.
-        print(f'@@@@@@@@@@@@@@@@@ self.doc_type : {self.doc_type} ************** ')
 
         current_year = self.today.strftime('%Y')
         next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
         next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
         print(f'current_year: {current_year} | next_month: {next_month} |')
 
-
-        # Handles INV case # todo: may simply need `if self.doc_type == 'INV'` then `self.company_dir = ''` to ensure that all invoices are sent to DTN Reports/Fuel invoices/YYYY
-        if self.doc_type is True:
-            # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
-            doc_type_full = doc_type_abbrv_to_doc_type_subdir_map['INV']
-            company_dir = os.path.join(self.root_dir, doc_type_full) #todo: rename to `doc_type_dir`
-            print(f'******************* company_dir ******************** {company_dir}')
-
-
-        # If it's December, create the next year's directory and the next month's directory inside it
+        # Define the directory that you want to create
         if next_month == '01-Jan':
             os.makedirs(os.path.join(self.company_dir, next_year, next_month), exist_ok=True)
 
-        else:  # If not December, just create the next month's directory inside the current year's directory
-            print(f'Joining {self.company_dir} + {current_year} + {next_month}')
-            os.makedirs(os.path.join(self.company_dir, current_year, next_month), exist_ok=True)
+    def wrapper(self):
+        # Fetch doc type dir with hard coded doc_type for invoices
+        invoices_doc_type_dir = get_doc_type_dir('INV')
+        # Get dynamically created year and month dirs based on `self.today`
+        next_or_cur_year, next_month = self.end_of_month_operations()
+        # Pass params to return constructed `Fuel Invoices/YYYY/MM-MM`
+        month_dir = create_and_return_directory_path(invoices_doc_type_dir, next_or_cur_year, next_month)
+        # Add root_dir to construct full final output directory path and create required dirs
+        target_output_path = os.path.join(self.root_dir, month_dir)
+        os.makedirs(target_output_path)
+        print(f'$$$$$$$$$$$$$$$$$$ {target_output_path} $$$$$$$$$$$$$$$$$$ ')
 
 
 
