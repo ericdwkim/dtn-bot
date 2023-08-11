@@ -5,7 +5,7 @@ from glob import glob
 import pikepdf
 import shutil
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import PDFExtractor
@@ -128,7 +128,7 @@ class PdfProcessor:
             # f'\n########################################\n{self.cur_page_text}\n########################################\n')
         for company_name in PdfProcessor.get_company_names():
             # print(f'Checking company_name: {company_name}')
-            if company_name in cur_page_text:
+            if company_name in cur_page_text: # todo: may be redundant as this logic already exists in process_pages
                 return company_name
         # Return None if no company name is found in the cur_page_text
         return None
@@ -140,7 +140,9 @@ class PdfProcessor:
         :return:
         """
         for doc_type_pattern in doc_type_patterns:
-            if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
+            if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE): # todo: may be redundant as this logic already exists in process_pages
+                # todo: just add `and (
+                #                         'END MSG' not in self.cur_page_text)` logic
                 return doc_type_pattern
         return None
 
@@ -156,11 +158,11 @@ class PdfProcessor:
                 self.company_name = self.get_company_name(self.cur_page_text)
                 self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
 
-                if self.company_name not in self.cur_page_text:
+                if self.company_name not in self.cur_page_text: # todo: either this or simply use the one in get_company_name()
                     logging.warning(f"Company name '{self.company_name}' not found in current page.")
                     self.page_num += 1
                     continue
-
+                # todo: either this or simply use the one in get_doc_type()
                 if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
                         'END MSG' not in self.cur_page_text):
                     if not self.process_multi_page():
@@ -425,7 +427,7 @@ class PdfProcessor:
         """
 
         # todo wip: test to see what company_dir resolves to for invoices pdf. need it to be none.
-        print(f'@@@@@@@@@@@@@@@@@ self.company_dir : {self.company_dir} ************** ')
+        print(f'@@@@@@@@@@@@@@@@@ self.doc_type : {self.doc_type} ************** ')
 
         current_year = self.today.strftime('%Y')
         next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
@@ -434,11 +436,11 @@ class PdfProcessor:
 
 
         # Handles INV case # todo: may simply need `if self.doc_type == 'INV'` then `self.company_dir = ''` to ensure that all invoices are sent to DTN Reports/Fuel invoices/YYYY
-        # if self.company_dir is True:
-        #     # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
-        #     doc_type_full = doc_type_abbrv_to_doc_type_subdir_map['INV']
-        #     company_dir = os.path.join(self.root_dir, doc_type_full) #todo: rename to `doc_type_dir`
-        #     print(f'******************* company_dir ******************** {company_dir}')
+        if self.doc_type is True:
+            # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
+            doc_type_full = doc_type_abbrv_to_doc_type_subdir_map['INV']
+            company_dir = os.path.join(self.root_dir, doc_type_full) #todo: rename to `doc_type_dir`
+            print(f'******************* company_dir ******************** {company_dir}')
 
 
         # If it's December, create the next year's directory and the next month's directory inside it
