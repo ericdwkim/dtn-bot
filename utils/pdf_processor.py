@@ -449,7 +449,9 @@ class PdfProcessor:
 
         # Define the directory that you want to create
         if next_month == '01-Jan':
-            os.makedirs(os.path.join(self.company_dir, next_year, next_month), exist_ok=True)
+            return next_year, next_month
+        else:
+            return current_year, next_month
 
     def wrapper(self):
         # Fetch doc type dir with hard coded doc_type for invoices
