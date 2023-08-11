@@ -28,7 +28,9 @@ processor = PdfProcessor()
 
 # processor.rename_invoices_pdf()
 #
+
 cur_page_txt = processor.process_pages()
+print(f'cur_page_txt: {cur_page_txt}')
 
 # test to see if construct_month_dir_from_doc_type can simply take self.doc_type and still work
 # invoices_downloaded = processor.rename_and_move_or_overwrite_invoices_pdf()
@@ -41,3 +43,6 @@ cur_page_txt = processor.process_pages()
 
 # for company_name in PdfProcessor.get_company_names():
 #     print(company_name)
+
+
+# processor.construct_final_output_filepath()

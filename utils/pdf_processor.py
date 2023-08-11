@@ -78,7 +78,9 @@ class PdfProcessor:
             return None
         else:
             # Return output path from nested value in nested mapping
-            return self.file_path_mappings[self.doc_type][self.company_id]
+            # return self.file_path_mappings[self.doc_type][self.company_id]
+            self.company_dir =  self.file_path_mappings[self.doc_type][self.company_id]
+            return self.company_dir
 
 
     def construct_final_output_filepath(self, post_processing=False):
@@ -88,20 +90,21 @@ class PdfProcessor:
      ideally have assign_file_path_mappings construct up to month_dir and # TODO: perform post processing in memory and not on disk; requires breaking into smaller classes
 
         """
-        company_dir = self.assign_file_path_mappings()
-        month_dir = construct_month_dir_from_company_dir(company_dir)
+        self.company_dir = self.assign_file_path_mappings()
+        print(f'self.company_dir: {self.company_dir}')
+        month_dir = construct_month_dir_from_company_dir(self.company_dir)
 
 
-        if not company_dir or not month_dir:
+        if not self.company_dir or not month_dir:
             print('Company directory or month directory could not be constructed')
             return
 
         elif post_processing is True:
-            output_file_path = os.path.join(company_dir, self.new_file_name)
+            output_file_path = os.path.join(self.company_dir, self.new_file_name)
             return output_file_path
 
         else:
-            output_file_path = os.path.join(company_dir, month_dir, self.new_file_name)
+            output_file_path = os.path.join(self.company_dir, month_dir, self.new_file_name)
             return output_file_path
 
 
@@ -421,7 +424,8 @@ class PdfProcessor:
         :return: None
         """
 
-        self.company_dir = self.assign_file_path_mappings() #TODO : "AttributeError: 'PdfProcessor' object has no attribute 'company_name'. Did you mean: 'get_company_name'"
+        # todo wip: test to see what company_dir resolves to for invoices pdf. need it to be none.
+        print(f'@@@@@@@@@@@@@@@@@ self.company_dir : {self.company_dir} ************** ')
 
         current_year = self.today.strftime('%Y')
         next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
@@ -429,13 +433,13 @@ class PdfProcessor:
         print(f'current_year: {current_year} | next_month: {next_month} |')
 
 
-        # Handles INV case
-        # if first_flow is True: # TODO: not sure what self.company_Dir will result in for first flow...
+        # Handles INV case # todo: may simply need `if self.doc_type == 'INV'` then `self.company_dir = ''` to ensure that all invoices are sent to DTN Reports/Fuel invoices/YYYY
+        # if self.company_dir is True:
         #     # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
         #     doc_type_full = doc_type_abbrv_to_doc_type_subdir_map['INV']
         #     company_dir = os.path.join(self.root_dir, doc_type_full) #todo: rename to `doc_type_dir`
         #     print(f'******************* company_dir ******************** {company_dir}')
-        #
+
 
         # If it's December, create the next year's directory and the next month's directory inside it
         if next_month == '01-Jan':
