@@ -36,6 +36,7 @@ class FlowManager:
 
 
 """
+FYI: first_flow doesn't need it, only second and third flows do
 # TODO: test implementation in `end_flow()`
         # todo: clean up via `rename_and_delete_pdf()`?
 
