@@ -62,13 +62,14 @@ def second_flow(flow_manager, processor):
 
 
 
-# def third_flow(flow_manager, processor):
-#
-#     # third flow specific logic
-#     pass
-#
-#
-#
+def third_flow(flow_manager, processor):
+    logging.info('running third flow....')
+
+    # third flow specific logic
+    pass
+
+
+
 def run_flows(flow_manager, processor, args):
     if not args.skipFlow1:
         first_flow(flow_manager, processor)
@@ -85,7 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('--skipFlow1', required=False, action='store_true', help='Skip the first flow')
     parser.add_argument('--skipFlow2', required=False, action='store_true', help='Skip the second flow')
     parser.add_argument('--skipFlow3', required=False, action='store_true', help='Skip the third flow')
-    args = parser.parse.args()
+    args = parser.parse_args()
 
     flow_manager = FlowManager(headless=args.headless)
     processor = PdfProcessor()
