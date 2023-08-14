@@ -43,6 +43,10 @@ def second_flow():
 
     try:
         flow_manager.start_flow()
+        group_filter_set_to_draft_notice = flow_manager.data_connect_driver.set_group_filter_to_draft_notice()
+
+        if not group_filter_set_to_draft_notice:
+            logging.error('Could not set group filter to Draft Notice during second_flow')
 
 
     finally:
