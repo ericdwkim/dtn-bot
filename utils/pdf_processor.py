@@ -90,9 +90,14 @@ class PdfProcessor:
      ideally have assign_file_path_mappings construct up to month_dir and # TODO: perform post processing in memory and not on disk; requires breaking into smaller classes
 
         """
+        # Construct company dir
         self.company_dir = self.assign_file_path_mappings()
         print(f'self.company_dir: {self.company_dir}')
-        month_dir = construct_month_dir_from_company_dir(self.company_dir)
+
+        current_year, current_month = self.cur_month_and_year_from_today()
+
+        month_dir = create_and_return_directory_path(self.company_dir, current_year, current_month)
+        # print(f'******************** month_dir {month_dir} *******************')
 
 
         if not self.company_dir or not month_dir:
