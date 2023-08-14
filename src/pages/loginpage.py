@@ -1,4 +1,5 @@
 import os
+import logging
 from selenium.webdriver.common.by import By
 from .basepage import BasePage
 
@@ -19,7 +20,7 @@ class LoginPage(BasePage):
             self.driver.get(self.url)
             return True
         except Exception as e:
-            print(f'Browser could not be launched\nAn error occurred: {str(e)} ')
+            logging.exception(f'Browser could not be launched\nAn error occurred trying to visit "{self.url}": {str(e)} ')
             return False
 
 
@@ -31,7 +32,7 @@ class LoginPage(BasePage):
             else:
                 return False
         except Exception as e:
-            print(f'An error occurred: {str(e)}')
+            logging.exception(f'An error occurred trying to enter_username: {str(e)}')
             return False
 
 
@@ -43,7 +44,7 @@ class LoginPage(BasePage):
             else:
                 return False
         except Exception as e:
-            print(f'An error occurred: {str(e)}')
+            logging.exception(f'An error occurred trying to enter_password: {str(e)}')
             return False
     def click_login_button(self):
         """
@@ -57,7 +58,7 @@ class LoginPage(BasePage):
             else:
                 return False
         except Exception as e:
-            print(f'An error occurred: {str(e)}')
+            logging.exception(f'An error occurred trying to click_login_button: {str(e)}')
             return False
 
     def login(self):
@@ -68,10 +69,10 @@ class LoginPage(BasePage):
             if username_entered and password_entered and login_btn_clicked:
                 return True
             else:
-                print(f'Could not login with provided credentials')
+                logging.error(f'Could not login with provided credentials')
                 return False
         except Exception as e:
-            print(f'An error occurred: {str(e)}')
+            logging.exception(f'An error occurred trying to login: {str(e)}')
             return False
 
     def visit_and_login(self):
@@ -81,7 +82,7 @@ class LoginPage(BasePage):
             if not self.login():
                 return False
             else:
-                print('Browser launched!')
+                logging.info('Browser launched!')
                 return True
         except Exception as e:
-            print(f'exception: {e}')
+            logging.exception(f'An error occurred trying to visit_and_login: {e}')
