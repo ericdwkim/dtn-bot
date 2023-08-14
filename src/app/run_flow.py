@@ -28,9 +28,8 @@ def first_flow():
             logging.error('Could not rename and file away invoices. Does the Invoices PDF exist?')
 
         # WIP - needs to create Sept dir in `Fuel Invoices/2023`
-        elif invoices_renamed_and_filed_away and is_last_day_of_month():
-            print(f'last day of the month\nPerforming end of month operations....')
-            processor.wrapper()
+        elif invoices_renamed_and_filed_away and processor.is_last_day_of_month():
+            processor.month_and_year_handler(first_flow=True)
             print(f'done!---------------------------------')
 
 
