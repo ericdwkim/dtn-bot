@@ -1,7 +1,6 @@
 from src.app.flow_manager import FlowManager
 from utils.pdf_processor import PdfProcessor
 import logging
-from utils.filesystem_manager import is_last_day_of_month
 
 flow_manager = FlowManager()
 processor = PdfProcessor()
