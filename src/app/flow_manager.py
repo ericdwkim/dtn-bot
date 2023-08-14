@@ -32,5 +32,42 @@ class FlowManager:
             print(f'An error occurred trying to start_flow: {e}')
 
     def end_flow(self):
-        # todo: clean up via `rename_and_delete_pdf()`?
         self.base_driver.teardown_driver()
+
+
+"""
+# TODO: test implementation in `end_flow()`
+        # todo: clean up via `rename_and_delete_pdf()`?
+
+
+    # TODO: test implementation in `end_flow()`
+    # def rename_and_delete_pdf(self):
+    #     file_deleted = False
+    #     if os.path.exists(self.file_path):
+    #         with pikepdf.open(self.file_path) as pdf:
+    #             if len(pdf.pages) > 0:
+    #                 first_page = self.extractor.extract_text_from_pdf_page(pdf.pages[0])
+    #
+    #                 if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
+    #                     if re.search(r'EFT-\d+', first_page):
+    #                         self.new_file_name = f'EFT-{self.today}-TO-BE-DELETED.pdf'
+    #                     else:
+    #                         self.new_file_name = f'CCM-{self.today}-TO-BE-DELETED.pdf'
+    #
+    #                     file_directory = os.path.dirname(self.file_path)
+    #                     new_file_path = os.path.join(file_directory, self.new_file_name)
+    #
+    #                     print(f"Renaming file: {self.file_path} to {new_file_path}")
+    #                     os.rename(self.file_path, new_file_path)
+    #                     file_deleted = True
+    #                     print("File renamed successfully.")
+    #                     sleep(3)
+    #
+    #                     if os.path.exists(new_file_path):
+    #                         print(f"Deleting file: {new_file_path}")
+    #                         os.remove(new_file_path)
+    #                         print("File deleted successfully.")
+    #
+    #             return file_deleted
+
+"""
