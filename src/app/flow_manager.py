@@ -2,9 +2,9 @@ import logging
 
 from src.app.drivers import BaseDriver, LoginPageDriver, DataConnectDriver
 class FlowManager:
-    def __init__(self):
+    def __init__(self, headless=False):
         # @dev: subclass drivers have and use base_driver
-        self.base_driver = BaseDriver()
+        self.base_driver = BaseDriver(headless=headless)
         self.login_page_driver = LoginPageDriver(self.base_driver)
         self.data_connect_driver = DataConnectDriver(self.base_driver)
 
