@@ -29,7 +29,6 @@ def first_flow(flow_manager, processor):
 
         elif invoices_renamed_and_filed_away and processor.is_last_day_of_month():
             processor.month_and_year_handler(first_flow=True)
-            print(f'done!---------------------------------')
 
         flow_manager.end_flow()
 
