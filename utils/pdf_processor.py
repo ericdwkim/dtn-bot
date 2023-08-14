@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import PDFExtractor
-from utils.filesystem_manager import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files, construct_month_dir_from_company_dir, create_and_return_directory_path, get_doc_type_dir
-from utils.mappings import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
+from utils.filesystem_manager import construct_month_dir_from_doc_type, create_and_return_directory_path, get_doc_type_full, create_directory
+from utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -29,7 +29,6 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
-        # self.pdf_file_path = self.get_pdf_file_path()
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
@@ -37,14 +36,6 @@ class PdfProcessor:
         self.doc_type, self.total_target_amt = ('', '')
 
     # ---------------------------------- Instance attributes ----------------------------------
-    # TODO: remove?
-    # def get_pdf_file_path(self):
-    #     try:
-    #         files = Path(self.download_dir).glob('*messages.pdf')
-    #         tar_file = max(files, key=lambda x: x.stat().st_mtime)
-    #         return str(tar_file)
-    #     except ValueError as e:
-    #         print(f'An error occurred: {e}. Check if `messages.pdf` exists?')
 
     def get_pdf(self, filepath):
         if os.path.exists(filepath):
@@ -62,7 +53,7 @@ class PdfProcessor:
                 self.company_id: os.path.join
                     (
                     self.root_dir,
-                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
+                    doc_type_short_to_doc_type_full_map[self.doc_type],
                     company_id_to_company_subdir_map[self.company_id]
                 )
             }
@@ -123,6 +114,12 @@ class PdfProcessor:
         # print(f'******** {company_names} *******')
         return company_names
 
+
+    def cur_month_and_year_from_today(self):
+        current_month = self.today.strftime('%m-%b')
+        current_year = self.today.strftime('%Y')
+        return current_year, current_month
+
     def get_company_name(self, cur_page_text):
         """
         Helper func for getting company_name instance
@@ -150,6 +147,11 @@ class PdfProcessor:
                 #                         'END MSG' not in self.cur_page_text)` logic
                 return doc_type_pattern
         return None
+
+    def is_last_day_of_month(self):
+        logging.info('It is the last day of the month\nPerforming end of month operations...')
+        tomorrow = self.today + timedelta(days=1)
+        return tomorrow.day == 1
 
     def process_pages(self):
         """
@@ -189,37 +191,6 @@ class PdfProcessor:
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return False
-
-    # TODO: test implementation in `end_flow()`
-    # def rename_and_delete_pdf(self):
-    #     file_deleted = False
-    #     if os.path.exists(self.file_path):
-    #         with pikepdf.open(self.file_path) as pdf:
-    #             if len(pdf.pages) > 0:
-    #                 first_page = self.extractor.extract_text_from_pdf_page(pdf.pages[0])
-    #
-    #                 if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
-    #                     if re.search(r'EFT-\d+', first_page):
-    #                         self.new_file_name = f'EFT-{self.today}-TO-BE-DELETED.pdf'
-    #                     else:
-    #                         self.new_file_name = f'CCM-{self.today}-TO-BE-DELETED.pdf'
-    #
-    #                     file_directory = os.path.dirname(self.file_path)
-    #                     new_file_path = os.path.join(file_directory, self.new_file_name)
-    #
-    #                     print(f"Renaming file: {self.file_path} to {new_file_path}")
-    #                     os.rename(self.file_path, new_file_path)
-    #                     file_deleted = True
-    #                     print("File renamed successfully.")
-    #                     sleep(3)
-    #
-    #                     if os.path.exists(new_file_path):
-    #                         print(f"Deleting file: {new_file_path}")
-    #                         os.remove(new_file_path)
-    #                         print("File deleted successfully.")
-    #
-    #             return file_deleted
-
 
     # Invoices PDF rename helper
     def rename_invoices_pdf(self):
@@ -423,77 +394,29 @@ class PdfProcessor:
             print(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
             return single_page_pdf_created_and_saved
 
-    # def end_of_month_operations(self):
-    #
-    #     """
-    #     Creates the new month and new year directories if it is the last day of the month
-    #     :param company_dir: defaulted to None
-    #     :return: None
-    #     """
-    #
-    #     current_year = self.today.strftime('%Y')
-    #     next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
-    #     next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
-    #     print(f'current_year: {current_year} | next_month: {next_month} |')
-    #
-    #
-    #     # If it's December, create the next year's directory and the next month's directory inside it
-    #     if next_month == '01-Jan':
-    #         os.makedirs(os.path.join(self.company_dir, next_year, next_month), exist_ok=True)
-    #
-    #     else:  # If not December, just create the next month's directory inside the current year's directory
-    #         print(f'Joining {self.company_dir} + {current_year} + {next_month}')
-    #         os.makedirs(os.path.join(self.company_dir, current_year, next_month), exist_ok=True)
-    #
-    def end_of_month_operations(self):
-
-        current_year = self.today.strftime('%Y')
+    # @dev: previously called `end_of_month_operations`
+    def get_year_and_month(self):
+        # throw away `current_month` as not needed in this function
+        current_year, _ = self.cur_month_and_year_from_today()
         next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
         next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
-        print(f'current_year: {current_year} | next_month: {next_month} |')
+        return (next_year, next_month) if next_month == '01-Jan' else (current_year, next_month)
 
-        # Define the directory that you want to create
-        if next_month == '01-Jan':
-            return next_year, next_month
-        else:
-            return current_year, next_month
-
-    def wrapper(self):
-        # Fetch doc type dir with hard coded doc_type for invoices
-        invoices_doc_type_dir = get_doc_type_dir('INV')
-        # Get dynamically created year and month dirs based on `self.today`
-        next_or_cur_year, next_month = self.end_of_month_operations()
-        # Pass params to return constructed `Fuel Invoices/YYYY/MM-MM`
-        month_dir = create_and_return_directory_path(invoices_doc_type_dir, next_or_cur_year, next_month)
-        # Add root_dir to construct full final output directory path and create required dirs
+    # @dev: previously called `wrapper` during dev
+    def end_of_month_operations(self, parent_dir):
+        next_or_cur_year, next_month = self.get_year_and_month()
+        month_dir = create_and_return_directory_path(parent_dir, next_or_cur_year, next_month)
         target_output_path = os.path.join(self.root_dir, month_dir)
-        os.makedirs(target_output_path)
-        print(f'$$$$$$$$$$$$$$$$$$ {target_output_path} $$$$$$$$$$$$$$$$$$ ')
+        create_directory(target_output_path)
+
+    def month_and_year_handler(self, first_flow=False):
+        try:
+            if self.is_last_day_of_month():
+                parent_dir = get_doc_type_full('INV') if first_flow else self.company_dir
+                self.end_of_month_operations(parent_dir)
+            else:
+                print('Not the last day of the month.')
+        except Exception as e:
+            print(f'Exception: {e}')
 
 
-
-# TODO: clean up pdf_processor.py, perform live tests to ensure both mutli and single pages are getting correctly processed and filed away;
-
-    # def process_pdfs(self, post_processing=False):
-    #
-    #     output_path = self.file_path_mappings[self.doc_type][self.company_id]
-    #     print(f'output_path: {output_path}')
-    #
-    #     try:
-    #
-    #         # Conditional post processing only for EXXON CCMs and LRDs
-    #         if post_processing is True:
-    #             # print(f'Post processing for EXXON CCMs & LRDs')
-    #             merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map,
-    #                                      company_id_to_company_subdir_map)
-    #
-    #
-    #
-    #         else:
-    #             # Dynamic filesystem mgmt for files that do not need post processing
-    #             end_of_month_operations(output_path, self.new_file_name)
-    #             return True
-    #
-    #     except Exception as e:
-    #         print(f'An error occurred: {str(e)}')
-    #         return False
