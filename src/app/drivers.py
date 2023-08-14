@@ -6,7 +6,7 @@ from ..pages.dataconnectpage import DataConnectPage
 
 class BaseDriver:
     def __init__(self):
-        print(f'Constructing BaseDriver class')
+        print(f'Constructing BaseDriver')
         options = webdriver.ChromeOptions()
         # TODO: argument flag to toggle b/w headless or maximized; less repo changes/commits
         options.add_argument('--headless=new')

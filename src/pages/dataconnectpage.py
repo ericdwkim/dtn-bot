@@ -1,4 +1,5 @@
 import time
+import logging
 from .basepage import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -33,14 +34,13 @@ class DataConnectPage(BasePage):
         :param max_retries: defaulted to 3 attempts
         :return:
         """
-        print(f'*********************date_locator1 ***********: {date_locator}')
+        logging.info(f'Default `date_locator`: {date_locator}')
         if third_flow:
-            print(f'---------- testing -------------')
             date_locator = '#date > option:nth-child(1)'
         try:
-            print(f'*********************date_locator2 ***********: {date_locator}')
+            logging.info(f'Using `date_locator`: {date_locator}')
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
-            print(f'************ was_clicked , element_selector_clicked : {was_clicked}  {element_selector_clicked }')
+            logging.info(f'was_clicked:{was_clicked}\nelement_selector_clicked:\n {element_selector_clicked}')
 
             if was_clicked and element_selector_clicked:
                 time.sleep(10)  # Wait for filter heads to load on DOM
