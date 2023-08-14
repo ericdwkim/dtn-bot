@@ -1,3 +1,5 @@
+import logging
+
 from src.app.drivers import BaseDriver, LoginPageDriver, DataConnectDriver
 class FlowManager:
     def __init__(self):
@@ -13,7 +15,7 @@ class FlowManager:
             if not site_visited_and_logged_in:
                 raise RuntimeError('site_visited_and_logged_in returned false')
             else:
-                print(f'logged in successfully!')
+                logging.info('Logged in to DataConnect Successfully')
 
             tab_switched_to_data_connect = self.data_connect_driver.switch_tab()
             if not tab_switched_to_data_connect:
@@ -29,10 +31,14 @@ class FlowManager:
             if not translated_set_to_no:
                 raise RuntimeError('Something went wrong')
         except Exception as e:
-            print(f'An error occurred trying to start_flow: {e}')
+            logging.exception(f'An error occurred trying to start_flow: {e}')
 
     def end_flow(self):
-        self.base_driver.teardown_driver()
+        try:
+            logging.info('Tearing down ChromeDriver.')
+            self.base_driver.teardown_driver()
+        except Exception as e:
+            logging.exception(f'An error occurred trying to tear down ChromeDriver: {e}')
 
 
 """
