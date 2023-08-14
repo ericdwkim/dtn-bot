@@ -5,17 +5,17 @@ from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
 
 class BaseDriver:
-    def __init__(self):
-        print(f'Constructing BaseDriver')
+    def __init__(self, headless=False):
+        logging.info('Initializing BaseDriver...')
         options = webdriver.ChromeOptions()
-        # TODO: argument flag to toggle b/w headless or maximized; less repo changes/commits
-        options.add_argument('--headless=new')
-        # options.add_argument('--start-maximized')
+        if headless:
+            options.add_argument('--headless=new')
+        else:
+            options.add_argument('--start-maximized')
         self.driver = webdriver.Chrome(service=Service(), options=options)
 
     def teardown_driver(self):
         self.driver.quit()
-
 
 class LoginPageDriver:
     def __init__(self, base_driver):
