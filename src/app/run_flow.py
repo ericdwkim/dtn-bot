@@ -1,5 +1,6 @@
 import argparse
 import logging
+# from subprocess import run
 from src.app.flow_manager import FlowManager
 from utils.pdf_processor import PdfProcessor
 
@@ -43,6 +44,7 @@ def second_flow(flow_manager, processor):
         flow_manager.start_flow()
         # TODO WIP - does not select all prior tp clicking print
         group_filter_set_to_draft_notice = flow_manager.data_connect_driver.set_group_filter_to_draft_notice()
+        logging.info(f'group_filter_set_to_draft_notice: {group_filter_set_to_draft_notice}')
 
         if not group_filter_set_to_draft_notice:
             logging.error('Could not set group filter to Draft Notice during second_flow')
@@ -94,8 +96,8 @@ if __name__ == '__main__':
     processor = PdfProcessor()
 
     # Delete all PDFs in Downloads directory
-    run(["../scripts/clean_slate.sh"], shell=True)
-    print(f'===========================================================================================')
+    # run(["../scripts/clean_slate.sh"], shell=True)
+    # print(f'===========================================================================================')
 
     run_flows(flow_manager, processor, args)
     logging.info(f'\n---------------------------\nCommencing All Flows\n---------------------------\n')
