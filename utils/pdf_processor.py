@@ -32,7 +32,7 @@ class PdfProcessor:
     def __init__(self):
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
-        self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
+        self.pdf_data = self.update_pdf_data() # PikePDF instance var
         logging.critical(f'pdf_data: {self.pdf_data}')
         self.extractor = PDFExtractor()
         self.doc_type, self.total_target_amt = ('', '')
@@ -40,9 +40,17 @@ class PdfProcessor:
     # ---------------------------------- Instance attributes ----------------------------------
 
     def get_pdf(self, filepath):
-        if os.path.exists(filepath):
-            logging.info(f'filepath: {filepath} exists. Returning opened PikePdf object')
+        if not os.path.exists(filepath):
+            logging.error(f'File path does not exist: "{filepath}"')
+            return None
+        else:
+            logging.info(f'Filepath: "{filepath}" exists. Returning opened PikePdf object')
             return pikepdf.open(filepath)
+
+    # @dev: workaround to update `pdf_data` instance being initialized as None during start of run_flows
+    def update_pdf_data(self):
+        self.pdf_data = self.get_pdf(self.pdf_file_path)
+        return self.pdf_data
 
     def assign_file_path_mappings(self):
 
@@ -132,11 +140,13 @@ class PdfProcessor:
         # print(
             # f'\n########################################\n{self.cur_page_text}\n########################################\n')
         for company_name in PdfProcessor.get_company_names():
-            # print(f'Checking company_name: {company_name}')
-            if company_name in cur_page_text: # todo: may be redundant as this logic already exists in process_pages
+            logging.info(f'Checking company_name: {company_name}')
+            if company_name not in cur_page_text: #  Return None if no company name is found in the cur_page_text
+                logging.error(f'Could not find matching Company Name in current page text.')
+                return None
+            else:
+                logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
                 return company_name
-        # Return None if no company name is found in the cur_page_text
-        return None
 
     def get_doc_type(self, cur_page_text):
         """
@@ -145,11 +155,11 @@ class PdfProcessor:
         :return:
         """
         for doc_type_pattern in doc_type_patterns:
-            if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE): # todo: may be redundant as this logic already exists in process_pages
-                # todo: just add `and (
-                #                         'END MSG' not in self.cur_page_text)` logic
-                return doc_type_pattern
-        return None
+            if not re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
+                logging.error(f'Could not find matching document type using regex pattern in current page text.')
+                return None
+            else:
+                logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
 
     def is_last_day_of_month(self):
         logging.info('It is the last day of the month\nPerforming end of month operations...')
@@ -160,13 +170,21 @@ class PdfProcessor:
         """
         main processing func
         """
+        logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
+        self.pdf_data = self.update_pdf_data()
+        logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
+        # logging.info(f'pdf_file_path: {self.pdf_file_path}')
         try:
             while self.page_num < len(self.pdf_data.pages):
                 logging.info(f'Processing page number: {self.page_num + 1}')
                 page = self.pdf_data.pages[self.page_num]
                 self.cur_page_text = self.extractor.extract_text_from_pdf_page(page)
+                # logging.info(f'self.cur_page_text: \n{self.cur_page_text}\n')
                 self.company_name = self.get_company_name(self.cur_page_text)
+                logging.info(f'self.company_name: \n{self.company_name}\n')
                 self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
+                logging.info(f'self.doc_type_pattern: \n{self.doc_type_pattern}\n')
+
 
                 if self.company_name not in self.cur_page_text: # todo: either this or simply use the one in get_company_name()
                     logging.warning(f"Company name '{self.company_name}' not found in current page.")
