@@ -1,4 +1,5 @@
 import time
+import logging
 from .basepage import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,13 +17,13 @@ class DataConnectPage(BasePage):
         try:
             is_element_clicked = self.wait_for_find_then_click('#header > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(1)')
             if is_element_clicked:
-                print('Switched to DataConnect tab')
+                logging.info('Switched to DataConnect tab')
                 return True
             else:
                 # print('Failed to switch to DataConnect tab.')
                 return False
         except Exception as e:
-            print(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
+            logging.exception(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
 
     def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False, max_retries=3):
@@ -33,14 +34,13 @@ class DataConnectPage(BasePage):
         :param max_retries: defaulted to 3 attempts
         :return:
         """
-        print(f'*********************date_locator1 ***********: {date_locator}')
+        logging.info(f'Default `date_locator`: {date_locator}')
         if third_flow:
-            print(f'---------- testing -------------')
             date_locator = '#date > option:nth-child(1)'
         try:
-            print(f'*********************date_locator2 ***********: {date_locator}')
+            logging.info(f'Using `date_locator`: {date_locator}')
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
-            print(f'************ was_clicked , element_selector_clicked : {was_clicked}  {element_selector_clicked }')
+            logging.info(f'was_clicked:{was_clicked}\nelement_selector_clicked:\n {element_selector_clicked}')
 
             if was_clicked and element_selector_clicked:
                 time.sleep(10)  # Wait for filter heads to load on DOM
@@ -56,7 +56,7 @@ class DataConnectPage(BasePage):
                 return True
 
             elif not was_clicked and not element_selector_clicked:
-                print(f'Could not set date filter with retries. Reloading page....')
+                logging.error(f'Could not set date filter with retries. Reloading page....')
                 self.reload_page()
                 time.sleep(30)
                 if max_retries > 1:
@@ -64,11 +64,11 @@ class DataConnectPage(BasePage):
                     # Recursive call
                     return self.set_date_filter(date_locator, third_flow, max_retries - 1)
                 else:
-                    print("Could not set the date after 3 attempts of reloading the page. Please restart the script.")
+                    logging.error("Could not set the date after 3 attempts of reloading the page. Please restart the script.")
                     return False
 
         except Exception as e:
-            print(f'An error occurred trying to set date filter: {str(e)}')
+            logging.exception(f'An error occurred trying to set date filter: {str(e)}')
             return False
 
     def reload_page(self, max_retries=3):
@@ -80,9 +80,10 @@ class DataConnectPage(BasePage):
         for attempt in range(max_retries):
             try:
                 self.driver.refresh()
+                logging.info('Reloading page....')
                 return True
             except Exception as e:
-                print(f"Error during refresh: {str(e)}. Attempt: {attempt + 1}")
+                logging.exception(f"Error during refresh: {str(e)}. Attempt: {attempt + 1}")
                 time.sleep(1)  # Wait for 1 second before the next attempt
         return False
 
@@ -96,7 +97,7 @@ class DataConnectPage(BasePage):
         if self.wait_for_find_then_click(filter_header_locator, locator_type):
             return True
         else:
-            print(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
+            logging.error(f'Could not click filter header: {filter_header_locator} using locator type: {locator_type}')
             return False
 
     def click_filter_button_at_idx(self, filter_btn_elem_idx, timeout=10):
@@ -122,13 +123,13 @@ class DataConnectPage(BasePage):
                     time.sleep(timeout)  # Wait for UI update
                     # print(f"Filter button at idx {filter_btn_elem_idx} was clicked!")
                 else:
-                    print(f"Could not click Filter button at idx {filter_btn_elem_idx}")
+                    logging.error(f"Could not click Filter button at idx {filter_btn_elem_idx}")
             else:
-                print(f"Filter buttons were not found or idx {filter_btn_elem_idx} is out of range!")
+                logging.error(f"Filter buttons were not found or idx {filter_btn_elem_idx} is out of range!")
             return True
 
         except Exception as e:
-            print(f'An error occurred trying to drag and drop from source to target element: {e}')
+            logging.exception(f'An error occurred trying to drag and drop from source to target element: {e}')
             return False
 
 
@@ -145,7 +146,7 @@ class DataConnectPage(BasePage):
             # print(f'Reset selected Group filter list')
             return True
         else:
-            # print(f'Could not reset selected Group filter list')
+            logging.error(f'Could not reset selected Group filter list')
             return False
 
     def click_checkbox(self):
@@ -160,7 +161,7 @@ class DataConnectPage(BasePage):
             time.sleep(15)  # wait for UI to update
             return True
         else:
-            print(f'Checkbox could not be found and clicked')
+            logging.error(f'Checkbox could not be found and clicked')
             return False
 
     def click_print_button(self):
@@ -175,7 +176,7 @@ class DataConnectPage(BasePage):
             time.sleep(15)  # wait for UI to update
             return True
         else:
-            print(f'Print button could not be found and clicked')
+            logging.error(f'Print button could not be found and clicked')
             return False
 
     def check_all_then_click_print(self):
@@ -202,7 +203,7 @@ class DataConnectPage(BasePage):
         """
         filter_header_is_clicked = self.click_filter_header(filter_header_locator)
         if not filter_header_is_clicked:
-            print("Filter header could not be clicked")
+            logging.error("Filter header could not be clicked")
             return False, False, False
 
         # Group `Draft Notice` case requires resetting of selected list
@@ -214,12 +215,12 @@ class DataConnectPage(BasePage):
 
         src_elem_dragged_and_dropped_to_target_elem = self.find_element_drag_and_drop(src_locator, target_elem_idx)
         if not src_elem_dragged_and_dropped_to_target_elem:
-            print("Source element could not be dragged and dropped to target element")
+            logging.error("Source element could not be dragged and dropped to target element")
             return True, False, False
 
         filter_button_is_clicked = self.click_filter_button_at_idx(filter_btn_elem_idx)
         if not filter_button_is_clicked:
-            print("Filter button could not be clicked")
+            logging.error("Filter button could not be clicked")
             return True, True, False
 
         if filter_button_is_clicked and reset_selected is True:
@@ -227,7 +228,7 @@ class DataConnectPage(BasePage):
             checkbox_is_clicked = self.click_checkbox()
             checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
             if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
-                print("Downloading Draft Notice PDF")
+                logging.info("Downloading Draft Notice PDF")
                 time.sleep(30)  # wait for UI to update
 
         return True, True, True
@@ -249,16 +250,16 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set translated filter. Resetting date filter to reload page.')
+            logging.error(f'Could not set translated filter. Resetting date filter to reload page.')
             reset_date_filter = self.set_date_filter()
             time.sleep(20)
             if not reset_date_filter:
-                print(f'Could not reset date filter in order to set translated filter. Please restart the script!')
+                logging.error(f'Could not reset date filter in order to set translated filter. Please restart the script!')
             else:
-                print('Date filter has been reset! Proceeding with the next phase...')
+                logging.info('Date filter has been reset! Proceeding with the next phase...')
                 return True
         else:
-            print(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: '
+            logging.info(f'filter_header_is_clicked: {filter_header_is_clicked}\nsrc_elem_dragged_and_dropped_to_target_elem: '
                   f'{src_elem_dragged_and_dropped_to_target_elem}'
                   f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
             raise Exception("Failed to set Translated filter.")
@@ -281,11 +282,11 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not set group filter to Invoice. Proceeding to Draft Notice...')
+            logging.error(f'Could not set group filter to Invoice. Proceeding to Draft Notice...')
             return False
 
         else:
-            print(
+            logging.info(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
                 f'src_elem_dragged_and_dropped_to_target_elem: '
                 f'{src_elem_dragged_and_dropped_to_target_elem}\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
@@ -309,17 +310,17 @@ class DataConnectPage(BasePage):
 
         # if all 3 bool conditions returned false
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not click on Group filter header for Draft Notice. Consider retrying the script.')
+            logging.error(f'Could not click on Group filter header for Draft Notice. Consider retrying the script.')
             return False # Go to third flow
 
         # Group filter head was clicked, but could not drag and drop filter and therefore could not click `Filter` button to confirm. Possibly due to unavailable `Draft Notice` draggable bar.
         elif filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Group filter header was clicked for Draft Notice: {filter_header_is_clicked}. Draft Notice possibly unavailable. Skipping to Credit Cards....')
+            logging.info(f'Group filter header was clicked for Draft Notice: {filter_header_is_clicked}. Draft Notice possibly unavailable. Skipping to Credit Cards....')
             return False  # Go to third flow
 
         # something unexpected occurred
         else:
-            print(
+            logging.info(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
                 f'src_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}'
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
@@ -342,16 +343,16 @@ class DataConnectPage(BasePage):
             return True
 
         elif not filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Could not click on Group filter header for Credit Card. Consider retrying the script.')
+            logging.error(f'Could not click on Group filter header for Credit Card. Consider retrying the script.')
             return False
 
         # Group filter header was clicked, but could not drag/drop and therefore could not confirm Filter setting. Possibly due to unavailable `Credit Card` draggable bar
         elif filter_header_is_clicked and not src_elem_dragged_and_dropped_to_target_elem and not filter_button_is_clicked:
-            print(f'Group filter header was clicked for Credit Card: {filter_header_is_clicked}. Credit Card docs possibly unavailable. Proceeding with rest of the script...')
+            logging.info(f'Group filter header was clicked for Credit Card: {filter_header_is_clicked}. Credit Card docs possibly unavailable. Proceeding with rest of the script...')
             return False  # Continue
 
         else:
-            print(
+            logging.info(
                 f'filter_header_is_clicked: {filter_header_is_clicked}\n'
                 f'src_elem_dragged_and_dropped_to_target_elem: {src_elem_dragged_and_dropped_to_target_elem}'
                 f'\nfilter_button_is_clicked: {filter_button_is_clicked}\n')
@@ -368,13 +369,13 @@ class DataConnectPage(BasePage):
         try:
             self.set_translated_filter_to_no()
         except Exception as e:
-            print(f"set_translated_filter_to_no failed with error: {str(e)}\nPlease restart the script.")
+            logging.exception(f"set_translated_filter_to_no failed with error: {str(e)}\nPlease restart the script.")
             return False
 
         try:
             self.set_group_filter_to_invoice()
         except Exception as e:
-            print(f'set_group_filter_to_invoice failed with error: {str(e)}\nPlease restart the script.')
+            logging.exception(f'set_group_filter_to_invoice failed with error: {str(e)}\nPlease restart the script.')
             return False
 
         if not self.check_all_then_click_print():

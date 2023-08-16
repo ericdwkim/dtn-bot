@@ -9,13 +9,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from utils.post_processing import merge_rename_and_summate
 from utils.extraction_handler import PDFExtractor
-from utils.filesystem_manager import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files, construct_month_dir_from_company_dir, create_and_return_directory_path, get_doc_type_dir
-from utils.mappings import doc_type_abbrv_to_doc_type_subdir_map, doc_type_patterns, company_id_to_company_subdir_map
+from utils.filesystem_manager import construct_month_dir_from_doc_type, create_and_return_directory_path, get_doc_type_full, create_directory
+from utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
+    # TODO: figure out which `today` in `datetime` should be used; also needs formatting.
     # today = datetime.today().strftime('%m-%d-%y')  # @today original in `string`
     # today = datetime.today()  # @today; original in `datetime`
     # today_datetime = datetime.today()  # @today; renamed original in `datetime`
@@ -29,7 +30,6 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
-        # self.pdf_file_path = self.get_pdf_file_path()
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
@@ -37,14 +37,6 @@ class PdfProcessor:
         self.doc_type, self.total_target_amt = ('', '')
 
     # ---------------------------------- Instance attributes ----------------------------------
-    # TODO: remove?
-    # def get_pdf_file_path(self):
-    #     try:
-    #         files = Path(self.download_dir).glob('*messages.pdf')
-    #         tar_file = max(files, key=lambda x: x.stat().st_mtime)
-    #         return str(tar_file)
-    #     except ValueError as e:
-    #         print(f'An error occurred: {e}. Check if `messages.pdf` exists?')
 
     def get_pdf(self, filepath):
         if os.path.exists(filepath):
@@ -55,14 +47,14 @@ class PdfProcessor:
         # fetch company_id from company_name using helper instance method
         self.company_id = self.get_company_id_fixed(self.company_name)
 
-        print(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
+        logging.info(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
 
         self.file_path_mappings = {
             self.doc_type: {
                 self.company_id: os.path.join
                     (
                     self.root_dir,
-                    doc_type_abbrv_to_doc_type_subdir_map[self.doc_type],
+                    doc_type_short_to_doc_type_full_map[self.doc_type],
                     company_id_to_company_subdir_map[self.company_id]
                 )
             }
@@ -70,11 +62,11 @@ class PdfProcessor:
 
         # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
         if self.doc_type is None:
-            print("Error: Document type is None. File path mappings could not be assigned.")
+            logging.error("Error: Document type is None. File path mappings could not be assigned.")
             return None
 
         elif self.company_id is None:
-            print("Error: Company ID is None. File path mappings could not be assigned.")
+            logging.error("Error: Company ID is None. File path mappings could not be assigned.")
             return None
         else:
             # Return output path from nested value in nested mapping
@@ -90,13 +82,18 @@ class PdfProcessor:
      ideally have assign_file_path_mappings construct up to month_dir and # TODO: perform post processing in memory and not on disk; requires breaking into smaller classes
 
         """
+        # Construct company dir
         self.company_dir = self.assign_file_path_mappings()
-        print(f'self.company_dir: {self.company_dir}')
-        month_dir = construct_month_dir_from_company_dir(self.company_dir)
+        logging.info(f'Company directory: {self.company_dir}')
+
+        current_year, current_month = self.cur_month_and_year_from_today()
+
+        month_dir = create_and_return_directory_path(self.company_dir, current_year, current_month)
+        # print(f'******************** month_dir {month_dir} *******************')
 
 
         if not self.company_dir or not month_dir:
-            print('Company directory or month directory could not be constructed')
+            logging.error('Company directory or month directory could not be constructed')
             return
 
         elif post_processing is True:
@@ -117,6 +114,12 @@ class PdfProcessor:
             company_names.append(company_name)
         # print(f'******** {company_names} *******')
         return company_names
+
+
+    def cur_month_and_year_from_today(self):
+        current_month = self.today.strftime('%m-%b')
+        current_year = self.today.strftime('%Y')
+        return current_year, current_month
 
     def get_company_name(self, cur_page_text):
         """
@@ -145,6 +148,11 @@ class PdfProcessor:
                 #                         'END MSG' not in self.cur_page_text)` logic
                 return doc_type_pattern
         return None
+
+    def is_last_day_of_month(self):
+        logging.info('It is the last day of the month\nPerforming end of month operations...')
+        tomorrow = self.today + timedelta(days=1)
+        return tomorrow.day == 1
 
     def process_pages(self):
         """
@@ -185,37 +193,6 @@ class PdfProcessor:
             logging.error(f"An error occurred: {e}")
             return False
 
-    # TODO: test implementation in `end_flow()`
-    # def rename_and_delete_pdf(self):
-    #     file_deleted = False
-    #     if os.path.exists(self.file_path):
-    #         with pikepdf.open(self.file_path) as pdf:
-    #             if len(pdf.pages) > 0:
-    #                 first_page = self.extractor.extract_text_from_pdf_page(pdf.pages[0])
-    #
-    #                 if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
-    #                     if re.search(r'EFT-\d+', first_page):
-    #                         self.new_file_name = f'EFT-{self.today}-TO-BE-DELETED.pdf'
-    #                     else:
-    #                         self.new_file_name = f'CCM-{self.today}-TO-BE-DELETED.pdf'
-    #
-    #                     file_directory = os.path.dirname(self.file_path)
-    #                     new_file_path = os.path.join(file_directory, self.new_file_name)
-    #
-    #                     print(f"Renaming file: {self.file_path} to {new_file_path}")
-    #                     os.rename(self.file_path, new_file_path)
-    #                     file_deleted = True
-    #                     print("File renamed successfully.")
-    #                     sleep(3)
-    #
-    #                     if os.path.exists(new_file_path):
-    #                         print(f"Deleting file: {new_file_path}")
-    #                         os.remove(new_file_path)
-    #                         print("File deleted successfully.")
-    #
-    #             return file_deleted
-
-
     # Invoices PDF rename helper
     def rename_invoices_pdf(self):
 
@@ -227,17 +204,17 @@ class PdfProcessor:
         # given the original `messages.pdf` full filepath, return new full filepath
         file_dir = os.path.dirname(self.pdf_file_path)
         self.new_file_path = os.path.join(file_dir, self.new_file_name)
-        print(f'Renaming original Invoices PDF file "{self.pdf_file_path}" to {self.new_file_path}')
+        logging.info(f'Renaming original Invoices PDF file "{self.pdf_file_path}" to {self.new_file_path}')
 
         pdf.close() # Close PDF
         os.rename(self.pdf_file_path, self.new_file_path)
         # Check file got saved correctly
         if os.path.exists(self.new_file_path):
-            print(f'File renamed successfully.')
+            logging.info(f'File renamed successfully.')
             time.sleep(3)
             return True
         else:
-            print(f'Could not rename Invoices PDF')
+            logging.error(f'Could not rename Invoices PDF')
             return False
 
     def get_file_timestamps(self, file_path):
@@ -274,27 +251,27 @@ class PdfProcessor:
         if os.path.isfile(target_file_path):
             mod_time_old, cre_time_old = self.get_file_timestamps(target_file_path)
 
-            print(
+            logging.info(
                 f'File with name: "{self.new_file_name}" already exists at "{target_file_path}"\nLast modified (old): {mod_time_old} | Last modified (new): {mod_time_new}\nCreated (old): {cre_time_old} | Created (new): {cre_time_new}\nOverwriting duplicate file with latest modified/created...')
             os.remove(target_file_path)
 
         try:
             shutil.move(self.new_file_path, target_file_path)
-            print(f'Moved latest Invoices pdf created on "{cre_time_new}" to "{target_file_path}"')
+            logging.info(f'Moved latest Invoices pdf created on "{cre_time_new}" to "{target_file_path}"')
             return True  # File moved successfully
         except Exception as e:
-            print(f'An error occurred while moving the file: {e}')
+            logging.exception(f'An error occurred while moving the file: {e}')
             return False  # File could not be moved
 
     def get_company_id_fixed(self, company_name):
         company_subdir_to_company_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
         # print(f'-------------- company_subdir_to_company_id_map----------------\n {company_subdir_to_company_id_map}\n----------------')
         for company_dir, company_id in company_subdir_to_company_id_map.items():
-            print(f'Using {company_name} to fetch matching company_id: {company_id}')
+            logging.info(f'Using {company_name} to fetch matching company_id: {company_id}')
 
             # print(f'if "{company_name}" == "{cleaned_comp_dir}"')
             if company_name == company_dir.split('[')[0].strip():
-                print(f'Match found!\nCompany Name: {company_name} has Company ID: {company_id}')
+                logging.info(f'Match found!\nCompany Name: {company_name} has Company ID: {company_id}')
                 # Turn local var to instance var for dynamic file path construction
                 self.company_id = company_id
                 return self.company_id
@@ -330,7 +307,7 @@ class PdfProcessor:
             return True
 
         except Exception as e:
-            print(f'An error occurred while creating and saving PDF: {e}')
+            logging.exception(f'An error occurred while creating and saving PDF: {e}')
             return False
 
     def get_new_file_name(self):
@@ -356,11 +333,6 @@ class PdfProcessor:
         while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
             cur_page = self.pdf_data.pages[self.page_num]
             page_objs.append(cur_page)
-            print(f'----------page_objs----------------------\n')
-            print(page_objs)
-            print(f'\n--------------------------------')
-
-
             self.cur_page_text = self.extractor.extract_text_from_pdf_page(cur_page)
             page_text_strings.append(self.cur_page_text)
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
@@ -371,9 +343,9 @@ class PdfProcessor:
         # print(f'------------cur_page_text--------------------\n')
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
-        print(f'Extracting Document Type and Total Target Amount....')
+        logging.info(f'Extracting Document Type and Total Target Amount....')
         self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-        print(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
+        logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
 
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
@@ -381,7 +353,7 @@ class PdfProcessor:
         # Construct final output filepath using wrapper
         self.final_output_filepath = self.construct_final_output_filepath()
 
-        print(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
+        logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
 
         # Move (save) new file to final output path
         multi_page_pdf_created_and_saved = self.create_and_save_pdf(page_objs)
@@ -398,7 +370,7 @@ class PdfProcessor:
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
             # fetch target data
             self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-            print(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
+            logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
 
             if self.page_num >= len(self.pdf_data.pages):
                 return # exit func b/c finished with pdf
@@ -411,84 +383,36 @@ class PdfProcessor:
             #  fetch output filepath
             self.final_output_filepath = self.construct_final_output_filepath()
 
-            print(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
+            logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
 
             # Create single page pdf and save in correct dir
             single_page_pdf_created_and_saved = self.create_and_save_pdf(cur_page)
-            print(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
+            logging.info(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
             return single_page_pdf_created_and_saved
 
-    # def end_of_month_operations(self):
-    #
-    #     """
-    #     Creates the new month and new year directories if it is the last day of the month
-    #     :param company_dir: defaulted to None
-    #     :return: None
-    #     """
-    #
-    #     current_year = self.today.strftime('%Y')
-    #     next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
-    #     next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
-    #     print(f'current_year: {current_year} | next_month: {next_month} |')
-    #
-    #
-    #     # If it's December, create the next year's directory and the next month's directory inside it
-    #     if next_month == '01-Jan':
-    #         os.makedirs(os.path.join(self.company_dir, next_year, next_month), exist_ok=True)
-    #
-    #     else:  # If not December, just create the next month's directory inside the current year's directory
-    #         print(f'Joining {self.company_dir} + {current_year} + {next_month}')
-    #         os.makedirs(os.path.join(self.company_dir, current_year, next_month), exist_ok=True)
-    #
-    def end_of_month_operations(self):
-
-        current_year = self.today.strftime('%Y')
+    # @dev: previously called `end_of_month_operations`
+    def get_year_and_month(self):
+        # throw away `current_month` as not needed in this function
+        current_year, _ = self.cur_month_and_year_from_today()
         next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
         next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
-        print(f'current_year: {current_year} | next_month: {next_month} |')
+        return (next_year, next_month) if next_month == '01-Jan' else (current_year, next_month)
 
-        # Define the directory that you want to create
-        if next_month == '01-Jan':
-            return next_year, next_month
-        else:
-            return current_year, next_month
-
-    def wrapper(self):
-        # Fetch doc type dir with hard coded doc_type for invoices
-        invoices_doc_type_dir = get_doc_type_dir('INV')
-        # Get dynamically created year and month dirs based on `self.today`
-        next_or_cur_year, next_month = self.end_of_month_operations()
-        # Pass params to return constructed `Fuel Invoices/YYYY/MM-MM`
-        month_dir = create_and_return_directory_path(invoices_doc_type_dir, next_or_cur_year, next_month)
-        # Add root_dir to construct full final output directory path and create required dirs
+    # @dev: previously called `wrapper` during dev
+    def end_of_month_operations(self, parent_dir):
+        next_or_cur_year, next_month = self.get_year_and_month()
+        month_dir = create_and_return_directory_path(parent_dir, next_or_cur_year, next_month)
         target_output_path = os.path.join(self.root_dir, month_dir)
-        os.makedirs(target_output_path)
-        print(f'$$$$$$$$$$$$$$$$$$ {target_output_path} $$$$$$$$$$$$$$$$$$ ')
+        create_directory(target_output_path)
+
+    def month_and_year_handler(self, first_flow=False):
+        try:
+            if self.is_last_day_of_month():
+                parent_dir = get_doc_type_full('INV') if first_flow else self.company_dir
+                self.end_of_month_operations(parent_dir)
+            else:
+                logging.info('Not the last day of the month.')
+        except Exception as e:
+            logging.exception(f'Exception: {e}')
 
 
-
-# TODO: clean up pdf_processor.py, perform live tests to ensure both mutli and single pages are getting correctly processed and filed away;
-
-    # def process_pdfs(self, post_processing=False):
-    #
-    #     output_path = self.file_path_mappings[self.doc_type][self.company_id]
-    #     print(f'output_path: {output_path}')
-    #
-    #     try:
-    #
-    #         # Conditional post processing only for EXXON CCMs and LRDs
-    #         if post_processing is True:
-    #             # print(f'Post processing for EXXON CCMs & LRDs')
-    #             merge_rename_and_summate(output_path, doc_type_abbrv_to_doc_type_subdir_map,
-    #                                      company_id_to_company_subdir_map)
-    #
-    #
-    #
-    #         else:
-    #             # Dynamic filesystem mgmt for files that do not need post processing
-    #             end_of_month_operations(output_path, self.new_file_name)
-    #             return True
-    #
-    #     except Exception as e:
-    #         print(f'An error occurred: {str(e)}')
-    #         return False

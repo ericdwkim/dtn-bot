@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta
-from utils.mappings import doc_type_abbrv_to_doc_type_subdir_map, company_id_to_company_subdir_map
+from utils.mappings import doc_type_short_to_doc_type_full_map, company_id_to_company_subdir_map
 
 def check_file_exists(output_path):
     """
@@ -33,9 +33,9 @@ def cleanup_files(pdf_data):
             os.remove(file_path)
             files_deleted = True
     return files_deleted
-# TODO: consider creating a wrapper func for `is_last_day_of_month` then `end_of_month_operations`
 
 def is_last_day_of_month():
+    #todo: MOVED TO PDFPROCESSOR ; refactor `is_last_day_of_month` uses in post_processing.py and other modules from filesystem_manager as this was moved to PdfProcessor
     """
     Relative to today's date, it checks if tomorrow's date would be the start of a new month,\n
     if so, then it will return True indicating that today is the last day of the month
@@ -58,8 +58,8 @@ def create_directory(directory):
         os.makedirs(directory)
     return directory
 
-# TODO: currently only viable for invoices as we need to dynamically construct `doc_type` and `company_name`. we have access to `root_dir` which goes up to "DTN Reports" and this func constructs YYYY/MM-MMM.
 def end_of_month_operations(root_dir, company_dir=None):
+    # todo: MOVED TO PDFPROCESSOR ;  refactor `end_of_month_operations` uses in post_processing.py
     """
     Creates the new month and new year directories if it is the last day of the month
     :param company_dir: defaulted to None
@@ -68,7 +68,7 @@ def end_of_month_operations(root_dir, company_dir=None):
     # Handles INV case
     if company_dir is None:
         # set company_dir as Fuel Invoices document type dir; prevents new dirs from being generated in bot script's working dir.
-        doc_type_full = doc_type_abbrv_to_doc_type_subdir_map['INV']
+        doc_type_full = doc_type_short_to_doc_type_full_map['INV']
         company_dir = os.path.join(root_dir, doc_type_full) #todo: rename to `doc_type_dir`
         print(f'******************* company_dir ******************** {company_dir}')
 
@@ -90,7 +90,9 @@ def end_of_month_operations(root_dir, company_dir=None):
         print(f'Joining {company_dir} + {current_year} + {next_month}')
         os.makedirs(os.path.join(company_dir, current_year, next_month), exist_ok=True)
 
+
 def cur_month_and_year_from_today():
+    # todo: MOVED TO PDFPROCESSOR ; refactor `cur_month_and_year_from_today` uses in post_processing.py
     """
     Helper function to calculate current month and current year relative to today's date
     :return: Tuple(cur_month, cur_yr)
@@ -105,27 +107,27 @@ def cur_month_and_year_from_today():
 
 # @dev: renamed `get_root_directory` to `get_doc_type_dir`
 # TODO: rename func and associated vars as it only returns type of document in full `Credit Credits`, not the directory up to doc_type as suggested `K:/DTN Reports/Credit Cards`
-def get_doc_type_dir(doc_type):
+def get_doc_type_full(doc_type_short):
     """
-    Given a file prefix, it unpacks the root_directory mapping to return doc_type matching root directory aka the document type directory path
-    :param doc_type:
+    Given a file prefix, it unpacks the root_directory mapping to return full document type
+    :param doc_type_short:
     :return: str | None
     """
-    for key, value in doc_type_abbrv_to_doc_type_subdir_map.items():
-        if (isinstance(key, tuple) and doc_type in key) or key == doc_type:
+    for key, value in doc_type_short_to_doc_type_full_map.items():
+        if (isinstance(key, tuple) and doc_type_short in key) or key == doc_type_short:
             return value
     return None
 
-def create_and_return_directory_path(doc_type_dir, current_year, current_month):
+def create_and_return_directory_path(parent_dir, current_year, current_month):
     """
-    Given the root dir (aka document type dir), cur_yr, cur_month,\n
+    Given the parent_dir, cur_yr, cur_month,\n
     it returns the final output path `month_dir` which is constructed appropriately based on current date
-    :param doc_type_dir:
+    :param parent_dir:
     :param current_year:
     :param current_month:
     :return: `month_dir` final output path to save PDFs to
     """
-    year_dir = os.path.join(doc_type_dir, current_year)
+    year_dir = os.path.join(parent_dir, current_year)
     create_directory(year_dir)
 
     month_dir = os.path.join(year_dir, current_month)
@@ -146,7 +148,7 @@ def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=Non
     current_month, current_year = cur_month_and_year_from_today()
 
     # Determine root directory; #todo: rename var to doc_type_full ? b/c not a directory!
-    doc_type_dir = get_doc_type_dir(doc_type)
+    doc_type_dir = get_doc_type_full(doc_type)
 
     # If root directory not found, raise exception
     # todo: update as it is no longer a root directory, just document type in full aka `Fuel Invoices`
@@ -165,16 +167,5 @@ def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=Non
     # Create and return path to the relevant year and month directories
     # @dev: for INV doc_type, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
     return create_and_return_directory_path(doc_type_dir, current_year, current_month)
-
-
-def construct_month_dir_from_company_dir(company_dir):
-
-    # Extract cur_yr and cur_month
-    cur_month, cur_yr = cur_month_and_year_from_today()
-
-    # Construct month directory
-    month_dir = create_and_return_directory_path(company_dir, cur_yr, cur_month)
-
-    return month_dir
 
 
