@@ -149,6 +149,39 @@ class PdfProcessor:
         logging.error(f'Could not find matching Company Name in current page text.')
         return None
 
+    # TODO: left off on considering new helper to account for `U.S. OIL COMPANY` not matching with `U S VENTURE - U S OIL COMPANY`; also re-evaulating
+    #  ```            if (self.company_name in self.cur_page_text) and (re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE)) and ('END MSG' not in self.cur_page_text):
+    #                 self.process_multi_page()```  from commit ae944fb's `get_page_text()` (now called `process_pages()`) as this specific edge case was never an issue during test with `get_page_text` logic...
+
+
+    # def create_variations(name):
+    #     variations = []
+    #     variations.append(name.replace('.', ''))  # Remove dots
+    #     variations.append(name.replace(' ', ''))  # Remove spaces
+    #     # You can add more variations if needed
+    #     return variations
+    #
+    # def get_company_name(self, cur_page_text):
+    #     """
+    #     Helper func for getting company_name instance
+    #     :param cur_page_text:
+    #     :return:
+    #     """
+    #     company_names = PdfProcessor.get_company_names()
+    #     logging.info(f'\ncompany_names\n {company_names}\n')
+    #     cur_page_text_upper = cur_page_text.upper()  # Convert cur_page_text to uppercase
+    #     for company_name in company_names:
+    #         logging.info(f'Checking company_name: {company_name}')
+    #         company_name_upper = company_name.upper()  # Convert company_name to uppercase
+    #         variations = create_variations(company_name_upper)
+    #         for variation in variations:
+    #             if variation in cur_page_text_upper:
+    #                 logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
+    #                 return company_name
+    #
+    #     logging.error(f'Could not find matching Company Name in current page text.')
+    #     return None
+
     def get_doc_type(self, cur_page_text):
         """
         Helper func for getting doc_type_pattern instance
