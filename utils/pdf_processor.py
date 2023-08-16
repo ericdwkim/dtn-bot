@@ -137,16 +137,14 @@ class PdfProcessor:
         :param cur_page_text:
         :return:
         """
-        # print(
-            # f'\n########################################\n{self.cur_page_text}\n########################################\n')
         for company_name in PdfProcessor.get_company_names():
             logging.info(f'Checking company_name: {company_name}')
-            if company_name not in cur_page_text: #  Return None if no company name is found in the cur_page_text
-                logging.error(f'Could not find matching Company Name in current page text.')
-                return None
-            else:
+            if company_name in cur_page_text:
                 logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
                 return company_name
+
+        logging.error(f'Could not find matching Company Name in current page text.')
+        return None
 
     def get_doc_type(self, cur_page_text):
         """
@@ -155,11 +153,12 @@ class PdfProcessor:
         :return:
         """
         for doc_type_pattern in doc_type_patterns:
-            if not re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
-                logging.error(f'Could not find matching document type using regex pattern in current page text.')
-                return None
-            else:
+            if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
                 logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
+                return doc_type_pattern
+
+        logging.error(f'Could not find matching document type using regex pattern in current page text.')
+        return None
 
     def is_last_day_of_month(self):
         logging.info('It is the last day of the month\nPerforming end of month operations...')
