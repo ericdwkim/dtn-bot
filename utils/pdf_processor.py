@@ -137,9 +137,12 @@ class PdfProcessor:
         :param cur_page_text:
         :return:
         """
-        for company_name in PdfProcessor.get_company_names():
+        company_names = PdfProcessor.get_company_names()
+        logging.info(f'\ncompany_names\n {company_names}\n')
+        cur_page_text_upper = cur_page_text.upper()  # Convert cur_page_text to uppercase
+        for company_name in company_names:
             logging.info(f'Checking company_name: {company_name}')
-            if company_name in cur_page_text:
+            if company_name.upper() in cur_page_text_upper:  # Convert company_name to uppercase
                 logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
                 return company_name
 
@@ -178,7 +181,7 @@ class PdfProcessor:
                 logging.info(f'Processing page number: {self.page_num + 1}')
                 page = self.pdf_data.pages[self.page_num]
                 self.cur_page_text = self.extractor.extract_text_from_pdf_page(page)
-                # logging.info(f'self.cur_page_text: \n{self.cur_page_text}\n')
+                logging.info(f'self.cur_page_text: \n{self.cur_page_text}\n')
                 self.company_name = self.get_company_name(self.cur_page_text)
                 logging.info(f'self.company_name: \n{self.company_name}\n')
                 self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
