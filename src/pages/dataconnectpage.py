@@ -225,9 +225,9 @@ class DataConnectPage(BasePage):
 
         if filter_button_is_clicked and reset_selected is True:
             # @dev: first checkbox click req'd
-            checkbox_is_clicked = self.click_checkbox()
+            # checkbox_is_clicked = self.click_checkbox()
             checkbox_checked_and_print_button_clicked = self.check_all_then_click_print()
-            if checkbox_is_clicked and checkbox_checked_and_print_button_clicked:
+            if checkbox_checked_and_print_button_clicked:
                 logging.info("Downloading Draft Notice PDF")
                 time.sleep(30)  # wait for UI to update
 
