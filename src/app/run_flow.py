@@ -93,5 +93,9 @@ if __name__ == '__main__':
     flow_manager = FlowManager(headless=args.headless)
     processor = PdfProcessor()
 
+    # Delete all PDFs in Downloads directory
+    run(["../scripts/clean_slate.sh"], shell=True)
+    print(f'===========================================================================================')
+
     run_flows(flow_manager, processor, args)
     logging.info(f'\n---------------------------\nCommencing All Flows\n---------------------------\n')
