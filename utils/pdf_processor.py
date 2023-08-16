@@ -33,6 +33,7 @@ class PdfProcessor:
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.get_pdf(self.pdf_file_path) # PikePDF instance var
+        logging.critical(f'pdf_data: {self.pdf_data}')
         self.extractor = PDFExtractor()
         self.doc_type, self.total_target_amt = ('', '')
 
@@ -40,6 +41,7 @@ class PdfProcessor:
 
     def get_pdf(self, filepath):
         if os.path.exists(filepath):
+            logging.info(f'filepath: {filepath} exists. Returning opened PikePdf object')
             return pikepdf.open(filepath)
 
     def assign_file_path_mappings(self):
