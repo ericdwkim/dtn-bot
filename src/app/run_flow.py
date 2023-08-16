@@ -69,7 +69,7 @@ def third_flow(flow_manager, processor):
     pass
 
 
-
+# @dev: call w/o args if wish to run all three flows in sequential order using the same ChromeDriver instance todo: will need to refactor flow funcs to conditionally `start_flow` and `end_flow` depending on whether it is to be ran in sequential order (only one `start_flow` and `end_flow` necessary OR individually (currently as is)
 def run_flows(flow_manager, processor, args):
     if not args.skipFlow1:
         first_flow(flow_manager, processor)
@@ -77,6 +77,8 @@ def run_flows(flow_manager, processor, args):
         second_flow(flow_manager, processor)
     if not args.skipFlow3:
         third_flow(flow_manager, processor)
+
+#todo: if wish to call individual flows, will need to ensure each flow calls its own `start_flow` and `end_flow`
 
 
 
