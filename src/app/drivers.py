@@ -12,7 +12,7 @@ class BaseDriver:
             options.add_argument('--headless=new')
         else:
             options.add_argument('--start-maximized')
-        self.driver = webdriver.Chrome(service=Service(), options=options)
+        self.driver = webdriver.Chrome(service=Service(executable_path='{$HOME}/opt/homebrew/Caskroom/chromedriver/116.0.5845.96/chromedriver-mac-arm64/chromedriver.exe'), options=options)
 
     def teardown_driver(self):
         self.driver.quit()
