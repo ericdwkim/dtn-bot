@@ -470,6 +470,7 @@ class PdfProcessor:
     def month_and_year_handler(self, first_flow=False):
         try:
             if self.is_last_day_of_month():
+                # @dev: for Invoices, set parent_dir to `Fuel Invoices` as there is no company directories
                 parent_dir = get_doc_type_full('INV') if first_flow else self.company_dir
                 self.end_of_month_operations(parent_dir)
             else:
