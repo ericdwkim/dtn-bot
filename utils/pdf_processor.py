@@ -130,6 +130,7 @@ class PdfProcessor:
         current_year = self.today.strftime('%Y')
         return current_year, current_month
 
+    # todo: improve to only append variations using regex to determine first whether original `name` even has dots, spaces, dashes etc... to account for
     def create_variations(self, name):
         variations = []
         variations.append(name.replace('.', ''))  # Remove dots
@@ -158,10 +159,13 @@ class PdfProcessor:
             variations = self.create_variations(company_name)
             logging.info(f'Checking variations of company name "{company_name}" in:\n{variations}\n')
             for variation in variations:
-                if variation in cur_page_text_upper:
-                    logging.info(f'Checking variation "{variation}"....')
-                    logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
-                    return company_name
+                if variation not in cur_page_text_upper:
+                    logging.error(f'Could not find matching company name for "{company_name}" using varied company name "{variation}" in current page text. Does company exist?')
+                    return company_name  # just return original name instance #todo: uncertain whether to just exit func or at least return og name
+                else:
+                    logging.info(f'Found matching company name for "{company_name}" in current page text using varied company name "{variation}".')
+                    # company_name = variation  # explicit update of local var company_name to update name instance
+                    return variation
 
         logging.error(f'Could not find matching Company Name in current page text.')
         return None
