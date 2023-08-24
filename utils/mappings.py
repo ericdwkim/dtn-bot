@@ -28,7 +28,6 @@ company_id_to_company_subdir_map = {
 }
 
 # Mapping from document type to its respective directory under the root directory
-# todo: turn keys into tuples? FYI: may cause issues that are not expecting key to be tuples; get_doc_type_dir checks for tuple keys tho
 doc_type_short_to_doc_type_full_map = {
     ('CCM', 'LRD', 'CBK', 'RBK', 'CMB'): 'Credit Cards',
     'EFT': 'Fuel Drafts',
