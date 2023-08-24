@@ -34,18 +34,10 @@ doc_type_short_to_doc_type_full_map = {
     'INV': 'Fuel Invoices',
 }
 
-# doc_type_short_to_doc_type_full_map = {
-#     'CCM': 'Credit Cards',
-#     'LRD': 'Credit Cards',
-#     'EFT': 'Fuel Drafts',
-#     'INV': 'Fuel Invoices',
-#     'CBK': 'Credit Cards',
-#     'RBK': 'Credit Cards',
-#     'CMB': 'Credit Cards'
-# }
+# company_names = ['COFFEYVILLE', 'CVR Supply & Trading', 'DK TRADING', 'EXXONMOBIL', 'FLINT HILLS', 'FRONTIER', 'FUEL MASTERS',
+#  'JUNIPER', 'LA LOMITA', 'MANSFIELD OIL', 'MERITUM - PICO', 'MOTIVA', 'OFFEN PETROLEUM', 'PHILLIPS', 'SEIFS', 'SUNOCO',
+#  'TEXAS TRANSEASTERN', 'U S VENTURE - U S OIL COMPANY', 'VALERO', 'WINTERS OIL', 'CONCORD FIRST DATA RETRIEVAL', 'P66',
+#  'GLOBAL COMPANIES LLC']
 
-
-# company_names = ['VALERO', 'CONCORD FIRST DATA RETRIEVAL', 'EXXONMOBIL', 'U.S. OIL COMPANY', 'DK Trading & Supply',
-#                  'CVR SUPPLY & TRADING, LLC', 'COFFEYVILLE', 'FLINT HILLS', 'FRONTIER',  'FUEL MASTERS', 'JUNIPER', 'LA LOMITA', 'MANSFIELD OIL', 'MERITUM - PICO', 'MOTIVA', 'OFFEN PETROLEUM', 'PHILLIPS', 'SEIFS', 'SUNOCO', 'TEXAS TRANSEASTERN', 'WINTERS OIL']
 
 doc_type_patterns = {'EFT-\s*\d+', 'CMB-\s*\d+', 'CCM-\s*\d+', 'RTV-\s*\d+', 'CBK-\s*\d+', 'LRD-\s*\d+'}
