@@ -143,10 +143,12 @@ class PdfProcessor:
 
         # Convert cur_page_text to uppercase and remove any punctuation or whitespace
         cur_page_text_upper = re.sub(r'[^\w\s]', '', cur_page_text.upper())
+        logging.info(f'\ncur_page_text_upper\n {cur_page_text_upper}\n')
 
         for company_name in company_names:
             # Convert company_name to uppercase and remove any punctuation or whitespace
             company_name_upper = re.sub(r'[^\w\s]', '', company_name.upper())
+            logging.info(f'\ncompany_name_upper\n {company_name_upper}\n')
 
             logging.info(f'Checking company_name: {company_name_upper}')
             if company_name_upper in cur_page_text_upper:
@@ -155,7 +157,7 @@ class PdfProcessor:
 
         logging.error(f'Could not find matching Company Name in current page text.')
         return None
-    # TODO: left off on considering new helper to account for `U.S. OIL COMPANY` not matching with `U S VENTURE - U S OIL COMPANY`; also re-evaulating
+    # TODO - WIP: left off on considering new helper to account for `U.S. OIL COMPANY` not matching with `U S VENTURE - U S OIL COMPANY`; also re-evaulating
     #  ```            if (self.company_name in self.cur_page_text) and (re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE)) and ('END MSG' not in self.cur_page_text):
     #                 self.process_multi_page()```  from commit ae944fb's `get_page_text()` (now called `process_pages()`) as this specific edge case was never an issue during test with `get_page_text` logic...
 
