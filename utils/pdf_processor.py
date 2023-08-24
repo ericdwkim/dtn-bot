@@ -160,7 +160,7 @@ class PdfProcessor:
     #                 self.process_multi_page()```  from commit ae944fb's `get_page_text()` (now called `process_pages()`) as this specific edge case was never an issue during test with `get_page_text` logic...
 
 
-    def create_variations(name):
+    def create_variations(self, name):
         variations = []
         variations.append(name.replace('.', ''))  # Remove dots
         variations.append(name.replace(' ', ''))  # Remove spaces
@@ -182,7 +182,7 @@ class PdfProcessor:
             logging.info(f'Checking company_name: {company_name}')
             company_name_upper = company_name.upper()  # Convert company_name to uppercase
             logging.info(f'\ncompany_name_upper:\n {company_name_upper}\n')
-            variations = create_variations(company_name_upper)
+            variations = self.create_variations(company_name_upper)
             logging.info(f'Checking variations of company name "{company_name_upper}" in:\n{variations}\n')
             for variation in variations:
                 if variation in cur_page_text_upper:
