@@ -66,7 +66,11 @@ def second_flow(flow_manager, processor):
         draft_notices_processed_and_filed = processor.process_pages()
 
         if not draft_notices_processed_and_filed:
-            logging.error('Could not download Draft Notices')
+            logging.error('Could not rename and file away Draft Notices. Do the notices PDF exist?')
+
+        elif draft_notices_processed_and_filed and processor.is_last_day_of_month():
+            processor.month_and_year_handler()
+
 
     except Exception as e:
         logging.info(f'an error: {e}')
