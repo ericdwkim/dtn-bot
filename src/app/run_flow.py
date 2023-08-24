@@ -57,7 +57,6 @@ def second_flow(flow_manager, processor):
 
     try:
         # flow_manager.start_flow()
-        # TODO WIP - does not select all prior tp clicking print
         group_filter_set_to_draft_notice = flow_manager.data_connect_driver.set_group_filter_to_draft_notice()
         logging.info(f'group_filter_set_to_draft_notice: {group_filter_set_to_draft_notice}')
 
