@@ -130,46 +130,10 @@ class PdfProcessor:
         current_year = self.today.strftime('%Y')
         return current_year, current_month
 
-    # def get_company_name(self, cur_page_text):
-    #     """
-    #     Helper func for getting company_name instance
-    #     :param cur_page_text:
-    #     :return:
-    #     """
-    #     company_names = PdfProcessor.get_company_names()
-    #     logging.info(f'\ncompany_names\n {company_names}\n')
-    #
-    #     # Convert cur_page_text to uppercase and remove any punctuation or whitespace
-    #     cur_page_text_upper = re.sub(r'[\s\-\.]+', '', cur_page_text.upper())
-    #     logging.info(f'\ncur_page_text_upper\n {cur_page_text_upper}\n')
-    #
-    #     for company_name in company_names:
-    #         # Convert company_name to uppercase and remove any punctuation or whitespace
-    #         company_name_upper = re.sub(r'[\s\-\.]+', '', company_name.upper())
-    #         logging.info(f'\ncompany_name_upper\n {company_name_upper}\n')
-    #
-    #         logging.info(f'Checking company_name: {company_name_upper}')
-    #         if company_name_upper in cur_page_text_upper:
-    #             logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
-    #             return company_name
-    #
-    #     logging.error(f'Could not find matching Company Name in current page text.')
-    #     return None
-    # TODO - WIP: left off on considering new helper to account for `U.S. OIL COMPANY` not matching with `U S VENTURE - U S OIL COMPANY`; also re-evaulating
-    #  ```            if (self.company_name in self.cur_page_text) and (re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE)) and ('END MSG' not in self.cur_page_text):
-    #                 self.process_multi_page()```  from commit ae944fb's `get_page_text()` (now called `process_pages()`) as this specific edge case was never an issue during test with `get_page_text` logic...
-
-
-    def create_variations(self, name):
-        variations = []
-        variations.append(name.replace('.', ''))  # Remove dots
-        variations.append(name.replace(' ', ''))  # Remove spaces
-        variations.append(name.replace('-', ''))  # Remove dashes
+    def edge_case_handler(self, name):
         if name == 'U S VENTURE - U S OIL COMPANY':
-            variations.append('U.S. OIL COMPANY')
-            # todo: update self.company_name instance to this exact variation for this specific edge case to resolve conditional check in `process_pages()`
-        # You can add more variations if needed
-        return variations
+            new_name = 'U.S. OIL COMPANY'
+            return new_name
     def get_company_name(self, cur_page_text):
         """
         Helper func for getting company_name instance
@@ -179,21 +143,56 @@ class PdfProcessor:
         company_names = PdfProcessor.get_company_names()
         logging.info(f'\ncompany_names\n {company_names}\n')
         cur_page_text_upper = cur_page_text.upper()  # Convert cur_page_text to uppercase
-        logging.info(f'\ncur_page_text_upper\n {cur_page_text_upper}\n')
         for company_name in company_names:
+            if company_name == 'U S VENTURE - U S OIL COMPANY':
+                company_name = 'U.S. OIL COMPANY'
             logging.info(f'Checking company_name: {company_name}')
-            company_name_upper = company_name.upper()  # Convert company_name to uppercase
-            logging.info(f'\ncompany_name_upper:\n {company_name_upper}\n')
-            variations = self.create_variations(company_name_upper)
-            logging.info(f'Checking variations of company name "{company_name_upper}" in:\n{variations}\n')
-            for variation in variations:
-                if variation in cur_page_text_upper:
-                    logging.info(f'Checking variation "{variation}"....')
-                    logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
-                    return company_name
+            if company_name.upper() in cur_page_text_upper:  # Convert company_name to uppercase
+                logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
+                return company_name
 
         logging.error(f'Could not find matching Company Name in current page text.')
         return None
+
+    # TODO - WIP: left off on considering new helper to account for `U.S. OIL COMPANY` not matching with `U S VENTURE - U S OIL COMPANY`; also re-evaulating
+    #  ```            if (self.company_name in self.cur_page_text) and (re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE)) and ('END MSG' not in self.cur_page_text):
+    #                 self.process_multi_page()```  from commit ae944fb's `get_page_text()` (now called `process_pages()`) as this specific edge case was never an issue during test with `get_page_text` logic...
+
+
+    # def create_variations(self, name):
+    #     variations = []
+    #     variations.append(name.replace('.', ''))  # Remove dots
+    #     variations.append(name.replace(' ', ''))  # Remove spaces
+    #     variations.append(name.replace('-', ''))  # Remove dashes
+    #     if name == 'U S VENTURE - U S OIL COMPANY':
+    #         variations.append('U.S. OIL COMPANY')
+    #         # todo: update self.company_name instance to this exact variation for this specific edge case to resolve conditional check in `process_pages()`
+    #     # You can add more variations if needed
+    #     return variations
+    # def get_company_name(self, cur_page_text):
+    #     """
+    #     Helper func for getting company_name instance
+    #     :param cur_page_text:
+    #     :return:
+    #     """
+    #     company_names = PdfProcessor.get_company_names()
+    #     logging.info(f'\ncompany_names\n {company_names}\n')
+    #     cur_page_text_upper = cur_page_text.upper()  # Convert cur_page_text to uppercase
+    #     logging.info(f'\ncur_page_text_upper\n {cur_page_text_upper}\n')
+    #     for company_name in company_names:
+    #         logging.info(f'Checking company_name: {company_name}')
+    #         company_name_upper = company_name.upper()  # Convert company_name to uppercase
+    #         logging.info(f'\ncompany_name_upper:\n {company_name_upper}\n')
+    #         variations = self.create_variations(company_name_upper)
+    #         logging.info(f'Checking variations of company name "{company_name_upper}" in:\n{variations}\n')
+    #         for variation in variations:
+    #             if variation in cur_page_text_upper:
+    #                 logging.info(f'Checking variation "{variation}"....')
+    #                 logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
+    #                 return company_name
+    #
+    #     logging.error(f'Could not find matching Company Name in current page text.')
+    #     return None
 
     def get_doc_type(self, cur_page_text):
         """
