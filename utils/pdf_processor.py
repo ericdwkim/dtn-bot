@@ -48,7 +48,6 @@ class PdfProcessor:
             return pikepdf.open(filepath)
 
     # @dev: workaround to update `pdf_data` instance being initialized as None during start of run_flows
-    # TODO: logic to overwrite existing `messages.pdf` in downloads dir with currently downloaded Invoices.pdf of current day's run --> prevents freakout/confusion. may need to be added in `get_pdf()` instead
     def update_pdf_data(self):
         self.pdf_data = self.get_pdf(self.pdf_file_path)
         return self.pdf_data
@@ -161,33 +160,33 @@ class PdfProcessor:
     #                 self.process_multi_page()```  from commit ae944fb's `get_page_text()` (now called `process_pages()`) as this specific edge case was never an issue during test with `get_page_text` logic...
 
 
-    # def create_variations(name):
-    #     variations = []
-    #     variations.append(name.replace('.', ''))  # Remove dots
-    #     variations.append(name.replace(' ', ''))  # Remove spaces
-    #     # You can add more variations if needed
-    #     return variations
-    #
-    # def get_company_name(self, cur_page_text):
-    #     """
-    #     Helper func for getting company_name instance
-    #     :param cur_page_text:
-    #     :return:
-    #     """
-    #     company_names = PdfProcessor.get_company_names()
-    #     logging.info(f'\ncompany_names\n {company_names}\n')
-    #     cur_page_text_upper = cur_page_text.upper()  # Convert cur_page_text to uppercase
-    #     for company_name in company_names:
-    #         logging.info(f'Checking company_name: {company_name}')
-    #         company_name_upper = company_name.upper()  # Convert company_name to uppercase
-    #         variations = create_variations(company_name_upper)
-    #         for variation in variations:
-    #             if variation in cur_page_text_upper:
-    #                 logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
-    #                 return company_name
-    #
-    #     logging.error(f'Could not find matching Company Name in current page text.')
-    #     return None
+    def create_variations(name):
+        variations = []
+        variations.append(name.replace('.', ''))  # Remove dots
+        variations.append(name.replace(' ', ''))  # Remove spaces
+        # You can add more variations if needed
+        return variations
+
+    def get_company_name(self, cur_page_text):
+        """
+        Helper func for getting company_name instance
+        :param cur_page_text:
+        :return:
+        """
+        company_names = PdfProcessor.get_company_names()
+        logging.info(f'\ncompany_names\n {company_names}\n')
+        cur_page_text_upper = cur_page_text.upper()  # Convert cur_page_text to uppercase
+        for company_name in company_names:
+            logging.info(f'Checking company_name: {company_name}')
+            company_name_upper = company_name.upper()  # Convert company_name to uppercase
+            variations = create_variations(company_name_upper)
+            for variation in variations:
+                if variation in cur_page_text_upper:
+                    logging.info(f'Found matching Company Name: "{company_name}" in current page text.')
+                    return company_name
+
+        logging.error(f'Could not find matching Company Name in current page text.')
+        return None
 
     def get_doc_type(self, cur_page_text):
         """
