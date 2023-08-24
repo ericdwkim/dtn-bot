@@ -167,6 +167,7 @@ class PdfProcessor:
         variations.append(name.replace('-', ''))  # Remove dashes
         if name == 'U S VENTURE - U S OIL COMPANY':
             variations.append('U.S. OIL COMPANY')
+            # todo: update self.company_name instance to this exact variation for this specific edge case to resolve conditional check in `process_pages()`
         # You can add more variations if needed
         return variations
     def get_company_name(self, cur_page_text):
