@@ -164,10 +164,11 @@ class PdfProcessor:
         variations = []
         variations.append(name.replace('.', ''))  # Remove dots
         variations.append(name.replace(' ', ''))  # Remove spaces
-        variations.append(name.replace('-', ''))  # Remove spaces
+        variations.append(name.replace('-', ''))  # Remove dashes
+        if name == 'U S VENTURE - U S OIL COMPANY':
+            variations.append('U S OIL COMPANY')
         # You can add more variations if needed
         return variations
-
     def get_company_name(self, cur_page_text):
         """
         Helper func for getting company_name instance
