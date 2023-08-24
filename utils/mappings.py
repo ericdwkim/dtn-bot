@@ -24,7 +24,6 @@ company_id_to_company_subdir_map = {
     '11111': 'CONCORD FIRST DATA RETRIEVAL [11111]',
     '22222': 'P66 [22222]',
     '33333': 'GLOBAL COMPANIES LLC [33333]'
-    # '44444': 'U.S. OIL COMPANY [44444]' # TODO: remove sanity check
 
 }
 
