@@ -130,20 +130,7 @@ class PdfProcessor:
         current_year = self.today.strftime('%Y')
         return current_year, current_month
 
-    # todo: improve to only append variations using regex to determine first whether original `name` even has dots, spaces, dashes etc... to account for
-    def create_variations(self, name):
-        variations = []
-        variations.append(name.replace('.', ''))  # Remove dots
-        variations.append(name.replace(' ', ''))  # Remove spaces
-        variations.append(name.replace('-', ''))  # Remove dashes
-        variations.append(name.upper())
 
-        if name == 'U S VENTURE - U S OIL COMPANY':
-            variations.append('U.S. OIL COMPANY')
-
-        elif name == 'TEXAS TRANSEASTERN':
-            variations.append('TTE')
-        return variations
     def get_company_name(self, cur_page_text):
         """
         Helper func for getting company_name instance
@@ -152,20 +139,10 @@ class PdfProcessor:
         """
         company_names = PdfProcessor.get_company_names()
         logging.info(f'\ncompany_names\n {company_names}\n')
-        cur_page_text_upper = cur_page_text.upper()  # Convert cur_page_text to uppercase
-        logging.info(f'\ncur_page_text_upper\n {cur_page_text_upper}\n')
+        logging.info(f'\ncur_page_text\n {cur_page_text}\n')
         for company_name in company_names:
-            # logging.info(f'Checking company_name: {company_name}')
-            variations = self.create_variations(company_name)
-            logging.info(f'Checking variations of company name "{company_name}" in:\n{variations}\n')
-            for variation in variations:
-                if variation in cur_page_text_upper:
-                    logging.info(f'Found matching company name for "{company_name}" in current page text using varied company name "{variation}".')
-
-                    return variation
-                else:
-                    logging.error(f'Could not find matching company name for "{company_name}" using varied company name "{variation}" in current page text. Does company exist?')
-                    return company_name
+            if company_name in cur_page_text:
+                logging.info(f'Checking company_name: {company_name}\nFound matching company name in current pageg!')
 
         logging.error(f'Could not find matching Company Name in current page text.')
         return None

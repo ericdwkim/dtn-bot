@@ -2,7 +2,7 @@
 # @dev: last two are made up company_ids
 company_id_to_company_subdir_map = {
     '10482': 'COFFEYVILLE [10482]',
-    '12351': 'CVR Supply & Trading [12351]',
+    '12351': 'CVR SUPPLY & TRADING [12351]',
     '12293': 'DK TRADING [12293]',
     '10005': 'EXXONMOBIL [10005]',
     '11177': 'FLINT HILLS [11177]',
@@ -18,7 +18,7 @@ company_id_to_company_subdir_map = {
     '11293': 'SEIFS [11293]',
     '11613': 'SUNOCO [11613]',
     '10280': 'TEXAS TRANSEASTERN [10280]',
-    '12262': 'U S VENTURE - U S OIL COMPANY [12262]',
+    '12262': 'U.S. OIL COMPANY [12262]',
     '10006': 'VALERO [10006]',
     '10778': 'WINTERS OIL [10778]',
     '11111': 'CONCORD FIRST DATA RETRIEVAL [11111]',
@@ -34,9 +34,9 @@ doc_type_short_to_doc_type_full_map = {
     'INV': 'Fuel Invoices',
 }
 
-# company_names = ['COFFEYVILLE', 'CVR Supply & Trading', 'DK TRADING', 'EXXONMOBIL', 'FLINT HILLS', 'FRONTIER', 'FUEL MASTERS',
+# company_names = ['COFFEYVILLE', 'CVR SUPPLY & TRADING', 'DK TRADING', 'EXXONMOBIL', 'FLINT HILLS', 'FRONTIER', 'FUEL MASTERS',
 #  'JUNIPER', 'LA LOMITA', 'MANSFIELD OIL', 'MERITUM - PICO', 'MOTIVA', 'OFFEN PETROLEUM', 'PHILLIPS', 'SEIFS', 'SUNOCO',
-#  'TEXAS TRANSEASTERN', 'U S VENTURE - U S OIL COMPANY', 'VALERO', 'WINTERS OIL', 'CONCORD FIRST DATA RETRIEVAL', 'P66',
+#  'TEXAS TRANSEASTERN', 'U.S. OIL COMPANY', 'VALERO', 'WINTERS OIL', 'CONCORD FIRST DATA RETRIEVAL', 'P66',
 #  'GLOBAL COMPANIES LLC']
 
 
