@@ -5,7 +5,7 @@ from src.app.flow_manager import FlowManager
 from utils.pdf_processor import PdfProcessor
 
 
-
+# todo: keeps trying to save in working dir `src` so it creates new Fuel Invoices/yyyy/mm
 def first_flow(flow_manager, processor):
     logging.info(f'\n---------------------------\nInitiating First Flow\n---------------------------\n')
     try:
@@ -98,6 +98,7 @@ def run_flows(flow_manager, processor, flows):
     flow_manager.start_flow()
 
     for flow in flows:
+        logging.info(f'Running flow: {flow}')
         flow(flow_manager, processor)   # Execute all flow(s)
 
     # Terminate session

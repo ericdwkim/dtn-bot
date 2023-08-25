@@ -1,5 +1,4 @@
 import logging
-
 from src.app.drivers import BaseDriver, LoginPageDriver, DataConnectDriver
 class FlowManager:
     def __init__(self, headless=False):
