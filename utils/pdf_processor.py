@@ -287,7 +287,6 @@ class PdfProcessor:
         except Exception as e:
             logging.exception(f'An error occurred while moving the file: {e}')
             return False  # File could not be moved
-    # TODO - WIP: refactor to handle for variations to map to same id?
     def get_company_id_fixed(self, company_name):
         company_subdir_to_company_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
         # print(f'-------------- company_subdir_to_company_id_map----------------\n {company_subdir_to_company_id_map}\n----------------')
