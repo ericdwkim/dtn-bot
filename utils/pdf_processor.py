@@ -159,13 +159,13 @@ class PdfProcessor:
             variations = self.create_variations(company_name)
             logging.info(f'Checking variations of company name "{company_name}" in:\n{variations}\n')
             for variation in variations:
-                if variation not in cur_page_text_upper:
-                    logging.error(f'Could not find matching company name for "{company_name}" using varied company name "{variation}" in current page text. Does company exist?')
-                    return company_name  # just return original name instance #todo: uncertain whether to just exit func or at least return og name
-                else:
+                if variation in cur_page_text_upper:
                     logging.info(f'Found matching company name for "{company_name}" in current page text using varied company name "{variation}".')
-                    # company_name = variation  # explicit update of local var company_name to update name instance
+
                     return variation
+                else:
+                    logging.error(f'Could not find matching company name for "{company_name}" using varied company name "{variation}" in current page text. Does company exist?')
+                    return company_name
 
         logging.error(f'Could not find matching Company Name in current page text.')
         return None
@@ -199,31 +199,35 @@ class PdfProcessor:
         # logging.info(f'pdf_file_path: {self.pdf_file_path}')
         try:
             while self.page_num < len(self.pdf_data.pages):
+
                 logging.info(f'Processing page number: {self.page_num + 1}')
                 page = self.pdf_data.pages[self.page_num]
+
                 self.cur_page_text = self.extractor.extract_text_from_pdf_page(page)
                 logging.info(f'self.cur_page_text: \n{self.cur_page_text}\n')
+
                 self.company_name = self.get_company_name(self.cur_page_text)
                 logging.info(f'self.company_name: \n{self.company_name}\n')
-                self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
-                logging.info(f'self.doc_type_pattern: \n{self.doc_type_pattern}\n')
+
+                doc_type_pattern = self.get_doc_type(self.cur_page_text)
+                logging.info(f'doc_type_pattern: \n{doc_type_pattern}\n')
 
 
                 if self.company_name not in self.cur_page_text: # todo: either this or simply use the one in get_company_name()
-                    logging.warning(f"Company name '{self.company_name}' not found in current page.")
+                    logging.critical(f'Company name "{self.company_name}" not found in current page.')
                     self.page_num += 1
                     continue
                 # todo: either this or simply use the one in get_doc_type()
-                if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
+                if re.search(doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
                         'END MSG' not in self.cur_page_text):
                     if not self.process_multi_page():
                         raise ValueError(f"Failed processing multi-page PDF at page {self.page_num + 1}.")
-                elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
+                elif re.search(doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
                         'END MSG' in self.cur_page_text):
                     if not self.process_single_page():
                         raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
                 else:
-                    logging.warning(f"Pattern '{self.doc_type_pattern}' not found in current page.")
+                    logging.warning(f"Pattern '{doc_type_pattern}' not found in current page.")
                     self.page_num += 1
 
                 if self.page_num >= len(self.pdf_data.pages):
@@ -305,7 +309,7 @@ class PdfProcessor:
         except Exception as e:
             logging.exception(f'An error occurred while moving the file: {e}')
             return False  # File could not be moved
-
+    # TODO - WIP: refactor to handle for variations to map to same id?
     def get_company_id_fixed(self, company_name):
         company_subdir_to_company_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
         # print(f'-------------- company_subdir_to_company_id_map----------------\n {company_subdir_to_company_id_map}\n----------------')
