@@ -7,28 +7,34 @@ from ..pages.dataconnectpage import DataConnectPage
 
 class BaseDriver:
     def __init__(self, headless=False):
+        self.headless = headless
+        self.setup_driver()
+
+    def setup_driver(self):
         logging.info('Initializing BaseDriver...')
+        options = self._get_chrome_options()
+        os_type = platform.system()
+        chromedriver_executable_path = self._get_chromedriver_executable_path(os_type)
+
+        self.driver = webdriver.Chrome(
+            service=Service(executable_path=chromedriver_executable_path),
+            options=options
+        )
+
+        logging.info(
+            f'Using operating system: "{os_type}".\nConstructing chromedriver instance using executable_path: "{chromedriver_executable_path}"'
+        )
+
+    def _get_chrome_options(self):
         options = webdriver.ChromeOptions()
-        if headless:
+        if self.headless:
             options.add_argument('--headless=new')
         else:
             options.add_argument('--start-maximized')
+        return options
 
-        # @dev: OS dependent chromedriver.exe path for correct driver instance
-        # TODO: requires testing
-        os_type = platform.system()
-        if os_type == 'Darwin':
-            chromedriver_executable_path = '/opt/homebrew/bin/chromedriver'
-            self.driver = webdriver.Chrome(service=Service(executable_path=chromedriver_executable_path),
-                                           options=options)
-            logging.info(
-                f'Using operating system {os_type}. Constructing chromedriver instance accordingly via `executable_path`: {executable_path}')
-        else:
-            chromedriver_executable_path = 'C:\\Users\\ekima\\AppData\\Local\\anaconda3\\envs\\bots\\Lib\\site-packages\\seleniumbase\\drivers\\chromedriver.exe' # taken from prod
-        logging.info(f'Using operating system {os_type}. Constructing chromedriver instance accordingly via `executable_path`: {executable_path}')
-        self.driver = webdriver.Chrome(service=Service(executable_path=chromedriver_executable_path), options=options)
-
-
+    def _get_chromedriver_executable_path(self, os_type):
+        return '/opt/homebrew/bin/chromedriver' if os_type == 'Darwin' else 'C:\\Users\\ekima\\AppData\\Local\\anaconda3\\envs\\bots\\Lib\\site-packages\\seleniumbase\\drivers\\chromedriver.exe'
 
     def teardown_driver(self):
         self.driver.quit()
