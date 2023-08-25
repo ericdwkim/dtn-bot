@@ -142,7 +142,8 @@ class PdfProcessor:
         logging.info(f'\ncur_page_text\n {cur_page_text}\n')
         for company_name in company_names:
             if company_name in cur_page_text:
-                logging.info(f'Checking company_name: {company_name}\nFound matching company name in current pageg!')
+                logging.info(f'Checking company_name: {company_name}\nFound matching company name in current page!')
+                return company_name
 
         logging.error(f'Could not find matching Company Name in current page text.')
         return None
