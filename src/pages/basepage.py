@@ -1,3 +1,4 @@
+import logging
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -27,7 +28,7 @@ class BasePage(object):
             element_clickable = self.wait_for_element_clickable(locator, locator_type)
             return element_located, element_clickable
         except Exception as e:
-            print(f'An error occurred trying to locate and click element: {str(e)}')
+            logging.exception(f'An error occurred trying to locate and click element: {str(e)}')
             return None, None
 
     def find_and_wait_for_src_elem_to_be_clickable_and_target_elems_to_be_present(self, src_locator, target_elem_idx, target_locator="//ul[@class='selected connected-list ui-sortable']", locator_type=By.XPATH):
@@ -56,7 +57,7 @@ class BasePage(object):
                 target_element = target_elements[target_elem_idx]
 
             else:
-                print(f'Could not find source WebElement: {src_locator}\nand/or target WebElements: target_locator[{target_elem_idx}]')
+                logging.error(f'Could not find source WebElement: {src_locator}\nand/or target WebElements: target_locator[{target_elem_idx}]')
 
             src_element_is_clickable = self.wait_for_element_clickable(src_locator, locator_type)
             src_element_is_present = self.wait_for_presence_of_elements_located(src_locator, locator_type)
@@ -64,7 +65,7 @@ class BasePage(object):
             target_elements_present =  self.wait_for_presence_of_elements_located(target_locator, locator_type)
 
         except Exception as e:
-            print(
+            logging.exception(
                 f"Error finding or waiting for source/target elements.\nSource locator: {src_locator}\nTarget locator: {target_locator}\nLocator type: {locator_type}\nError {str(e)}")
 
         return source_element, src_element_is_clickable_and_present, target_element, target_elements_present
@@ -88,11 +89,11 @@ class BasePage(object):
         # @dev: Handles edge case when either Draft Notices or Credit Cards are unavailable for set date; if so, continue to next flow
         elif source_element and target_element and not src_element_is_clickable_and_present and not target_elements_present and (
                 (src_locator == r"//li[@title='Draft Notice']") or (src_locator == r"//li[@title='Credit Card']")):
-            print(f'Unable to wait for src elem: {src_locator} to be found and interactable\nAre there Draft Notices or Credit Cards for set date?\nProceeding with the script...')
+            logging.info(f'Unable to wait for src elem: {src_locator} to be found and interactable\nAre there Draft Notices or Credit Cards for set date?\nProceeding with the script...')
             return True
 
         else:
-            print(f'Source and/or Target element was not found and/or not present\nsrc_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
+            logging.error(f'Source and/or Target element was not found and/or not present\nsrc_locator: {src_locator} | target_elem_idx: {target_elem_idx}')
             return False
 
 
@@ -109,10 +110,10 @@ class BasePage(object):
             element.click()
             return True, element
         except NoSuchElementException:
-            print(f'Element {locator} was not found.')
+            logging.error(f'Element {locator} was not found.')
             return False, None
         except Exception as e:
-            print(f'Error occurred when trying to find and click element: {str(e)}')
+            logging.exception(f'Error occurred when trying to find and click element: {str(e)}')
             return False, None
 
     def find_element_and_click_and_send_keys(self, locator, keys_to_send):
@@ -128,10 +129,10 @@ class BasePage(object):
                 element_selector_clicked.send_keys(keys_to_send)
                 return True
             else:
-                print(f'Failed to send keys to element: {locator}')
+                logging.error(f'Failed to send keys to element: {locator}')
                 return False
         except Exception as e:
-            print(f'An error occurred: {str(e)}')
+            logging.exception(f'An error occurred: {str(e)}')
             return False
 
     def find_element_and_click_perform(self, locator, locator_type=By.CSS_SELECTOR):
@@ -146,7 +147,7 @@ class BasePage(object):
             self.action.move_to_element(element).click(element).perform()
             return True
         else:
-            print(f'Could not locate element: {locator}')
+            logging.error(f'Could not locate element: {locator}')
             return False
 
 
@@ -190,7 +191,7 @@ class BasePage(object):
             # print(f'element: {mark} is clickable!')
             return True  # If element is found within `timeout`
         except TimeoutException:
-            print(f'Tried to wait for element: {mark} to be clickable')
+            logging.exception(f'Tried to wait for element: {mark} to be clickable')
             return False
 
     def is_web_element(self, obj):
@@ -218,7 +219,7 @@ class BasePage(object):
             # print(f'element {locator} is present!')
             return True
         except (NoSuchElementException, TimeoutException):
-            print(f'Tried to check visibility of list WebElements: {locator} using locator type: {locator_type}')
+            logging.exception(f'Tried to check visibility of list WebElements: {locator} using locator type: {locator_type}')
             return False
 
     def wait_for_find_then_click(self, locator, locator_type=By.CSS_SELECTOR):
@@ -234,8 +235,8 @@ class BasePage(object):
                 # print(f'Successfully clicked on the element: {element}')
                 return True
             else:
-                print(f'Element "{locator}" was not present.')
+                logging.error(f'Element "{locator}" was not present.')
                 return False
         except NoSuchElementException:
-            print(f'NoSuchElementException: The element "{locator}" was not found.')
+            logging.exception(f'NoSuchElementException: The element "{locator}" was not found.')
             return False
