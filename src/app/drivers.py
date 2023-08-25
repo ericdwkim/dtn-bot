@@ -1,4 +1,5 @@
 import logging
+import platform
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from ..pages.loginpage import LoginPage
@@ -12,7 +13,22 @@ class BaseDriver:
             options.add_argument('--headless=new')
         else:
             options.add_argument('--start-maximized')
-        self.driver = webdriver.Chrome(service=Service(executable_path='/opt/homebrew/bin/chromedriver'), options=options)
+
+        # @dev: OS dependent chromedriver.exe path for correct driver instance
+        # TODO: requires testing
+        os_type = platform.system()
+        if os_type == 'Darwin':
+            chromedriver_executable_path = '/opt/homebrew/bin/chromedriver'
+            self.driver = webdriver.Chrome(service=Service(executable_path=chromedriver_executable_path),
+                                           options=options)
+            logging.info(
+                f'Using operating system {os_type}. Constructing chromedriver instance accordingly via `executable_path`: {executable_path}')
+        else:
+            chromedriver_executable_path = 'C:\\Users\\ekima\\AppData\\Local\\anaconda3\\envs\\bots\\Lib\\site-packages\\seleniumbase\\drivers\\chromedriver.exe' # taken from prod
+        logging.info(f'Using operating system {os_type}. Constructing chromedriver instance accordingly via `executable_path`: {executable_path}')
+        self.driver = webdriver.Chrome(service=Service(executable_path=chromedriver_executable_path), options=options)
+
+
 
     def teardown_driver(self):
         self.driver.quit()
