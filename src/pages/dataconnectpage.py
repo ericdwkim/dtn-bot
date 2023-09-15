@@ -223,6 +223,7 @@ class DataConnectPage(BasePage):
             logging.error("Filter button could not be clicked")
             return True, True, False
 
+        # TODO: separate this block as it is not relevant to setting a filter head
         if filter_button_is_clicked and reset_selected is True:
             # @dev: first checkbox click req'd
             # checkbox_is_clicked = self.click_checkbox()
