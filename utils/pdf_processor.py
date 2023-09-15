@@ -287,6 +287,36 @@ class PdfProcessor:
         except Exception as e:
             logging.exception(f'An error occurred while moving the file: {e}')
             return False  # File could not be moved
+
+    def rename_and_delete_pdf(self):
+        file_deleted = False
+        if os.path.exists(self.file_path):
+            with pikepdf.open(self.file_path) as pdf:
+                if len(pdf.pages) > 0:
+                    first_page = self.extractor.extract_text_from_pdf_page(pdf.pages[0])
+
+                    if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
+                        if re.search(r'EFT-\d+', first_page):
+                            self.new_file_name = f'EFT-{self.today}-TO-BE-DELETED.pdf'
+                        else:
+                            self.new_file_name = f'CCM-{self.today}-TO-BE-DELETED.pdf'
+
+                        file_directory = os.path.dirname(self.file_path)
+                        new_file_path = os.path.join(file_directory, self.new_file_name)
+
+                        print(f"Renaming file: {self.file_path} to {new_file_path}")
+                        os.rename(self.file_path, new_file_path)
+                        file_deleted = True
+                        print("File renamed successfully.")
+                        sleep(3)
+
+                        if os.path.exists(new_file_path):
+                            print(f"Deleting file: {new_file_path}")
+                            os.remove(new_file_path)
+                            print("File deleted successfully.")
+
+                return file_deleted
+
     def get_company_id_fixed(self, company_name):
         company_subdir_to_company_id_map = {v: k for k, v in company_id_to_company_subdir_map.items()}
         # print(f'-------------- company_subdir_to_company_id_map----------------\n {company_subdir_to_company_id_map}\n----------------')
