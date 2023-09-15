@@ -98,6 +98,7 @@ class DataConnectDriver:
 
     def set_group_filter_to_invoice(self):
         try:
+            logging.info('CALLING set_group_filter_to_invoice FROM drivers.py')
             set_group_filter_to_invoice = self.data_connect_page.set_group_filter_to_invoice()
             if not set_group_filter_to_invoice:
                 logging.error('Could not set `Group` filter to `Invoice`')
