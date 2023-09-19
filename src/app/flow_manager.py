@@ -8,7 +8,7 @@ class FlowManager:
         self.data_connect_driver = DataConnectDriver(self.base_driver)
 
     # @dev: what all flows should do in sequence regardless of what flow number assuming they are independently ran
-    def start_flow(self):
+    def start_flow(self, third_flow=False):
         try:
             site_visited_and_logged_in = self.login_page_driver.visit_and_login()
             if not site_visited_and_logged_in:
@@ -22,7 +22,7 @@ class FlowManager:
 
 
             # todo: not sure what changes will need to made, but it will be needed for all three flows, just different for third flow using `third_flow` bool
-            date_filter_set = self.data_connect_driver.set_date_filter()
+            date_filter_set = self.data_connect_driver.set_date_filter(third_flow)
             if not date_filter_set:
                 raise RuntimeError('Something went wrong3')
 

@@ -51,23 +51,25 @@ def second_flow(flow_manager, processor):
         elif draft_notices_processed_and_filed and processor.is_last_day_of_month():
             processor.month_and_year_handler()
 
+        logging.info(f'\n---------------------------\nCommencing First Flow\n---------------------------\n')
+
 
     except Exception as e:
         logging.info(f'an error: {e}')
 
 
-# todo
-# def third_flow(flow_manager, processor):
-#     logging.info('running third flow....')
+def third_flow(flow_manager, processor):
+    logging.info(f'\n---------------------------\nInitiating Third Flow\n---------------------------\n')
 
-    # third flow specific logic
-    # pass
+    try:
+
+
 
 
 # @dev: call w/o args if wish to run all three flows in sequential order using the same ChromeDriver instance
-def run_flows(flow_manager, processor, flows):
+def run_flows(flow_manager, processor, flows, third_flow):
     # Setup session
-    flow_manager.start_flow()
+    flow_manager.start_flow(third_flow)
 
     for flow_func, flow_name in flows:
         logging.info(f'Running flow: {flow_name}')
@@ -79,6 +81,22 @@ def run_flows(flow_manager, processor, flows):
 
     # Terminate session
     flow_manager.end_flow()
+
+def run_flows(flow_manager, processor, flows, third_flow=False):
+    # loop through all requested flows
+    for flow_func, flow_name in flows:
+        # `date_locator` flag for `set_date_filter`
+        if flow_name == 'third_flow':
+            flow_manager.start_flow(third_flow=True)
+        else:
+            flow_manager.start_flow(third_flow=False)
+
+
+
+
+        logging.info(f'Running flow: {flow_name}')
+        flow_func(flow_manager, processor)  # Execute flows
+
 
 
 

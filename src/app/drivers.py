@@ -74,9 +74,9 @@ class DataConnectDriver:
         except Exception as e:
             logging.exception(f'An error occurred trying to switch tab to `Data Connect`: {e}')
 
-    def set_date_filter(self):
+    def set_date_filter(self, third_flow=False):
         try:
-            set_date_filter = self.data_connect_page.set_date_filter()
+            set_date_filter = self.data_connect_page.set_date_filter(third_flow)
             if not set_date_filter:
                 logging.error('Could not set date filter')
                 return False
