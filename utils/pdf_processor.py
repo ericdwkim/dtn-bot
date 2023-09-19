@@ -224,22 +224,25 @@ class PdfProcessor:
         # Pass `/Users/ekim/Downloads/messages.pdf` to get PikePDf object
         pdf = self.get_pdf(self.pdf_file_path)
 
+        if pdf is not None:
+            logging.info(f'Renaming original Invoices PDF file "{self.pdf_file_path}" to {self.new_file_path}')
+            self.new_file_name = self.today.strftime('%m-%d-%y') + '.pdf'
+            # given the original `messages.pdf` full filepath, return new full filepath
+            file_dir = os.path.dirname(self.pdf_file_path)
+            self.new_file_path = os.path.join(file_dir, self.new_file_name)
 
-        self.new_file_name = self.today.strftime('%m-%d-%y') + '.pdf'
-        # given the original `messages.pdf` full filepath, return new full filepath
-        file_dir = os.path.dirname(self.pdf_file_path)
-        self.new_file_path = os.path.join(file_dir, self.new_file_name)
-        logging.info(f'Renaming original Invoices PDF file "{self.pdf_file_path}" to {self.new_file_path}')
-
-        pdf.close() # Close PDF
-        os.rename(self.pdf_file_path, self.new_file_path)
-        # Check file got saved correctly
-        if os.path.exists(self.new_file_path):
-            logging.info(f'File renamed successfully.')
-            time.sleep(3)
-            return True
+            pdf.close() # Close PDF
+            os.rename(self.pdf_file_path, self.new_file_path)
+            # Check file got saved correctly
+            if os.path.exists(self.new_file_path):
+                logging.info(f'File renamed successfully.')
+                time.sleep(3)
+                return True
+            else:
+                logging.error(f'Could not rename Invoices PDF')
+                return False
         else:
-            logging.error(f'Could not rename Invoices PDF')
+            logging.critical(f'Could not find downloaded Invoices PDF in Downloads directory. Something went wrong. Does it even exist?')
             return False
 
     def get_file_timestamps(self, file_path):
