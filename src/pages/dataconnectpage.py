@@ -26,7 +26,7 @@ class DataConnectPage(BasePage):
             logging.exception(f'An error occurred trying to switch to DataConnect tab: {str(e)}')
             return False
 
-    def set_date_filter(self, date_locator='#date > option:nth-child(2)', third_flow=False, max_retries=3):
+    def set_date_filter(self, third_flow=False, date_locator='#date > option:nth-child(2)', max_retries=3):
         """
         Sets `Date` element
         :param date_locator: element locator string; defaulted to yesterday's date
@@ -51,7 +51,7 @@ class DataConnectPage(BasePage):
                 if not translated_filter_head_located and not translated_filter_head_clickable:
                     self.reload_page()
                     time.sleep(30)
-                    return self.set_date_filter(date_locator, third_flow, max_retries - 1)
+                    return self.set_date_filter(third_flow, date_locator, max_retries - 1)
                 time.sleep(5)
                 return True
 
@@ -62,7 +62,7 @@ class DataConnectPage(BasePage):
                 if max_retries > 1:
                     time.sleep(10)
                     # Recursive call
-                    return self.set_date_filter(date_locator, third_flow, max_retries - 1)
+                    return self.set_date_filter(third_flow, date_locator, max_retries - 1)
                 else:
                     logging.error("Could not set the date after 3 attempts of reloading the page. Please restart the script.")
                     return False
