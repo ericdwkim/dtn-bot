@@ -119,6 +119,17 @@ class DataConnectDriver:
         except Exception as e:
             logging.exception(f'An error occurred trying to set `Group` filter to `Draft Notice`: {e}')
 
+    def set_group_filter_to_credit_card(self):
+        try:
+            set_group_filter_to_credit_card = self.data_connect_page.set_group_filter_to_credit_card()
+            if not set_group_filter_to_credit_card:
+                logging.error('Could not set `Group` filter to `Credit Card`')
+                return False
+            else:
+                return True
+        except Exception as e:
+            logging.exception(f'An error occurred trying to set `Group` filter to `Credit Card`: {e}')
+
 #
 #     # todo: fill out with other required instance methods to be used in flow_manager.py
 #
