@@ -7,9 +7,7 @@ from utils.pdf_processor import PdfProcessor
 
 # todo: keeps trying to save in working dir `src` so it creates new Fuel Invoices/yyyy/mm; need it to save it in downloads dir as from and overwrite/save to target dir
 def first_flow(flow_manager, processor):
-    logging.info(f'\n---------------------------\nInitiating First Flow\n---------------------------\n')
     try:
-        # flow_manager.start_flow()
 
         group_filter_set_to_invoice =  flow_manager.data_connect_driver.set_group_filter_to_invoice()
 
@@ -24,16 +22,12 @@ def first_flow(flow_manager, processor):
         elif invoices_renamed_and_filed_away and processor.is_last_day_of_month():
             processor.month_and_year_handler(first_flow=True)
 
-        logging.info(f'\n---------------------------\nCommencing First Flow\n---------------------------\n')
-
-
     except Exception as e:
-        logging.info(f'an error: {e}')
+        logging.info(f'An unexpected error has occurred during first_flow: {e}')
 
 
 
 def second_flow(flow_manager, processor):
-    logging.info(f'\n---------------------------\nInitiating Second Flow\n---------------------------\n')
 
     try:
         group_filter_set_to_draft_notice = flow_manager.data_connect_driver.set_group_filter_to_draft_notice()
@@ -51,51 +45,50 @@ def second_flow(flow_manager, processor):
         elif draft_notices_processed_and_filed and processor.is_last_day_of_month():
             processor.month_and_year_handler()
 
-        logging.info(f'\n---------------------------\nCommencing First Flow\n---------------------------\n')
-
-
     except Exception as e:
-        logging.info(f'an error: {e}')
+        logging.info(f'An unexpected error has occurred during second_flow: {e}')
 
 
 def third_flow(flow_manager, processor):
-    logging.info(f'\n---------------------------\nInitiating Third Flow\n---------------------------\n')
 
     try:
+        group_filter_set_to_credit_card = flow_manager.data_connect_driver.set_group_filter_to_credit_card()
+        logging.info(f'group_filter_to_credit_card: {group_filter_set_to_credit_card}')
+
+        if not group_filter_set_to_credit_card:
+            logging.error('Could not set group filter to Credit Card during third_flow')
+
+        ccms_processed_and_filed = processor.process_pages()
+
+        if not ccms_processed_and_filed:
+            logging.error('Could not rename and file away CCMs')
+        elif ccms_processed_and_filed and processor.is_last_day_of_month():
+            processor.month_and_year_handler()
+
+    except Exception as e:
+        logging.info(f'An unexpected error has occurred during third_flow: {e}')
 
 
-
-
-# @dev: call w/o args if wish to run all three flows in sequential order using the same ChromeDriver instance
-def run_flows(flow_manager, processor, flows, third_flow):
-    # Setup session
-    flow_manager.start_flow(third_flow)
-
-    for flow_func, flow_name in flows:
-        logging.info(f'Running flow: {flow_name}')
-        flow_func(flow_manager, processor)   # Execute all flow(s)
-
-        # Conditional logic based on the flow name
-        if flow_name in ['second_flow', 'third_flow']:
-            processor.rename_and_delete_pdf()
-
-    # Terminate session
-    flow_manager.end_flow()
-
-def run_flows(flow_manager, processor, flows, third_flow=False):
+def run_flows(flow_manager, processor, flows):
     # loop through all requested flows
     for flow_func, flow_name in flows:
+        logging.info(f'\n---------------------------\nInitiating Flow: {flow_name}\n---------------------------\n')
+
         # `date_locator` flag for `set_date_filter`
         if flow_name == 'third_flow':
             flow_manager.start_flow(third_flow=True)
         else:
             flow_manager.start_flow(third_flow=False)
 
-
-
-
-        logging.info(f'Running flow: {flow_name}')
         flow_func(flow_manager, processor)  # Execute flows
+
+        if flow_name in ['second_flow', 'third_flow']:
+            original_pdf_deleted = processor.rename_and_delete_pdf()
+            logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
+
+        logging.info(f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')
+    # Terminate session
+    flow_manager.end_flow()
 
 
 
