@@ -70,15 +70,17 @@ def third_flow(flow_manager, processor):
 
 
 def run_flows(flow_manager, processor, flows):
-    # loop through all requested flows
-    for flow_func, flow_name in flows:
+    num_flows = len(flows)
+
+    for i, (flow_func, flow_name) in enumerate(flows):
         logging.info(f'\n---------------------------\nInitiating Flow: {flow_name}\n---------------------------\n')
 
-        # `date_locator` flag for `set_date_filter`
-        if flow_name == 'third_flow':
-            flow_manager.start_flow(third_flow=True)
-        else:
-            flow_manager.start_flow(third_flow=False)
+        # Only start the flow at the beginning of the list of flows.
+        if i == 0:
+            if flow_name == 'third_flow':
+                flow_manager.start_flow(third_flow=True)
+            else:
+                flow_manager.start_flow(third_flow=False)
 
         flow_func(flow_manager, processor)  # Execute flows
 
@@ -87,10 +89,10 @@ def run_flows(flow_manager, processor, flows):
             logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
 
         logging.info(f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')
-    # Terminate session
-    flow_manager.end_flow()
 
-
+        # Only end the flow if it's the last one in the list of flows.
+        if i == num_flows - 1:
+            flow_manager.end_flow()
 
 
 if __name__ == '__main__':
