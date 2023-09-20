@@ -129,6 +129,47 @@ class DataConnectDriver:
         except Exception as e:
             logging.exception(f'An error occurred trying to set `Group` filter to `Credit Card`: {e}')
 
+
+# todo: requires testing; decorator to centralize error handling for all functions
+# def handle_errors(func):
+#     def wrapper(*args, **kwargs):
+#         try:
+#             result = func(*args, **kwargs)
+#             return result
+#         except Exception as e:
+#             logging.exception(f'An error occurred in {func.__name__}: {e}')
+#             return False
 #
-#     # todo: fill out with other required instance methods to be used in flow_manager.py
+#     return wrapper
+# class DataConnectDriver:
+#     def __init__(self, base_driver):
+#         self.base_driver = base_driver
+#         self.data_connect_page = DataConnectPage(self.base_driver)
 #
+#     @handle_errors
+#     def switch_tab(self):
+#         return self.data_connect_page.switch_tab()
+#
+#     @handle_errors
+#     def set_date_filter(self, third_flow=False):
+#         return self.data_connect_page.set_date_filter(third_flow)
+#
+#     @handle_errors
+#     def set_translated_filter_to_no(self):
+#         return self.data_connect_page.set_translated_filter_to_no()
+#
+#     @handle_errors
+#     def set_group_filter_to_invoice(self):
+#         return self.data_connect_page.set_group_filter_to_invoice()
+#
+#     @handle_errors
+#     def set_group_filter_to_draft_notice(self):
+#         return self.data_connect_page.set_group_filter_to_draft_notice()
+#
+#     @handle_errors
+#     def set_group_filter_to_credit_card(self):
+#         return self.data_connect_page.set_group_filter_to_credit_card()
+#
+#     # Add other methods with error handling here
+#
+#     # ...
