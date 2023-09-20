@@ -293,8 +293,8 @@ class PdfProcessor:
 
     def rename_and_delete_pdf(self):
         file_deleted = False
-        if os.path.exists(self.file_path):
-            with pikepdf.open(self.file_path) as pdf:
+        if os.path.exists(self.pdf_file_path):
+            with pikepdf.open(self.pdf_file_path) as pdf:
                 if len(pdf.pages) > 0:
                     first_page = self.extractor.extract_text_from_pdf_page(pdf.pages[0])
 
@@ -304,11 +304,11 @@ class PdfProcessor:
                         else:
                             self.new_file_name = f'CCM-{self.today}-TO-BE-DELETED.pdf'
 
-                        file_directory = os.path.dirname(self.file_path)
+                        file_directory = os.path.dirname(self.pdf_file_path)
                         new_file_path = os.path.join(file_directory, self.new_file_name)
 
-                        print(f"Renaming file: {self.file_path} to {new_file_path}")
-                        os.rename(self.file_path, new_file_path)
+                        print(f"Renaming file: {self.pdf_file_path} to {new_file_path}")
+                        os.rename(self.pdf_file_path, new_file_path)
                         file_deleted = True
                         print("File renamed successfully.")
                         sleep(3)
