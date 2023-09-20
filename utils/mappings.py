@@ -3,7 +3,7 @@
 company_id_to_company_subdir_map = {
     '10482': 'COFFEYVILLE [10482]',
     '12351': 'CVR SUPPLY & TRADING [12351]',
-    '12293': 'DK TRADING [12293]',
+    '12293': 'DK TRADING & SUPPLY [12293]',
     '10005': 'EXXONMOBIL [10005]',
     '11177': 'FLINT HILLS [11177]',
     '10351': 'FRONTIER [10351]',
