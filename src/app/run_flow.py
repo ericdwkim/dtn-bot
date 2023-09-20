@@ -43,7 +43,7 @@ def second_flow(flow_manager, processor):
             logging.error('Could not rename and file away Draft Notices. Do the notices PDF exist?')
 
         elif draft_notices_processed_and_filed and processor.is_last_day_of_month():
-            processor.month_and_year_handler()
+            processor.month_and_year_handler(first_flow=False)
 
     except Exception as e:
         logging.info(f'An unexpected error has occurred during second_flow: {e}')
@@ -63,7 +63,7 @@ def third_flow(flow_manager, processor):
         if not ccms_processed_and_filed:
             logging.error('Could not rename and file away CCMs')
         elif ccms_processed_and_filed and processor.is_last_day_of_month():
-            processor.month_and_year_handler()
+            processor.month_and_year_handler(first_flow=False)
 
     except Exception as e:
         logging.info(f'An unexpected error has occurred during third_flow: {e}')
