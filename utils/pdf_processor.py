@@ -17,7 +17,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
     # TODO: figure out which `today` in `datetime` should be used; also needs formatting.
-    # today = datetime.today().strftime('%m-%d-%y')  # @today original in `string`
     # today = datetime.today()  # @today; original in `datetime`
     # today_datetime = datetime.today()  # @today; renamed original in `datetime`
     # today_string = today_datetime.strftime('%m-%d-%y') # @today `string`
@@ -372,6 +371,8 @@ class PdfProcessor:
     def get_new_file_name(self):
         today_str = self.today.strftime('%m-%d-%y')
         if re.match(r'EFT-\s*\d+', self.doc_type) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
+            logging.critical(f'******************************************* self.total_target_amt: {self.total_target_amt} ***********************')
+            # todo: debug why this formatting conditional doesn't work
             if "-" in self.total_target_amt:
                 total_target_amt = self.total_target_amt.replace("-", "")
                 new_file_name = f'{self.doc_type}-{today_str}-({total_target_amt}).pdf'
