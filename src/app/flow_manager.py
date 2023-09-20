@@ -21,7 +21,6 @@ class FlowManager:
                 raise RuntimeError('tab_switched_to_data_connect returned false')
 
 
-            # todo: not sure what changes will need to made, but it will be needed for all three flows, just different for third flow using `third_flow` bool
             date_filter_set = self.data_connect_driver.set_date_filter(third_flow)
             if not date_filter_set:
                 raise RuntimeError('Something went wrong3')
