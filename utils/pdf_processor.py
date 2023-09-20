@@ -30,6 +30,7 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
+        self.company_dir = ''
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
@@ -141,7 +142,7 @@ class PdfProcessor:
         logging.info(f'\ncompany_names\n {company_names}\n')
         logging.info(f'\ncur_page_text\n {cur_page_text}\n')
         for company_name in company_names:
-            if company_name in cur_page_text:
+            if company_name in cur_page_text.upper():
                 logging.info(f'Checking company_name: {company_name}\nFound matching company name in current page!')
                 return company_name
 
@@ -225,11 +226,12 @@ class PdfProcessor:
         pdf = self.get_pdf(self.pdf_file_path)
 
         if pdf is not None:
-            logging.info(f'Renaming original Invoices PDF file "{self.pdf_file_path}" to {self.new_file_path}')
+
             self.new_file_name = self.today.strftime('%m-%d-%y') + '.pdf'
             # given the original `messages.pdf` full filepath, return new full filepath
             file_dir = os.path.dirname(self.pdf_file_path)
             self.new_file_path = os.path.join(file_dir, self.new_file_name)
+            logging.info(f'Renaming original Invoices PDF file "{self.pdf_file_path}" to {self.new_file_path}')
 
             pdf.close() # Close PDF
             os.rename(self.pdf_file_path, self.new_file_path)
@@ -311,7 +313,7 @@ class PdfProcessor:
                         os.rename(self.pdf_file_path, new_file_path)
                         file_deleted = True
                         print("File renamed successfully.")
-                        sleep(3)
+                        time.sleep(3)
 
                         if os.path.exists(new_file_path):
                             print(f"Deleting file: {new_file_path}")
