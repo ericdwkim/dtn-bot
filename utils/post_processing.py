@@ -13,7 +13,7 @@ def extract_ccm_data(pdf_file):
     :return:
     """
     filename = os.path.basename(pdf_file)
-    match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)\.pdf', filename)
+    match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)-?\.pdf', filename)
     if match:
         doc_type_num = int(match.group(1))
         total_amount = float(match.group(2).replace(',', ''))
