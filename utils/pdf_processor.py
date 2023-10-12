@@ -12,8 +12,6 @@ from utils.extraction_handler import PDFExtractor
 from utils.filesystem_manager import construct_month_dir_from_doc_type, create_and_return_directory_path, get_doc_type_full, create_directory
 from utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
     # TODO: figure out which `today` in `datetime` should be used; also needs formatting.

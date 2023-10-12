@@ -11,7 +11,6 @@ class Main:
         self.flow_manager = FlowManager(headless=headless)
         self.processor = PdfProcessor()
 
-
     # todo: keeps trying to save in working dir `src` so it creates new Fuel Invoices/yyyy/mm; need it to save it in downloads dir as from and overwrite/save to target dir
     def first_flow(self):
         try:
@@ -102,6 +101,7 @@ class Main:
                 self.flow_manager.end_flow()
 
     def test_changes(self):
+        setup_logger()
         logging.info('testing...............')
         logging.error('errrorrrrr')
 
@@ -116,13 +116,13 @@ if __name__ == '__main__':
 
     main = Main()
 
-    flows_to_run = []
-    if not args.skipFlow1:
-        flows_to_run.append((first_flow, 'first_flow'))
-    if not args.skipFlow2:
-        flows_to_run.append((second_flow, 'second_flow'))
-    if not args.skipFlow3:
-        flows_to_run.append((third_flow, 'third_flow'))
+    # flows_to_run = []
+    # if not args.skipFlow1:
+    #     flows_to_run.append((md.first_flow, 'first_flow'))
+    # if not args.skipFlow2:
+    #     flows_to_run.append((md.second_flow, 'second_flow'))
+    # if not args.skipFlow3:
+    #     flows_to_run.append((md.third_flow, 'third_flow'))
 
     # Delete all PDFs in Downloads directory
     # run(["../scripts/clean_slate.sh"], shell=True)
