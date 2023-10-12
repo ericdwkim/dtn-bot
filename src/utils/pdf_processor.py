@@ -1,16 +1,14 @@
 import os
 import re
 import time
-from glob import glob
 import pikepdf
 import shutil
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
-from utils.post_processing import merge_rename_and_summate
-from utils.extraction_handler import PDFExtractor
-from utils.filesystem_manager import construct_month_dir_from_doc_type, create_and_return_directory_path, get_doc_type_full, create_directory
-from utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
+from src.utils.extraction_handler import PDFExtractor
+from src.utils.file_handler import construct_month_dir_from_doc_type, create_and_return_directory_path, get_doc_type_full, create_directory  # todo: FileHandler
+from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------

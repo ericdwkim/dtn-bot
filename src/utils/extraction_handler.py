@@ -2,8 +2,7 @@ from pikepdf import Pdf
 import pdfplumber
 import io
 import re
-import datetime
-from utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
+
 
 # TODO: create class PDFExtractor; migrate extraction helpers from post_processing.py as instance methods for this class
 

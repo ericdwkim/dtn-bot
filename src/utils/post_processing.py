@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 import pikepdf
 import shutil
-from utils.filesystem_manager import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files
+from src.utils.file_handler import end_of_month_operations, construct_month_dir_from_doc_type, is_last_day_of_month, cleanup_files  # todo: import FileManager as class
 
 # TODO: move all `extract_` helpers to extraction_handler.py as class `PDFExtractor` instance method
 def extract_ccm_data(pdf_file):
