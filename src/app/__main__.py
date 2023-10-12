@@ -1,9 +1,9 @@
 import argparse
 import logging
 # from subprocess import run
-from utils.log_config import setup_logger
+from src.utils.log_config import setup_logger
 from src.app.flow_manager import FlowManager
-from utils.pdf_processor import PdfProcessor
+from src.utils.pdf_processor import PdfProcessor
 
 
 class Main:
@@ -76,6 +76,7 @@ class Main:
 
 
     def run_flows(self, flows):
+        setup_logger()
         num_flows = len(flows)
 
         for i, (flow_func, flow_name) in enumerate(flows):
@@ -100,10 +101,6 @@ class Main:
             if i == num_flows - 1:
                 self.flow_manager.end_flow()
 
-    def test_changes(self):
-        setup_logger()
-        logging.info('testing...............')
-        logging.error('errrorrrrr')
 
 
 if __name__ == '__main__':
@@ -128,6 +125,5 @@ if __name__ == '__main__':
     # run(["../scripts/clean_slate.sh"], shell=True)
     # print(f'===========================================================================================')
 
-    # main.run_flows()
-    main.test_changes()
+    main.run_flows()
     logging.info(f'\n---------------------------\nCommencing All Flows\n---------------------------\n')
