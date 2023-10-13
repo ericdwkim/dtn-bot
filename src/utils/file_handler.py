@@ -4,7 +4,8 @@ from src.utils.mappings import doc_type_short_to_doc_type_full_map, company_id_t
 
 class FileHandler:
     def __init__(self):
-        self.today = datetime.today().strftime('%m-%d-%y')
+        self.today = datetime.today().strptime('%m-%d-%y')
+
     def check_file_exists(self, output_path):
         """
         :param output_path:
@@ -13,7 +14,8 @@ class FileHandler:
         file_path = os.path.join(output_path)
         return os.path.isfile(file_path)
 
-    def move_directory_to_another(self, src_dir, dst_dir):
+    @staticmethod
+    def move_directory_to_another(src_dir, dst_dir):
         """
         Files away from src_dir to dst_dir for management
         :param src_dir:
@@ -24,7 +26,8 @@ class FileHandler:
             os.makedirs(dst_dir)
         shutil.move(src_dir, dst_dir)
 
-    def cleanup_files(self, pdf_data):
+    @staticmethod
+    def cleanup_files(pdf_data):
         """
         Given a list of tuples. Loop and delete all file_path files in the 4th element of each tuple
         :param pdf_data:
@@ -38,20 +41,20 @@ class FileHandler:
         return files_deleted
 
     def is_last_day_of_month(self):
-        #todo: MOVED TO PDFPROCESSOR ; refactor `is_last_day_of_month` uses in post_processing.py and other modules from filesystem_manager as this was moved to PdfProcessor
         """
         Relative to today's date, it checks if tomorrow's date would be the start of a new month,\n
         if so, then it will return True indicating that today is the last day of the month
         :return: bool
         """
         # today = datetime.today()  # @today
-        today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
+        # today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
 
 
-        tomorrow = today + timedelta(days=1)
+        tomorrow = self.today + timedelta(days=1)
         return tomorrow.day == 1
 
-    def create_directory(self, directory):
+    @staticmethod
+    def create_directory(directory):
         """
         Checks if `directory` path exists, if not, it creates `directory`
         :param directory: year or month directory
@@ -75,13 +78,8 @@ class FileHandler:
             company_dir = os.path.join(root_dir, doc_type_full) #todo: rename to `doc_type_dir`
             print(f'******************* company_dir ******************** {company_dir}')
 
-        # Get today's date
-        # today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')  # @today
-        today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
-
-
-        current_year = today.strftime('%Y')
-        next_month = (today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
+        current_year = self.today.strftime('%Y')
+        next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
         next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
         print(f'current_year: {current_year} | next_month: {next_month} |')
 
@@ -95,21 +93,15 @@ class FileHandler:
 
 
     def cur_month_and_year_from_today(self):
-        # todo: MOVED TO PDFPROCESSOR ; refactor `cur_month_and_year_from_today` uses in post_processing.py
         """
         Helper function to calculate current month and current year relative to today's date
         :return: Tuple(cur_month, cur_yr)
         """
-        # today = datetime.today().strftime('%m-%d-%y')  # @today # todo: turn file_handler.py into OOP to be able to `self.today` ?
-        today = '08-31-23'
-
-        current_month = datetime.strptime(today, '%m-%d-%y').strftime('%m-%b')
-        current_year = datetime.strptime(today, '%m-%d-%y').strftime('%Y')
+        current_month = self.today.strftime('%m-%b')
+        current_year = self.today.strftime('%Y')
 
         return current_month, current_year
 
-    # @dev: renamed `get_root_directory` to `get_doc_type_dir`
-    # TODO: rename func and associated vars as it only returns type of document in full `Credit Credits`, not the directory up to doc_type as suggested `K:/DTN Reports/Credit Cards`
     @staticmethod
     def get_doc_type_full(doc_type_short):
         """
@@ -122,7 +114,8 @@ class FileHandler:
                 return value
         return None
 
-    def create_and_return_directory_path(self, parent_dir, current_year, current_month):
+    @staticmethod
+    def create_and_return_directory_path(parent_dir, current_year, current_month):
         """
         Given the parent_dir, cur_yr, cur_month,\n
         it returns the final output path `month_dir` which is constructed appropriately based on current date
@@ -139,8 +132,8 @@ class FileHandler:
 
         return month_dir
 
-    # @dev: renamed `calculate_directory_path` to `construct_month_dir_from_doc_type`
-    def construct_month_dir_from_doc_type(doc_type, company_id=None, company_dir=None):
+    # @dev: refactor WIP todo
+    def construct_month_dir_from_doc_type(self, doc_type, company_id=None, company_dir=None):
         """
         Given the doc_type as minimum param, it returns the constructed final output path\ndepending on document type
         :param doc_type:
@@ -149,27 +142,27 @@ class FileHandler:
         :return:
         """
         # Extract month and year from helper
-        current_month, current_year = cur_month_and_year_from_today()
+        current_month, current_year = self.cur_month_and_year_from_today()
 
-        # Determine root directory; #todo: rename var to doc_type_full ? b/c not a directory!
-        doc_type_dir = get_doc_type_full(doc_type)
+        # Determine root directory;
+        doc_type_full = self.get_doc_type_full(doc_type)
 
         # If root directory not found, raise exception
         # todo: update as it is no longer a root directory, just document type in full aka `Fuel Invoices`
-        if not doc_type_dir:
+        if not doc_type_full:
             raise ValueError(f"No root directory found for document type '{doc_type}'")
 
         # Handle EFT and CMB cases and non-exxon CCM files
         if (doc_type == 'EFT' or doc_type == 'CMB' or doc_type == 'CCM') and company_id is None and company_dir:
-            doc_type_dir = company_dir # todo: change var name;; doesn't make sense to say that company directory is now doc type directory. if anything, it is now the new "root" directory /doc_type/company; NOTE: called the same var to only have a single return instead of having three separate returns
+            doc_type_full = company_dir # todo: change var name;; doesn't make sense to say that company directory is now doc type directory. if anything, it is now the new "root" directory /doc_type/company; NOTE: called the same var to only have a single return instead of having three separate returns
 
         # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
-        elif doc_type_dir and company_id:
+        elif doc_type_full and company_id:
             company_directory = company_id_to_company_subdir_map.get(company_id, '')
-            doc_type_dir = os.path.join(doc_type_dir, company_directory)
+            doc_type_full = os.path.join(doc_type_full, company_directory)
 
         # Create and return path to the relevant year and month directories
         # @dev: for INV doc_type, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
-        return create_and_return_directory_path(doc_type_dir, current_year, current_month)
+        return create_and_return_directory_path(doc_type_full, current_year, current_month)
 
 
