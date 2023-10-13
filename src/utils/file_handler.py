@@ -122,7 +122,7 @@ class FileHandler:
                 return value
         return None
 
-    def create_and_return_directory_path(parent_dir, current_year, current_month):
+    def create_and_return_directory_path(self, parent_dir, current_year, current_month):
         """
         Given the parent_dir, cur_yr, cur_month,\n
         it returns the final output path `month_dir` which is constructed appropriately based on current date
