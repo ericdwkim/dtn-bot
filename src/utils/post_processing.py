@@ -10,6 +10,7 @@ from src.utils.file_handler import FileHandler
 class PDFPostProcessor:
 
     def __init__(self):
+        self.today = datetime.today().strftime('%m-%d-%y')
         self.file_handler = FileHandler()
         self.new_pdf= pikepdf.Pdf.new()
 
@@ -48,8 +49,6 @@ class PDFPostProcessor:
         :param company_dir: path to company name directory
         :return: Tuple (List, Int, List) where each List contains tuples of pre-extracted data relevant for CCM and LRD, respectively.
         """
-        # today = datetime.today().strftime('%m-%d-%y')  # @today
-        today = '08-31-23'
 
         pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
         print(f'************************ pdf_files ******************** : {pdf_files}\n')
@@ -61,10 +60,10 @@ class PDFPostProcessor:
                 doc_type_num_ccm, amount = extract_ccm_data(pdf_file)
                 total_amount += amount
                 total_amount = round(total_amount, 2)  # Round to two decimal places
-                pdf_data_ccm.append((doc_type_num_ccm, today, total_amount, os.path.join(company_dir, pdf_file)))
+                pdf_data_ccm.append((doc_type_num_ccm, self.today, total_amount, os.path.join(company_dir, pdf_file)))
             elif pdf_file.startswith('LRD'):
                 doc_type_num_lrd, _ = extract_lrd_data(pdf_file)
-                pdf_data_lrd.append((doc_type_num_lrd, today, _, os.path.join(company_dir, pdf_file)))
+                pdf_data_lrd.append((doc_type_num_lrd, self.today, _, os.path.join(company_dir, pdf_file)))
         pdf_data_ccm.sort(key=lambda x: x[0])
         print(f'*********************************** pdf_data_ccm {pdf_data_ccm}\n')
         pdf_data_lrd.sort(key=lambda x: x[0])
@@ -94,13 +93,10 @@ class PDFPostProcessor:
         :param company_id:
         :return: Bool
         """
-        # today = datetime.today().strftime('%m-%d-%y')  # @today
-        today = '08-31-23'
-
         if file_prefix == 'CCM':
-            new_file_name = f'{file_prefix}-{today}-{total_amount_sum}.pdf'
+            new_file_name = f'{file_prefix}-{self.today}-{total_amount_sum}.pdf'
         else:
-            new_file_name = f'{today}-Loyalty.pdf'
+            new_file_name = f'{self.today}-Loyalty.pdf'
 
         month_directory = self.file_handler.construct_month_dir_from_doc_type(file_prefix, company_id)
         output_path = os.path.join(month_directory, new_file_name)
