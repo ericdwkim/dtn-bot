@@ -7,7 +7,7 @@ import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 from src.utils.extraction_handler import PDFExtractor
-from src.utils.file_handler import construct_month_dir_from_doc_type, create_and_return_directory_path, get_doc_type_full, create_directory  # todo: FileHandler
+from src.utils.file_handler import FileHandler
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
 
 class PdfProcessor:
@@ -29,15 +29,17 @@ class PdfProcessor:
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
-        logging.critical(f'pdf_data: {self.pdf_data}')
+        logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
         self.extractor = PDFExtractor()
         self.doc_type, self.total_target_amt = ('', '')
+
+        self.file_handler = FileHandler()
 
     # ---------------------------------- Instance attributes ----------------------------------
 
     def get_pdf(self, filepath):
         if not os.path.exists(filepath):
-            logging.error(f'File path does not exist: "{filepath}"')
+            logging.info(f'File path does not exist: "{filepath}"')
             return None
         else:
             logging.info(f'Filepath: "{filepath}" exists. Returning opened PikePdf object')
@@ -94,7 +96,7 @@ class PdfProcessor:
 
         current_year, current_month = self.cur_month_and_year_from_today()
 
-        month_dir = create_and_return_directory_path(self.company_dir, current_year, current_month)
+        month_dir = self.file_handler.create_and_return_directory_path(self.company_dir, current_year, current_month)
         # print(f'******************** month_dir {month_dir} *******************')
 
 
@@ -264,7 +266,7 @@ class PdfProcessor:
             return False
 
         # Get final output dir from file prefix
-        month_dir = construct_month_dir_from_doc_type('INV')
+        month_dir = self.file_handler.construct_month_dir_from_doc_type('INV')
 
         # Construct final output path
         target_file_path = os.path.join(self.root_dir, month_dir, self.new_file_name)
@@ -459,13 +461,13 @@ class PdfProcessor:
         next_or_cur_year, next_month = self.get_year_and_month()
         month_dir = create_and_return_directory_path(parent_dir, next_or_cur_year, next_month)
         target_output_path = os.path.join(self.root_dir, month_dir)
-        create_directory(target_output_path)
+        self.file_handler.create_directory(target_output_path)
 
     def month_and_year_handler(self, first_flow=False):
         try:
             if self.is_last_day_of_month():
                 # @dev: for Invoices, set parent_dir to `Fuel Invoices` as there is no company directories
-                parent_dir = get_doc_type_full('INV') if first_flow else self.company_dir
+                parent_dir = self.file_handler.get_doc_type_full('INV') if first_flow else self.company_dir
                 self.end_of_month_operations(parent_dir)
             else:
                 logging.info('Not the last day of the month.')
