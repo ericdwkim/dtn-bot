@@ -13,9 +13,7 @@ from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_pat
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
     # TODO: figure out which `today` in `datetime` should be used; also needs formatting.
-    # today = datetime.today()  # @today; original in `datetime`
-    # today_datetime = datetime.today()  # @today; renamed original in `datetime`
-    # today_string = today_datetime.strftime('%m-%d-%y') # @today `string`
+    # @deV: seems like most cases require it to be datetime object, so just instantiate attr as datetime and convert to str locally where neeeded
 
     today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
@@ -25,6 +23,7 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
+        self.today = datetime.today().strptime('%m-%d-%y')
         self.company_dir = ''
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
@@ -34,6 +33,8 @@ class PdfProcessor:
         self.doc_type, self.total_target_amt = ('', '')
 
         self.file_handler = FileHandler()
+
+        # self.cur_page_text = cur_page_text # todo
 
     # ---------------------------------- Instance attributes ----------------------------------
 
@@ -123,13 +124,14 @@ class PdfProcessor:
         # print(f'******** {company_names} *******')
         return company_names
 
+    # todo: consider just moving this back to file_handler.py and just import cls
     def cur_month_and_year_from_today(self):
         current_month = self.today.strftime('%m-%b')
         current_year = self.today.strftime('%Y')
         return current_year, current_month
 
-
-    def get_company_name(self, cur_page_text):
+    @staticmethod
+    def get_company_name(cur_page_text):
         """
         Helper func for getting company_name instance
         :param cur_page_text:
@@ -146,7 +148,8 @@ class PdfProcessor:
         logging.error(f'Could not find matching Company Name in current page text.')
         return None
 
-    def get_doc_type(self, cur_page_text):
+    @staticmethod
+    def get_doc_type(cur_page_text):
         """
         Helper func for getting doc_type_pattern instance
         :param cur_page_text:
@@ -160,6 +163,7 @@ class PdfProcessor:
         logging.error(f'Could not find matching document type using regex pattern in current page text.')
         return None
 
+    # todo: move back to filehandler
     def is_last_day_of_month(self):
         logging.info('It is the last day of the month\nPerforming end of month operations...')
         tomorrow = self.today + timedelta(days=1)
@@ -244,7 +248,8 @@ class PdfProcessor:
             logging.critical(f'Could not find downloaded Invoices PDF in Downloads directory. Something went wrong. Does it even exist?')
             return False
 
-    def get_file_timestamps(self, file_path):
+    @staticmethod
+    def get_file_timestamps(file_path):
         """
         Helper function to get creation and modification times of a file
         """
