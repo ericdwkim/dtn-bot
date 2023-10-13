@@ -113,17 +113,17 @@ if __name__ == '__main__':
 
     main = Main()
 
-    # flows_to_run = []
-    # if not args.skipFlow1:
-    #     flows_to_run.append((md.first_flow, 'first_flow'))
-    # if not args.skipFlow2:
-    #     flows_to_run.append((md.second_flow, 'second_flow'))
-    # if not args.skipFlow3:
-    #     flows_to_run.append((md.third_flow, 'third_flow'))
+    flows_to_run = []
+    if not args.skipFlow1:
+        flows_to_run.append((main.first_flow, 'first_flow'))
+    if not args.skipFlow2:
+        flows_to_run.append((main.second_flow, 'second_flow'))
+    if not args.skipFlow3:
+        flows_to_run.append((main.third_flow, 'third_flow'))
 
     # Delete all PDFs in Downloads directory
     # run(["../scripts/clean_slate.sh"], shell=True)
     # print(f'===========================================================================================')
 
-    main.run_flows()
+    main.run_flows(flows_to_run)
     logging.info(f'\n---------------------------\nCommencing All Flows\n---------------------------\n')
