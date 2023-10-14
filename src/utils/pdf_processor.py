@@ -290,16 +290,16 @@ class PdfProcessor:
                         file_directory = os.path.dirname(self.pdf_file_path)
                         new_file_path = os.path.join(file_directory, self.new_file_name)
 
-                        print(f"Renaming file: {self.pdf_file_path} to {new_file_path}")
+                        logging.info(f"Renaming file: {self.pdf_file_path} to {new_file_path}")
                         os.rename(self.pdf_file_path, new_file_path)
                         file_deleted = True
-                        print("File renamed successfully.")
+                        logging.info("File renamed successfully.")
                         time.sleep(3)
 
                         if os.path.exists(new_file_path):
-                            print(f"Deleting file: {new_file_path}")
+                            logging.info(f"Deleting file: {new_file_path}")
                             os.remove(new_file_path)
-                            print("File deleted successfully.")
+                            logging.info("File deleted successfully.")
 
                 return file_deleted
 
@@ -315,7 +315,7 @@ class PdfProcessor:
                 # Turn local var to instance var for dynamic file path construction
                 self.company_id = company_id
                 return self.company_id
-        print(f'Could not retrieve Company ID from Company Name: {company_name}.')
+        logging.crticial(f'Could not retrieve Company ID from Company Name: {company_name}.')
         return None
 
     def create_and_save_pdf(self, pages):
@@ -356,13 +356,13 @@ class PdfProcessor:
             # todo: debug why this formatting conditional doesn't work
             if "-" in self.total_target_amt:
                 total_target_amt = self.total_target_amt.replace("-", "")
-                new_file_name = f'{self.doc_type}-{today_str}-({total_target_amt}).pdf'
+                new_file_name = f'{self.doc_type}-{self.today_str}-({total_target_amt}).pdf'
             else:
-                new_file_name = f'{self.doc_type}-{today_str}-{self.total_target_amt}.pdf'
+                new_file_name = f'{self.doc_type}-{self.today_str}-{self.total_target_amt}.pdf'
         elif (re.match(r'CBK-\s*\d+', self.doc_type) or re.match(r'RTV-\s*\d+', self.doc_type)):
-            new_file_name = f'{self.doc_type}-{today_str}-CHARGEBACK REQUEST.pdf'
+            new_file_name = f'{self.doc_type}-{self.today_str}-CHARGEBACK REQUEST.pdf'
         else:
-            new_file_name = f'{self.doc_type}-{today_str}-{self.total_target_amt}.pdf'
+            new_file_name = f'{self.doc_type}-{self.today_str}-{self.total_target_amt}.pdf'
         return new_file_name
 
 
