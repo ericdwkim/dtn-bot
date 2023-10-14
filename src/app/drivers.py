@@ -13,6 +13,9 @@ class BaseDriver:
     def setup_driver(self):
         logging.info('Initializing BaseDriver...')
         options = self._get_chrome_options()
+        # @dev: for unit testing
+        # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+
         os_type = platform.system()
         chromedriver_executable_path = self._get_chromedriver_executable_path(os_type)
 
