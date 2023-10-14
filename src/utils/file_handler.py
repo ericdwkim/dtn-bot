@@ -6,7 +6,22 @@ class FileHandler:
     def __init__(self):
         self.today = datetime.today().strptime('%m-%d-%y')
 
-    def check_file_exists(self, output_path):
+    @staticmethod
+    def get_file_timestamps(file_path):
+        """
+        Helper function to get creation and modification times of a file
+        """
+        mod_time = os.path.getmtime(file_path)
+        cre_time = os.path.getctime(file_path)
+
+        # convert the time from seconds since the epoch to a datetime object
+        mod_time = datetime.fromtimestamp(mod_time)
+        cre_time = datetime.fromtimestamp(cre_time)
+
+        return mod_time, cre_time
+
+    @staticmethod
+    def check_file_exists(output_path):
         """
         :param output_path:
         :return: bool
@@ -40,19 +55,6 @@ class FileHandler:
                 files_deleted = True
         return files_deleted
 
-    def is_last_day_of_month(self):
-        """
-        Relative to today's date, it checks if tomorrow's date would be the start of a new month,\n
-        if so, then it will return True indicating that today is the last day of the month
-        :return: bool
-        """
-        # today = datetime.today()  # @today
-        # today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
-
-        logging.info('It is the last day of the month\nPerforming end of month operations...')
-        tomorrow = self.today + timedelta(days=1)
-        return tomorrow.day == 1
-
     @staticmethod
     def create_directory(directory):
         """
@@ -63,6 +65,29 @@ class FileHandler:
         if not os.path.exists(directory):
             os.makedirs(directory)
         return directory
+
+    @staticmethod
+    def get_doc_type_full(doc_type_short):
+        """
+        Given a file prefix, it unpacks the root_directory mapping to return full document type
+        :param doc_type_short:
+        :return: str | None
+        """
+        for key, value in doc_type_short_to_doc_type_full_map.items():
+            if (isinstance(key, tuple) and doc_type_short in key) or key == doc_type_short:
+                return value
+        return None
+
+    def is_last_day_of_month(self):
+        """
+        Relative to today's date, it checks if tomorrow's date would be the start of a new month,\n
+        if so, then it will return True indicating that today is the last day of the month
+        :return: bool
+        """
+
+        logging.info('It is the last day of the month\nPerforming end of month operations...')
+        tomorrow = self.today + timedelta(days=1)
+        return tomorrow.day == 1
 
     def end_of_month_operations(self, root_dir, company_dir=None):
         """
@@ -90,7 +115,6 @@ class FileHandler:
             print(f'Joining {company_dir} + {current_year} + {next_month}')
             os.makedirs(os.path.join(company_dir, current_year, next_month), exist_ok=True)
 
-
     def cur_month_and_year_from_today(self):
         """
         Helper function to calculate current month and current year relative to today's date
@@ -101,20 +125,7 @@ class FileHandler:
 
         return current_month, current_year
 
-    @staticmethod
-    def get_doc_type_full(doc_type_short):
-        """
-        Given a file prefix, it unpacks the root_directory mapping to return full document type
-        :param doc_type_short:
-        :return: str | None
-        """
-        for key, value in doc_type_short_to_doc_type_full_map.items():
-            if (isinstance(key, tuple) and doc_type_short in key) or key == doc_type_short:
-                return value
-        return None
-
-    @staticmethod
-    def create_and_return_directory_path(parent_dir, current_year, current_month):
+    def create_and_return_directory_path(self, parent_dir, current_year, current_month):
         """
         Given the parent_dir, cur_yr, cur_month,\n
         it returns the final output path `month_dir` which is constructed appropriately based on current date
@@ -124,10 +135,10 @@ class FileHandler:
         :return: `month_dir` final output path to save PDFs to
         """
         year_dir = os.path.join(parent_dir, current_year)
-        create_directory(year_dir)
+        self.create_directory(year_dir)
 
         month_dir = os.path.join(year_dir, current_month)
-        create_directory(month_dir)
+        self.create_directory(month_dir)
 
         return month_dir
 
@@ -162,7 +173,7 @@ class FileHandler:
 
         # Create and return path to the relevant year and month directories
         # @dev: for INV doc_type, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
-        return create_and_return_directory_path(doc_type_full, current_year, current_month)
+        return self.create_and_return_directory_path(doc_type_full, current_year, current_month)
 
 
     # todo: moved from pdf_processor

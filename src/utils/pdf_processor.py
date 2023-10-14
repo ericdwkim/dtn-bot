@@ -95,7 +95,7 @@ class PdfProcessor:
         self.company_dir = self.assign_file_path_mappings()
         logging.info(f'Company directory: {self.company_dir}')
 
-        current_year, current_month = self.cur_month_and_year_from_today()
+        current_year, current_month = self.file_handler.cur_month_and_year_from_today()
 
         month_dir = self.file_handler.create_and_return_directory_path(self.company_dir, current_year, current_month)
         # print(f'******************** month_dir {month_dir} *******************')
@@ -123,12 +123,6 @@ class PdfProcessor:
             company_names.append(company_name)
         # print(f'******** {company_names} *******')
         return company_names
-
-    # todo: consider just moving this back to file_handler.py and just import cls
-    def cur_month_and_year_from_today(self):
-        current_month = self.today.strftime('%m-%b')
-        current_year = self.today.strftime('%Y')
-        return current_year, current_month
 
     @staticmethod
     def get_company_name(cur_page_text):
@@ -163,12 +157,6 @@ class PdfProcessor:
         logging.error(f'Could not find matching document type using regex pattern in current page text.')
         return None
 
-    # todo: move back to filehandler
-    def is_last_day_of_month(self):
-        logging.info('It is the last day of the month\nPerforming end of month operations...')
-        tomorrow = self.today + timedelta(days=1)
-        return tomorrow.day == 1
-
     def process_pages(self):
         """
         main processing func
@@ -189,6 +177,7 @@ class PdfProcessor:
                 self.company_name = self.get_company_name(self.cur_page_text)
                 logging.info(f'self.company_name: \n{self.company_name}\n')
 
+                # todo: self.doc_type_pattern; @dev: catch22 b/c it gets initialized as '' in constructor; must be a way to turn this into an instance att...
                 doc_type_pattern = self.get_doc_type(self.cur_page_text)
                 logging.info(f'doc_type_pattern: \n{doc_type_pattern}\n')
 
@@ -248,20 +237,6 @@ class PdfProcessor:
             logging.critical(f'Could not find downloaded Invoices PDF in Downloads directory. Something went wrong. Does it even exist?')
             return False
 
-    @staticmethod
-    def get_file_timestamps(file_path):
-        """
-        Helper function to get creation and modification times of a file
-        """
-        mod_time = os.path.getmtime(file_path)
-        cre_time = os.path.getctime(file_path)
-
-        # convert the time from seconds since the epoch to a datetime object
-        mod_time = datetime.fromtimestamp(mod_time)
-        cre_time = datetime.fromtimestamp(cre_time)
-
-        return mod_time, cre_time
-
     # Refactored `rename_and_move_pdf` with OOP
     def rename_and_move_or_overwrite_invoices_pdf(self):
 
@@ -277,11 +252,11 @@ class PdfProcessor:
         target_file_path = os.path.join(self.root_dir, month_dir, self.new_file_name)
 
         # Get timestamps for new Invoices file
-        mod_time_new, cre_time_new = self.get_file_timestamps(self.new_file_path)
+        mod_time_new, cre_time_new = self.file_handler.get_file_timestamps(self.new_file_path)
 
         # If conflicting filename exists in target directory, replace with newest
         if os.path.isfile(target_file_path):
-            mod_time_old, cre_time_old = self.get_file_timestamps(target_file_path)
+            mod_time_old, cre_time_old = self.file_handler.get_file_timestamps(target_file_path)
 
             logging.info(
                 f'File with name: "{self.new_file_name}" already exists at "{target_file_path}"\nLast modified (old): {mod_time_old} | Last modified (new): {mod_time_new}\nCreated (old): {cre_time_old} | Created (new): {cre_time_new}\nOverwriting duplicate file with latest modified/created...')
@@ -452,31 +427,3 @@ class PdfProcessor:
             single_page_pdf_created_and_saved = self.create_and_save_pdf(cur_page)
             logging.info(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
             return single_page_pdf_created_and_saved
-
-    # @dev: previously called `end_of_month_operations`
-    def get_year_and_month(self):
-        # throw away `current_month` as not needed in this function
-        current_year, _ = self.cur_month_and_year_from_today()
-        next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
-        next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
-        return (next_year, next_month) if next_month == '01-Jan' else (current_year, next_month)
-
-    # @dev: previously called `wrapper` during dev
-    def end_of_month_operations(self, parent_dir):
-        next_or_cur_year, next_month = self.get_year_and_month()
-        month_dir = create_and_return_directory_path(parent_dir, next_or_cur_year, next_month)
-        target_output_path = os.path.join(self.root_dir, month_dir)
-        self.file_handler.create_directory(target_output_path)
-
-    def month_and_year_handler(self, first_flow=False):
-        try:
-            if self.is_last_day_of_month():
-                # @dev: for Invoices, set parent_dir to `Fuel Invoices` as there is no company directories
-                parent_dir = self.file_handler.get_doc_type_full('INV') if first_flow else self.company_dir
-                self.end_of_month_operations(parent_dir)
-            else:
-                logging.info('Not the last day of the month.')
-        except Exception as e:
-            logging.exception(f'Exception: {e}')
-
-
