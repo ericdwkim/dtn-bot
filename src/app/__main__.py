@@ -88,6 +88,9 @@ class Main:
             if i == 0:
                 if flow_name == 'third_flow':
                     self.flow_manager.start_flow(third_flow=True)
+                elif flow_name == 'first_flow':
+                    self.flow_manager.start_flow(third_flow=False)
+                    self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
                 else:
                     self.flow_manager.start_flow(third_flow=False)
 
