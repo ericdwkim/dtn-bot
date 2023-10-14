@@ -49,7 +49,7 @@ class FileHandler:
         # today = datetime.today()  # @today
         # today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes for `today` as `datetime`
 
-
+        logging.info('It is the last day of the month\nPerforming end of month operations...')
         tomorrow = self.today + timedelta(days=1)
         return tomorrow.day == 1
 
@@ -65,7 +65,6 @@ class FileHandler:
         return directory
 
     def end_of_month_operations(self, root_dir, company_dir=None):
-        # todo: MOVED TO PDFPROCESSOR ;  refactor `end_of_month_operations` uses in post_processing.py
         """
         Creates the new month and new year directories if it is the last day of the month
         :param company_dir: defaulted to None
@@ -165,4 +164,31 @@ class FileHandler:
         # @dev: for INV doc_type, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
         return create_and_return_directory_path(doc_type_full, current_year, current_month)
 
+
+    # todo: moved from pdf_processor
+    # @dev: previously called `end_of_month_operations`
+    def get_year_and_month(self):
+        # throw away `current_month` as not needed in this function
+        current_year, _ = self.cur_month_and_year_from_today()
+        next_month = (self.today.replace(day=1) + timedelta(days=32)).replace(day=1).strftime('%m-%b')
+        next_year = str(int(current_year) + 1) if next_month == '01-Jan' else current_year
+        return (next_year, next_month) if next_month == '01-Jan' else (current_year, next_month)
+
+    # @dev: previously called `wrapper` during dev
+    def end_of_month_operations(self, parent_dir):
+        next_or_cur_year, next_month = self.get_year_and_month()
+        month_dir = create_and_return_directory_path(parent_dir, next_or_cur_year, next_month)
+        target_output_path = os.path.join(self.root_dir, month_dir)
+        self.file_handler.create_directory(target_output_path)
+
+    def month_and_year_handler(self, first_flow=False):
+        try:
+            if self.is_last_day_of_month():
+                # @dev: for Invoices, set parent_dir to `Fuel Invoices` as there is no company directories
+                parent_dir = self.file_handler.get_doc_type_full('INV') if first_flow else self.company_dir
+                self.end_of_month_operations(parent_dir)
+            else:
+                logging.info('Not the last day of the month.')
+        except Exception as e:
+            logging.exception(f'Exception: {e}')
 

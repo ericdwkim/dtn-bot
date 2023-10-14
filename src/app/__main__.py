@@ -4,12 +4,14 @@ import logging
 from src.utils.log_config import setup_logger
 from src.app.flow_manager import FlowManager
 from src.utils.pdf_processor import PdfProcessor
+from src.utils.file_handler import FileHandler
 
 
 class Main:
     def __init__(self, headless=False):
         self.flow_manager = FlowManager(headless=headless)
         self.processor = PdfProcessor()
+        self.file_handler = FileHandler()
 
     # todo: keeps trying to save in working dir `src` so it creates new Fuel Invoices/yyyy/mm; need it to save it in downloads dir as from and overwrite/save to target dir
     def first_flow(self):
@@ -25,7 +27,7 @@ class Main:
             if not invoices_renamed_and_filed_away:
                 logging.error('Could not rename and file away invoices. Does the Invoices PDF exist?')
 
-            elif invoices_renamed_and_filed_away and self.processor.is_last_day_of_month():
+            elif invoices_renamed_and_filed_away and self.file_handler.is_last_day_of_month():
                 self.processor.month_and_year_handler(first_flow=True)
 
         except Exception as e:
@@ -48,7 +50,7 @@ class Main:
             if not draft_notices_processed_and_filed:
                 logging.error('Could not rename and file away Draft Notices. Do the notices PDF exist?')
 
-            elif draft_notices_processed_and_filed and self.processor.is_last_day_of_month():
+            elif draft_notices_processed_and_filed and self.file_handler.is_last_day_of_month():
                 processor.month_and_year_handler(first_flow=False)
 
         except Exception as e:
@@ -68,7 +70,7 @@ class Main:
 
             if not ccms_processed_and_filed:
                 logging.error('Could not rename and file away CCMs')
-            elif ccms_processed_and_filed and self.processor.is_last_day_of_month():
+            elif ccms_processed_and_filed and self.file_handler.is_last_day_of_month():
                 self.processor.month_and_year_handler(first_flow=False)
 
         except Exception as e:
