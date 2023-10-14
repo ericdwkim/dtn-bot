@@ -4,72 +4,17 @@ from datetime import datetime
 import pikepdf
 import shutil
 from src.utils.file_handler import FileHandler
+from src.utils.extraction_handler import ExtractionHandler
 
-# TODO: move all `extract_` helpers to extraction_handler.py as class `PDFExtractor` instance method
 
 class PDFPostProcessor:
 
     def __init__(self):
         self.today = datetime.today().strftime('%m-%d-%y')
         self.file_handler = FileHandler()
+        self.extraction_handler = ExtractionHandler()
         self.new_pdf= pikepdf.Pdf.new()
 
-
-    def extract_ccm_data(self, pdf_file):
-        """
-        Extracts CCM relevant data from List of tuples with target data
-        :param pdf_file:
-        :return:
-        """
-        filename = os.path.basename(pdf_file)
-        match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)-?\.pdf', filename)
-        if match:
-            doc_type_num = int(match.group(1))
-            total_amount = float(match.group(2).replace(',', ''))
-            return doc_type_num, total_amount
-        return None, None
-
-
-    def extract_lrd_data(self, pdf_file):
-        """
-        Extracts LRD relevant data from list of tuples
-        :param pdf_file:
-        :return:
-        """
-        match = re.match(r'LRD-(\d+)-.*\.pdf', pdf_file)
-        if match:
-            doc_type_num = match.group(1)
-            return doc_type_num, None
-        return None, None
-
-
-    def extract_pdf_data(self, company_dir):
-        """
-        Extracts target data from filenames for calculation for post-processing
-        :param company_dir: path to company name directory
-        :return: Tuple (List, Int, List) where each List contains tuples of pre-extracted data relevant for CCM and LRD, respectively.
-        """
-
-        pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
-        print(f'************************ pdf_files ******************** : {pdf_files}\n')
-        pdf_data_ccm = []
-        pdf_data_lrd = []
-        total_amount = 0.00
-        for pdf_file in pdf_files:
-            if pdf_file.startswith('CCM'):
-                doc_type_num_ccm, amount = extract_ccm_data(pdf_file)
-                total_amount += amount
-                total_amount = round(total_amount, 2)  # Round to two decimal places
-                pdf_data_ccm.append((doc_type_num_ccm, self.today, total_amount, os.path.join(company_dir, pdf_file)))
-            elif pdf_file.startswith('LRD'):
-                doc_type_num_lrd, _ = extract_lrd_data(pdf_file)
-                pdf_data_lrd.append((doc_type_num_lrd, self.today, _, os.path.join(company_dir, pdf_file)))
-        pdf_data_ccm.sort(key=lambda x: x[0])
-        print(f'*********************************** pdf_data_ccm {pdf_data_ccm}\n')
-        pdf_data_lrd.sort(key=lambda x: x[0])
-        print(f'*********************************** pdf_data_lrd {pdf_data_lrd}\n')
-
-        return pdf_data_ccm, total_amount, pdf_data_lrd
 
     def merge_pdfs(self, pdf_data):
         """
@@ -109,14 +54,13 @@ class PDFPostProcessor:
         except Exception:
             return False
 
-
     def merge_rename_and_summate(self, company_dir):
         """
         Main post-processing wrapper function. Accounts for end of month operations if last day of the month.
         :param company_dir: path to company name directory
         :return: None
         """
-        pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = extract_pdf_data(company_dir)
+        pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = self.self.extraction_handler.extract_pdf_data(company_dir)
         print(
             f'********************* pdf_data_ccm: {pdf_data_ccm}\n total_amount_sum_ccm: {total_amount_sum_ccm}\n *********** pdf_data_lrd {pdf_data_lrd}  ')
 

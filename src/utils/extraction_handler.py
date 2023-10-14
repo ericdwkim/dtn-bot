@@ -2,15 +2,46 @@ from pikepdf import Pdf
 import pdfplumber
 import io
 import re
+from datetime import datetime
 
 
-# TODO: create class PDFExtractor; migrate extraction helpers from post_processing.py as instance methods for this class
-
-class PDFExtractor():
+class ExtractionHandler():
     def __init__(self):
         self.doc_type, self.total_target_amt = (None, None)
+        self.today = datetime.today().strftime('%m-%d-%y')
 
-    def extract_text_from_pdf_page(self, pdf_page):
+
+    @staticmethod
+    def extract_ccm_data(pdf_file):
+        """
+        Extracts CCM relevant data from List of tuples with target data
+        :param pdf_file:
+        :return:
+        """
+        filename = os.path.basename(pdf_file)
+        match = re.match(r'CCM-(\d+)-.*-(\d{1,3}(?:,\d{3})*\.\d+)-?\.pdf', filename)
+        if match:
+            doc_type_num = int(match.group(1))
+            total_amount = float(match.group(2).replace(',', ''))
+            return doc_type_num, total_amount
+        return None, None
+
+    @staticmethod
+    def extract_lrd_data(pdf_file):
+        """
+        Extracts LRD relevant data from list of tuples
+        :param pdf_file:
+        :return:
+        """
+        match = re.match(r'LRD-(\d+)-.*\.pdf', pdf_file)
+        if match:
+            doc_type_num = match.group(1)
+            return doc_type_num, None
+        return None, None
+
+
+    @staticmethod
+    def extract_text_from_pdf_page(pdf_page):
         """
         Take in pikepdf Pdf page object, return extracted text from current instance pdf page
         :param pdf_page:
@@ -30,6 +61,35 @@ class PDFExtractor():
             pdf_page = pdf.pages[0]
             cur_page_text = pdf_page.extract_text()
         return cur_page_text
+
+    def extract_pdf_data(self, company_dir):
+        """
+        Extracts target data from filenames for calculation for post-processing
+        :param company_dir: path to company name directory
+        :return: Tuple (List, Int, List) where each List contains tuples of pre-extracted data relevant for CCM and LRD, respectively.
+        """
+
+        pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
+        print(f'************************ pdf_files ******************** : {pdf_files}\n')
+        pdf_data_ccm = []
+        pdf_data_lrd = []
+        total_amount = 0.00
+        for pdf_file in pdf_files:
+            if pdf_file.startswith('CCM'):
+                doc_type_num_ccm, amount = self.extract_ccm_data(pdf_file)
+                total_amount += amount
+                total_amount = round(total_amount, 2)  # Round to two decimal places
+                pdf_data_ccm.append((doc_type_num_ccm, self.today, total_amount, os.path.join(company_dir, pdf_file)))
+            elif pdf_file.startswith('LRD'):
+                doc_type_num_lrd, _ = self.extract_lrd_data(pdf_file)
+                pdf_data_lrd.append((doc_type_num_lrd, self.today, _, os.path.join(company_dir, pdf_file)))
+        pdf_data_ccm.sort(key=lambda x: x[0])
+        print(f'*********************************** pdf_data_ccm {pdf_data_ccm}\n')
+        pdf_data_lrd.sort(key=lambda x: x[0])
+        print(f'*********************************** pdf_data_lrd {pdf_data_lrd}\n')
+
+        return pdf_data_ccm, total_amount, pdf_data_lrd
+
 
     def extract_doc_type_and_total_target_amt(self, pattern, cur_page_text):
         """

@@ -6,7 +6,7 @@ import shutil
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
-from src.utils.extraction_handler import PDFExtractor
+from src.utils.extraction_handler import ExtractionHandler
 from src.utils.file_handler import FileHandler
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
 
@@ -29,7 +29,7 @@ class PdfProcessor:
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
-        self.extractor = PDFExtractor()
+        self.extraction_handler = ExtractionHandler()
         self.doc_type, self.total_target_amt = ('', '')
 
         self.file_handler = FileHandler()
@@ -183,7 +183,7 @@ class PdfProcessor:
                 logging.info(f'Processing page number: {self.page_num + 1}')
                 page = self.pdf_data.pages[self.page_num]
 
-                self.cur_page_text = self.extractor.extract_text_from_pdf_page(page)
+                self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(page)
                 logging.info(f'self.cur_page_text: \n{self.cur_page_text}\n')
 
                 self.company_name = self.get_company_name(self.cur_page_text)
@@ -300,7 +300,7 @@ class PdfProcessor:
         if os.path.exists(self.pdf_file_path):
             with pikepdf.open(self.pdf_file_path) as pdf:
                 if len(pdf.pages) > 0:
-                    first_page = self.extractor.extract_text_from_pdf_page(pdf.pages[0])
+                    first_page = self.extraction_handler.extract_text_from_pdf_page(pdf.pages[0])
 
                     if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
                         if re.search(r'EFT-\d+', first_page):
@@ -396,7 +396,7 @@ class PdfProcessor:
         while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
             cur_page = self.pdf_data.pages[self.page_num]
             page_objs.append(cur_page)
-            self.cur_page_text = self.extractor.extract_text_from_pdf_page(cur_page)
+            self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(cur_page)
             page_text_strings.append(self.cur_page_text)
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
             self.page_num += 1
@@ -407,7 +407,7 @@ class PdfProcessor:
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
         logging.info(f'Extracting Document Type and Total Target Amount....')
-        self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
+        self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
         logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
 
         # Construct new file name instance
@@ -432,7 +432,7 @@ class PdfProcessor:
             # @dev: cur_page_text instance is the same instance to extract text from b/c single page
             self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
             # fetch target data
-            self.doc_type, self.total_target_amt = self.extractor.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
+            self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
             logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
 
             if self.page_num >= len(self.pdf_data.pages):
