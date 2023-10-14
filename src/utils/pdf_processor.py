@@ -15,7 +15,6 @@ class PdfProcessor:
     # TODO: figure out which `today` in `datetime` should be used; also needs formatting.
     # @deV: seems like most cases require it to be datetime object, so just instantiate attr as datetime and convert to str locally where neeeded
 
-    today = datetime.strptime('08-31-23', '%m-%d-%y')  # testing purposes
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
     # root_dir_prod = r'K:/DTN Reports'
     download_dir = str(Path.home() / "Downloads")
@@ -23,7 +22,12 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
-        self.today = datetime.today().strptime('%m-%d-%y')
+
+        # Get today's date as a datetime object
+        today = datetime.today()
+        # If you need the date in string format with specific format
+        self.today_str = today.strftime('%m-%d-%y')
+        self.today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')
         self.company_dir = ''
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
@@ -347,7 +351,6 @@ class PdfProcessor:
             return False
 
     def get_new_file_name(self):
-        today_str = self.today.strftime('%m-%d-%y')
         if re.match(r'EFT-\s*\d+', self.doc_type) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
             logging.critical(f'******************************************* self.total_target_amt: {self.total_target_amt} ***********************')
             # todo: debug why this formatting conditional doesn't work

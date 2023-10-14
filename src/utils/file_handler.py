@@ -4,7 +4,11 @@ from src.utils.mappings import doc_type_short_to_doc_type_full_map, company_id_t
 
 class FileHandler:
     def __init__(self):
-        self.today = datetime.today().strptime('%m-%d-%y')
+        # Get today's date as a datetime object
+        today = datetime.today()
+        # If you need the date in string format with specific format
+        self.today_str = today.strftime('%m-%d-%y')
+        self.today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')
 
     @staticmethod
     def get_file_timestamps(file_path):
