@@ -12,9 +12,7 @@ from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_pat
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
-    # TODO: figure out which `today` in `datetime` should be used; also needs formatting.
-    # @deV: seems like most cases require it to be datetime object, so just instantiate attr as datetime and convert to str locally where neeeded
-
+    today = datetime.today()
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
     # root_dir_prod = r'K:/DTN Reports'
     download_dir = str(Path.home() / "Downloads")
@@ -22,25 +20,20 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
-
-        # Get today's date as a datetime object
-        today = datetime.today()
-        # If you need the date in string format with specific format
-        self.today_str = today.strftime('%m-%d-%y')
-        self.today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')
+        self.file_handler = FileHandler()
+        self.extraction_handler = ExtractionHandler()
         self.company_dir = ''
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
-        self.extraction_handler = ExtractionHandler()
         self.doc_type, self.total_target_amt = ('', '')
 
-        self.file_handler = FileHandler()
-
-        # self.cur_page_text = cur_page_text # todo
-
     # ---------------------------------- Instance attributes ----------------------------------
+    @classmethod
+    def from_today(cls):
+        cls.today_str = cls.today.strftime('%m-%d-%y')
+        cls.today_datetime  = datetime.strptime(cls.today.str, '%m-%d-%y')
 
     def get_pdf(self, filepath):
         if not os.path.exists(filepath):
@@ -221,7 +214,7 @@ class PdfProcessor:
 
         if pdf is not None:
 
-            self.new_file_name = self.today.strftime('%m-%d-%y') + '.pdf'
+            self.new_file_name = self.today_str + '.pdf'
             # given the original `messages.pdf` full filepath, return new full filepath
             file_dir = os.path.dirname(self.pdf_file_path)
             self.new_file_path = os.path.join(file_dir, self.new_file_name)
@@ -283,9 +276,9 @@ class PdfProcessor:
 
                     if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
                         if re.search(r'EFT-\d+', first_page):
-                            self.new_file_name = f'EFT-{self.today}-TO-BE-DELETED.pdf'
+                            self.new_file_name = f'EFT-{self.today_str}-TO-BE-DELETED.pdf'
                         else:
-                            self.new_file_name = f'CCM-{self.today}-TO-BE-DELETED.pdf'
+                            self.new_file_name = f'CCM-{self.today_str}-TO-BE-DELETED.pdf'
 
                         file_directory = os.path.dirname(self.pdf_file_path)
                         new_file_path = os.path.join(file_directory, self.new_file_name)
