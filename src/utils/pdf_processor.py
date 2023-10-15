@@ -376,7 +376,6 @@ class PdfProcessor:
             page_objs.append(cur_page)
             self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(cur_page)
             page_text_strings.append(self.cur_page_text)
-            self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
             self.page_num += 1
             if self.page_num >= len(self.pdf_data.pages):
                 break
@@ -406,10 +405,10 @@ class PdfProcessor:
 
         # end marker and current instance company name in text
         if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
-            cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj
-            # @dev: cur_page_text instance is the same instance to extract text from b/c single page
-            self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
-            # fetch target data
+            cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
+
+            # @dev: `self.cur_page_text` instance is already the extracted cur_page_text which already has been extracted from process_pages since it is a single page
+            # fetch target data from already extracted page text
             self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
             logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
 
