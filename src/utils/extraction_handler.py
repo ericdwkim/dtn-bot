@@ -7,7 +7,6 @@ from datetime import datetime
 
 class ExtractionHandler():
     def __init__(self):
-        self.doc_type, self.total_target_amt = (None, None)
         self.today = datetime.today().strftime('%m-%d-%y')
 
 
@@ -90,8 +89,8 @@ class ExtractionHandler():
 
         return pdf_data_ccm, total_amount, pdf_data_lrd
 
-
-    def extract_doc_type_and_total_target_amt(self, pattern, cur_page_text):
+    @staticmethod
+    def extract_doc_type_and_total_target_amt(pattern, cur_page_text):
         """
         replaces deprecated `extract_info_from_text`
         :param pattern:
@@ -99,10 +98,9 @@ class ExtractionHandler():
         :return:
         """
 
-        if re.search(pattern, cur_page_text):
-            self.doc_type = pattern.split('-')[0]
+        doc_type = pattern.split('-')[0]
 
-        if self.doc_type is None:
+        if doc_type is None:
             print(f'Could not find document type using pattern {pattern} in current text: {cur_page_text}')
             return None, None
 
@@ -110,8 +108,8 @@ class ExtractionHandler():
 
         # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
         if total_amount_matches:
-            self.total_target_amt = total_amount_matches[-1]
+            total_target_amt = total_amount_matches[-1]
         else:
-            self.total_target_amt = None
+            total_target_amt = None
 
-        return self.doc_type, self.total_target_amt
+        return doc_type, total_target_amt
