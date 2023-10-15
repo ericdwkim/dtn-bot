@@ -153,19 +153,39 @@ class PdfProcessor:
 
         logging.error(f'Could not find matching document type using regex pattern in current page text.')
         return None
+    def initialize_pdf_data(self):
+        logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
+        self.pdf_data = self.update_pdf_data()
+        logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
+
+    def log_critical_error_and_skip_page(self, msg):
+        logging.critical(msg)
+        self.page_num +=1
+    def is_company_name_present(self):
+        if self.company_name in self.cur_page_text:
+            return True
+        self.log_critical_error_and_skip_page(f'Company name "{self.company_name}" not found in current page.')
+        return False
+
+    def is_doc_type_pattern_present(self):
+        if self.doc_type_pattern in self.cur_page_text:
+            return True
+        self.log_critical_error_and_skip_page(f'Pattern {self.doc_type_pattern} not found in current page')
+        return False
+
 
     def process_pages(self):
         """
         main processing func
         """
-        logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
-        self.pdf_data = self.update_pdf_data()
-        logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
+        self.initialize_pdf_data()
+
         # logging.info(f'pdf_file_path: {self.pdf_file_path}')
         try:
             while self.page_num < len(self.pdf_data.pages):
 
                 logging.info(f'Processing page number: {self.page_num + 1}')
+                # ---------------------------------------------------
                 page = self.pdf_data.pages[self.page_num]
 
                 self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(page)
@@ -174,30 +194,26 @@ class PdfProcessor:
                 self.company_name = self.get_company_name(self.cur_page_text)
                 logging.info(f'self.company_name: \n{self.company_name}\n')
 
-                # todo: self.doc_type_pattern; @dev: catch22 b/c it gets initialized as '' in constructor; must be a way to turn this into an instance att...
-                doc_type_pattern = self.get_doc_type(self.cur_page_text)
-                logging.info(f'doc_type_pattern: \n{doc_type_pattern}\n')
-
-
-                if self.company_name not in self.cur_page_text: # todo: either this or simply use the one in get_company_name()
-                    logging.critical(f'Company name "{self.company_name}" not found in current page.')
-                    self.page_num += 1
+                if not self.is_company_name_present():
                     continue
-                # todo: either this or simply use the one in get_doc_type()
-                if re.search(doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
-                        'END MSG' not in self.cur_page_text):
-                    if not self.process_multi_page():
-                        raise ValueError(f"Failed processing multi-page PDF at page {self.page_num + 1}.")
-                elif re.search(doc_type_pattern, self.cur_page_text, re.IGNORECASE) and (
-                        'END MSG' in self.cur_page_text):
-                    if not self.process_single_page():
-                        raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
-                else:
-                    logging.warning(f"Pattern '{doc_type_pattern}' not found in current page.")
-                    self.page_num += 1
 
+                self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
+                logging.info(f'doc_type_pattern: \n{self.doc_type_pattern}\n')
+
+                if not self.is_doc_type_pattern_present():
+                    continue
+
+                # @dev: exit loop logic after `_present` calls b/c that's where pages are incremented
                 if self.page_num >= len(self.pdf_data.pages):
                     break
+                # ---------------------------------------------------
+                # @dev: shoudln't be neceessary, but if need additional check to have iteration properly go with multi or single can just add conditional `if "END MSG" not in self.cur_page_text: self.process_multi ; else: process_single` --> this might be more robust too...
+                if self.process_multi_page() or self.process_single_page():
+                    continue
+
+
+                raise ValueError(f'Failed processing PDF at page {self.page_num + 1}')
+
 
             logging.info("Completed processing all pages.")
             return True
@@ -363,8 +379,8 @@ class PdfProcessor:
         page_objs = []
         page_text_strings = []
 
-        # Enter loop by checking for absence of end marker in first page of multi page spanning text
-        while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
+        # Enter loop if both conditions are met
+        while re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
             cur_page = self.pdf_data.pages[self.page_num]
             page_objs.append(cur_page)
             self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(cur_page)
@@ -397,7 +413,7 @@ class PdfProcessor:
     def process_single_page(self):
 
         # end marker and current instance company name in text
-        if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
+        if 'END MSG' in self.cur_page_text:
             cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
 
             # @dev: `self.cur_page_text` instance is already the extracted cur_page_text which already has been extracted from process_pages since it is a single page
