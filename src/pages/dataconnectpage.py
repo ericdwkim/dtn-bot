@@ -181,11 +181,13 @@ class DataConnectPage(BasePage):
 
     def check_all_then_click_print(self):
         is_clicked = self.click_checkbox()
-        if is_clicked:
-            self.click_print_button()
-            return True
-        else:
+        if not is_clicked:
+            logging.error(f'Could not click checkbox to select all messages.')
             return False
+        else:
+            self.click_print_button()
+            logging.info(f'Successfully selected all messages. Downloading PDF...')
+            return True
 
 
     def set_filter(self, filter_btn_elem_idx, filter_header_locator,
@@ -208,6 +210,7 @@ class DataConnectPage(BasePage):
 
         # Group `Draft Notice` case requires resetting of selected list
         # to remove `Invoice` before selecting `Draft Notice`
+        # @dev --> this is only applicable when ran sequentially from 1 -> 2 TODO
         if filter_header_is_clicked and reset_selected is True:
 
             # Find `Remove all` and click to reset selected list on Filter widget
