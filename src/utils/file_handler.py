@@ -163,7 +163,6 @@ class FileHandler:
         doc_type_full = self.get_doc_type_full(doc_type)
 
         # If root directory not found, raise exception
-        # todo: update as it is no longer a root directory, just document type in full aka `Fuel Invoices`
         if not doc_type_full:
             raise ValueError(f"No root directory found for document type '{doc_type}'")
 
