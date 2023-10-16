@@ -143,7 +143,7 @@ class PdfProcessor:
                 logging.info(f'Checking company_name: {company_name}\nFound matching company name in current page!')
                 return company_name
 
-        logging.warning(f'Could not find matching Company Name in current page text.')
+        # logging.warning(f'Could not find matching Company Name in current page text.')
         return None
 
     @staticmethod
@@ -158,8 +158,9 @@ class PdfProcessor:
                 logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
                 return doc_type_pattern
 
-        logging.warning(f'Could not find matching document type using regex pattern in current page text.')
+        # logging.warning(f'Could not find matching document type using regex pattern in current page text.')
         return None
+
     def initialize_pdf_data(self):
         logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
         self.pdf_data = self.update_pdf_data()
@@ -229,12 +230,13 @@ class PdfProcessor:
                         raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
                     continue
 
+                # logging.info(f'--------------------- self.page_num: {self.page_num} | len(self.pdf_data.pages): {len(self.pdf_data.pages)} -----------------------')
                 # @dev: main outer loop exit  logic
                 if self.page_num >= len(self.pdf_data.pages):
                     break
                 # ---------------------------------------------------
 
-            logging.info("Completed processing all pages.")
+            logging.info("\n******************************\nCompleted processing all pages!\n******************************\n")
             return True
 
         except Exception as e:
@@ -365,17 +367,17 @@ class PdfProcessor:
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
                 # send to company_dir for post processing
                 output_file_path = self.construct_final_output_filepath(post_processing=True)
-                # print(f'1output_file_path: {output_file_path}')
+                logging.info(f'Setting output filepath to: {output_file_path}')
 
             else:
                 # send to month_dir for all other doc types
                 output_file_path = self.construct_final_output_filepath()
-                # print(f'2output_file_path: {output_file_path}')
+                logging.info(f'Setting output filepath to: {output_file_path}')
             new_pdf.save(output_file_path)
             return True
 
         except Exception as e:
-            logging.exception(f'An error occurred while creating and saving PDF: {e}')
+            logging.exception(f'An error occurred while creating and saving PDF: "{str(e)}"')
             return False
 
     def get_new_file_name(self):
@@ -428,7 +430,6 @@ class PdfProcessor:
 
         # Move (save) new file to final output path
         multi_page_pdf_created_and_saved = self.create_and_save_pdf(page_objs)
-        # print('\n--------------------------------------------------------------------')
         return multi_page_pdf_created_and_saved
 
 
