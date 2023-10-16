@@ -90,7 +90,6 @@ class FileHandler:
         :return: bool
         """
 
-        logging.info('It is the last day of the month\nPerforming end of month operations...')
         tomorrow = self.today + timedelta(days=1)
         return tomorrow.day == 1
 
@@ -199,6 +198,7 @@ class FileHandler:
     def month_and_year_handler(self, first_flow=False):
         try:
             if self.is_last_day_of_month():
+                logging.info('It is the last day of the month\nPerforming end of month operations...')
                 # @dev: for Invoices, set parent_dir to `Fuel Invoices` as there is no company directories
                 parent_dir = self.file_handler.get_doc_type_full('INV') if first_flow else self.company_dir
                 self.end_of_month_operations(parent_dir)
