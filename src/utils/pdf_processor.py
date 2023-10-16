@@ -59,12 +59,15 @@ class PdfProcessor:
 
         logging.info(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
 
+        # @dev: handles key as tuple
+        doc_type_full = self.file_handler.get_doc_type_full(self.doc_type)
+
         self.file_path_mappings = {
             self.doc_type: {
                 self.company_id: os.path.join
                     (
                     self.root_dir,
-                    doc_type_short_to_doc_type_full_map[self.doc_type],
+                    doc_type_full,
                     company_id_to_company_subdir_map[self.company_id]
                 )
             }
