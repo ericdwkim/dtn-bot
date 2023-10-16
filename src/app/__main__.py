@@ -76,7 +76,7 @@ class Main:
                 self.processor.month_and_year_handler(first_flow=False)
 
         except Exception as e:
-            logging.info(f'An unexpected error has occurred during third_flow: {e}')
+            logging.exception(f'An unexpected error has occurred during third_flow: {e}')
 
 
     def run_flows(self, flows):
