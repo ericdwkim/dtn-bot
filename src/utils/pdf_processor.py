@@ -31,9 +31,9 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     @classmethod
-    def from_today(cls):
+    def set_today_str_and_datetime(cls):
         cls.today_str = cls.today.strftime('%m-%d-%y')
-        cls.today_datetime  = datetime.strptime(cls.today.str, '%m-%d-%y')
+        cls.today_datetime  = datetime.strptime(cls.today_str, '%m-%d-%y')
 
     def get_pdf(self, filepath):
         if not os.path.exists(filepath):
@@ -136,7 +136,7 @@ class PdfProcessor:
                 logging.info(f'Checking company_name: {company_name}\nFound matching company name in current page!')
                 return company_name
 
-        logging.error(f'Could not find matching Company Name in current page text.')
+        logging.warning(f'Could not find matching Company Name in current page text.')
         return None
 
     @staticmethod
@@ -151,7 +151,7 @@ class PdfProcessor:
                 logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
                 return doc_type_pattern
 
-        logging.error(f'Could not find matching document type using regex pattern in current page text.')
+        logging.warning(f'Could not find matching document type using regex pattern in current page text.')
         return None
     def initialize_pdf_data(self):
         logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
@@ -172,12 +172,6 @@ class PdfProcessor:
             return True
         return False  # company_name wasn't set and we couldn't update it
 
-    def is_company_name_present(self):
-        if self.company_name in self.cur_page_text:
-            return True
-        else:
-            self.log_warning_and_skip_page(f'Company name "{self.company_name}" not found in current page.')
-
     def is_doc_type_pattern_set(self):
         doc_type_pattern = self.get_doc_type(self.cur_page_text)
         if doc_type_pattern is not None:
@@ -186,12 +180,14 @@ class PdfProcessor:
             return True
         elif self.doc_type_pattern is not None:  # if doc_type_pattern is alraedy set, no need to update
             return True
+        return False
 
-    def is_doc_type_pattern_present(self):
-        if self.doc_type_pattern in self.cur_page_text:
+    def is_doc_type_pattern_and_company_name_present(self):
+        if self.company_name and self.doc_type_pattern in self.cur_page_text:
             return True
         else:
-            self.log_warning_and_skip_page(f'Pattern {self.doc_type_pattern} not found in current page')
+            self.log_warning_and_skip_page(f'Company name "{self.company_name}" and Document Type pattern: "{self.doc_type_pattern}" not found in current page text')
+            return None
 
     def process_pages(self):
         """
@@ -210,11 +206,8 @@ class PdfProcessor:
                 self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(page)
                 logging.info(f'self.cur_page_text: \n{self.cur_page_text}\n')
 
-
-                if all([self.is_company_name_set(), self.is_company_name_present()]) is not False:
-                    continue
-
-                if all([self.is_doc_type_pattern_set(), self.is_doc_type_pattern_present()]) is not False:
+                if self.is_company_name_set() and self.is_doc_type_pattern_set():
+                    self.is_doc_type_pattern_and_company_name_present()
                     continue
 
 
@@ -239,6 +232,7 @@ class PdfProcessor:
 
     # Invoices PDF rename helper
     def rename_invoices_pdf(self):
+        self.set_today_str_and_datetime()  # self.today_str & self.today_datetime
 
         # Pass `/Users/ekim/Downloads/messages.pdf` to get PikePDf object
         pdf = self.get_pdf(self.pdf_file_path)
