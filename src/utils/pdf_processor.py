@@ -206,7 +206,7 @@ class PdfProcessor:
         # logging.info(f'pdf_file_path: {self.pdf_file_path}')
         try:
             # @dev: outer while loop for the main downloaded PDF
-            while self.page_num < len(self.pdf_data.pages):
+            while self.page_num < len(self.pdf_data.pages) - 1:
 
                 logging.info(f'Processing page number: {self.page_num + 1}')
                 # ---------------------------------------------------
