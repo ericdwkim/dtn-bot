@@ -129,8 +129,8 @@ class PdfProcessor:
         :return:
         """
         company_names = PdfProcessor.get_company_names()
-        logging.info(f'\ncompany_names\n {company_names}\n')
-        logging.info(f'\ncur_page_text\n {cur_page_text}\n')
+        # logging.info(f'\ncompany_names\n {company_names}\n')
+        # logging.info(f'\ncur_page_text\n {cur_page_text}\n')
         for company_name in company_names:
             if company_name in cur_page_text.upper():
                 logging.info(f'Checking company_name: {company_name}\nFound matching company name in current page!')
@@ -158,21 +158,40 @@ class PdfProcessor:
         self.pdf_data = self.update_pdf_data()
         logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
 
-    def log_critical_error_and_skip_page(self, msg):
-        logging.critical(msg)
+    def log_warning_and_skip_page(self, msg):
+        logging.warning(msg)
         self.page_num +=1
+
+    def is_company_name_set(self):
+        company_name = self.get_company_name(self.cur_page_text)
+        if company_name is not None:
+            self.company_name = company_name
+            logging.info(f'Updated company_name to: {company_name}')
+            return True
+        elif self.company_name is not None:  # company_name is already set, no need to update
+            return True
+        return False  # company_name wasn't set and we couldn't update it
+
     def is_company_name_present(self):
         if self.company_name in self.cur_page_text:
             return True
-        self.log_critical_error_and_skip_page(f'Company name "{self.company_name}" not found in current page.')
-        return False
+        else:
+            self.log_warning_and_skip_page(f'Company name "{self.company_name}" not found in current page.')
+
+    def is_doc_type_pattern_set(self):
+        doc_type_pattern = self.get_doc_type(self.cur_page_text)
+        if doc_type_pattern is not None:
+            self.doc_type_pattern = doc_type_pattern
+            logging.info(f'Updated doc_type_pattern to: {doc_type_pattern}')
+            return True
+        elif self.doc_type_pattern is not None:  # if doc_type_pattern is alraedy set, no need to update
+            return True
 
     def is_doc_type_pattern_present(self):
         if self.doc_type_pattern in self.cur_page_text:
             return True
-        self.log_critical_error_and_skip_page(f'Pattern {self.doc_type_pattern} not found in current page')
-        return False
-
+        else:
+            self.log_warning_and_skip_page(f'Pattern {self.doc_type_pattern} not found in current page')
 
     def process_pages(self):
         """
@@ -191,17 +210,13 @@ class PdfProcessor:
                 self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(page)
                 logging.info(f'self.cur_page_text: \n{self.cur_page_text}\n')
 
-                self.company_name = self.get_company_name(self.cur_page_text)
-                logging.info(f'self.company_name: \n{self.company_name}\n')
 
-                if not self.is_company_name_present():
+                if all([self.is_company_name_set(), self.is_company_name_present()]) is not False:
                     continue
 
-                self.doc_type_pattern = self.get_doc_type(self.cur_page_text)
-                logging.info(f'doc_type_pattern: \n{self.doc_type_pattern}\n')
-
-                if not self.is_doc_type_pattern_present():
+                if all([self.is_doc_type_pattern_set(), self.is_doc_type_pattern_present()]) is not False:
                     continue
+
 
                 # @dev: exit loop logic after `_present` calls b/c that's where pages are incremented
                 if self.page_num >= len(self.pdf_data.pages):
