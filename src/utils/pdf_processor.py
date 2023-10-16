@@ -13,6 +13,7 @@ from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_pat
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
     today = datetime.today()
+    _initialized = False
     root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
     # root_dir_prod = r'K:/DTN Reports'
     download_dir = str(Path.home() / "Downloads")
@@ -28,6 +29,9 @@ class PdfProcessor:
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
         self.doc_type, self.total_target_amt = ('', '')
+        if not PdfProcessor._initialized:
+            self.set_today_str_and_datetime()
+            PdfProcessor._initialized = True
 
     # ---------------------------------- Instance attributes ----------------------------------
     @classmethod
@@ -197,6 +201,7 @@ class PdfProcessor:
 
         # logging.info(f'pdf_file_path: {self.pdf_file_path}')
         try:
+            # @dev: outer while loop for the main downloaded PDF
             while self.page_num < len(self.pdf_data.pages):
 
                 logging.info(f'Processing page number: {self.page_num + 1}')
@@ -207,21 +212,24 @@ class PdfProcessor:
                 logging.info(f'self.cur_page_text: \n{self.cur_page_text}\n')
 
                 if self.is_company_name_set() and self.is_doc_type_pattern_set():
-                    self.is_doc_type_pattern_and_company_name_present()
+                    if self.is_doc_type_pattern_and_company_name_present():
+                        continue
+                else:  # if company_name or doc_type_pattern instances were not set in the current iteration nor in the previous iteration, then exit function
+                    return
+
+                if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
+                    if not self.process_multi_page():
+                        raise ValueError(f"Failed processing multi-page PDF at page {self.page_num + 1}.")
+                    continue
+                elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' in self.cur_page_text):
+                    if not self.process_single_page():
+                        raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
                     continue
 
-
-                # @dev: exit loop logic after `_present` calls b/c that's where pages are incremented
+                # @dev: main outer loop exit  logic
                 if self.page_num >= len(self.pdf_data.pages):
                     break
                 # ---------------------------------------------------
-                # @dev: shoudln't be neceessary, but if need additional check to have iteration properly go with multi or single can just add conditional `if "END MSG" not in self.cur_page_text: self.process_multi ; else: process_single` --> this might be more robust too...
-                if self.process_multi_page() or self.process_single_page():
-                    continue
-
-
-                raise ValueError(f'Failed processing PDF at page {self.page_num + 1}')
-
 
             logging.info("Completed processing all pages.")
             return True
@@ -232,7 +240,6 @@ class PdfProcessor:
 
     # Invoices PDF rename helper
     def rename_invoices_pdf(self):
-        self.set_today_str_and_datetime()  # self.today_str & self.today_datetime
 
         # Pass `/Users/ekim/Downloads/messages.pdf` to get PikePDf object
         pdf = self.get_pdf(self.pdf_file_path)
@@ -388,13 +395,15 @@ class PdfProcessor:
         page_objs = []
         page_text_strings = []
 
-        # Enter loop if both conditions are met
-        while re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
+        # @deV: inner loop for the multi-page spanning mini PDF
+        while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
             cur_page = self.pdf_data.pages[self.page_num]
             page_objs.append(cur_page)
             self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(cur_page)
             page_text_strings.append(self.cur_page_text)
+
             self.page_num += 1
+
             if self.page_num >= len(self.pdf_data.pages):
                 break
         self.cur_page_text = "".join(page_text_strings)
@@ -409,7 +418,8 @@ class PdfProcessor:
         self.new_file_name = self.get_new_file_name()
 
         # Construct final output filepath using wrapper
-        self.final_output_filepath = self.construct_final_output_filepath()
+        self.final_output_filepath = '/Users/ekim/workspace/personal/dtn-bot/test'
+        # self.final_output_filepath = self.construct_final_output_filepath()
 
         logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
 
@@ -422,7 +432,7 @@ class PdfProcessor:
     def process_single_page(self):
 
         # end marker and current instance company name in text
-        if 'END MSG' in self.cur_page_text:
+        if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
             cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
 
             # @dev: `self.cur_page_text` instance is already the extracted cur_page_text which already has been extracted from process_pages since it is a single page
