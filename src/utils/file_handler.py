@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta
+import logging
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, company_id_to_company_subdir_map
 
 class FileHandler:
