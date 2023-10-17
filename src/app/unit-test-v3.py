@@ -160,12 +160,15 @@ class Main:
         :return:
         """
         for doc_type_pattern in doc_type_patterns:
-            if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
-                logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
-                return doc_type_pattern  # @dev: we're just returning the regex pattern, not the doc_type + doc_type_num from the document that matched the pattern
-
-        # logging.warning(f'Could not find matching document type using regex pattern in current page text.')
-        return None
+                doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
+                if not doc_type_and_num_matches:
+                    logging.warning(f'Could not find doc_type_and_num on current page text')
+                    return None
+                else:
+                    doc_type_and_num = doc_type_and_num_matches[0]
+                    # assumes first match is correct doc type
+                    logging.info(f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
+                    return doc_type_and_num, doc_type_pattern
 
     def initialize_pdf_data(self):
         logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
@@ -189,14 +192,15 @@ class Main:
         return False  # company_name wasn't set and we couldn't update it
 
     def is_doc_type_pattern_set(self):
-        doc_type_pattern = self.get_doc_type(self.cur_page_text)
-        if doc_type_pattern is not None:
+        doc_type_and_num, doc_type_pattern = self.get_doc_type(self.cur_page_text)
+        if (doc_type_and_num is not None) and (doc_type_pattern is not None):
             self.doc_type_pattern = doc_type_pattern
+            self.doc_type_and_num = doc_type_and_num
             logging.info(f'Updated doc_type_pattern to: {doc_type_pattern}')
             return True
-        elif self.doc_type_pattern is not None:  # if doc_type_pattern is alraedy set, no need to update
+        elif (self.doc_type_pattern is not None) and (self.doc_type_and_num is not None):  # if doc_type_pattern and doc_type_and_num instances are alraedy set, no need to update
             return True
-        return False
+        return False  # todo: add exception /error hadling
 
     def is_doc_type_pattern_and_company_name_present(self):
         if self.company_name and self.doc_type_pattern in self.cur_page_text:
@@ -282,18 +286,17 @@ class Main:
             return False
 
     def get_new_file_name(self):
-        if re.match(r'EFT-\s*\d+', self.doc_type) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
+        if re.match(r'EFT-\s*\d+', self.doc_type_and_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
             logging.critical(f'******************************************* self.total_target_amt: {self.total_target_amt} ***********************')
-            # todo: debug why this formatting conditional doesn't work
             if "-" in self.total_target_amt:
                 total_target_amt = self.total_target_amt.replace("-", "")
-                new_file_name = f'{self.doc_type}-{self.today_str}-({total_target_amt}).pdf'
+                new_file_name = f'{self.doc_type_and_num}-{self.today_str}-({total_target_amt}).pdf'
             else:
-                new_file_name = f'{self.doc_type}-{self.today_str}-{self.total_target_amt}.pdf'
-        elif (re.match(r'CBK-\s*\d+', self.doc_type) or re.match(r'RTV-\s*\d+', self.doc_type)):
-            new_file_name = f'{self.doc_type}-{self.today_str}-CHARGEBACK REQUEST.pdf'
+                new_file_name = f'{self.doc_type_and_num}-{self.today_str}-{self.total_target_amt}.pdf'
+        elif (re.match(r'CBK-\s*\d+', self.doc_type_and_num) or re.match(r'RTV-\s*\d+', self.doc_type_and_num)):
+            new_file_name = f'{self.doc_type_and_num}-{self.today_str}-CHARGEBACK REQUEST.pdf'
         else:
-            new_file_name = f'{self.doc_type}-{self.today_str}-{self.total_target_amt}.pdf'
+            new_file_name = f'{self.doc_type_and_num}-{self.today_str}-{self.total_target_amt}.pdf'
         return new_file_name
 
 
@@ -320,8 +323,8 @@ class Main:
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
         logging.info(f'Extracting Document Type and Total Target Amount....')
-        self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-        logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
+        self.doc_type, self.doc_type_num, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_and_num, self.cur_page_text)
+        logging.info(f'Document Type: {self.doc_type} | Document Type Number: {self.doc_type_num} | Total Target Amount: {self.total_target_amt}')
 
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
@@ -344,8 +347,9 @@ class Main:
 
             # @dev: `self.cur_page_text` instance is already the extracted cur_page_text which already has been extracted from process_pages since it is a single page
             # fetch target data from already extracted page text
-            self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-            logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
+            self.doc_type, self.doc_type_num, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_and_num, self.cur_page_text)
+            logging.info(
+                f'Document Type: {self.doc_type} | Document Type Number: {self.doc_type_num} | Total Target Amount: {self.total_target_amt}')
 
             if self.page_num >= len(self.pdf_data.pages) - 1:
                 return # exit func b/c finished with pdf
