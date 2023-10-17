@@ -211,7 +211,7 @@ class Main:
                 if len(pdf.pages) > 0:
                     first_page = self.extraction_handler.extract_text_from_pdf_page(pdf.pages[0])
 
-                    if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
+                    if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMB-\d+', first_page):
                         if re.search(r'EFT-\d+', first_page):
                             self.new_file_name = f'EFT-{self.today_str}-TO-BE-DELETED.pdf'
                         else:
@@ -411,10 +411,49 @@ class Main:
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return False
+    def first_flow(self):
+        try:
+
+            group_filter_set_to_invoice =  self.flow_manager.data_connect_driver.set_group_filter_to_invoice()
+
+            if not group_filter_set_to_invoice:
+                logging.error('Could not set group filter to invoice')
+
+            invoices_renamed_and_filed_away = self.processor.rename_and_move_or_overwrite_invoices_pdf()
+
+            if not invoices_renamed_and_filed_away:
+                logging.error('Could not rename and file away invoices. Does the Invoices PDF exist?')
+
+            elif invoices_renamed_and_filed_away and self.file_handler.is_last_day_of_month():
+                self.processor.month_and_year_handler(first_flow=True)
+
+        except Exception as e:
+            logging.info(f'An unexpected error has occurred during first_flow: {e}')
+
+
+    def second_flow(self):
+
+        try:
+            group_filter_set_to_draft_notice = self.flow_manager.data_connect_driver.set_group_filter_to_draft_notice()
+            logging.info(f'group_filter_set_to_draft_notice: {group_filter_set_to_draft_notice}')
+
+            if not group_filter_set_to_draft_notice:
+                logging.error('Could not set group filter to Draft Notice during second_flow')
+
+
+            draft_notices_processed_and_filed = self.processor.process_pages()
+
+            if not draft_notices_processed_and_filed:
+                logging.error('Could not rename and file away Draft Notices. Do the notices PDF exist?')
+
+            elif draft_notices_processed_and_filed and self.file_handler.is_last_day_of_month():
+                processor.month_and_year_handler(first_flow=False)
+
+        except Exception as e:
+            logging.info(f'An unexpected error has occurred during second_flow: {e}')
 
 
     def third_flow(self):
-        setup_logger()
         try:
             ccms_processed_and_filed = self.process_pages()
 
@@ -426,6 +465,36 @@ class Main:
         except Exception as e:
             logging.exception(f'An unexpected error has occurred during third_flow: {e}')
 
+    def run_flows(self, flows):
+        setup_logger()
+        num_flows = len(flows)
+
+        for i, (flow_func, flow_name) in enumerate(flows):
+            logging.info(f'\n---------------------------\nInitiating Flow: {flow_name}\n---------------------------\n')
+
+            # Only start the flow at the beginning of the list of flows.
+            if i == 0:
+                if flow_name == 'third_flow':
+                    self.flow_manager.start_flow(third_flow=True)
+                elif flow_name == 'first_flow':
+                    self.flow_manager.start_flow(third_flow=False)
+                    self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
+                else:
+                    self.flow_manager.start_flow(third_flow=False)
+
+            flow_func()  # Execute flows
+
+            if flow_name in ['second_flow', 'third_flow']:
+                original_pdf_deleted = self.rename_and_delete_pdf()
+                logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
+
+            logging.info(f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')
+
+            # Only end the flow if it's the last one in the list of flows.
+            if i == num_flows - 1:
+                self.flow_manager.end_flow()
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='DTN Bot V2')
@@ -435,4 +504,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main = Main()
-    main.third_flow()
+    flows_to_run = []
+    if not args.skipFlow1:
+        flows_to_run.append((main.first_flow, 'first_flow'))
+    if not args.skipFlow2:
+        flows_to_run.append((main.second_flow, 'second_flow'))
+    if not args.skipFlow3:
+        flows_to_run.append((main.third_flow, 'third_flow'))
+
+
+
+    main.run_flows(flows_to_run)
+    logging.info(f'\n---------------------------\nCommencing All Flows\n---------------------------\n')
