@@ -306,7 +306,7 @@ class PdfProcessor:
                 if len(pdf.pages) > 0:
                     first_page = self.extraction_handler.extract_text_from_pdf_page(pdf.pages[0])
 
-                    if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMD-\d+', first_page):
+                    if re.search(r'EFT-\d+', first_page) or re.search(r'CCM-\d+ | CMB-\d+', first_page):
                         if re.search(r'EFT-\d+', first_page):
                             self.new_file_name = f'EFT-{self.today_str}-TO-BE-DELETED.pdf'
                         else:
