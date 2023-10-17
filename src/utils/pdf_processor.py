@@ -226,9 +226,8 @@ class PdfProcessor:
                         raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
                     continue
 
-                # logging.info(f'--------------------- self.page_num: {self.page_num} | len(self.pdf_data.pages): {len(self.pdf_data.pages)} -----------------------')
                 # @dev: main outer loop exit  logic
-                if self.page_num >= len(self.pdf_data.pages):
+                if self.page_num >= len(self.pdf_data.pages) - 1:
                     break
                 # ---------------------------------------------------
 
@@ -397,7 +396,7 @@ class PdfProcessor:
         page_text_strings = []
 
         # @deV: inner loop for the multi-page spanning mini PDF
-        while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
+        while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages) - 1:
             cur_page = self.pdf_data.pages[self.page_num]
             page_objs.append(cur_page)
             self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(cur_page)
@@ -405,7 +404,7 @@ class PdfProcessor:
 
             self.page_num += 1
 
-            if self.page_num >= len(self.pdf_data.pages):
+            if self.page_num >= len(self.pdf_data.pages) - 1:
                 break
         self.cur_page_text = "".join(page_text_strings)
         # print(f'------------cur_page_text--------------------\n')
@@ -431,7 +430,7 @@ class PdfProcessor:
     def process_single_page(self):
 
         # end marker and current instance company name in text
-        if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages):
+        if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages) - 1:
             cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
 
             # @dev: `self.cur_page_text` instance is already the extracted cur_page_text which already has been extracted from process_pages since it is a single page
@@ -439,7 +438,7 @@ class PdfProcessor:
             self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
             logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
 
-            if self.page_num >= len(self.pdf_data.pages):
+            if self.page_num >= len(self.pdf_data.pages) - 1:
                 return # exit func b/c finished with pdf
 
             # move page cursor after check; ensures that when last_page_num == len(last_page), it exits and prevents misleading final "error" message that last_page_num + 1 could not be processed
