@@ -1,4 +1,5 @@
 import logging
+import os
 from pikepdf import Pdf
 import pdfplumber
 import io

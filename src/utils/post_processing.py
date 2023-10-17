@@ -60,7 +60,7 @@ class PDFPostProcessor:
         :param company_dir: path to company name directory
         :return: None
         """
-        pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = self.self.extraction_handler.extract_pdf_data(company_dir)
+        pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = self.extraction_handler.extract_pdf_data(company_dir)
         print(
             f'********************* pdf_data_ccm: {pdf_data_ccm}\n total_amount_sum_ccm: {total_amount_sum_ccm}\n *********** pdf_data_lrd {pdf_data_lrd}  ')
 
