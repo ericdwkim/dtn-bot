@@ -166,10 +166,6 @@ class PdfProcessor:
         self.pdf_data = self.update_pdf_data()
         logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
 
-    def log_warning_and_skip_page(self, msg):
-        logging.warning(msg)
-        self.page_num +=1
-
     def is_company_name_set(self):
         company_name = self.get_company_name(self.cur_page_text)
         if company_name is not None:
@@ -194,7 +190,7 @@ class PdfProcessor:
         if self.company_name and self.doc_type_pattern in self.cur_page_text:
             return True
         else:
-            self.log_warning_and_skip_page(f'Company name "{self.company_name}" and Document Type pattern: "{self.doc_type_pattern}" not found in current page text')
+            logging.warning(f'Company name "{self.company_name}" and Document Type pattern: "{self.doc_type_pattern}" not found in current page text')
             return None
 
     def process_pages(self):
