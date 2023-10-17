@@ -27,7 +27,8 @@ class Main:
         self.flow_manager = FlowManager(headless=headless)
         self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
-        self.company_dir = ''
+        # self.company_dir = ''
+        self.company_dir = '/Users/ekim/workspace/txb/mock/k-drive/Dtn reports/Credit Cards/EXXONMOBIL [10005]'
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
@@ -459,51 +460,51 @@ class Main:
     #         logging.info(f'An unexpected error has occurred during second_flow: {e}')
     #
     #
-    # def third_flow(self):
-    #     try:
-    #         ccms_processed_and_filed = self.process_pages()
-    #
-    #         if not ccms_processed_and_filed:
-    #             logging.error('Could not rename and file away CCMs')
-    #         elif ccms_processed_and_filed and self.file_handler.is_last_day_of_month():
-    #             self.processor.month_and_year_handler(first_flow=False)
-    #
-    #     except Exception as e:
-    #         logging.exception(f'An unexpected error has occurred during third_flow: {e}')
+    def third_flow(self):
+        try:
+            ccms_processed_and_filed = self.process_pages()
 
-    # def run_flows(self, flows):
-    #     setup_logger()
-    #     num_flows = len(flows)
-    #
-    #     for i, (flow_func, flow_name) in enumerate(flows):
-    #         logging.info(f'\n---------------------------\nInitiating Flow: {flow_name}\n---------------------------\n')
-    #
-    #         # Only start the flow at the beginning of the list of flows.
-    #         if i == 0:
-    #             if flow_name == 'third_flow':
-    #                 self.flow_manager.start_flow(third_flow=True)
-    #             elif flow_name == 'first_flow':
-    #                 self.flow_manager.start_flow(third_flow=False)
-    #                 self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
-    #             else:
-    #                 self.flow_manager.start_flow(third_flow=False)
-    #
-    #         flow_func()  # Execute flows
-    #
-    #         # if flow_name in ['second_flow', 'third_flow']:
-    #         #     original_pdf_deleted = self.rename_and_delete_pdf()
-    #         #     logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
-    #
-    #         logging.info(f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')
-    #
-    #         # Only end the flow if it's the last one in the list of flows.
-    #         if i == num_flows - 1:
-    #             self.flow_manager.end_flow()
+            if not ccms_processed_and_filed:
+                logging.error('Could not rename and file away CCMs')
+            elif ccms_processed_and_filed and self.file_handler.is_last_day_of_month():
+                self.processor.month_and_year_handler(first_flow=False)
+
+        except Exception as e:
+            logging.exception(f'An unexpected error has occurred during third_flow: {e}')
+
+    def run_flows(self, flows):
+        num_flows = len(flows)
+
+        for i, (flow_func, flow_name) in enumerate(flows):
+            logging.info(f'\n---------------------------\nInitiating Flow: {flow_name}\n---------------------------\n')
+
+            # Only start the flow at the beginning of the list of flows.
+            if i == 0:
+                if flow_name == 'third_flow':
+                    self.flow_manager.start_flow(third_flow=True)
+                elif flow_name == 'first_flow':
+                    self.flow_manager.start_flow(third_flow=False)
+                    self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
+                else:
+                    self.flow_manager.start_flow(third_flow=False)
+
+            flow_func()  # Execute flows
+
+            # if flow_name in ['second_flow', 'third_flow']:
+            #     original_pdf_deleted = self.rename_and_delete_pdf()
+            #     logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
+
+            logging.info(f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')
+
+            # Only end the flow if it's the last one in the list of flows.
+            if i == num_flows - 1:
+                self.flow_manager.end_flow()
 
 
     def test_post_processing(self):
         setup_logger()
         pp = PDFPostProcessor()
+        print(f'self.company_dir: {self.company_dir}')
 
         pp.merge_rename_and_summate(self.company_dir)
 
