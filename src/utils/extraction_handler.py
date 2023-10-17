@@ -1,3 +1,4 @@
+import logging
 from pikepdf import Pdf
 import pdfplumber
 import io
@@ -106,7 +107,7 @@ class ExtractionHandler():
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', cur_page_text)
 
-        # print(f'\nGetting total_amount_matches: {total_amount_matches}\n')
+        logging.info(f'\nGetting total_amount_matches: {total_amount_matches}\n')
         if total_amount_matches:
             total_target_amt = total_amount_matches[-1]
         else:
