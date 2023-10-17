@@ -419,8 +419,7 @@ class PdfProcessor:
         self.new_file_name = self.get_new_file_name()
 
         # Construct final output filepath using wrapper
-        self.final_output_filepath = '/Users/ekim/workspace/personal/dtn-bot/test'  # TODO @dev: LEFT OFF- `CMB` exception caught by process_pages b/c func stack from `construct_final_output_filepath` call on down to construct needs fixing/updating. it needs to use `self.doc_type (aka doc_type_short) to fetch doc_type_full to construct the output filepath correctly; almost there!!! and then once this and single page processing funcs works like before, move onto getting post_processing func stack to work for ccms ahhhhhh
-        # self.final_output_filepath = self.construct_final_output_filepath()
+        self.final_output_filepath = self.construct_final_output_filepath()
 
         logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
 
