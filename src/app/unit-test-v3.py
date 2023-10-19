@@ -27,8 +27,8 @@ class Main:
         self.flow_manager = FlowManager(headless=headless)
         self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
-        # self.company_dir = ''
-        self.company_dir = '/Users/ekim/workspace/txb/mock/k-drive/Dtn reports/Credit Cards/EXXONMOBIL [10005]'
+        self.company_dir = ''
+        # self.company_dir = '/Users/ekim/workspace/txb/mock/k-drive/Dtn reports/Credit Cards/EXXONMOBIL [10005]'
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
@@ -123,8 +123,6 @@ class Main:
             output_file_path = os.path.join(self.company_dir, month_dir, self.new_file_name)
             return output_file_path
 
-
-
     @staticmethod
     def get_company_names():
         company_names = []
@@ -178,9 +176,6 @@ class Main:
 
     def log_warning_and_skip_page(self, msg):
         logging.warning(msg)
-        # self.page_num +=1
-
-
 
     def is_company_name_set(self):
         company_name = self.get_company_name(self.cur_page_text)
@@ -330,11 +325,6 @@ class Main:
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
 
-        # Construct final output filepath using wrapper
-        self.final_output_filepath = self.construct_final_output_filepath()
-
-        logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
-
         # Move (save) new file to final output path
         multi_page_pdf_created_and_saved = self.create_and_save_pdf(page_objs)
         return multi_page_pdf_created_and_saved
@@ -359,11 +349,6 @@ class Main:
             self.page_num +=1
             # fetch file name
             self.new_file_name = self.get_new_file_name()
-
-            #  fetch output filepath
-            self.final_output_filepath = self.construct_final_output_filepath()
-
-            logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
 
             # Create single page pdf and save in correct dir
             single_page_pdf_created_and_saved = self.create_and_save_pdf(cur_page)
@@ -462,6 +447,17 @@ class Main:
     #
     def third_flow(self):
         try:
+            group_filter_set_to_credit_card = self.flow_manager.data_connect_driver.set_group_filter_to_credit_card()
+            logging.info(f'group filter set to CC: {group_filter_set_to_credit_card}')
+
+            if not group_filter_set_to_credit_card:
+                logging.error('Could not set group filter to CC during third flow')
+
+            credit_card_pdf_downloaded = self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
+            if not credit_card_pdf_downloaded:
+                logging.critical(f'Credit cards PDF was not downloaded. Exiting...')
+                return
+
             ccms_processed_and_filed = self.process_pages()
 
             if not ccms_processed_and_filed:
@@ -473,6 +469,7 @@ class Main:
             logging.exception(f'An unexpected error has occurred during third_flow: {e}')
 
     def run_flows(self, flows):
+        setup_logger()
         num_flows = len(flows)
 
         for i, (flow_func, flow_name) in enumerate(flows):
@@ -498,7 +495,9 @@ class Main:
 
             # Only end the flow if it's the last one in the list of flows.
             if i == num_flows - 1:
-                self.flow_manager.end_flow()
+                # self.flow_manager.end_flow()
+                logging.info('tearing down placeholder')
+                time.sleep(300000)
 
 
     def test_post_processing(self):
@@ -518,18 +517,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main = Main()
-    # flows_to_run = []
-    # if not args.skipFlow1:
-    #     flows_to_run.append((main.first_flow, 'first_flow'))
-    # if not args.skipFlow2:
-    #     flows_to_run.append((main.second_flow, 'second_flow'))
-    # if not args.skipFlow3:
-    #     flows_to_run.append((main.third_flow, 'third_flow'))
-    #
-    #
-    #
-    # main.run_flows(flows_to_run)
-    # logging.info(f'\n---------------------------\nCommencing All Flows\n---------------------------\n')
+    flows_to_run = []
+    if not args.skipFlow1:
+        flows_to_run.append((main.first_flow, 'first_flow'))
+    if not args.skipFlow2:
+        flows_to_run.append((main.second_flow, 'second_flow'))
+    if not args.skipFlow3:
+        flows_to_run.append((main.third_flow, 'third_flow'))
 
 
-    main.test_post_processing()
+
+    main.run_flows(flows_to_run)
+    logging.info(f'\n---------------------------\nCommencing All Flows\n---------------------------\n')
+
+
+    # main.test_post_processing()
