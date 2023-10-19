@@ -376,7 +376,7 @@ class Main:
             self.new_file_name = self.get_new_file_name()
 
             # Create single page pdf and save in correct dir
-            if not self.create_and_save_pdf(page_obj):
+            if not self.create_and_save_pdf(page_obj, post_processing=False):
                 logging.error(f'Could not create and save single page PDF')
                 return False
             logging.info('Successfully processed all multi pages in PDF')
