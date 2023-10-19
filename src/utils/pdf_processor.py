@@ -146,20 +146,21 @@ class PdfProcessor:
         # logging.warning(f'Could not find matching Company Name in current page text.')
         return None
 
-    @staticmethod
-    def get_doc_type(cur_page_text):
-        """
-        Helper func for getting doc_type_pattern instance
-        :param cur_page_text:
-        :return:
-        """
-        for doc_type_pattern in doc_type_patterns:
-            if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
-                logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
-                return doc_type_pattern
-
-        # logging.warning(f'Could not find matching document type using regex pattern in current page text.')
-        return None
+    # TODO: need to update after testing ; whole point of this new branch
+    # @staticmethod
+    # def get_doc_type(cur_page_text):
+    #     """
+    #     Helper func for getting doc_type_pattern instance
+    #     :param cur_page_text:
+    #     :return:
+    #     """
+    #     for doc_type_pattern in doc_type_patterns:
+    #         if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
+    #             logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
+    #             return doc_type_pattern
+    #
+    #     # logging.warning(f'Could not find matching document type using regex pattern in current page text.')
+    #     return None
 
     def initialize_pdf_data(self):
         logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
