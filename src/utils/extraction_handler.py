@@ -71,7 +71,7 @@ class ExtractionHandler():
         """
 
         pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
-        print(f'************************ pdf_files ******************** : {pdf_files}\n')
+        logging.info(f'************************ pdf_files ******************** : {pdf_files}\n')
         pdf_data_ccm = []
         pdf_data_lrd = []
         total_amount = 0.00
@@ -85,9 +85,9 @@ class ExtractionHandler():
                 doc_type_num_lrd, _ = self.extract_lrd_data(pdf_file)
                 pdf_data_lrd.append((doc_type_num_lrd, self.today, _, os.path.join(company_dir, pdf_file)))
         pdf_data_ccm.sort(key=lambda x: x[0])
-        print(f'*********************************** pdf_data_ccm {pdf_data_ccm}\n')
+        logging.info(f'*********************************** pdf_data_ccm {pdf_data_ccm}\n')
         pdf_data_lrd.sort(key=lambda x: x[0])
-        print(f'*********************************** pdf_data_lrd {pdf_data_lrd}\n')
+        logging.info(f'*********************************** pdf_data_lrd {pdf_data_lrd}\n')
 
         return pdf_data_ccm, total_amount, pdf_data_lrd
 
@@ -103,7 +103,7 @@ class ExtractionHandler():
         doc_type = pattern.split('-')[0]
 
         if doc_type is None:
-            print(f'Could not find document type using pattern {pattern} in current text: {cur_page_text}')
+            logging.warning(f'Could not find document type using pattern {pattern} in current text: {cur_page_text}')
             return None, None
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', cur_page_text)
