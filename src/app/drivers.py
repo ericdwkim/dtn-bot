@@ -59,7 +59,7 @@ class LoginPageDriver:
         self.login_page = LoginPage(self.base_driver)
 
     @handle_errors
-    def visit_and_login(selfself):
+    def visit_and_login(self):
         return self.login_page.visit_and_login()
 
 class DataConnectDriver:
