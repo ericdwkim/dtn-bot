@@ -74,7 +74,7 @@ class FileHandler:
     @staticmethod
     def get_doc_type_full(doc_type_short):
         """
-        Given a file prefix, it unpacks the root_directory mapping to return full document type
+        @dev: soley to construct final output path
         :param doc_type_short:
         :return: str | None
         """
@@ -82,6 +82,34 @@ class FileHandler:
             if (isinstance(key, tuple) and doc_type_short in key) or key == doc_type_short:
                 return value
         return None
+
+    # todo: figure out whether to leave these doc type funcs here or pdf_processor
+    # @staticmethod
+    # def get_doc_type(cur_page_text):
+    #     """
+    #     Helper func for getting doc_type_pattern instance
+    #     :param cur_page_text:
+    #     :return:
+    #     """
+    #     for doc_type_pattern in doc_type_patterns:
+    #             doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
+    #             if not doc_type_and_num_matches:
+    #                 logging.warning(f'Could not find doc_type_and_num on current page text')
+    #                 return None
+    #             else:
+    #                 doc_type_and_num = doc_type_and_num_matches[0]
+    #                 # assumes first match is correct doc type
+    #                 logging.info(f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
+    #                 return doc_type_and_num, doc_type_pattern
+    #
+    # @staticmethod
+    # def set_doc_type_short():
+    #
+    #     doc_type_and_num, _ = self.get_doc_type()
+    #     # todo: regex to cut off trailing nums from `doc_type_and_num`
+    #     return doc_type_short
+    #
+
 
     def is_last_day_of_month(self):
         """
