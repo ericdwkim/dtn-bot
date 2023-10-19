@@ -27,6 +27,7 @@ class Main:
         self.flow_manager = FlowManager(headless=headless)
         self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
+        self.post_processor = PDFPostProcessor()
         self.company_dir = ''
         # self.company_dir = '/Users/ekim/workspace/txb/mock/k-drive/Dtn reports/Credit Cards/EXXONMOBIL [10005]'
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
@@ -249,7 +250,7 @@ class Main:
         logging.crticial(f'Could not retrieve Company ID from Company Name: {company_name}.')
         return None
 
-    def create_and_save_pdf(self, pages):
+    def create_and_save_pdf(self, pages, post_processing):
         """
         pages - single or list of pike pdf page objects
         """
@@ -264,16 +265,10 @@ class Main:
                 # Create single page pdf from page obj instance
                 new_pdf.pages.append(pages)
 
+            # send to month_dir for all other doc types
+            output_file_path = self.construct_final_output_filepath(post_processing)
+            logging.info(f'Setting output filepath to: {output_file_path}')
 
-            if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
-                # send to company_dir for post processing
-                output_file_path = self.construct_final_output_filepath(post_processing=True)
-                logging.info(f'Setting output filepath to: {output_file_path}')
-
-            else:
-                # send to month_dir for all other doc types
-                output_file_path = self.construct_final_output_filepath()
-                logging.info(f'Setting output filepath to: {output_file_path}')
             new_pdf.save(output_file_path)
             return True
 
@@ -325,16 +320,33 @@ class Main:
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
 
-        # Move (save) new file to final output path
-        multi_page_pdf_created_and_saved = self.create_and_save_pdf(page_objs)
-        return multi_page_pdf_created_and_saved
+        if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
+
+            if not self.create_and_save_pdf(page_objs, post_processing=True):
+                logging.error(f'Could not create and save multipage w/ post processing required PDF')
+                return False
+
+            # Post processing core logic
+            ccms_and_lrds_post_processed = self.post_processor.merge_rename_and_summate(self.company_dir)
+            if not ccms_and_lrds_post_processed:
+                logging.error(f'ccms_and_lrds_post_processed: {ccms_and_lrds_post_processed}')
+            logging.info(f'Successfully post processed CCMs and LRDs')
+            return True
+
+        # @dev: post processing not needed multi page spanning pdfs
+        elif not self.create_and_save_pdf(page_objs, post_processing=False):
+            logging.error(f'Could not create and save multipage PDF')
+            return False
+
+        logging.info('Successfully processed all multi pages in PDF')
+        return True
 
 
     def process_single_page(self):
 
         # end marker and current instance company name in text
         if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages) - 1:
-            cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
+            page_obj = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
 
             # @dev: `self.cur_page_text` instance is already the extracted cur_page_text which already has been extracted from process_pages since it is a single page
             # fetch target data from already extracted page text
@@ -351,14 +363,17 @@ class Main:
             self.new_file_name = self.get_new_file_name()
 
             # Create single page pdf and save in correct dir
-            single_page_pdf_created_and_saved = self.create_and_save_pdf(cur_page)
-            logging.info(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
-            return single_page_pdf_created_and_saved
+            if not self.create_and_save_pdf(page_obj):
+                logging.error(f'Could not create and save single page PDF')
+                return False
+            logging.info('Successfully processed all multi pages in PDF')
+            return True
 
     def process_pages(self):
         """
         main processing func
         """
+        self.initialize_pdf_data()
 
         logging.info(f'pdf_file_path: {self.pdf_file_path}')
         try:
@@ -495,19 +510,8 @@ class Main:
 
             # Only end the flow if it's the last one in the list of flows.
             if i == num_flows - 1:
-                # self.flow_manager.end_flow()
-                logging.info('tearing down placeholder')
-                time.sleep(300000)
-
-
-    def test_post_processing(self):
-        setup_logger()
-        pp = PDFPostProcessor()
-        print(f'self.company_dir: {self.company_dir}')
-
-        pp.merge_rename_and_summate(self.company_dir)
-
-
+                time.slee(45)
+                self.flow_manager.end_flow()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='DTN Bot V2')
