@@ -160,15 +160,16 @@ class Main:
         :return:
         """
         for doc_type_pattern in doc_type_patterns:
-                doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
-                if not doc_type_and_num_matches:
-                    logging.warning(f'Could not find doc_type_and_num on current page text')
-                    return None
-                else:
-                    doc_type_and_num = doc_type_and_num_matches[0]
-                    # assumes first match is correct doc type
-                    logging.info(f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
-                    return doc_type_and_num, doc_type_pattern
+            logging.info(f'Using regex pattern {doc_type_pattern} for any matches in current page text\n************\n{cur_page_text}\n************\n')
+            doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
+            if not doc_type_and_num_matches:
+                logging.warning(f'Could not find doc_type_and_num on current page text')
+                return None
+            else:
+                doc_type_and_num = doc_type_and_num_matches[0]
+                # assumes first match is correct doc type
+                logging.info(f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
+                return doc_type_and_num, doc_type_pattern
 
     def initialize_pdf_data(self):
         logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
@@ -510,7 +511,7 @@ class Main:
 
             # Only end the flow if it's the last one in the list of flows.
             if i == num_flows - 1:
-                time.slee(45)
+                time.sleep(45)
                 self.flow_manager.end_flow()
 
 if __name__ == '__main__':
