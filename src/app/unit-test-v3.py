@@ -30,13 +30,12 @@ class Main:
         self.post_processor = PDFPostProcessor()
         self.company_dir = ''
         self.doc_type_and_num = ''
-        self.doc_type_short = ''
         # self.company_dir = '/Users/ekim/workspace/txb/mock/k-drive/Dtn reports/Credit Cards/EXXONMOBIL [10005]'
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
-        self.doc_type, self.total_target_amt = ('', '')
+        self.doc_type_short, self.total_target_amt = ('', '')
         if not PdfProcessor._initialized:
             self.set_today_str_and_datetime()
             PdfProcessor._initialized = True
@@ -66,13 +65,13 @@ class Main:
         # fetch company_id from company_name using helper instance method
         self.company_id = self.get_company_id_fixed(self.company_name)
 
-        logging.info(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
+        logging.info(f'self.doc_type_short: {self.doc_type_short}  | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
 
         # @dev: handles key as tuple
-        doc_type_full = self.file_handler.get_doc_type_full(self.doc_type)
+        doc_type_full = self.file_handler.get_doc_type_full(self.doc_type_short)
 
         self.file_path_mappings = {
-            self.doc_type: {
+            self.doc_type_short: {
                 self.company_id: os.path.join
                     (
                     self.root_dir,
@@ -82,8 +81,8 @@ class Main:
             }
         }
 
-        # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
-        if self.doc_type is None:
+        # print(f'{self.doc_type_short}   | {self.total_target_amt} | {self.company_name} ' )
+        if self.doc_type_short is None:
             logging.error("Error: Document type is None. File path mappings could not be assigned.")
             return None
 
@@ -92,8 +91,8 @@ class Main:
             return None
         else:
             # Return output path from nested value in nested mapping
-            # return self.file_path_mappings[self.doc_type][self.company_id]
-            self.company_dir =  self.file_path_mappings[self.doc_type][self.company_id]
+            # return self.file_path_mappings[self.doc_type_short][self.company_id]
+            self.company_dir =  self.file_path_mappings[self.doc_type_short][self.company_id]
             return self.company_dir
 
 
@@ -363,11 +362,10 @@ class Main:
         if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages) - 1:
             page_obj = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
 
-            # @dev: `self.cur_page_text` instance is already the extracted cur_page_text which already has been extracted from process_pages since it is a single page
-            # fetch target data from already extracted page text
-            self.doc_type, self.doc_type_num, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_and_num, self.cur_page_text)
+            self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
+            self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
             logging.info(
-                f'Document Type: {self.doc_type} | Document Type Number: {self.doc_type_num} | Total Target Amount: {self.total_target_amt}')
+                f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
 
             if self.page_num >= len(self.pdf_data.pages) - 1:
                 return # exit func b/c finished with pdf
