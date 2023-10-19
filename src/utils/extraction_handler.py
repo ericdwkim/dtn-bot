@@ -92,19 +92,13 @@ class ExtractionHandler():
         return pdf_data_ccm, total_amount, pdf_data_lrd
 
     @staticmethod
-    def extract_doc_type_and_total_target_amt(pattern, cur_page_text):
+    def extract_total_target_amt(cur_page_text):
         """
         replaces deprecated `extract_info_from_text`
         :param pattern:
         :param cur_page_text:
         :return:
         """
-
-        doc_type = pattern.split('-')[0]
-
-        if doc_type is None:
-            logging.warning(f'Could not find document type using pattern {pattern} in current text: {cur_page_text}')
-            return None, None
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', cur_page_text)
 
@@ -114,4 +108,4 @@ class ExtractionHandler():
         else:
             total_target_amt = None
 
-        return doc_type, total_target_amt
+        return total_target_amt

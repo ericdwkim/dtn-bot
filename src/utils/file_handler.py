@@ -104,11 +104,10 @@ class FileHandler:
     #
     # @staticmethod
     # def set_doc_type_short():
-    #
     #     doc_type_and_num, _ = self.get_doc_type()
-    #     # todo: regex to cut off trailing nums from `doc_type_and_num`
+    #     doc_type_short = doc_type_and_num.split('-')[0]
     #     return doc_type_short
-    #
+
 
 
     def is_last_day_of_month(self):

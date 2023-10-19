@@ -29,6 +29,8 @@ class Main:
         self.extraction_handler = ExtractionHandler()
         self.post_processor = PDFPostProcessor()
         self.company_dir = ''
+        self.doc_type_and_num = ''
+        self.doc_type_short = ''
         # self.company_dir = '/Users/ekim/workspace/txb/mock/k-drive/Dtn reports/Credit Cards/EXXONMOBIL [10005]'
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
@@ -152,6 +154,7 @@ class Main:
         # logging.warning(f'Could not find matching Company Name in current page text.')
         return None
 
+    # @dev: todo- this acts the same way as extract_total_target_amt , so consider moving to extraction_handler; could even create a wrapper for both extractions (improved logic b/c separation of concerns); wrapper(self.cur_page_text) and return vars as tuple
     @staticmethod
     def get_doc_type(cur_page_text):
         """
@@ -175,6 +178,10 @@ class Main:
 
         # If you reach here, that means no pattern has matched
         return None
+    def get_doc_type_short(self, doc_type_and_num):
+        if not doc_type_and_num:
+            logging.error(f'doc_type_and_num is None. Could not get doc_type_short from NoneType')
+        self.doc_type_short = doc_type_and_num.split('-')[0]
 
     def initialize_pdf_data(self):
         logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
@@ -198,8 +205,9 @@ class Main:
         doc_type_and_num, doc_type_pattern = self.get_doc_type(self.cur_page_text)
         if (doc_type_and_num is not None) and (doc_type_pattern is not None):
             self.doc_type_pattern = doc_type_pattern
+            logging.info(f'Updated doc_type_pattern instance to: {doc_type_pattern}')
             self.doc_type_and_num = doc_type_and_num
-            logging.info(f'Updated doc_type_pattern to: {doc_type_pattern}')
+            logging.info(f'Updated doc_type_and_num instance to: {doc_type_and_num}')
             return True
         elif (self.doc_type_pattern is not None) and (self.doc_type_and_num is not None):  # if doc_type_pattern and doc_type_and_num instances are alraedy set, no need to update
             return True
@@ -320,13 +328,14 @@ class Main:
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
         logging.info(f'Extracting Document Type and Total Target Amount....')
-        self.doc_type, self.doc_type_num, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_and_num, self.cur_page_text)
-        logging.info(f'Document Type: {self.doc_type} | Document Type Number: {self.doc_type_num} | Total Target Amount: {self.total_target_amt}')
+        self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
+        self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
+        logging.info(f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
 
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
 
-        if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
+        if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
 
             if not self.create_and_save_pdf(page_objs, post_processing=True):
                 logging.error(f'Could not create and save multipage w/ post processing required PDF')
