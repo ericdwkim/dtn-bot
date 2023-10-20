@@ -50,7 +50,7 @@ class PDFPostProcessor:
         try:
             merged_pdf.save(output_path)
             merged_pdf.close()
-            print(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
+            logging.info(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
             return True
         except Exception:
             return False
