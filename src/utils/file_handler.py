@@ -173,10 +173,10 @@ class FileHandler:
         return month_dir
 
     # @dev: refactor WIP todo
-    def construct_month_dir_from_doc_type(self, doc_type, company_id=None, company_dir=None):
+    def construct_month_dir_from_doc_type_short(self, doc_type_short, company_id=None, company_dir=None):
         """
-        Given the doc_type as minimum param, it returns the constructed final output path\ndepending on document type
-        :param doc_type:
+        Given the doc_type_short as minimum param, it returns the constructed final output path\ndepending on document type
+        :param doc_type_short:
         :param company_id:
         :param company_dir:
         :return:
@@ -185,15 +185,15 @@ class FileHandler:
         current_month, current_year = self.cur_month_and_year_from_today()
 
         # Determine root directory;
-        doc_type_full = self.get_doc_type_full(doc_type)
+        doc_type_full = self.get_doc_type_full(doc_type_short)
 
         # If root directory not found, raise exception
         if not doc_type_full:
-            raise ValueError(f"No root directory found for document type '{doc_type}'")
+            raise ValueError(f"No root directory found for document type '{doc_type_short}'")
 
         # Handle EFT and CMB cases and non-exxon CCM files
-        if (doc_type == 'EFT' or doc_type == 'CMB' or doc_type == 'CCM') and company_id is None and company_dir:
-            doc_type_full = company_dir # todo: change var name;; doesn't make sense to say that company directory is now doc type directory. if anything, it is now the new "root" directory /doc_type/company; NOTE: called the same var to only have a single return instead of having three separate returns
+        if (doc_type_short == 'EFT' or doc_type_short == 'CMB' or doc_type_short == 'CCM') and company_id is None and company_dir:
+            doc_type_full = company_dir  # todo: change var name;; doesn't make sense to say that company directory is now doc type directory. if anything, it is now the new "root" directory /doc_type_short/company; NOTE: called the same var to only have a single return instead of having three separate returns
 
         # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
         elif doc_type_full and company_id:
@@ -201,7 +201,7 @@ class FileHandler:
             doc_type_full = os.path.join(doc_type_full, company_directory)
 
         # Create and return path to the relevant year and month directories
-        # @dev: for INV doc_type, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
+        # @dev: for INV doc_type_short, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
         return self.create_and_return_directory_path(doc_type_full, current_year, current_month)
 
 
