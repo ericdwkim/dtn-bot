@@ -33,3 +33,14 @@ def setup_logger():
     ch = logging.StreamHandler()
     ch.setFormatter(CustomFormatter())
     logger.addHandler(ch)
+
+# @dev: decorator to centralize error handling for all functions
+def handle_errors(func):
+    def catch_and_log(*args, **kwargs):
+        try:
+            result = func(*args, **kwargs)
+            return result
+        except Exception as e:
+            logging.exception(f'An error occurred in {func.__name__}: {e}')
+            return False
+    return catch_and_log

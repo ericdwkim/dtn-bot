@@ -1,19 +1,9 @@
 import logging, platform
+from src.utils.log_config import handle_errors
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from ..pages.loginpage import LoginPage
 from ..pages.dataconnectpage import DataConnectPage
-
-# @dev: decorator to centralize error handling for all functions
-def handle_errors(func):
-    def catch_and_log(*args, **kwargs):
-        try:
-            result = func(*args, **kwargs)
-            return result
-        except Exception as e:
-            logging.exception(f'An error occurred in {func.__name__}: {e}')
-            return False
-    return catch_and_log
 
 class BaseDriver:
     def __init__(self, headless=False):
@@ -24,7 +14,7 @@ class BaseDriver:
         logging.info('Initializing BaseDriver...')
         options = self._get_chrome_options()
         # @dev: for unit testing
-        # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 
         os_type = platform.system()
         chromedriver_executable_path = self._get_chromedriver_executable_path(os_type)
