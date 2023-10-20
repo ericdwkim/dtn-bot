@@ -1,8 +1,8 @@
 import os, re, logging, pikepdf, shutil
 from datetime import datetime
+from src.utils.log_config import handle_errors
 from src.utils.file_handler import FileHandler
 from src.utils.extraction_handler import ExtractionHandler
-
 
 class PDFPostProcessor:
 
@@ -28,32 +28,46 @@ class PDFPostProcessor:
         merged_pdf = self.new_pdf
         return merged_pdf
 
-
-
-    def save_merged_pdf(self, file_prefix, merged_pdf, total_amount_sum, company_id):
-        """
-        Saves pre-merged pike PDF object with constructed filename dependent on doc type with provided target data.
-        :param file_prefix: CCM or LRD ; only these for post-processing
-        :param merged_pdf:
-        :param total_amount_sum:
-        :param company_id:
-        :return: Bool
-        """
-        if file_prefix == 'CCM':
-            new_file_name = f'{file_prefix}-{self.today}-{total_amount_sum}.pdf'
+    def get_new_file_name_for_merged_ccm_or_lrd_docs(self, doc_type_short, total_amount_sum):
+        if doc_type_short == 'CCM':
+            new_file_name = f'{doc_type_short}-{self.today}-{total_amount_sum}.pdf'
         else:
             new_file_name = f'{self.today}-Loyalty.pdf'
+        return new_file_name
 
-        month_directory = self.file_handler.construct_month_dir_from_doc_type(file_prefix, company_id)
+    def construct_final_output_path(self, doc_type_short, company_id):
+
+        month_directory = self.file_handler.construct_month_dir_from_doc_type_short(doc_type_short, company_id)
+
         output_path = os.path.join(month_directory, new_file_name)
 
+        return output_path
+
+    @handle_errors
+    def save_merged_pdf(self, merged_pdf, output_path):
         try:
             merged_pdf.save(output_path)
             merged_pdf.close()
-            logging.info(f'{file_prefix} PDFs have been merged, renamed "{new_file_name}" and saved to: {output_path}')
+            logging.info(f'Post processed PDFs have been merged, renamed and saved: {output_path}')
             return True
-        except Exception:
-            return False
+        except Exception as e:
+            logging.exception(f'An unexpected error has occurred trying to save_merged_pdf: {e}')
+
+    def merge_and_save_to_output_path(self, pdf_data, doc_type_short, company_id):
+        merged_pdf = self.merge_pdfs(pdf_data)
+        if not merged_pdf:
+            logging.error(f'PDFs could not be merged using pdf_data: {pdf_data}')
+        output_path = self.construct_final_output_path(doc_type_short, company_id)
+        if not output_path:
+            logging.error(f'Output path could not be constructed using doc_')
+        merged_pdf_is_saved = self.save_merged_pdf(merged_pdf, output_path)
+
+        return merged_pdf_is_saved
+
+
+    def merge_rename_and_save(self, pdf_data, doc_type_short, total_amount_sum):
+        merged_pdf = self.merge_pdfs(pdf_data)
+        new_file_name = self.get_new_file_name_for_merged_ccm_or_lrd_docs(doc_type_short, total_amount_sum)
 
     # todo: clean and refactor w/ error handling and return bool
     def merge_rename_and_summate(self, company_dir):
@@ -66,6 +80,7 @@ class PDFPostProcessor:
         logging.info(
             f'********************* pdf_data_ccm: {pdf_data_ccm}\n total_amount_sum_ccm: {total_amount_sum_ccm}\n *********** pdf_data_lrd {pdf_data_lrd}  ')
 
+        # todo: wrapper ?
         merged_pdf_ccm = self.merge_pdfs(pdf_data_ccm)
         merged_ccm_pdf_is_saved = self.save_merged_pdf('CCM', merged_pdf_ccm, total_amount_sum_ccm, '10005')
         logging.info(f'merged_pdf_ccm / merged_ccm_pdf_is_saved: {merged_pdf_ccm} / {merged_ccm_pdf_is_saved}')
