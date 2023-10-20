@@ -1,9 +1,5 @@
-import logging
-import os
+import logging, os, pdfplumber, io, re
 from pikepdf import Pdf
-import pdfplumber
-import io
-import re
 from datetime import datetime
 
 

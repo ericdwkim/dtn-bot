@@ -1,5 +1,4 @@
-import time
-import logging
+import time, logging
 from .basepage import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -36,7 +35,7 @@ class DataConnectPage(BasePage):
         """
         logging.info(f'Default `date_locator`: {date_locator}')
         if third_flow:
-            date_locator = '#date > option:nth-child(3)'  # @dev: toggle back to today
+            date_locator = '#date > option:nth-child(3)'  # TODO: @dev: toggle back to today
         try:
             logging.info(f'Using `date_locator`: {date_locator}')
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)

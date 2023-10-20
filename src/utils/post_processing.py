@@ -1,9 +1,5 @@
-import os
-import re
-import logging
+import os, re, logging, pikepdf, shutil
 from datetime import datetime
-import pikepdf
-import shutil
 from src.utils.file_handler import FileHandler
 from src.utils.extraction_handler import ExtractionHandler
 

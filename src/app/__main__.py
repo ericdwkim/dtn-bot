@@ -1,5 +1,4 @@
-import argparse
-import logging
+import argparse, logging
 # from subprocess import run
 from src.utils.log_config import setup_logger
 from src.app.flow_manager import FlowManager
