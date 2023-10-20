@@ -172,7 +172,7 @@ class FileHandler:
 
         return month_dir
 
-    # @dev: refactor WIP todo
+    # @TODO: refactor required ; need " target_file_path = os.path.join(self.root_dir, month_dir, self.new_file_name)" logic to account for root_dir ; prevent it from outputing merged pdfs to working directory
     def construct_month_dir_from_doc_type_short(self, doc_type_short, company_id=None, company_dir=None):
         """
         Given the doc_type_short as minimum param, it returns the constructed final output path\ndepending on document type

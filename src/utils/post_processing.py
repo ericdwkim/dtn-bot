@@ -85,7 +85,7 @@ class PDFPostProcessor:
         logging.info(f'Successfully merged, renamed, and saved post-processed PDFs!')
         return True
 
-    # @dev: wip ; requires testing
+    # todo: wip - 1) extracted 2) merge,rename, save wrapper 3) cleanup on disk files 4) dynamic FS mgmt 5) success log 6) failure/exception log  --> wrap in try/catch ===> use decorate `    @handle_errors
     def post_processing_for_ccm(self, company_dir):
         """
         Main post-processing wrapper function. Accounts for end of month operations if last day of the month.
