@@ -201,16 +201,19 @@ class Main:
         return False  # company_name wasn't set and we couldn't update it
 
     def is_doc_type_pattern_set(self):
-        doc_type_and_num, doc_type_pattern = self.get_doc_type(self.cur_page_text)
-        if (doc_type_and_num is not None) and (doc_type_pattern is not None):
-            self.doc_type_pattern = doc_type_pattern
-            logging.info(f'Updated doc_type_pattern instance to: {doc_type_pattern}')
-            self.doc_type_and_num = doc_type_and_num
-            logging.info(f'Updated doc_type_and_num instance to: {doc_type_and_num}')
-            return True
-        elif (self.doc_type_pattern is not None) and (self.doc_type_and_num is not None):  # if doc_type_pattern and doc_type_and_num instances are alraedy set, no need to update
-            return True
-        return False  # todo: add exception /error hadling
+        try:
+            doc_type_and_num, doc_type_pattern = self.get_doc_type(self.cur_page_text)
+            if (doc_type_and_num is not None) and (doc_type_pattern is not None):
+                self.doc_type_pattern = doc_type_pattern
+                logging.info(f'Updated doc_type_pattern instance to: {doc_type_pattern}')
+                self.doc_type_and_num = doc_type_and_num
+                logging.info(f'Updated doc_type_and_num instance to: {doc_type_and_num}')
+                return True
+            elif (self.doc_type_pattern is not None) and (self.doc_type_and_num is not None):  # if doc_type_pattern and doc_type_and_num instances are alraedy set, no need to update
+                return True
+            return False
+        except Exception as e:
+            logging.exception(f'An unexpected error has occurred in is_doc_type_pattern_set: {e}')
 
     def is_doc_type_pattern_and_company_name_present(self):
         if self.company_name and self.doc_type_pattern in self.cur_page_text:
