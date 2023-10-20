@@ -85,7 +85,7 @@ class PdfProcessor:
 
     def construct_final_output_filepath(self, post_processing=False):
         """
-        assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir;
+        assign_file_path_mappings & construct_month_dir_from_doc_type_short wrapper to construct dynamic final output paths for both company_dir and month_dir;
         allows flexibility for both up to company_dir or up to month_dir
      ideally have assign_file_path_mappings construct up to month_dir and # TODO: perform post processing in memory and not on disk; requires breaking into smaller classes
 
@@ -271,7 +271,7 @@ class PdfProcessor:
             return False
 
         # Get final output dir from file prefix
-        month_dir = self.file_handler.construct_month_dir_from_doc_type('INV')
+        month_dir = self.file_handler.construct_month_dir_from_doc_type_short('INV')
 
         # Construct final output path
         target_file_path = os.path.join(self.root_dir, month_dir, self.new_file_name)

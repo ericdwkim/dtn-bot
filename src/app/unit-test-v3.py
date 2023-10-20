@@ -98,7 +98,7 @@ class Main:
 
     def construct_final_output_filepath(self, post_processing=False):
         """
-        assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir;
+        assign_file_path_mappings & construct_month_dir_from_doc_type_short wrapper to construct dynamic final output paths for both company_dir and month_dir;
         allows flexibility for both up to company_dir or up to month_dir
      ideally have assign_file_path_mappings construct up to month_dir and # TODO: perform post processing in memory and not on disk; requires breaking into smaller classes
 
