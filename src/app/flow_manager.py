@@ -1,4 +1,4 @@
-import logging
+import logging, time
 from src.app.drivers import BaseDriver, LoginPageDriver, DataConnectDriver
 class FlowManager:
     def __init__(self, headless=False):
@@ -19,7 +19,7 @@ class FlowManager:
             tab_switched_to_data_connect = self.data_connect_driver.switch_tab()
             if not tab_switched_to_data_connect:
                 raise RuntimeError('tab_switched_to_data_connect returned false')
-
+            time.sleep(15)  # Wait for DOM to load switched tab
 
             date_filter_set = self.data_connect_driver.set_date_filter(third_flow)
             if not date_filter_set:
