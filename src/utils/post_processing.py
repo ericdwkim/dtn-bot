@@ -85,51 +85,58 @@ class PDFPostProcessor:
         logging.info(f'Successfully merged, renamed, and saved post-processed PDFs!')
         return True
 
-    # todo: wip - 1) extracted 2) merge,rename, save wrapper 3) cleanup on disk files 4) dynamic FS mgmt 5) success log 6) failure/exception log  --> wrap in try/catch ===> use decorate `    @handle_errors
-    def post_processing_for_ccm(self, company_dir):
-        """
-        Main post-processing wrapper function. Accounts for end of month operations if last day of the month.
-        :param company_dir: path to company name directory
-        :return: None
-        """
+    # todo: use decorate `    @handle_errors
+
+    def get_pdf_data_and_total_amount_sum(self, company_dir):
         pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = self.extraction_handler.extract_pdf_data(company_dir)
+        # todo: fix log and use decorate
         logging.info(
-            f'********************* pdf_data_ccm: {pdf_data_ccm}\n total_amount_sum_ccm: {total_amount_sum_ccm}\n *********** pdf_data_lrd {pdf_data_lrd}  ')
+            f'********************* pdf_data_ccm: {pdf_data_ccm}\n total_amount_sum_ccm: {total_amount_sum_ccm}\n *********** pdf_data_lrd {pdf_data_lrd} ')
+        return pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd
 
 
-        merged_renamed_and_saved = self.merge_rename_and_save(pdf_data_ccm, 'CCM', total_amount_sum_ccm, '10005')
-        logging.info(f'merged_renamed_and_saved: {merged_renamed_and_saved}')
-
-        # Clean up pre-merged PDFs in EXXON company_dir; loops through file_path (4th elem in tuple) to delete
-        self.file_handler.cleanup_files(pdf_data_ccm)
-
-
-        # PDFs were merged, saved w/ new filename. If it is currently the last day of the month, then perform end of month filesystem management
-        if merged_renamed_and_saved and self.file_handler.is_last_day_of_month():
-            self.file_handler.end_of_month_operations(company_dir)
-
-        elif merged_renamed_and_saved:
+    def post_processor(self, company_dir, pdf_data, doc_type_short, total_amount_sum=None, company_id='10005'):
+        try:
+            merged_renamed_and_saved = self.merge_rename_and_save(pdf_data, doc_type_short, total_amount_sum, company_id)
             logging.info(f'merged_renamed_and_saved: {merged_renamed_and_saved}')
-            return True
 
-        else:
-            logging.error('An')
+            # Clean up pre-merged PDFs in EXXON company_dir; loops through file_path (4th elem in tuple) to delete
+            self.file_handler.cleanup_files(pdf_data)
+
+
+            # PDFs were merged, saved w/ new filename. If it is currently the last day of the month, then perform end of month filesystem management
+            if merged_renamed_and_saved and self.file_handler.is_last_day_of_month():
+                self.file_handler.end_of_month_operations(company_dir)
+
+            elif merged_renamed_and_saved:
+                logging.info(f'doc type {doc_type_short} | merged_renamed_and_saved: {merged_renamed_and_saved}')
+                return True
+
+        except Exception as e:
+            logging.exception(f'An unexpected error occurred trying to post_process document type: {doc_type_short}. Error Message: {e}')
             return False
 
 
-        # TODO: same logic as post_processing_for_ccm; thinking of creating anothe rabstracted func since essentially same steps for both CCm and LRds except for varied doc_type_short and list of tups; can even set company_id=10005 (unless it has to be a string)
+    def extract_and_post_process(self, company_dir):
+        try:
+            pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = self.extraction_handler.extract_pdf_data(company_dir)
 
-        merged_pdf_lrd = self.merge_pdfs(pdf_data_lrd)
-        merged_lrd_pdf_is_saved = self.save_merged_pdf('LRD', merged_pdf_lrd, None, '10005')
-        # Clean up pre-merged PDFs in EXXON company_dir; loops through file_path (4th elem in tuple) to delete
-        self.file_handler.cleanup_files(pdf_data_lrd)
-        # PDFs were merged, saved w/ new filename. If it is currently the last day of the month, then perform end of month filesystem management
-        if merged_pdf_lrd and merged_lrd_pdf_is_saved and self.file_handler.is_last_day_of_month():
-            self.file_handler.end_of_month_operations(company_dir)
+            ccms_pdf_post_processed = self.post_processor(company_dir, pdf_data_ccm, doc_type_short='CCM', total_amount_sum=total_amount_sum_ccm)
 
-        elif merged_pdf_lrd and merged_lrd_pdf_is_saved:
-            logging.info(f'merged_lrd_pdf_is_saved: {merged_lrd_pdf_is_saved} | merged_pdf_lrd: {merged_pdf_lrd}')
+            if not ccms_pdf_post_processed:
+                logging.warning(f'Could not post process CCMs')
+
+
+            lrds_pdf_post_processed = self.post_processor(company_dir, pdf_data_lrd, doc_type_short='LRD')
+
+            if not lrds_pdf_post_processed:
+                logging.warning(f'Could not post process LRDs')
+
+
+            if not ccms_pdf_post_processed and not lrds_pdf_post_processed:
+                logging.error(f'Could not post process CCMs and LRDs')
+                return False
+
             return True
-
-        else:
-            return False
+        except Exception as e:
+            logging.exception(f'An unexpected error occurred trying to post process: {e}')

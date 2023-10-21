@@ -344,7 +344,9 @@ class Main:
                 return False
 
             # Post processing core logic
-            ccms_and_lrds_post_processed = self.post_processor.merge_rename_and_summate(self.company_dir)
+
+
+            ccms_and_lrds_post_processed = self.post_processor.extract_and_post_process(self.company_dir)
             if not ccms_and_lrds_post_processed:
                 logging.error(f'ccms_and_lrds_post_processed: {ccms_and_lrds_post_processed}')
             logging.info(f'Successfully post processed CCMs and LRDs')
