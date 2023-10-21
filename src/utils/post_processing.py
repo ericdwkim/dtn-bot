@@ -3,14 +3,16 @@ from datetime import datetime
 from src.utils.log_config import handle_errors  # TODO
 from src.utils.file_handler import FileHandler
 from src.utils.extraction_handler import ExtractionHandler
+from src.utils.pdf_processor import PdfProcessor
 
-class PostProcessor:
+class PostProcessor(PdfProcessor):
 
-    def __init__(self):
+    def __init__(self, new_pdf):
+        super().__init__()
         self.today = datetime.today().strftime('%m-%d-%y')
         self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
-        self.new_pdf= pikepdf.Pdf.new()
+        self.new_pdf = new_pdf
 
         # self.company_dir = company_dir
         # self.doc_type_short = doc_type_short
