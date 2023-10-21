@@ -163,7 +163,7 @@ class Main:
         """
         for doc_type_pattern in doc_type_patterns:
             logging.info(
-                f'Using regex pattern {doc_type_pattern} for any matches in current page text\n************\n{cur_page_text}\n************\n')
+                f'Using regex pattern {doc_type_pattern} for any matches in current page text:\n************************************************************\n{cur_page_text}\n************************************************************\n')
             doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
             if not doc_type_and_num_matches:
                 logging.warning(f'Could not find doc_type_and_num on current page text')
@@ -414,7 +414,6 @@ class Main:
                 else:  # if company_name or doc_type_pattern instances were not set in the current iteration nor in the previous iteration, then exit function
                     return
 
-                logging.info(f'PAGE NUM BEFORE MULTI OR SINGLE PROCESSING ----------------------- {self.page_num + 1} ---------------------------')
 
                 if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
                     if not self.process_multi_page():
@@ -531,7 +530,7 @@ class Main:
 
             # Only end the flow if it's the last one in the list of flows.
             if i == num_flows - 1:
-                time.sleep(45)
+                # time.sleep(45)
                 self.flow_manager.end_flow()
 
 if __name__ == '__main__':

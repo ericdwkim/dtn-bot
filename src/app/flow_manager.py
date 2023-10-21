@@ -33,8 +33,8 @@ class FlowManager:
 
     def end_flow(self):
         try:
-            logging.info('Tearing down ChromeDriver. Placeholder')
-            # self.base_driver.teardown_driver()  # todo: renable after deving
+            logging.info('Tearing down ChromeDriver.')
+            self.base_driver.teardown_driver()
         except Exception as e:
             logging.exception(f'An error occurred trying to tear down ChromeDriver: {e}')
 
