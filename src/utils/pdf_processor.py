@@ -22,6 +22,7 @@ class PdfProcessor:
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
+        self.new_pdf = pikePdf.Pdf.new()
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
         self.doc_type, self.total_target_amt = ('', '')
         if not PdfProcessor._initialized:
@@ -346,13 +347,12 @@ class PdfProcessor:
 
 
         try:
-            new_pdf = pikepdf.Pdf.new()
             if isinstance(pages, list):
                 # Merge multi page spanning pdfs w/ page objs instance
-                new_pdf.pages.extend(pages)
+                self.new_pdf.pages.extend(pages)
             else:
                 # Create single page pdf from page obj instance
-                new_pdf.pages.append(pages)
+                self.new_pdf.pages.append(pages)
 
 
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
@@ -364,7 +364,7 @@ class PdfProcessor:
                 # send to month_dir for all other doc types
                 output_file_path = self.construct_final_output_filepath()
                 logging.info(f'Setting output filepath to: {output_file_path}')
-            new_pdf.save(output_file_path)
+            self.new_pdf.save(output_file_path)
             return True
 
         except Exception as e:
