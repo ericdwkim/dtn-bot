@@ -98,8 +98,8 @@ class ExtractionHandler():
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', cur_page_text)
 
-        if len(total_amount_matches) > 10:
-            logging.info(f'Getting total_amount_matches: \n************************\n{total_amount_matches}\n************************\n')
+        if len(total_amount_matches) > 5:
+            logging.info(f'Getting total_amount_matches: \n************************\n{total_amount_matches[-3:]}\n************************\n')
         logging.info(f'\nGetting total_amount_matches: \n************************\n{total_amount_matches}\n************************\n')
 
 
