@@ -1,9 +1,11 @@
 import os, logging
 from datetime import datetime, timedelta
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, company_id_to_company_subdir_map
+from src.utils.pdf_processor import PdfProcessor
 
 class FileHandler:
     def __init__(self):
+        self.pdf_processor = PdfProcessor()
         # Get today's date as a datetime object
         today = datetime.today()
         # If you need the date in string format with specific format
@@ -172,6 +174,7 @@ class FileHandler:
 
         return month_dir
 
+
     # @TODO: refactor required ; need " target_file_path = os.path.join(self.root_dir, month_dir, self.new_file_name)" logic to account for root_dir ; prevent it from outputing merged pdfs to working directory
     def construct_month_dir_from_doc_type_short(self, doc_type_short, company_id=None, company_dir=None):
         """
@@ -192,17 +195,22 @@ class FileHandler:
             raise ValueError(f"No root directory found for document type '{doc_type_short}'")
 
         # Handle EFT and CMB cases and non-exxon CCM files
-        if (doc_type_short == 'EFT' or doc_type_short == 'CMB' or doc_type_short == 'CCM') and company_id is None and company_dir:
-            doc_type_full = company_dir  # todo: change var name;; doesn't make sense to say that company directory is now doc type directory. if anything, it is now the new "root" directory /doc_type_short/company; NOTE: called the same var to only have a single return instead of having three separate returns
+        if (doc_type_short not in ('EFT', 'CMB', 'CCM') ) and (company_id is not None) and (company_dir is None):
+            month_dir = self.create_and_return_directory_path()  # LEFT OFF HERE @DEV - WIP - tryna figure out what would be the parent_dir in this fail first condition
+
+        root_dir = self.pdf_processor.root_dir # todo: you'll need this to fix the CCM and LRD pre and post (wtf) both being outputted in working dir (src)
+
+        # if (doc_type_short == 'EFT' or doc_type_short == 'CMB' or doc_type_short == 'CCM') and company_id is None and company_dir:
+        #     root_dir = company_dir
 
         # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
         elif doc_type_full and company_id:
             company_directory = company_id_to_company_subdir_map.get(company_id, '')
-            doc_type_full = os.path.join(doc_type_full, company_directory)
+            root_dir = os.path.join(doc_type_full, company_directory)
 
         # Create and return path to the relevant year and month directories
         # @dev: for INV doc_type_short, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
-        return self.create_and_return_directory_path(doc_type_full, current_year, current_month)
+        return self.create_and_return_directory_path(parent_dir, current_year, current_month)
 
 
     # todo: moved from pdf_processor
