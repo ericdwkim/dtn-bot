@@ -10,7 +10,7 @@ from pathlib import Path
 from src.utils.log_config import setup_logger
 from src.app.flow_manager import FlowManager
 from src.utils.pdf_processor import PdfProcessor
-from src.utils.post_processing import PDFPostProcessor
+from src.utils.post_processing import PostProcessor
 from src.utils.file_handler import FileHandler
 from src.utils.extraction_handler import ExtractionHandler
 from src.utils.mappings import *
@@ -27,7 +27,7 @@ class Main:
         self.flow_manager = FlowManager(headless=headless)
         self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
-        self.post_processor = PDFPostProcessor()
+        self.post_processor = PostProcessor()
         self.company_dir = ''
         self.doc_type_and_num = ''
         # self.company_dir = '/Users/ekim/workspace/txb/mock/k-drive/Dtn reports/Credit Cards/EXXONMOBIL [10005]'
@@ -183,7 +183,10 @@ class Main:
         self.doc_type_short = doc_type_and_num.split('-')[0]
 
     def initialize_pdf_data(self):
-        logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
+        mod_time, cre_time = self.file_handler.get_file_timestamps(self.pdf_file_path)
+
+        logging.info(f'Prior to updating pdf data instance: {self.pdf_data} | Modified Time: {mod_time} | Created Time: {cre_time} | ')
+
         self.pdf_data = self.update_pdf_data()
         logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
 
@@ -259,7 +262,7 @@ class Main:
 
             # print(f'if "{company_name}" == "{cleaned_comp_dir}"')
             if company_name == company_dir.split('[')[0].strip():
-                logging.info(f'Match found!\nCompany Name: {company_name} has Company ID: {company_id}')
+                logging.info(f'Match found!\n************************\nCompany Name: {company_name} | Company ID: {company_id}\n************************\n')
                 # Turn local var to instance var for dynamic file path construction
                 self.company_id = company_id
                 return self.company_id
