@@ -155,7 +155,7 @@ class FileHandler:
         current_month = self.today.strftime('%m-%b')
         current_year = self.today.strftime('%Y')
 
-        return current_month, current_year
+        return current_year, current_month
 
     def create_and_return_directory_path(self, parent_dir, current_year, current_month):
         """
@@ -166,29 +166,61 @@ class FileHandler:
         :param current_month:
         :return: `month_dir` final output path to save PDFs to
         """
-        year_dir = os.path.join(parent_dir, current_year)
+        year_dir = os.path.join(parent_dir, current_year)  # year_dr = /parent_dir/current_yr
         self.create_directory(year_dir)
 
-        month_dir = os.path.join(year_dir, current_month)
+        month_dir = os.path.join(year_dir, current_month)  # month_dir = /parent_dir/current_year/current_month
         self.create_directory(month_dir)
 
         return month_dir
+
+    def get_month_year_dir_from_parent_dir(self, parent_dir):
+        cur_yr, cur_month= self.cur_month_and_year_from_today()
+        month_dir = self.create_and_return_directory_path(parent_dir, cur_yr, cur_month)
+        return month_dir
+
+    @staticmethod
+    def get_month_dir_from_company_id(company_id, doc_type_full):
+        company_dir = company_id_to_company_subdir_map.get(company_id, '')
+        month_dir = os.path.join(doc_type_full, company_dir)
+
+        return month_dir
+
 
 
     # @TODO: refactor required ; need " target_file_path = os.path.join(self.root_dir, month_dir, self.new_file_name)" logic to account for root_dir ; prevent it from outputing merged pdfs to working directory
     def construct_month_dir_from_doc_type_short(self, doc_type_short, company_id=None, company_dir=None):
         """
-        Given the doc_type_short as minimum param, it returns the constructed final output path\ndepending on document type
+        Given the doc_type_short, return the constructed final output path\ndepending on document type
         :param doc_type_short:
         :param company_id:
         :param company_dir:
         :return:
         """
         # Extract month and year from helper
-        current_month, current_year = self.cur_month_and_year_from_today()
+        current_year, current_month = self.cur_month_and_year_from_today()
 
-        # Determine root directory;
+        # Determine the full/long version of document type (ie:`Credit Cards`) from the abbreviated short version of doc type (ie: `CCM`)
         doc_type_full = self.get_doc_type_full(doc_type_short)
+
+        # if only doc_type_short --> only doc_type_full available -->  probably INV --> send to `/root_dir/doc_type_full/YYYY/MM-MM`
+        if (doc_type_full == 'Fuel Invoices') and (company_id is None) and (company_dir is None):
+            month_dir_invoices = self.get_month_year_dir_from_parent_dir(doc_type_full)
+            return month_dir_invoices
+
+        # EXXON CCM or LRD files
+        elif (company_id == '10005') and (doc_type_full == 'Credit Cards'):
+            # get month dir with company id
+            month_dir_for_ccm_or_lrd = self.get_month_dir_from_company_id(company_id, doc_type_full)
+            return month_dir_for_ccm_or_lrd
+
+
+
+
+
+
+
+
 
         # If root directory not found, raise exception
         if not doc_type_full:
@@ -197,16 +229,19 @@ class FileHandler:
         # Handle EFT and CMB cases and non-exxon CCM files
         if (doc_type_short not in ('EFT', 'CMB', 'CCM') ) and (company_id is not None) and (company_dir is None):
             month_dir = self.create_and_return_directory_path()  # LEFT OFF HERE @DEV - WIP - tryna figure out what would be the parent_dir in this fail first condition
-
+        # month_dir = / parent_dir / current_year / current_month
         root_dir = self.pdf_processor.root_dir # todo: you'll need this to fix the CCM and LRD pre and post (wtf) both being outputted in working dir (src)
 
         # if (doc_type_short == 'EFT' or doc_type_short == 'CMB' or doc_type_short == 'CCM') and company_id is None and company_dir:
         #     root_dir = company_dir
 
+
+
+
         # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
         elif doc_type_full and company_id:
-            company_directory = company_id_to_company_subdir_map.get(company_id, '')
-            root_dir = os.path.join(doc_type_full, company_directory)
+            company_dir = self.get_company_dir_from_company_id(company_id)
+            root_dir = os.path.join(doc_type_full, compan)
 
         # Create and return path to the relevant year and month directories
         # @dev: for INV doc_type_short, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
