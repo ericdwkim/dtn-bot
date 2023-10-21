@@ -4,6 +4,7 @@ from pathlib import Path
 from src.utils.extraction_handler import ExtractionHandler
 from src.utils.file_handler import FileHandler
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
+from src.utils.post_processing import PostProcessor
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
@@ -16,13 +17,14 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
-        self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
-        self.company_dir = ''
+        self.file_handler = FileHandler()
+        self.new_pdf = pikePdf.Pdf.new()
+        self.post_processing = PostProcessor(self.new_pdf)
+        self.company_dir = ''  # todo necessary?
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
-        self.new_pdf = pikePdf.Pdf.new()
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
         self.doc_type, self.total_target_amt = ('', '')
         if not PdfProcessor._initialized:
