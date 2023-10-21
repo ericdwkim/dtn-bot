@@ -67,7 +67,7 @@ class ExtractionHandler():
         """
 
         pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
-        logging.info(f'************************ pdf_files ******************** : {pdf_files}\n')
+        logging.info(f'************************ pdf_files ******************** : {pdf_files}\n')  # todo: clean up logging format
         pdf_data_ccm = []
         pdf_data_lrd = []
         total_amount = 0.00
