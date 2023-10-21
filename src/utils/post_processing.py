@@ -4,13 +4,17 @@ from src.utils.log_config import handle_errors  # TODO
 from src.utils.file_handler import FileHandler
 from src.utils.extraction_handler import ExtractionHandler
 
-class PDFPostProcessor:
+class PostProcessor:
 
     def __init__(self):
         self.today = datetime.today().strftime('%m-%d-%y')
         self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
         self.new_pdf= pikepdf.Pdf.new()
+
+        # self.company_dir = company_dir
+        # self.doc_type_short = doc_type_short
+        # self.total_amount_sum
 
 
     def merge_pdfs(self, pdf_data):
@@ -35,7 +39,7 @@ class PDFPostProcessor:
             new_file_name = f'{self.today}-Loyalty.pdf'
         return new_file_name
 
-    def construct_final_output_path(self, doc_type_short, company_id):
+    def construct_final_output_path(self, doc_type_short, company_id, new_file_name):
         try:
             month_directory = self.file_handler.construct_month_dir_from_doc_type_short(doc_type_short, company_id)
 
@@ -72,7 +76,7 @@ class PDFPostProcessor:
             logging.error(f'Could not get new file name for merged {doc_type_short} document')
             return False
 
-        output_path = self.construct_final_output_path(doc_type_short, company_id)
+        output_path = self.construct_final_output_path(doc_type_short, company_id, new_file_name)
         if not output_path:
             logging.error(f'Output path could not be constructed using args: doc_type: {doc_type} / company_id: {company_id}')
             return False
@@ -121,16 +125,18 @@ class PDFPostProcessor:
         try:
             pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = self.extraction_handler.extract_pdf_data(company_dir)
 
-            ccms_pdf_post_processed = self.post_processor(company_dir, pdf_data_ccm, doc_type_short='CCM', total_amount_sum=total_amount_sum_ccm)
+            ccms_pdf_post_processed = self.post_processor(company_dir, pdf_data_ccm, 'CCM', total_amount_sum_ccm)
 
             if not ccms_pdf_post_processed:
                 logging.warning(f'Could not post process CCMs')
+                return False
 
 
-            lrds_pdf_post_processed = self.post_processor(company_dir, pdf_data_lrd, doc_type_short='LRD')
+            lrds_pdf_post_processed = self.post_processor(company_dir, pdf_data_lrd, 'LRD')
 
             if not lrds_pdf_post_processed:
                 logging.warning(f'Could not post process LRDs')
+                return False
 
 
             if not ccms_pdf_post_processed and not lrds_pdf_post_processed:
@@ -140,3 +146,4 @@ class PDFPostProcessor:
             return True
         except Exception as e:
             logging.exception(f'An unexpected error occurred trying to post process: {e}')
+            return False
