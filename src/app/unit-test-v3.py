@@ -27,7 +27,8 @@ class Main:
         self.flow_manager = FlowManager(headless=headless)
         self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
-        self.post_processor = PostProcessor()
+        self.new_pdf = pikepdf.Pdf.new()
+        self.post_processor = PostProcessor(self.new_pdf)
         self.company_dir = ''
         self.doc_type_and_num = ''
         # self.company_dir = '/Users/ekim/workspace/txb/mock/k-drive/Dtn reports/Credit Cards/EXXONMOBIL [10005]'
