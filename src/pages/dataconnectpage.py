@@ -35,7 +35,8 @@ class DataConnectPage(BasePage):
         """
         logging.info(f'Default `date_locator`: {date_locator}')
         if third_flow:
-            date_locator = '#date > option:nth-child(3)'  # TODO: @dev: toggle back to today
+            # date_locator = '#date > option:nth-child(1)'
+            date_locator = '#date > option:nth-child(6)'  # TODO: @dev: toggle back to today
         try:
             logging.info(f'Using `date_locator`: {date_locator}')
             was_clicked, element_selector_clicked = self.find_element_and_click(date_locator)
