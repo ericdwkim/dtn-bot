@@ -28,11 +28,10 @@ class PostProcessor(PdfProcessor):
         for _, _, _, file_path in pdf_data:
             try:
                 pdf = pikepdf.Pdf.open(file_path)
-                self.new_pdf.pages.extend(pdf.pages)
+                merged_pdfs = self.new_pdf.pages.extend(pdf.pages)
+                return merged_pdfs
             except pikepdf.PdfError:
-                return False
-        merged_pdf = self.new_pdf
-        return merged_pdf
+                logging.error(f'An error occurred trying to merge_pdfs with provided pdf_data: {pdf_data}')
 
     def get_new_file_name_for_merged_ccm_or_lrd_docs(self, doc_type_short, total_amount_sum):
         if doc_type_short == 'CCM':
