@@ -56,13 +56,13 @@ class PdfProcessor:
         # fetch company_id from company_name using helper instance method
         self.company_id = self.get_company_id_fixed(self.company_name)
 
-        logging.info(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
+        logging.info(f'self.doc_type_short: {self.doc_type_short}  | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
 
         # @dev: handles key as tuple
-        doc_type_full = self.file_handler.get_doc_type_full(self.doc_type)
+        doc_type_full = self.file_handler.get_doc_type_full(self.doc_type_short)
 
         self.file_path_mappings = {
-            self.doc_type: {
+            self.doc_type_short: {
                 self.company_id: os.path.join
                     (
                     self.root_dir,
@@ -72,8 +72,8 @@ class PdfProcessor:
             }
         }
 
-        # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
-        if self.doc_type is None:
+        # print(f'{self.doc_type_short}   | {self.total_target_amt} | {self.company_name} ' )
+        if self.doc_type_short is None:
             logging.error("Error: Document type is None. File path mappings could not be assigned.")
             return None
 
@@ -82,8 +82,8 @@ class PdfProcessor:
             return None
         else:
             # Return output path from nested value in nested mapping
-            # return self.file_path_mappings[self.doc_type][self.company_id]
-            self.company_dir =  self.file_path_mappings[self.doc_type][self.company_id]
+            # return self.file_path_mappings[self.doc_type_short][self.company_id]
+            self.company_dir =  self.file_path_mappings[self.doc_type_short][self.company_id]
             return self.company_dir
 
 
@@ -116,7 +116,6 @@ class PdfProcessor:
             output_file_path = os.path.join(self.company_dir, month_dir, self.new_file_name)
             return output_file_path
 
-
     @staticmethod
     def get_company_names():
         company_names = []
@@ -145,24 +144,41 @@ class PdfProcessor:
         # logging.warning(f'Could not find matching Company Name in current page text.')
         return None
 
-    # TODO: need to update after testing ; whole point of this new branch
-    # @staticmethod
-    # def get_doc_type(cur_page_text):
-    #     """
-    #     Helper func for getting doc_type_pattern instance
-    #     :param cur_page_text:
-    #     :return:
-    #     """
-    #     for doc_type_pattern in doc_type_patterns:
-    #         if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
-    #             logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
-    #             return doc_type_pattern
-    #
-    #     # logging.warning(f'Could not find matching document type using regex pattern in current page text.')
-    #     return None
+    # @dev: todo- this acts the same way as extract_total_target_amt , so consider moving to extraction_handler; could even create a wrapper for both extractions (improved logic b/c separation of concerns); wrapper(self.cur_page_text) and return vars as tuple
+    @staticmethod
+    def get_doc_type_and_num(cur_page_text):
+        """
+        Helper func for getting doc_type_pattern instance
+        :param cur_page_text:
+        :return:
+        """
+        for doc_type_pattern in doc_type_patterns:
+            # todo: log_config.wrapper func for logging cur page text ; prevent bloating stdout logs`
+            # logging.info(
+                # f'Using regex pattern {doc_type_pattern} for any matches in current page text:\n************************************************************\n{cur_page_text}\n************************************************************\n')
+            doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
+            if not doc_type_and_num_matches:
+                logging.warning(f'Could not find doc_type_and_num on current page text')
+                continue  # Skips the rest of the loop body and goes to the next iteration
+            else:
+                doc_type_and_num = doc_type_and_num_matches[0]
+                # assumes first match is correct doc type
+                logging.info(
+                    f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
+                return doc_type_and_num, doc_type_pattern
+
+        # If you reach here, that means no pattern has matched
+        return None
+    def get_doc_type_short(self, doc_type_and_num):
+        if not doc_type_and_num:
+            logging.error(f'doc_type_and_num is None. Could not get doc_type_short from NoneType')
+        self.doc_type_short = doc_type_and_num.split('-')[0]
 
     def initialize_pdf_data(self):
-        logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
+        mod_time, cre_time = self.file_handler.get_file_timestamps(self.pdf_file_path)
+
+        logging.info(f'Prior to updating pdf data instance: {self.pdf_data}\n | Modified Time: {mod_time} | Created Time: {cre_time} | ')
+
         self.pdf_data = self.update_pdf_data()
         logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
 
@@ -176,13 +192,16 @@ class PdfProcessor:
             return True
         return False  # company_name wasn't set and we couldn't update it
 
+    @handle_errors
     def is_doc_type_pattern_set(self):
-        doc_type_pattern = self.get_doc_type(self.cur_page_text)
-        if doc_type_pattern is not None:
+        doc_type_and_num, doc_type_pattern = self.get_doc_type_and_num(self.cur_page_text)
+        if (doc_type_and_num is not None) and (doc_type_pattern is not None):
             self.doc_type_pattern = doc_type_pattern
-            logging.info(f'Updated doc_type_pattern to: {doc_type_pattern}')
+            logging.info(f'Updated doc_type_pattern instance to: {doc_type_pattern}')
+            self.doc_type_and_num = doc_type_and_num
+            logging.info(f'Updated doc_type_and_num instance to: {doc_type_and_num}')
             return True
-        elif self.doc_type_pattern is not None:  # if doc_type_pattern is alraedy set, no need to update
+        elif (self.doc_type_pattern is not None) and (self.doc_type_and_num is not None):  # if doc_type_pattern and doc_type_and_num instances are alraedy set, no need to update
             return True
         return False
 
