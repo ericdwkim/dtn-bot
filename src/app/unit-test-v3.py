@@ -162,8 +162,9 @@ class Main:
         :return:
         """
         for doc_type_pattern in doc_type_patterns:
-            logging.info(
-                f'Using regex pattern {doc_type_pattern} for any matches in current page text:\n************************************************************\n{cur_page_text}\n************************************************************\n')
+            # todo: log_config.wrapper func for logging cur page text ; prevent spamming stdout logs`
+            # logging.info(
+                # f'Using regex pattern {doc_type_pattern} for any matches in current page text:\n************************************************************\n{cur_page_text}\n************************************************************\n')
             doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
             if not doc_type_and_num_matches:
                 logging.warning(f'Could not find doc_type_and_num on current page text')
