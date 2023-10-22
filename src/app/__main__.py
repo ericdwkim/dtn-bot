@@ -61,7 +61,7 @@ class Main:
             logging.info(f'group_filter_to_credit_card: {group_filter_set_to_credit_card}')
 
             if not group_filter_set_to_credit_card:
-                logging.error('Could not set group filter to Credit Card during third_flow')
+                logging.error('Could not set group filter to Credit Cards during third_flow')
             # if group filter set to cc __AND__ this flow is ran independently OR ran sequentially from first flow(?) # TODO: need to re-evaluate for when it is NOT ran independently
             credit_card_pdf_downloaded = self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
             if not credit_card_pdf_downloaded:
@@ -77,13 +77,13 @@ class Main:
         except Exception as e:
             logging.exception(f'An unexpected error has occurred during third_flow: {e}')
 
-
     def run_flows(self, flows):
         setup_logger()
         num_flows = len(flows)
 
         for i, (flow_func, flow_name) in enumerate(flows):
-            logging.info(f'\n---------------------------\nInitiating Flow: {flow_name}\n---------------------------\n')
+            logging.info(
+                f'\n---------------------------\nInitiating Flow: {flow_name}\n---------------------------\n')
 
             # Only start the flow at the beginning of the list of flows.
             if i == 0:
@@ -101,13 +101,12 @@ class Main:
                 original_pdf_deleted = self.processor.rename_and_delete_pdf()
                 logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
 
-            logging.info(f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')
+            logging.info(
+                f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')
 
             # Only end the flow if it's the last one in the list of flows.
             if i == num_flows - 1:
                 self.flow_manager.end_flow()
-
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='DTN Bot V2')
@@ -118,7 +117,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main = Main()
-
     flows_to_run = []
     if not args.skipFlow1:
         flows_to_run.append((main.first_flow, 'first_flow'))
