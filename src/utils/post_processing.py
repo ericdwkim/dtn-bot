@@ -3,6 +3,7 @@ from datetime import datetime
 from src.utils.log_config import handle_errors  # TODO
 from src.utils.file_handler import FileHandler
 from src.utils.extraction_handler import ExtractionHandler
+from src.utils.log_config import pdf_files_logger, total_amt_matches_logger
 
 class PostProcessor:
 
@@ -10,7 +11,6 @@ class PostProcessor:
         self.today = datetime.today().strftime('%m-%d-%y')
         self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
-        self.new_pdf = pikepdf.Pdf.new()
 
         # self.company_dir = company_dir
         # self.doc_type_short = doc_type_short
@@ -22,14 +22,14 @@ class PostProcessor:
         Merges PDFs by fetching 4th element in tuple `file_path` by looping, opening each file_path\nand creating them as pikePDF pages to combine and merge them all into a single PDF object
         :param pdf_data:
         """
-
+        merged_pdf = pikepdf.Pdf.new()
         for _, _, _, file_path in pdf_data:
             try:
                 pdf = pikepdf.Pdf.open(file_path)
-                merged_pdfs = self.new_pdf.pages.extend(pdf.pages)
-                return merged_pdfs
+                merged_pdf.pages.extend(pdf.pages)
             except pikepdf.PdfError:
                 logging.error(f'An error occurred trying to merge_pdfs with provided pdf_data: {pdf_data}')
+            return merged_pdf
 
     def get_new_file_name_for_merged_ccm_or_lrd_docs(self, doc_type_short, total_amount_sum):
         if doc_type_short == 'CCM':
@@ -92,6 +92,7 @@ class PostProcessor:
 
     def get_pdf_data_and_total_amount_sum(self, company_dir):
         pdf_data_ccm, total_amount_sum_ccm, pdf_data_lrd = self.extraction_handler.extract_pdf_data(company_dir)
+
         # todo: fix log and use decorate
         logging.info(
             f'********************* pdf_data_ccm: {pdf_data_ccm}\n total_amount_sum_ccm: {total_amount_sum_ccm}\n *********** pdf_data_lrd {pdf_data_lrd} ')
