@@ -1,16 +1,16 @@
 import os, logging
 from datetime import datetime, timedelta
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, company_id_to_company_subdir_map
-from src.utils.pdf_processor import PdfProcessor
 
 class FileHandler:
+
     def __init__(self):
-        self.pdf_processor = PdfProcessor()
         # Get today's date as a datetime object
         today = datetime.today()
         # If you need the date in string format with specific format
         self.today_str = today.strftime('%m-%d-%y')
         self.today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')
+        self.root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
 
     @staticmethod
     def get_file_timestamps(file_path):
@@ -183,15 +183,13 @@ class FileHandler:
         return month_dir
 
     def get_company_dir_from_company_id(self, company_id, doc_type_full):
-        root_dir = self.pdf_processor.root_dir
         if company_id is not None:
             _company_dir_from_company_id = company_id_to_company_subdir_map.get(company_id, '')
-            _company_dir = os.path.join(root_dir, doc_type_full, _company_dir_from_company_id)
+            _company_dir = os.path.join(self.root_dir, doc_type_full, _company_dir_from_company_id)
             return _company_dir
     def get_company_dir_from_doc_type_full(self, company_dir, doc_type_full):
-        root_dir = self.pdf_processor.root_dir
         if company_dir is not None:
-            _company_dir = os.path.join(root_dir, doc_type_full, company_dir)
+            _company_dir = os.path.join(self.root_dir, doc_type_full, company_dir)
 
     def construct_month_dir_from_doc_type_short(self, doc_type_short, company_id=None, company_dir=None):
 
