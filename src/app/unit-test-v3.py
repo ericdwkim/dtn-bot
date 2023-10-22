@@ -191,9 +191,6 @@ class Main:
         self.pdf_data = self.update_pdf_data()
         logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
 
-    def log_warning_and_skip_page(self, msg):
-        logging.warning(msg)
-
     def is_company_name_set(self):
         company_name = self.get_company_name(self.cur_page_text)
         if company_name is not None:
@@ -223,7 +220,7 @@ class Main:
         if self.company_name and self.doc_type_pattern in self.cur_page_text:
             return True
         else:
-            self.log_warning_and_skip_page(f'Company name "{self.company_name}" and Document Type pattern: "{self.doc_type_pattern}" not found in current page text')
+            logging.warning(f'Company name "{self.company_name}" and Document Type pattern: "{self.doc_type_pattern}" not found in current page text')
             return None
 
     def rename_and_delete_pdf(self):
@@ -270,6 +267,7 @@ class Main:
         logging.crticial(f'Could not retrieve Company ID from Company Name: {company_name}.')
         return None
 
+    # @handle_erors
     def create_and_save_pdf(self, pages, post_processing):
         """
         pages - single or list of pike pdf page objects
@@ -296,6 +294,7 @@ class Main:
             logging.exception(f'An error occurred while creating and saving PDF: "{str(e)}"')
             return False
 
+    # @handle_erors
     def get_new_file_name(self):
         if re.match(r'EFT-\s*\d+', self.doc_type_and_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
             logging.critical(f'******************************************* self.total_target_amt: {self.total_target_amt} ***********************')
@@ -341,6 +340,7 @@ class Main:
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
 
+        # todo: abstract post processing block into wrapper
         if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
 
             if not self.create_and_save_pdf(page_objs, post_processing=True):
@@ -384,6 +384,7 @@ class Main:
             # fetch file name
             self.new_file_name = self.get_new_file_name()
 
+            # todo: abstract post processing block into wrapper
             if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
 
                 if not self.create_and_save_pdf(page_objs, post_processing=True):
