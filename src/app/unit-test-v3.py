@@ -186,7 +186,7 @@ class Main:
     def initialize_pdf_data(self):
         mod_time, cre_time = self.file_handler.get_file_timestamps(self.pdf_file_path)
 
-        logging.info(f'Prior to updating pdf data instance: {self.pdf_data} | Modified Time: {mod_time} | Created Time: {cre_time} | ')
+        logging.info(f'Prior to updating pdf data instance: {self.pdf_data}\n | Modified Time: {mod_time} | Created Time: {cre_time} | ')
 
         self.pdf_data = self.update_pdf_data()
         logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
@@ -384,8 +384,22 @@ class Main:
             # fetch file name
             self.new_file_name = self.get_new_file_name()
 
+            if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
+
+                if not self.create_and_save_pdf(page_objs, post_processing=True):
+                    logging.error(f'Could not create and save single page  w/ post processing required PDF')
+                    return False
+
+                # Post processing core logic
+
+                ccms_and_lrds_post_processed = self.post_processor.extract_and_post_process(self.company_dir)
+                if not ccms_and_lrds_post_processed:
+                    logging.error(f'ccms_and_lrds_post_processed: {ccms_and_lrds_post_processed}')
+                logging.info(f'Successfully post processed CCMs and LRDs')
+                return True
+
             # Create single page pdf and save in correct dir
-            if not self.create_and_save_pdf(page_obj, post_processing=False):
+            elif not self.create_and_save_pdf(page_obj, post_processing=False):
                 logging.error(f'Could not create and save single page PDF')
                 return False
             logging.info('Successfully processed all multi pages in PDF')
