@@ -20,7 +20,7 @@ class PdfProcessor:
         self.extraction_handler = ExtractionHandler()
         self.file_handler = FileHandler()
         self.new_pdf = pikePdf.Pdf.new()
-        self.post_processing = PostProcessor(self.new_pdf)
+        self.post_processing = PostProcessor()
         self.company_dir = ''  # todo necessary?
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
