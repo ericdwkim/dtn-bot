@@ -12,47 +12,46 @@ class Main:
         self.processor = PdfProcessor()
         self.file_handler = FileHandler()
 
-    # todo: keeps trying to save in working dir `src` so it creates new Fuel Invoices/yyyy/mm; need it to save it in downloads dir as from and overwrite/save to target dir
-    # def first_flow(self):
-    #     try:
-    #
-    #         group_filter_set_to_invoice =  self.flow_manager.data_connect_driver.set_group_filter_to_invoice()
-    #
-    #         if not group_filter_set_to_invoice:
-    #             logging.error('Could not set group filter to invoice')
-    #
-    #         invoices_renamed_and_filed_away = self.processor.rename_and_move_or_overwrite_invoices_pdf()
-    #
-    #         if not invoices_renamed_and_filed_away:
-    #             logging.error('Could not rename and file away invoices. Does the Invoices PDF exist?')
-    #
-    #         elif invoices_renamed_and_filed_away and self.file_handler.is_last_day_of_month():
-    #             self.processor.month_and_year_handler(first_flow=True)
-    #
-    #     except Exception as e:
-    #         logging.info(f'An unexpected error has occurred during first_flow: {e}')
+    def first_flow(self):
+        try:
+
+            group_filter_set_to_invoice =  self.flow_manager.data_connect_driver.set_group_filter_to_invoice()
+
+            if not group_filter_set_to_invoice:
+                logging.error('Could not set group filter to invoice')
+
+            invoices_renamed_and_filed_away = self.processor.rename_and_move_or_overwrite_invoices_pdf()
+
+            if not invoices_renamed_and_filed_away:
+                logging.error('Could not rename and file away invoices. Does the Invoices PDF exist?')
+
+            elif invoices_renamed_and_filed_away and self.file_handler.is_last_day_of_month():
+                self.processor.month_and_year_handler(first_flow=True)
+
+        except Exception as e:
+            logging.info(f'An unexpected error has occurred during first_flow: {e}')
 
 
-    # def second_flow(self):
-    #
-    #     try:
-    #         group_filter_set_to_draft_notice = self.flow_manager.data_connect_driver.set_group_filter_to_draft_notice()
-    #         logging.info(f'group_filter_set_to_draft_notice: {group_filter_set_to_draft_notice}')
-    #
-    #         if not group_filter_set_to_draft_notice:
-    #             logging.error('Could not set group filter to Draft Notice during second_flow')
-    #
-    #
-    #         draft_notices_processed_and_filed = self.processor.process_pages()
-    #
-    #         if not draft_notices_processed_and_filed:
-    #             logging.error('Could not rename and file away Draft Notices. Do the notices PDF exist?')
-    #
-    #         elif draft_notices_processed_and_filed and self.file_handler.is_last_day_of_month():
-    #             processor.month_and_year_handler(first_flow=False)
-    #
-    #     except Exception as e:
-    #         logging.info(f'An unexpected error has occurred during second_flow: {e}')
+    def second_flow(self):
+
+        try:
+            group_filter_set_to_draft_notice = self.flow_manager.data_connect_driver.set_group_filter_to_draft_notice()
+            logging.info(f'group_filter_set_to_draft_notice: {group_filter_set_to_draft_notice}')
+
+            if not group_filter_set_to_draft_notice:
+                logging.error('Could not set group filter to Draft Notice during second_flow')
+
+
+            draft_notices_processed_and_filed = self.processor.process_pages()
+
+            if not draft_notices_processed_and_filed:
+                logging.error('Could not rename and file away Draft Notices. Do the notices PDF exist?')
+
+            elif draft_notices_processed_and_filed and self.file_handler.is_last_day_of_month():
+                processor.month_and_year_handler(first_flow=False)
+
+        except Exception as e:
+            logging.info(f'An unexpected error has occurred during second_flow: {e}')
 
     def third_flow(self):
 
