@@ -107,3 +107,17 @@ class ExtractionHandler():
             total_target_amt = None
 
         return total_target_amt
+
+    @staticmethod
+    def get_doc_type_full(doc_type_short):
+        """
+        @dev: soley to construct final output path
+        :param doc_type_short:
+        :return: str | None
+        """
+        for key, value in doc_type_short_to_doc_type_full_map.items():
+            if (isinstance(key, tuple) and doc_type_short in key) or key == doc_type_short:
+                return value
+        return None
+
+
