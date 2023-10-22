@@ -1,5 +1,5 @@
-import logging
-import platform
+import logging, platform
+from src.utils.log_config import handle_errors
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from ..pages.loginpage import LoginPage
@@ -13,8 +13,6 @@ class BaseDriver:
     def setup_driver(self):
         logging.info('Initializing BaseDriver...')
         options = self._get_chrome_options()
-        # @dev: for unit testing
-        # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 
         os_type = platform.system()
         chromedriver_executable_path = self._get_chromedriver_executable_path(os_type)
@@ -47,132 +45,35 @@ class LoginPageDriver:
         self.base_driver = base_driver
         self.login_page = LoginPage(self.base_driver)
 
-
+    @handle_errors
     def visit_and_login(self):
-        try:
-            visit_and_login = self.login_page.visit_and_login()
-            if not visit_and_login:
-                return False
-            else:
-                return True
-        except Exception as e:
-            print(f'An error occurred trying to visit_and_login: {e}')
-
-
+        return self.login_page.visit_and_login()
 
 class DataConnectDriver:
     def __init__(self, base_driver):
         self.base_driver = base_driver
         self.data_connect_page = DataConnectPage(self.base_driver)
 
-
+    @handle_errors
     def switch_tab(self):
-        try:
-            switch_tab = self.data_connect_page.switch_tab()
-            if not switch_tab:
-                logging.error('Could not switch tab')
-                return False
-            else:
-                return True
-        except Exception as e:
-            logging.exception(f'An error occurred trying to switch tab to `Data Connect`: {e}')
+        return self.data_connect_page.switch_tab()
 
+    @handle_errors
     def set_date_filter(self, third_flow=False):
-        try:
-            set_date_filter = self.data_connect_page.set_date_filter(third_flow)
-            if not set_date_filter:
-                logging.error('Could not set date filter')
-                return False
-            else:
-                return True
-        except Exception as e:
-            logging.exception(f'An error occurred trying to set date filter: {e}')
+        return self.data_connect_page.set_date_filter(third_flow)
 
+    @handle_errors
     def set_translated_filter_to_no(self):
-        try:
-            set_translated_filter_to_no = self.data_connect_page.set_translated_filter_to_no()
-            if not set_translated_filter_to_no:
-                logging.error('Could not set `Translated` filter to `No`')
-                return False
-            else:
-                return True
-        except Exception as e:
-            logging.exception(f'An error occurred trying to set `Translated` filter to `No`: {e}')
+        return self.data_connect_page.set_translated_filter_to_no()
 
+    @handle_errors
     def set_group_filter_to_invoice(self):
-        try:
-            set_group_filter_to_invoice = self.data_connect_page.set_group_filter_to_invoice()
-            if not set_group_filter_to_invoice:
-                logging.error('Could not set `Group` filter to `Invoice`')
-                return False
-            else:
-                return True
-        except Exception as e:
-            logging.exception(f'An error occurred trying to set `Group` filter to `Invoice`: {e}')
+        return self.data_connect_page.set_group_filter_to_invoice()
 
+    @handle_errors
     def set_group_filter_to_draft_notice(self):
-        try:
-            set_group_filter_to_draft_notice = self.data_connect_page.set_group_filter_to_draft_notice()
-            if not set_group_filter_to_draft_notice:
-                logging.error('Could not set `Group` filter to `Draft Notice`')
-                return False
-            else:
-                return True
-        except Exception as e:
-            logging.exception(f'An error occurred trying to set `Group` filter to `Draft Notice`: {e}')
+        return self.data_connect_page.set_group_filter_to_draft_notice()
 
+    @handle_errors
     def set_group_filter_to_credit_card(self):
-        try:
-            set_group_filter_to_credit_card = self.data_connect_page.set_group_filter_to_credit_card()
-            if not set_group_filter_to_credit_card:
-                logging.error('Could not set `Group` filter to `Credit Card`')
-                return False
-            else:
-                return True
-        except Exception as e:
-            logging.exception(f'An error occurred trying to set `Group` filter to `Credit Card`: {e}')
-
-
-# todo: requires testing; decorator to centralize error handling for all functions
-# def handle_errors(func):
-#     def wrapper(*args, **kwargs):
-#         try:
-#             result = func(*args, **kwargs)
-#             return result
-#         except Exception as e:
-#             logging.exception(f'An error occurred in {func.__name__}: {e}')
-#             return False
-#
-#     return wrapper
-# class DataConnectDriver:
-#     def __init__(self, base_driver):
-#         self.base_driver = base_driver
-#         self.data_connect_page = DataConnectPage(self.base_driver)
-#
-#     @handle_errors
-#     def switch_tab(self):
-#         return self.data_connect_page.switch_tab()
-#
-#     @handle_errors
-#     def set_date_filter(self, third_flow=False):
-#         return self.data_connect_page.set_date_filter(third_flow)
-#
-#     @handle_errors
-#     def set_translated_filter_to_no(self):
-#         return self.data_connect_page.set_translated_filter_to_no()
-#
-#     @handle_errors
-#     def set_group_filter_to_invoice(self):
-#         return self.data_connect_page.set_group_filter_to_invoice()
-#
-#     @handle_errors
-#     def set_group_filter_to_draft_notice(self):
-#         return self.data_connect_page.set_group_filter_to_draft_notice()
-#
-#     @handle_errors
-#     def set_group_filter_to_credit_card(self):
-#         return self.data_connect_page.set_group_filter_to_credit_card()
-#
-#     # Add other methods with error handling here
-#
-#     # ...
+        return self.data_connect_page.set_group_filter_to_credit_card()

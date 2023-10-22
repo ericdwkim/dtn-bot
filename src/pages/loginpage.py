@@ -1,5 +1,4 @@
-import os
-import logging
+import os, logging
 from selenium.webdriver.common.by import By
 from .basepage import BasePage
 

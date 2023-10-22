@@ -1,15 +1,16 @@
-import os
+import os, logging
 from datetime import datetime, timedelta
-import logging
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, company_id_to_company_subdir_map
 
 class FileHandler:
+
     def __init__(self):
         # Get today's date as a datetime object
         today = datetime.today()
         # If you need the date in string format with specific format
         self.today_str = today.strftime('%m-%d-%y')
         self.today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')
+        self.root_dir = r'/Users/ekim/workspace/txb/mock/K-Drive/DTN Reports'
 
     @staticmethod
     def get_file_timestamps(file_path):
@@ -74,7 +75,7 @@ class FileHandler:
     @staticmethod
     def get_doc_type_full(doc_type_short):
         """
-        Given a file prefix, it unpacks the root_directory mapping to return full document type
+        @dev: soley to construct final output path
         :param doc_type_short:
         :return: str | None
         """
@@ -82,6 +83,33 @@ class FileHandler:
             if (isinstance(key, tuple) and doc_type_short in key) or key == doc_type_short:
                 return value
         return None
+
+    # todo: figure out whether to leave these doc type funcs here or pdf_processor
+    # @staticmethod
+    # def get_doc_type(cur_page_text):
+    #     """
+    #     Helper func for getting doc_type_pattern instance
+    #     :param cur_page_text:
+    #     :return:
+    #     """
+    #     for doc_type_pattern in doc_type_patterns:
+    #             doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
+    #             if not doc_type_and_num_matches:
+    #                 logging.warning(f'Could not find doc_type_and_num on current page text')
+    #                 return None
+    #             else:
+    #                 doc_type_and_num = doc_type_and_num_matches[0]
+    #                 # assumes first match is correct doc type
+    #                 logging.info(f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
+    #                 return doc_type_and_num, doc_type_pattern
+    #
+    # @staticmethod
+    # def set_doc_type_short():
+    #     doc_type_and_num, _ = self.get_doc_type()
+    #     doc_type_short = doc_type_and_num.split('-')[0]
+    #     return doc_type_short
+
+
 
     def is_last_day_of_month(self):
         """
@@ -127,7 +155,7 @@ class FileHandler:
         current_month = self.today.strftime('%m-%b')
         current_year = self.today.strftime('%Y')
 
-        return current_month, current_year
+        return current_year, current_month
 
     def create_and_return_directory_path(self, parent_dir, current_year, current_month):
         """
@@ -138,45 +166,80 @@ class FileHandler:
         :param current_month:
         :return: `month_dir` final output path to save PDFs to
         """
-        year_dir = os.path.join(parent_dir, current_year)
+        year_dir = os.path.join(parent_dir, current_year)  # year_dr = /parent_dir/current_yr
         self.create_directory(year_dir)
 
-        month_dir = os.path.join(year_dir, current_month)
+        month_dir = os.path.join(year_dir, current_month)  # month_dir = /parent_dir/current_year/current_month
         self.create_directory(month_dir)
 
         return month_dir
 
-    # @dev: refactor WIP todo
-    def construct_month_dir_from_doc_type(self, doc_type, company_id=None, company_dir=None):
+    def get_month_dir_from_parent_dir(self, parent_dir):
         """
-        Given the doc_type as minimum param, it returns the constructed final output path\ndepending on document type
-        :param doc_type:
-        :param company_id:
-        :param company_dir:
-        :return:
+        @param: parent_dir - ambiguous and relative directory above current directory; could be doc_type_full (ie: INV) or company_dir (CCM/LRDs)
         """
-        # Extract month and year from helper
-        current_month, current_year = self.cur_month_and_year_from_today()
+        cur_yr, cur_month= self.cur_month_and_year_from_today()
+        month_dir = self.create_and_return_directory_path(parent_dir, cur_yr, cur_month)
+        return month_dir
 
-        # Determine root directory;
-        doc_type_full = self.get_doc_type_full(doc_type)
+    def get_company_dir_from_company_id(self, company_id, doc_type_full):
+        if company_id is not None:
+            _company_dir_from_company_id = company_id_to_company_subdir_map.get(company_id, '')
+            _company_dir = os.path.join(self.root_dir, doc_type_full, _company_dir_from_company_id)
+            return _company_dir
+    def get_company_dir_from_doc_type_full(self, company_dir, doc_type_full):
+        if company_dir is not None:
+            _company_dir = os.path.join(self.root_dir, doc_type_full, company_dir)
 
-        # If root directory not found, raise exception
-        if not doc_type_full:
-            raise ValueError(f"No root directory found for document type '{doc_type}'")
+    def construct_month_dir_from_doc_type_short(self, doc_type_short, company_id=None, company_dir=None):
 
-        # Handle EFT and CMB cases and non-exxon CCM files
-        if (doc_type == 'EFT' or doc_type == 'CMB' or doc_type == 'CCM') and company_id is None and company_dir:
-            doc_type_full = company_dir # todo: change var name;; doesn't make sense to say that company directory is now doc type directory. if anything, it is now the new "root" directory /doc_type/company; NOTE: called the same var to only have a single return instead of having three separate returns
+        try:
 
-        # If a company_id was provided, update root directory to include company subdirectory; CCM or LRD
-        elif doc_type_full and company_id:
-            company_directory = company_id_to_company_subdir_map.get(company_id, '')
-            doc_type_full = os.path.join(doc_type_full, company_directory)
+            # Determine the full/long version of document type (ie:`Credit Cards`) from the abbreviated short version of doc type (ie: `CCM`)
+            doc_type_full = self.get_doc_type_full(doc_type_short)
+            if not doc_type_full:
+                logging.error(f'Could not get doc_type_full from doc_type_short "{doc_type_short}"')
+                return
 
-        # Create and return path to the relevant year and month directories
-        # @dev: for INV doc_type, it only needs to return `Fuel Invoices/YYYY/MM-MMM`
-        return self.create_and_return_directory_path(doc_type_full, current_year, current_month)
+            # EFTs w/o provided company_dir ; hedges against potential edge case to fail first
+            elif (doc_type_full == 'Fuel Drafts') and company_dir is None:
+                logging.error(f'Not enough info provided to construct month_dir with')
+                return
+
+            # if only doc_type_short --> only doc_type_full available -->  probably INV --> send to `/root_dir/doc_type_full/YYYY/MM-MM`
+            if (doc_type_full == 'Fuel Invoices') and (company_id is None) and (company_dir is None):
+                month_dir = self.get_month_dir_from_parent_dir(parent_dir=doc_type_full)
+                logging.info(f'Constructed month directory: "{month_dir}" from doc_type_short: "{doc_type_short}"')
+                return month_dir
+
+            # EXXON CCM or LRDs only
+            elif (company_id == '10005') and (doc_type_full == 'Credit Cards') and (company_dir is None):
+                # get (internal) _company dir with company id
+                _company_dir = self.get_company_dir_from_company_id(company_id, doc_type_full)
+                # get month dir with (internal) _company_dir as parent dir
+                month_dir = self.get_month_dir_from_parent_dir(parent_dir=_company_dir)
+                logging.info(f'Constructed month directory: "{month_dir}" from doc_type_short: "{doc_type_short}" and _company_dir: {_company_dir}')
+                return month_dir
+
+            # NON EXXON CCMs with company_dir provided
+            elif (doc_type_full == 'Credit Cards') and (company_id is None) and company_dir:
+                parent_dir = self.get_company_dir_from_doc_type_full(company_dir, doc_type_full)
+                month_dir = self.get_month_dir_from_parent_dir(parent_dir)
+                logging.info(f'Constructed month directory: "{month_dir}" from doc_type_short: "{doc_type_short}"')
+                return month_dir
+
+            # EFTs and CMBS w/ provided company_dir
+            elif (doc_type_full == 'Fuel Drafts') and company_dir is not None:
+                parent_dir = self.get_company_dir_from_doc_type_full(company_dir, doc_type_full)
+                month_dir = self.get_month_dir_from_parent_dir(parent_dir)
+                return month_dir
+
+
+            else:
+                logging.error(f'Insufficient info provided to construct month directory\ndoc_type_short: {doc_type_short} | company_id: {company_id} | company_dir: {company_dir} | ')
+
+        except Exception as e:
+            logging.exception(f'An unexpected error occurred trying to construct month dir from doc_type_short: {e}')
 
 
     # todo: moved from pdf_processor

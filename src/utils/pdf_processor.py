@@ -1,14 +1,10 @@
-import os
-import re
-import time
-import pikepdf
-import shutil
-import logging
+import os, re, time, pikepdf, shutil, logging
 from datetime import datetime, timedelta
 from pathlib import Path
 from src.utils.extraction_handler import ExtractionHandler
 from src.utils.file_handler import FileHandler
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
+from src.utils.post_processing import PostProcessor
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
@@ -21,9 +17,11 @@ class PdfProcessor:
 
     # ---------------------------------- Instance attributes ----------------------------------
     def __init__(self):
-        self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
-        self.company_dir = ''
+        self.file_handler = FileHandler()
+        self.new_pdf = pikePdf.Pdf.new()
+        self.post_processing = PostProcessor()
+        self.company_dir = ''  # todo necessary?
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
@@ -90,7 +88,7 @@ class PdfProcessor:
 
     def construct_final_output_filepath(self, post_processing=False):
         """
-        assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir;
+        assign_file_path_mappings & construct_month_dir_from_doc_type_short wrapper to construct dynamic final output paths for both company_dir and month_dir;
         allows flexibility for both up to company_dir or up to month_dir
      ideally have assign_file_path_mappings construct up to month_dir and # TODO: perform post processing in memory and not on disk; requires breaking into smaller classes
 
@@ -146,20 +144,21 @@ class PdfProcessor:
         # logging.warning(f'Could not find matching Company Name in current page text.')
         return None
 
-    @staticmethod
-    def get_doc_type(cur_page_text):
-        """
-        Helper func for getting doc_type_pattern instance
-        :param cur_page_text:
-        :return:
-        """
-        for doc_type_pattern in doc_type_patterns:
-            if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
-                logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
-                return doc_type_pattern
-
-        # logging.warning(f'Could not find matching document type using regex pattern in current page text.')
-        return None
+    # TODO: need to update after testing ; whole point of this new branch
+    # @staticmethod
+    # def get_doc_type(cur_page_text):
+    #     """
+    #     Helper func for getting doc_type_pattern instance
+    #     :param cur_page_text:
+    #     :return:
+    #     """
+    #     for doc_type_pattern in doc_type_patterns:
+    #         if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
+    #             logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
+    #             return doc_type_pattern
+    #
+    #     # logging.warning(f'Could not find matching document type using regex pattern in current page text.')
+    #     return None
 
     def initialize_pdf_data(self):
         logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
@@ -275,7 +274,7 @@ class PdfProcessor:
             return False
 
         # Get final output dir from file prefix
-        month_dir = self.file_handler.construct_month_dir_from_doc_type('INV')
+        month_dir = self.file_handler.construct_month_dir_from_doc_type_short('INV')
 
         # Construct final output path
         target_file_path = os.path.join(self.root_dir, month_dir, self.new_file_name)
@@ -350,13 +349,12 @@ class PdfProcessor:
 
 
         try:
-            new_pdf = pikepdf.Pdf.new()
             if isinstance(pages, list):
                 # Merge multi page spanning pdfs w/ page objs instance
-                new_pdf.pages.extend(pages)
+                self.new_pdf.pages.extend(pages)
             else:
                 # Create single page pdf from page obj instance
-                new_pdf.pages.append(pages)
+                self.new_pdf.pages.append(pages)
 
 
             if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
@@ -368,7 +366,7 @@ class PdfProcessor:
                 # send to month_dir for all other doc types
                 output_file_path = self.construct_final_output_filepath()
                 logging.info(f'Setting output filepath to: {output_file_path}')
-            new_pdf.save(output_file_path)
+            self.new_pdf.save(output_file_path)
             return True
 
         except Exception as e:

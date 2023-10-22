@@ -10,7 +10,7 @@ from pathlib import Path
 from src.utils.log_config import setup_logger
 from src.app.flow_manager import FlowManager
 from src.utils.pdf_processor import PdfProcessor
-from src.utils.post_processing import PDFPostProcessor
+from src.utils.post_processing import PostProcessor
 from src.utils.file_handler import FileHandler
 from src.utils.extraction_handler import ExtractionHandler
 from src.utils.mappings import *
@@ -27,12 +27,15 @@ class Main:
         self.flow_manager = FlowManager(headless=headless)
         self.file_handler = FileHandler()
         self.extraction_handler = ExtractionHandler()
+        self.post_processor = PostProcessor()
         self.company_dir = ''
+        self.doc_type_and_num = ''
+        # self.company_dir = '/Users/ekim/workspace/txb/mock/k-drive/Dtn reports/Credit Cards/EXXONMOBIL [10005]'
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
-        self.doc_type, self.total_target_amt = ('', '')
+        self.doc_type_short, self.total_target_amt = ('', '')
         if not PdfProcessor._initialized:
             self.set_today_str_and_datetime()
             PdfProcessor._initialized = True
@@ -62,13 +65,13 @@ class Main:
         # fetch company_id from company_name using helper instance method
         self.company_id = self.get_company_id_fixed(self.company_name)
 
-        logging.info(f'self.doc_type: {self.doc_type}   | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
+        logging.info(f'self.doc_type_short: {self.doc_type_short}  | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
 
         # @dev: handles key as tuple
-        doc_type_full = self.file_handler.get_doc_type_full(self.doc_type)
+        doc_type_full = self.file_handler.get_doc_type_full(self.doc_type_short)
 
         self.file_path_mappings = {
-            self.doc_type: {
+            self.doc_type_short: {
                 self.company_id: os.path.join
                     (
                     self.root_dir,
@@ -78,8 +81,8 @@ class Main:
             }
         }
 
-        # print(f'{self.doc_type}   | {self.total_target_amt} | {self.company_name} ' )
-        if self.doc_type is None:
+        # print(f'{self.doc_type_short}   | {self.total_target_amt} | {self.company_name} ' )
+        if self.doc_type_short is None:
             logging.error("Error: Document type is None. File path mappings could not be assigned.")
             return None
 
@@ -88,14 +91,14 @@ class Main:
             return None
         else:
             # Return output path from nested value in nested mapping
-            # return self.file_path_mappings[self.doc_type][self.company_id]
-            self.company_dir =  self.file_path_mappings[self.doc_type][self.company_id]
+            # return self.file_path_mappings[self.doc_type_short][self.company_id]
+            self.company_dir =  self.file_path_mappings[self.doc_type_short][self.company_id]
             return self.company_dir
 
 
     def construct_final_output_filepath(self, post_processing=False):
         """
-        assign_file_path_mappings & construct_month_dir_from_doc_type wrapper to construct dynamic final output paths for both company_dir and month_dir;
+        assign_file_path_mappings & construct_month_dir_from_doc_type_short wrapper to construct dynamic final output paths for both company_dir and month_dir;
         allows flexibility for both up to company_dir or up to month_dir
      ideally have assign_file_path_mappings construct up to month_dir and # TODO: perform post processing in memory and not on disk; requires breaking into smaller classes
 
@@ -121,8 +124,6 @@ class Main:
         else:
             output_file_path = os.path.join(self.company_dir, month_dir, self.new_file_name)
             return output_file_path
-
-
 
     @staticmethod
     def get_company_names():
@@ -152,6 +153,7 @@ class Main:
         # logging.warning(f'Could not find matching Company Name in current page text.')
         return None
 
+    # @dev: todo- this acts the same way as extract_total_target_amt , so consider moving to extraction_handler; could even create a wrapper for both extractions (improved logic b/c separation of concerns); wrapper(self.cur_page_text) and return vars as tuple
     @staticmethod
     def get_doc_type(cur_page_text):
         """
@@ -160,23 +162,37 @@ class Main:
         :return:
         """
         for doc_type_pattern in doc_type_patterns:
-            if re.search(doc_type_pattern, cur_page_text, re.IGNORECASE):
-                logging.info(f'Found matching document type using regex patter: "{doc_type_pattern}" in current page text.')
-                return doc_type_pattern  # @dev: we're just returning the regex pattern, not the doc_type + doc_type_num from the document that matched the pattern
+            # todo: log_config.wrapper func for logging cur page text ; prevent spamming stdout logs`
+            # logging.info(
+                # f'Using regex pattern {doc_type_pattern} for any matches in current page text:\n************************************************************\n{cur_page_text}\n************************************************************\n')
+            doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
+            if not doc_type_and_num_matches:
+                logging.warning(f'Could not find doc_type_and_num on current page text')
+                continue  # Skips the rest of the loop body and goes to the next iteration
+            else:
+                doc_type_and_num = doc_type_and_num_matches[0]
+                # assumes first match is correct doc type
+                logging.info(
+                    f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
+                return doc_type_and_num, doc_type_pattern
 
-        # logging.warning(f'Could not find matching document type using regex pattern in current page text.')
+        # If you reach here, that means no pattern has matched
         return None
+    def get_doc_type_short(self, doc_type_and_num):
+        if not doc_type_and_num:
+            logging.error(f'doc_type_and_num is None. Could not get doc_type_short from NoneType')
+        self.doc_type_short = doc_type_and_num.split('-')[0]
 
     def initialize_pdf_data(self):
-        logging.info(f'Prior to updating pdf data instance: {self.pdf_data}')
+        mod_time, cre_time = self.file_handler.get_file_timestamps(self.pdf_file_path)
+
+        logging.info(f'Prior to updating pdf data instance: {self.pdf_data}\n | Modified Time: {mod_time} | Created Time: {cre_time} | ')
+
         self.pdf_data = self.update_pdf_data()
         logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
 
     def log_warning_and_skip_page(self, msg):
         logging.warning(msg)
-        # self.page_num +=1
-
-
 
     def is_company_name_set(self):
         company_name = self.get_company_name(self.cur_page_text)
@@ -189,14 +205,19 @@ class Main:
         return False  # company_name wasn't set and we couldn't update it
 
     def is_doc_type_pattern_set(self):
-        doc_type_pattern = self.get_doc_type(self.cur_page_text)
-        if doc_type_pattern is not None:
-            self.doc_type_pattern = doc_type_pattern
-            logging.info(f'Updated doc_type_pattern to: {doc_type_pattern}')
-            return True
-        elif self.doc_type_pattern is not None:  # if doc_type_pattern is alraedy set, no need to update
-            return True
-        return False
+        try:
+            doc_type_and_num, doc_type_pattern = self.get_doc_type(self.cur_page_text)
+            if (doc_type_and_num is not None) and (doc_type_pattern is not None):
+                self.doc_type_pattern = doc_type_pattern
+                logging.info(f'Updated doc_type_pattern instance to: {doc_type_pattern}')
+                self.doc_type_and_num = doc_type_and_num
+                logging.info(f'Updated doc_type_and_num instance to: {doc_type_and_num}')
+                return True
+            elif (self.doc_type_pattern is not None) and (self.doc_type_and_num is not None):  # if doc_type_pattern and doc_type_and_num instances are alraedy set, no need to update
+                return True
+            return False
+        except Exception as e:
+            logging.exception(f'An unexpected error has occurred in is_doc_type_pattern_set: {e}')
 
     def is_doc_type_pattern_and_company_name_present(self):
         if self.company_name and self.doc_type_pattern in self.cur_page_text:
@@ -242,14 +263,14 @@ class Main:
 
             # print(f'if "{company_name}" == "{cleaned_comp_dir}"')
             if company_name == company_dir.split('[')[0].strip():
-                logging.info(f'Match found!\nCompany Name: {company_name} has Company ID: {company_id}')
+                logging.info(f'Match found!\n************************\nCompany Name: {company_name} | Company ID: {company_id}\n************************\n')
                 # Turn local var to instance var for dynamic file path construction
                 self.company_id = company_id
                 return self.company_id
         logging.crticial(f'Could not retrieve Company ID from Company Name: {company_name}.')
         return None
 
-    def create_and_save_pdf(self, pages):
+    def create_and_save_pdf(self, pages, post_processing):
         """
         pages - single or list of pike pdf page objects
         """
@@ -264,16 +285,10 @@ class Main:
                 # Create single page pdf from page obj instance
                 new_pdf.pages.append(pages)
 
+            # send to month_dir for all other doc types
+            output_file_path = self.construct_final_output_filepath(post_processing)
+            logging.info(f'Setting output filepath to: {output_file_path}')
 
-            if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
-                # send to company_dir for post processing
-                output_file_path = self.construct_final_output_filepath(post_processing=True)
-                logging.info(f'Setting output filepath to: {output_file_path}')
-
-            else:
-                # send to month_dir for all other doc types
-                output_file_path = self.construct_final_output_filepath()
-                logging.info(f'Setting output filepath to: {output_file_path}')
             new_pdf.save(output_file_path)
             return True
 
@@ -282,18 +297,17 @@ class Main:
             return False
 
     def get_new_file_name(self):
-        if re.match(r'EFT-\s*\d+', self.doc_type) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
+        if re.match(r'EFT-\s*\d+', self.doc_type_and_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
             logging.critical(f'******************************************* self.total_target_amt: {self.total_target_amt} ***********************')
-            # todo: debug why this formatting conditional doesn't work
             if "-" in self.total_target_amt:
                 total_target_amt = self.total_target_amt.replace("-", "")
-                new_file_name = f'{self.doc_type}-{self.today_str}-({total_target_amt}).pdf'
+                new_file_name = f'{self.doc_type_and_num}-{self.today_str}-({total_target_amt}).pdf'
             else:
-                new_file_name = f'{self.doc_type}-{self.today_str}-{self.total_target_amt}.pdf'
-        elif (re.match(r'CBK-\s*\d+', self.doc_type) or re.match(r'RTV-\s*\d+', self.doc_type)):
-            new_file_name = f'{self.doc_type}-{self.today_str}-CHARGEBACK REQUEST.pdf'
+                new_file_name = f'{self.doc_type_and_num}-{self.today_str}-{self.total_target_amt}.pdf'
+        elif (re.match(r'CBK-\s*\d+', self.doc_type_and_num) or re.match(r'RTV-\s*\d+', self.doc_type_and_num)):
+            new_file_name = f'{self.doc_type_and_num}-{self.today_str}-CHARGEBACK REQUEST.pdf'
         else:
-            new_file_name = f'{self.doc_type}-{self.today_str}-{self.total_target_amt}.pdf'
+            new_file_name = f'{self.doc_type_and_num}-{self.today_str}-{self.total_target_amt}.pdf'
         return new_file_name
 
 
@@ -320,32 +334,47 @@ class Main:
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
         logging.info(f'Extracting Document Type and Total Target Amount....')
-        self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-        logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
+        self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
+        self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
+        logging.info(f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
 
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
 
-        # Construct final output filepath using wrapper
-        self.final_output_filepath = self.construct_final_output_filepath()
+        if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
 
-        logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
+            if not self.create_and_save_pdf(page_objs, post_processing=True):
+                logging.error(f'Could not create and save multipage w/ post processing required PDF')
+                return False
 
-        # Move (save) new file to final output path
-        multi_page_pdf_created_and_saved = self.create_and_save_pdf(page_objs)
-        return multi_page_pdf_created_and_saved
+            # Post processing core logic
+
+
+            ccms_and_lrds_post_processed = self.post_processor.extract_and_post_process(self.company_dir)
+            if not ccms_and_lrds_post_processed:
+                logging.error(f'ccms_and_lrds_post_processed: {ccms_and_lrds_post_processed}')
+            logging.info(f'Successfully post processed CCMs and LRDs')
+            return True
+
+        # @dev: post processing not needed multi page spanning pdfs
+        elif not self.create_and_save_pdf(page_objs, post_processing=False):
+            logging.error(f'Could not create and save multipage PDF')
+            return False
+
+        logging.info('Successfully processed all multi pages in PDF')
+        return True
 
 
     def process_single_page(self):
 
         # end marker and current instance company name in text
         if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages) - 1:
-            cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
+            page_obj = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
 
-            # @dev: `self.cur_page_text` instance is already the extracted cur_page_text which already has been extracted from process_pages since it is a single page
-            # fetch target data from already extracted page text
-            self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-            logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
+            self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
+            self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
+            logging.info(
+                f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
 
             if self.page_num >= len(self.pdf_data.pages) - 1:
                 return # exit func b/c finished with pdf
@@ -355,20 +384,32 @@ class Main:
             # fetch file name
             self.new_file_name = self.get_new_file_name()
 
-            #  fetch output filepath
-            self.final_output_filepath = self.construct_final_output_filepath()
+            if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
 
-            logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
+                if not self.create_and_save_pdf(page_objs, post_processing=True):
+                    logging.error(f'Could not create and save single page  w/ post processing required PDF')
+                    return False
+
+                # Post processing core logic
+
+                ccms_and_lrds_post_processed = self.post_processor.extract_and_post_process(self.company_dir)
+                if not ccms_and_lrds_post_processed:
+                    logging.error(f'ccms_and_lrds_post_processed: {ccms_and_lrds_post_processed}')
+                logging.info(f'Successfully post processed CCMs and LRDs')
+                return True
 
             # Create single page pdf and save in correct dir
-            single_page_pdf_created_and_saved = self.create_and_save_pdf(cur_page)
-            logging.info(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
-            return single_page_pdf_created_and_saved
+            elif not self.create_and_save_pdf(page_obj, post_processing=False):
+                logging.error(f'Could not create and save single page PDF')
+                return False
+            logging.info('Successfully processed all multi pages in PDF')
+            return True
 
     def process_pages(self):
         """
         main processing func
         """
+        self.initialize_pdf_data()
 
         logging.info(f'pdf_file_path: {self.pdf_file_path}')
         try:
@@ -388,7 +429,6 @@ class Main:
                 else:  # if company_name or doc_type_pattern instances were not set in the current iteration nor in the previous iteration, then exit function
                     return
 
-                logging.info(f'PAGE NUM BEFORE MULTI OR SINGLE PROCESSING ----------------------- {self.page_num + 1} ---------------------------')
 
                 if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
                     if not self.process_multi_page():
@@ -455,55 +495,58 @@ class Main:
     #         logging.info(f'An unexpected error has occurred during second_flow: {e}')
     #
     #
-    # def third_flow(self):
-    #     try:
-    #         ccms_processed_and_filed = self.process_pages()
-    #
-    #         if not ccms_processed_and_filed:
-    #             logging.error('Could not rename and file away CCMs')
-    #         elif ccms_processed_and_filed and self.file_handler.is_last_day_of_month():
-    #             self.processor.month_and_year_handler(first_flow=False)
-    #
-    #     except Exception as e:
-    #         logging.exception(f'An unexpected error has occurred during third_flow: {e}')
+    def third_flow(self):
+        try:
+            group_filter_set_to_credit_card = self.flow_manager.data_connect_driver.set_group_filter_to_credit_card()
+            logging.info(f'group filter set to CC: {group_filter_set_to_credit_card}')
 
-    # def run_flows(self, flows):
-    #     setup_logger()
-    #     num_flows = len(flows)
-    #
-    #     for i, (flow_func, flow_name) in enumerate(flows):
-    #         logging.info(f'\n---------------------------\nInitiating Flow: {flow_name}\n---------------------------\n')
-    #
-    #         # Only start the flow at the beginning of the list of flows.
-    #         if i == 0:
-    #             if flow_name == 'third_flow':
-    #                 self.flow_manager.start_flow(third_flow=True)
-    #             elif flow_name == 'first_flow':
-    #                 self.flow_manager.start_flow(third_flow=False)
-    #                 self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
-    #             else:
-    #                 self.flow_manager.start_flow(third_flow=False)
-    #
-    #         flow_func()  # Execute flows
-    #
-    #         # if flow_name in ['second_flow', 'third_flow']:
-    #         #     original_pdf_deleted = self.rename_and_delete_pdf()
-    #         #     logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
-    #
-    #         logging.info(f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')
-    #
-    #         # Only end the flow if it's the last one in the list of flows.
-    #         if i == num_flows - 1:
-    #             self.flow_manager.end_flow()
+            if not group_filter_set_to_credit_card:
+                logging.error('Could not set group filter to CC during third flow')
 
+            credit_card_pdf_downloaded = self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
+            if not credit_card_pdf_downloaded:
+                logging.critical(f'Credit cards PDF was not downloaded. Exiting...')
+                return
 
-    def test_post_processing(self):
+            ccms_processed_and_filed = self.process_pages()
+
+            if not ccms_processed_and_filed:
+                logging.error('Could not rename and file away CCMs')
+            elif ccms_processed_and_filed and self.file_handler.is_last_day_of_month():
+                self.processor.month_and_year_handler(first_flow=False)
+
+        except Exception as e:
+            logging.exception(f'An unexpected error has occurred during third_flow: {e}')
+
+    def run_flows(self, flows):
         setup_logger()
-        pp = PDFPostProcessor()
+        num_flows = len(flows)
 
-        pp.merge_rename_and_summate(self.company_dir)
+        for i, (flow_func, flow_name) in enumerate(flows):
+            logging.info(f'\n---------------------------\nInitiating Flow: {flow_name}\n---------------------------\n')
 
+            # Only start the flow at the beginning of the list of flows.
+            if i == 0:
+                if flow_name == 'third_flow':
+                    self.flow_manager.start_flow(third_flow=True)
+                elif flow_name == 'first_flow':
+                    self.flow_manager.start_flow(third_flow=False)
+                    self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
+                else:
+                    self.flow_manager.start_flow(third_flow=False)
 
+            flow_func()  # Execute flows
+
+            # if flow_name in ['second_flow', 'third_flow']:
+            #     original_pdf_deleted = self.rename_and_delete_pdf()
+            #     logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
+
+            logging.info(f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')
+
+            # Only end the flow if it's the last one in the list of flows.
+            if i == num_flows - 1:
+                # time.sleep(45)
+                self.flow_manager.end_flow()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='DTN Bot V2')
@@ -513,18 +556,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main = Main()
-    # flows_to_run = []
-    # if not args.skipFlow1:
-    #     flows_to_run.append((main.first_flow, 'first_flow'))
-    # if not args.skipFlow2:
-    #     flows_to_run.append((main.second_flow, 'second_flow'))
-    # if not args.skipFlow3:
-    #     flows_to_run.append((main.third_flow, 'third_flow'))
-    #
-    #
-    #
-    # main.run_flows(flows_to_run)
-    # logging.info(f'\n---------------------------\nCommencing All Flows\n---------------------------\n')
+    flows_to_run = []
+    if not args.skipFlow1:
+        flows_to_run.append((main.first_flow, 'first_flow'))
+    if not args.skipFlow2:
+        flows_to_run.append((main.second_flow, 'second_flow'))
+    if not args.skipFlow3:
+        flows_to_run.append((main.third_flow, 'third_flow'))
 
 
-    main.test_post_processing()
+
+    main.run_flows(flows_to_run)
+    logging.info(f'\n---------------------------\nCommencing All Flows\n---------------------------\n')
+
+
+    # main.test_post_processing()
