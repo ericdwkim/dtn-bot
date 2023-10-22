@@ -1,12 +1,14 @@
 import os, logging
 from datetime import datetime, timedelta
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, company_id_to_company_subdir_map
+from src.utils.extraction_handler import ExtractionHandler
 
 class FileHandler:
 
     def __init__(self):
         # Get today's date as a datetime object
         today = datetime.today()
+        self.extraction_handler = ExtractionHandler()
         # If you need the date in string format with specific format
         self.today_str = today.strftime('%m-%d-%y')
         self.today = datetime.strptime(datetime.today().strftime('%m-%d-%y'), '%m-%d-%y')
@@ -71,45 +73,6 @@ class FileHandler:
         if not os.path.exists(directory):
             os.makedirs(directory)
         return directory
-
-    @staticmethod
-    def get_doc_type_full(doc_type_short):
-        """
-        @dev: soley to construct final output path
-        :param doc_type_short:
-        :return: str | None
-        """
-        for key, value in doc_type_short_to_doc_type_full_map.items():
-            if (isinstance(key, tuple) and doc_type_short in key) or key == doc_type_short:
-                return value
-        return None
-
-    # todo: figure out whether to leave these doc type funcs here or pdf_processor
-    # @staticmethod
-    # def get_doc_type(cur_page_text):
-    #     """
-    #     Helper func for getting doc_type_pattern instance
-    #     :param cur_page_text:
-    #     :return:
-    #     """
-    #     for doc_type_pattern in doc_type_patterns:
-    #             doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
-    #             if not doc_type_and_num_matches:
-    #                 logging.warning(f'Could not find doc_type_and_num on current page text')
-    #                 return None
-    #             else:
-    #                 doc_type_and_num = doc_type_and_num_matches[0]
-    #                 # assumes first match is correct doc type
-    #                 logging.info(f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
-    #                 return doc_type_and_num, doc_type_pattern
-    #
-    # @staticmethod
-    # def set_doc_type_short():
-    #     doc_type_and_num, _ = self.get_doc_type()
-    #     doc_type_short = doc_type_and_num.split('-')[0]
-    #     return doc_type_short
-
-
 
     def is_last_day_of_month(self):
         """
@@ -196,7 +159,7 @@ class FileHandler:
         try:
 
             # Determine the full/long version of document type (ie:`Credit Cards`) from the abbreviated short version of doc type (ie: `CCM`)
-            doc_type_full = self.get_doc_type_full(doc_type_short)
+            doc_type_full = self.extraction_handler.get_doc_type_full(doc_type_short)
             if not doc_type_full:
                 logging.error(f'Could not get doc_type_full from doc_type_short "{doc_type_short}"')
                 return
@@ -263,7 +226,7 @@ class FileHandler:
             if self.is_last_day_of_month():
                 logging.info('It is the last day of the month\nPerforming end of month operations...')
                 # @dev: for Invoices, set parent_dir to `Fuel Invoices` as there is no company directories
-                parent_dir = self.file_handler.get_doc_type_full('INV') if first_flow else self.company_dir
+                parent_dir = self.file_handler.extraction_handler.get_doc_type_full('INV') if first_flow else self.company_dir
                 self.end_of_month_operations(parent_dir)
             else:
                 logging.info('Not the last day of the month.')
