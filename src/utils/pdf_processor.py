@@ -59,7 +59,7 @@ class PdfProcessor:
         logging.info(f'self.doc_type_short: {self.doc_type_short}  | self.total_target_amt: {self.total_target_amt} | self.company_name: {self.company_name}  | self.company_id: {self.company_id}' )
 
         # @dev: handles key as tuple
-        doc_type_full = self.file_handler.get_doc_type_full(self.doc_type_short)
+        doc_type_full = self.extraction_handler.get_doc_type_full(self.doc_type_short)
 
         self.file_path_mappings = {
             self.doc_type_short: {
