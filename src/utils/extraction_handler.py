@@ -1,6 +1,7 @@
 import logging, os, pdfplumber, io, re
 from pikepdf import Pdf
 from datetime import datetime
+from src.utils.log_config import pdf_files_logger, total_amt_matches_logger
 
 
 class ExtractionHandler():
@@ -67,7 +68,7 @@ class ExtractionHandler():
         """
 
         pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
-        logging.info(f'************************ pdf_files ******************** : {pdf_files}\n')  # todo: clean up logging format
+        pdf_files_logger(f'PDF Files in Company Directory: "{company_dir}"\n{pdf_files}')
         pdf_data_ccm = []
         pdf_data_lrd = []
         total_amount = 0.00
@@ -81,9 +82,9 @@ class ExtractionHandler():
                 doc_type_num_lrd, _ = self.extract_lrd_data(pdf_file)
                 pdf_data_lrd.append((doc_type_num_lrd, self.today, _, os.path.join(company_dir, pdf_file)))
         pdf_data_ccm.sort(key=lambda x: x[0])
-        logging.info(f'pdf_data_ccm \n************************\n{pdf_data_ccm}\n************************\n')
+        pdf_files_logger(f'PDF Files - CCM\n{pdf_data_ccm}')
         pdf_data_lrd.sort(key=lambda x: x[0])
-        logging.info(f'pdf_data_lrd \n************************\n{pdf_data_lrd}\n************************\n')
+        pdf_files_logger(f'PDF Files - LRD\n{pdf_data_lrd}')
 
         return pdf_data_ccm, total_amount, pdf_data_lrd
 
@@ -98,10 +99,7 @@ class ExtractionHandler():
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', cur_page_text)
 
-        if len(total_amount_matches) > 5:
-            logging.info(f'Getting total_amount_matches: \n************************\n{total_amount_matches[-3:]}\n************************\n')
-        logging.info(f'\nGetting total_amount_matches: \n************************\n{total_amount_matches}\n************************\n')
-
+        total_amt_matches_logger(total_amount_matches)
 
         if total_amount_matches:
             total_target_amt = total_amount_matches[-1]
