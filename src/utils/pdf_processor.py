@@ -5,6 +5,7 @@ from src.utils.extraction_handler import ExtractionHandler
 from src.utils.file_handler import FileHandler
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
 from src.utils.post_processing import PostProcessor
+from src.utils.log_config import handle_errors
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
@@ -19,7 +20,7 @@ class PdfProcessor:
     def __init__(self):
         self.extraction_handler = ExtractionHandler()
         self.file_handler = FileHandler()
-        self.new_pdf = pikePdf.Pdf.new()
+        self.new_pdf = pikepdf.Pdf.new()
         self.post_processing = PostProcessor()
         self.company_dir = ''  # todo necessary?
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
@@ -198,7 +199,7 @@ class PdfProcessor:
         """
         self.initialize_pdf_data()
 
-        # logging.info(f'pdf_file_path: {self.pdf_file_path}')
+        logging.info(f'pdf_file_path: {self.pdf_file_path}')
         try:
             # @dev: outer while loop for the main downloaded PDF
             while self.page_num < len(self.pdf_data.pages) - 1:
@@ -216,15 +217,18 @@ class PdfProcessor:
                 else:  # if company_name or doc_type_pattern instances were not set in the current iteration nor in the previous iteration, then exit function
                     return
 
+
                 if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
                     if not self.process_multi_page():
                         raise ValueError(f"Failed processing multi-page PDF at page {self.page_num + 1}.")
                     continue
+
                 elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' in self.cur_page_text):
                     if not self.process_single_page():
                         raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
                     continue
 
+                # logging.info(f'--------------------- self.page_num: {self.page_num} | len(self.pdf_data.pages): {len(self.pdf_data.pages)} -----------------------')
                 # @dev: main outer loop exit  logic
                 if self.page_num >= len(self.pdf_data.pages) - 1:
                     break
@@ -335,59 +339,47 @@ class PdfProcessor:
 
             # print(f'if "{company_name}" == "{cleaned_comp_dir}"')
             if company_name == company_dir.split('[')[0].strip():
-                logging.info(f'Match found!\nCompany Name: {company_name} has Company ID: {company_id}')
+                logging.info(
+                    f'Match found!\n************************\nCompany Name: {company_name} | Company ID: {company_id}\n************************\n')
                 # Turn local var to instance var for dynamic file path construction
                 self.company_id = company_id
                 return self.company_id
         logging.crticial(f'Could not retrieve Company ID from Company Name: {company_name}.')
         return None
 
-    def create_and_save_pdf(self, pages):
-        """
-        pages - single or list of pike pdf page objects
-        """
+    @handle_errors
+    def create_and_save_pdf(self, pages, post_processing):
 
+        # todo: helper func for this logic; extend vs append
+        if isinstance(pages, list):
+            # Merge multi page spanning pdfs w/ page objs instance
+            self.new_pdf.pages.extend(pages)
+        else:
+            # Create single page pdf from page obj instance
+            self.new_pdf.pages.append(pages)
 
-        try:
-            if isinstance(pages, list):
-                # Merge multi page spanning pdfs w/ page objs instance
-                self.new_pdf.pages.extend(pages)
-            else:
-                # Create single page pdf from page obj instance
-                self.new_pdf.pages.append(pages)
+        # send to month_dir for all other doc types
+        output_file_path = self.construct_final_output_filepath(post_processing)
+        logging.info(f'Setting output filepath to: {output_file_path}')
 
+        self.new_pdf.save(output_file_path)
+        return True
 
-            if (self.doc_type == 'CCM' or self.doc_type == 'LRD') and self.company_name == 'EXXONMOBIL':
-                # send to company_dir for post processing
-                output_file_path = self.construct_final_output_filepath(post_processing=True)
-                logging.info(f'Setting output filepath to: {output_file_path}')
-
-            else:
-                # send to month_dir for all other doc types
-                output_file_path = self.construct_final_output_filepath()
-                logging.info(f'Setting output filepath to: {output_file_path}')
-            self.new_pdf.save(output_file_path)
-            return True
-
-        except Exception as e:
-            logging.exception(f'An error occurred while creating and saving PDF: "{str(e)}"')
-            return False
-
+    @handle_errors
     def get_new_file_name(self):
-        if re.match(r'EFT-\s*\d+', self.doc_type) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
-            logging.critical(f'******************************************* self.total_target_amt: {self.total_target_amt} ***********************')
-            # todo: debug why this formatting conditional doesn't work
+        if re.match(r'EFT-\s*\d+', self.doc_type_and_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
+            logging.critical(
+                f'******************************************* self.total_target_amt: {self.total_target_amt} ***********************')
             if "-" in self.total_target_amt:
                 total_target_amt = self.total_target_amt.replace("-", "")
-                new_file_name = f'{self.doc_type}-{self.today_str}-({total_target_amt}).pdf'
+                new_file_name = f'{self.doc_type_and_num}-{self.today_str}-({total_target_amt}).pdf'
             else:
-                new_file_name = f'{self.doc_type}-{self.today_str}-{self.total_target_amt}.pdf'
-        elif (re.match(r'CBK-\s*\d+', self.doc_type) or re.match(r'RTV-\s*\d+', self.doc_type)):
-            new_file_name = f'{self.doc_type}-{self.today_str}-CHARGEBACK REQUEST.pdf'
+                new_file_name = f'{self.doc_type_and_num}-{self.today_str}-{self.total_target_amt}.pdf'
+        elif (re.match(r'CBK-\s*\d+', self.doc_type_and_num) or re.match(r'RTV-\s*\d+', self.doc_type_and_num)):
+            new_file_name = f'{self.doc_type_and_num}-{self.today_str}-CHARGEBACK REQUEST.pdf'
         else:
-            new_file_name = f'{self.doc_type}-{self.today_str}-{self.total_target_amt}.pdf'
+            new_file_name = f'{self.doc_type_and_num}-{self.today_str}-{self.total_target_amt}.pdf'
         return new_file_name
-
 
     def process_multi_page(self):
         page_objs = []
@@ -395,6 +387,8 @@ class PdfProcessor:
 
         # @deV: inner loop for the multi-page spanning mini PDF
         while 'END MSG' not in self.cur_page_text and self.page_num < len(self.pdf_data.pages) - 1:
+            logging.info(f'processing multipage page num: {self.page_num + 1}')
+
             cur_page = self.pdf_data.pages[self.page_num]
             page_objs.append(cur_page)
             self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(cur_page)
@@ -409,47 +403,75 @@ class PdfProcessor:
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
         logging.info(f'Extracting Document Type and Total Target Amount....')
-        self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-        logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
+        self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
+        self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
+        logging.info(
+            f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
 
         # Construct new file name instance
         self.new_file_name = self.get_new_file_name()
 
-        # Construct final output filepath using wrapper
-        self.final_output_filepath = self.construct_final_output_filepath()
+        # todo: abstract post processing block into wrapper
+        if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
 
-        logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
+            if not self.create_and_save_pdf(page_objs, post_processing=True):
+                logging.error(f'Could not create and save multipage w/ post processing required PDF')
+                return False
 
-        # Move (save) new file to final output path
-        multi_page_pdf_created_and_saved = self.create_and_save_pdf(page_objs)
-        return multi_page_pdf_created_and_saved
+            # Post processing core logic
 
+            ccms_and_lrds_post_processed = self.post_processor.extract_and_post_process(self.company_dir)
+            if not ccms_and_lrds_post_processed:
+                logging.error(f'ccms_and_lrds_post_processed: {ccms_and_lrds_post_processed}')
+            logging.info(f'Successfully post processed CCMs and LRDs')
+            return True
+
+        # @dev: post processing not needed multi page spanning pdfs
+        elif not self.create_and_save_pdf(page_objs, post_processing=False):
+            logging.error(f'Could not create and save multipage PDF')
+            return False
+
+        logging.info('Successfully processed all multi pages in PDF')
+        return True
 
     def process_single_page(self):
 
         # end marker and current instance company name in text
         if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages) - 1:
-            cur_page = self.pdf_data.pages[self.page_num] # single pikepdf page obj --> req'd obj to create and save the page
+            page_obj = self.pdf_data.pages[
+                self.page_num]  # single pikepdf page obj --> req'd obj to create and save the page
 
-            # @dev: `self.cur_page_text` instance is already the extracted cur_page_text which already has been extracted from process_pages since it is a single page
-            # fetch target data from already extracted page text
-            self.doc_type, self.total_target_amt = self.extraction_handler.extract_doc_type_and_total_target_amt(self.doc_type_pattern, self.cur_page_text)
-            logging.info(f'Document Type: {self.doc_type} | Total Target Amount: {self.total_target_amt}')
+            self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
+            self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
+            logging.info(
+                f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
 
             if self.page_num >= len(self.pdf_data.pages) - 1:
-                return # exit func b/c finished with pdf
+                return  # exit func b/c finished with pdf
 
             # move page cursor after check; ensures that when last_page_num == len(last_page), it exits and prevents misleading final "error" message that last_page_num + 1 could not be processed
-            self.page_num +=1
+            self.page_num += 1
             # fetch file name
             self.new_file_name = self.get_new_file_name()
 
-            #  fetch output filepath
-            self.final_output_filepath = self.construct_final_output_filepath()
+            # todo: abstract post processing block into wrapper
+            if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
 
-            logging.info(f'final_output_filepath: {self.final_output_filepath}\nnew_file_name: {self.new_file_name}')
+                if not self.create_and_save_pdf(page_objs, post_processing=True):
+                    logging.error(f'Could not create and save single page  w/ post processing required PDF')
+                    return False
+
+                # Post processing core logic
+
+                ccms_and_lrds_post_processed = self.post_processor.extract_and_post_process(self.company_dir)
+                if not ccms_and_lrds_post_processed:
+                    logging.error(f'ccms_and_lrds_post_processed: {ccms_and_lrds_post_processed}')
+                logging.info(f'Successfully post processed CCMs and LRDs')
+                return True
 
             # Create single page pdf and save in correct dir
-            single_page_pdf_created_and_saved = self.create_and_save_pdf(cur_page)
-            logging.info(f'single_page_pdf_created_and_saved: {single_page_pdf_created_and_saved}')
-            return single_page_pdf_created_and_saved
+            elif not self.create_and_save_pdf(page_obj, post_processing=False):
+                logging.error(f'Could not create and save single page PDF')
+                return False
+            logging.info('Successfully processed all multi pages in PDF')
+            return True
