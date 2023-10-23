@@ -131,7 +131,7 @@ class BasePage(object):
                 logging.error(f'Failed to send keys to element: {locator}')
                 return False
         except Exception as e:
-            logging.exception(f'An error occurred: {str(e)}')
+            logging.exception(f'An error occurred trying to find_element_and_click_and_send_keys: {str(e)}')
             return False
 
     def find_element_and_click_perform(self, locator, locator_type=By.CSS_SELECTOR):

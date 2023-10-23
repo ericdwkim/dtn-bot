@@ -257,7 +257,7 @@ class PdfProcessor:
             return True
 
         except Exception as e:
-            logging.error(f"An error occurred: {e}")
+            logging.error(f"An error occurred trying to process_pages: {e}")
             return False
 
     # Invoices PDF rename helper
