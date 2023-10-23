@@ -146,7 +146,7 @@ class PdfProcessor:
 
     # @dev: todo- this acts the same way as extract_total_target_amt , so consider moving to extraction_handler; could even create a wrapper for both extractions (improved logic b/c separation of concerns); wrapper(self.cur_page_text) and return vars as tuple
     @staticmethod
-    def get_doc_type_and_num(cur_page_text):
+    def get_doc_type_and_num_and_doc_type_pattern(cur_page_text):
         """
         Helper func for getting doc_type_pattern instance
         :param cur_page_text:
@@ -196,7 +196,7 @@ class PdfProcessor:
 
     @handle_errors
     def is_doc_type_pattern_set(self):
-        doc_type_and_num, doc_type_pattern = self.get_doc_type_and_num(self.cur_page_text)
+        doc_type_and_num, doc_type_pattern = self.get_doc_type_and_num_and_doc_type_pattern(self.cur_page_text)
         if (doc_type_and_num is not None) and (doc_type_pattern is not None):
             self.doc_type_pattern = doc_type_pattern
             logging.info(f'Updated doc_type_pattern instance to: {doc_type_pattern}')
