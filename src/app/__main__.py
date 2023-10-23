@@ -115,7 +115,7 @@ if __name__ == '__main__':
     parser.add_argument('--skipFlow3', required=False, action='store_true', help='Skip the third flow')
     args = parser.parse_args()
 
-    main = Main()
+    main = Main(headless=args.headless)
     flows_to_run = []
     if not args.skipFlow1:
         flows_to_run.append((main.first_flow, 'first_flow'))
