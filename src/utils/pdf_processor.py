@@ -169,10 +169,12 @@ class PdfProcessor:
 
         # If you reach here, that means no pattern has matched
         return None
-    def get_doc_type_short(self, doc_type_and_num):
+    @staticmethod
+    def get_doc_type_short(doc_type_and_num):
         if not doc_type_and_num:
             logging.error(f'doc_type_and_num is None. Could not get doc_type_short from NoneType')
-        self.doc_type_short = doc_type_and_num.split('-')[0]
+        doc_type_short = doc_type_and_num.split('-')[0]
+        return doc_type_short
 
     def initialize_pdf_data(self):
         mod_time, cre_time = self.file_handler.get_file_timestamps(self.pdf_file_path)
