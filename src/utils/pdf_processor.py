@@ -27,7 +27,7 @@ class PdfProcessor:
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
-        self.doc_type, self.total_target_amt = ('', '')
+        self.doc_type_short, self.total_target_amt = ('', '')
         if not PdfProcessor._initialized:
             self.set_today_str_and_datetime()
             PdfProcessor._initialized = True
