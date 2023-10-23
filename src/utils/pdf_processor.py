@@ -37,8 +37,8 @@ class PdfProcessor:
     def set_today_str_and_datetime(cls):
         cls.today_str = cls.today.strftime('%m-%d-%y')
         cls.today_datetime  = datetime.strptime(cls.today_str, '%m-%d-%y')
-
-    def get_pdf(self, filepath):
+    @staticmethod
+    def get_pdf(filepath):
         if not os.path.exists(filepath):
             logging.info(f'File path does not exist: "{filepath}"')
             return None
@@ -424,7 +424,7 @@ class PdfProcessor:
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
         logging.info(f'Extracting Document Type and Total Target Amount....')
-        self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
+        self.doc_type_short = self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
         self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
         logging.info(
             f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
