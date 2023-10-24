@@ -208,12 +208,6 @@ class PdfProcessor:
             return True
         return False
 
-    def is_doc_type_pattern_and_company_name_present(self):
-        if self.company_name and self.doc_type_pattern in self.cur_page_text:
-            return True
-        else:
-            logging.warning(f'Company name "{self.company_name}" and Document Type pattern: "{self.doc_type_pattern}" not found in current page text')
-            return None
 
     def process_pages(self):
         """
@@ -233,27 +227,29 @@ class PdfProcessor:
                 self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(page)
                 logging.info(f'self.cur_page_text: \n{self.cur_page_text}\n')
 
-                if self.is_company_name_set() and self.is_doc_type_pattern_set():
-                    if self.is_doc_type_pattern_and_company_name_present():
-                        continue
-                else:  # if company_name or doc_type_pattern instances were not set in the current iteration nor in the previous iteration, then exit function
+                company_name_is_set = self.is_company_name_set()
+                logging.info(f'company_name_is_set: {company_name_is_set}')
+                doc_type_patterns_are_set = self.is_doc_type_pattern_set()
+                logging.info(f'doc_type_patterns_are_set: {doc_type_patterns_are_set}')
+
+                if not company_name_is_set and not doc_type_patterns_are_set:
                     return
+                elif company_name_is_set and doc_type_patterns_are_set:
 
+                    if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
+                        if not self.process_multi_page():
+                            raise ValueError(f"Failed processing multi-page PDF at page {self.page_num + 1}.")
+                        continue
 
-                if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
-                    if not self.process_multi_page():
-                        raise ValueError(f"Failed processing multi-page PDF at page {self.page_num + 1}.")
-                    continue
+                    elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' in self.cur_page_text):
+                        if not self.process_single_page():
+                            raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
+                        continue
 
-                elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' in self.cur_page_text):
-                    if not self.process_single_page():
-                        raise ValueError(f"Failed processing single-page PDF at page {self.page_num + 1}.")
-                    continue
-
-                # logging.info(f'--------------------- self.page_num: {self.page_num} | len(self.pdf_data.pages): {len(self.pdf_data.pages)} -----------------------')
-                # @dev: main outer loop exit  logic
-                if self.page_num >= len(self.pdf_data.pages) - 1:
-                    break
+                    # logging.info(f'--------------------- self.page_num: {self.page_num} | len(self.pdf_data.pages): {len(self.pdf_data.pages)} -----------------------')
+                    # @dev: main outer loop exit  logic
+                    if self.page_num >= len(self.pdf_data.pages) - 1:
+                        break
                 # ---------------------------------------------------
 
             logging.info("\n******************************\nCompleted processing all pages!\n******************************\n")
