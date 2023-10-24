@@ -32,7 +32,6 @@ class PostProcessor:
                 logging.error(f'An error occurred trying to merge_pdfs with provided pdf_data: {pdf_data}')
             return merged_pdf
 
-    @handle_errors
     def get_new_file_name_for_merged_ccm_or_lrd_docs(self, doc_type_short, total_amount_sum):
         if doc_type_short == 'CCM':
             new_file_name = f'{doc_type_short}-{self.today}-{total_amount_sum}.pdf'
@@ -40,7 +39,6 @@ class PostProcessor:
             new_file_name = f'{self.today}-Loyalty.pdf'
         return new_file_name
 
-    @handle_errors
     def construct_final_output_path(self, doc_type_short, company_id, new_file_name):
         month_directory = self.file_handler.construct_month_dir_from_doc_type_short(doc_type_short, company_id)
 
