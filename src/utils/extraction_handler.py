@@ -1,7 +1,8 @@
 import logging, os, pdfplumber, io, re
 from pikepdf import Pdf
 from datetime import datetime
-from src.utils.log_config import pdf_files_logger, total_amt_matches_logger
+from src.utils.log_config import pdf_files_logger
+from src.utils.mappings import doc_type_short_to_doc_type_full_map
 
 
 class ExtractionHandler():
@@ -98,10 +99,13 @@ class ExtractionHandler():
         """
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', cur_page_text)
+        logging.critical(f'total_amount_matches: {total_amount_matches}')
 
-        total_amt_matches_logger(total_amount_matches)
 
         if total_amount_matches:
+            logging.critical(f'total_amount_matches: {total_amount_matches[-1]}')
+            logging.critical(f'length total_amount_matches: {len(total_amount_matches[-1])}')
+
             total_target_amt = total_amount_matches[-1]
         else:
             total_target_amt = None

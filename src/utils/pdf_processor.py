@@ -21,7 +21,7 @@ class PdfProcessor:
         self.extraction_handler = ExtractionHandler()
         self.file_handler = FileHandler()
         self.new_pdf = pikepdf.Pdf.new()
-        self.post_processing = PostProcessor()
+        self.post_processor = PostProcessor()
         self.company_dir = ''  # todo necessary?
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
@@ -365,7 +365,6 @@ class PdfProcessor:
         logging.crticial(f'Could not retrieve Company ID from Company Name: {company_name}.')
         return None
 
-    @handle_errors
     def create_and_save_pdf(self, pages, post_processing):
 
         # todo: helper func for this logic; extend vs append
@@ -421,6 +420,7 @@ class PdfProcessor:
         # print(f'\n--------------------------------')
         logging.info(f'Extracting Document Type and Total Target Amount....')
         self.doc_type_short = self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
+        logging.critical(f'self.doctypeshort in process mutli page: {self.doc_type_short}')
         self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
         logging.info(
             f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
