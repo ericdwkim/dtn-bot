@@ -157,18 +157,34 @@ class PdfProcessor:
             # logging.info(
                 # f'Using regex pattern {doc_type_pattern} for any matches in current page text:\n************************************************************\n{cur_page_text}\n************************************************************\n')
             doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
+
+
+            logging.critical(
+                f'doc_type_and_num_matches: {doc_type_and_num_matches}\n length doc_type_and_num_matches: {len(doc_type_and_num_matches)}\n')
+
+            # Check if doc_type_and_num_matches is empty
             if not doc_type_and_num_matches:
                 logging.warning(f'Could not find doc_type_and_num on current page text')
-                continue  # Skips the rest of the loop body and goes to the next iteration
-            else:
+                continue
+
+            # Check if the first element is a string
+            if isinstance(doc_type_and_num_matches[0], str):
                 doc_type_and_num = doc_type_and_num_matches[0]
-                # assumes first match is correct doc type
-                logging.info(
-                    f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
-                return doc_type_and_num, doc_type_pattern
+                logging.critical(f'doc_type_pattern: {doc_type_pattern}')
+
+            else:
+                # Handle other types or nested structures if needed
+                logging.warning(f'Unexpected type in doc_type_and_num_matches: {type(doc_type_and_num_matches[0])}')
+                continue
+
+            logging.critical(f'doc_type_and_num: {doc_type_and_num}')
+            logging.info(
+                f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
+            return doc_type_and_num, doc_type_pattern
 
         # If you reach here, that means no pattern has matched
-        return None
+        return None, None
+
     @staticmethod
     def get_doc_type_short(doc_type_and_num):
         if not doc_type_and_num:
@@ -424,6 +440,7 @@ class PdfProcessor:
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
         logging.info(f'Extracting Document Type and Total Target Amount....')
+        logging.critical(f'doc_type_and_num: {self.doc_type_and_num}\nlength of doc_type_and_num: {len(self.doc_type_and_num)}')
         self.doc_type_short = self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
         self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
         logging.info(
