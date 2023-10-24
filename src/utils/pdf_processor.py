@@ -28,6 +28,7 @@ class PdfProcessor:
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
         self.doc_type_short, self.total_target_amt = ('', '')
+        self.doc_type_and_num, self.doc_type_pattern = ('', '')
         if not PdfProcessor._initialized:
             self.set_today_str_and_datetime()
             PdfProcessor._initialized = True
@@ -144,46 +145,29 @@ class PdfProcessor:
         # logging.warning(f'Could not find matching Company Name in current page text.')
         return None
 
-    # @dev: todo- this acts the same way as extract_total_target_amt , so consider moving to extraction_handler; could even create a wrapper for both extractions (improved logic b/c separation of concerns); wrapper(self.cur_page_text) and return vars as tuple
     @staticmethod
-    def get_doc_type_and_num_and_doc_type_pattern(cur_page_text):
-        """
-        Helper func for getting doc_type_pattern instance
-        :param cur_page_text:
-        :return:
-        """
+    def _get_doc_type_and_num_and_doc_type_pattern(cur_page_text):
         for doc_type_pattern in doc_type_patterns:
-            # todo: log_config.wrapper func for logging cur page text ; prevent bloating stdout logs`
-            # logging.info(
-                # f'Using regex pattern {doc_type_pattern} for any matches in current page text:\n************************************************************\n{cur_page_text}\n************************************************************\n')
-            doc_type_and_num_matches = re.findall(doc_type_pattern, cur_page_text, re.IGNORECASE)
+            logging.info(f'Checking pattern: {doc_type_pattern} in current page text...')
+            match = re.search(doc_type_pattern, cur_page_text, re.IGNORECASE)
 
-
-            logging.critical(
-                f'doc_type_and_num_matches: {doc_type_and_num_matches}\n length doc_type_and_num_matches: {len(doc_type_and_num_matches)}\n')
-
-            # Check if doc_type_and_num_matches is empty
-            if not doc_type_and_num_matches:
-                logging.warning(f'Could not find doc_type_and_num on current page text')
-                continue
-
-            # Check if the first element is a string
-            if isinstance(doc_type_and_num_matches[0], str):
-                doc_type_and_num = doc_type_and_num_matches[0]
-                logging.critical(f'doc_type_pattern: {doc_type_pattern}')
-
-            else:
-                # Handle other types or nested structures if needed
-                logging.warning(f'Unexpected type in doc_type_and_num_matches: {type(doc_type_and_num_matches[0])}')
-                continue
-
-            logging.critical(f'doc_type_and_num: {doc_type_and_num}')
-            logging.info(
-                f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
-            return doc_type_and_num, doc_type_pattern
-
-        # If you reach here, that means no pattern has matched
+            if match:
+                logging.info(f'Matching pattern found in current page text using pattern: {doc_type_pattern}')
+                return match.group(0), doc_type_pattern
+        # Fallback values if no match is found
+        logging.warning(f'No matching pattern found in current page text...')
         return None, None
+
+    def get_doc_type_and_num_and_doc_type_pattern(self, cur_page_text):
+        doc_type_and_num, doc_type_pattern = self._get_doc_type_and_num_and_doc_type_pattern(cur_page_text)
+
+        if not doc_type_and_num and not doc_type_pattern:
+            logging.error(f'Could not find doc_type_and_num on current page text using pattern: {doc_type_pattern}')
+
+        logging.info(f'Current page text has doc_type_and_num: {doc_type_and_num} using pattern: {doc_type_pattern}')
+
+        # You could specify fallback values here as well
+        return doc_type_and_num, doc_type_pattern
 
     @staticmethod
     def get_doc_type_short(doc_type_and_num):
@@ -200,6 +184,7 @@ class PdfProcessor:
         self.pdf_data = self.update_pdf_data()
         logging.info(f'After updating pdf_data instance using setter: {self.pdf_data}')
 
+    @handle_errors
     def is_company_name_set(self):
         company_name = self.get_company_name(self.cur_page_text)
         if company_name is not None:
@@ -402,7 +387,6 @@ class PdfProcessor:
         self.new_pdf.save(output_file_path)
         return True
 
-    @handle_errors
     def get_new_file_name(self):
         if re.match(r'EFT-\s*\d+', self.doc_type_and_num) and re.match(r'-?[\d,]+\.\d+-?', self.total_target_amt):
             logging.critical(
@@ -440,7 +424,6 @@ class PdfProcessor:
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
         logging.info(f'Extracting Document Type and Total Target Amount....')
-        logging.critical(f'doc_type_and_num: {self.doc_type_and_num}\nlength of doc_type_and_num: {len(self.doc_type_and_num)}')
         self.doc_type_short = self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
         self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
         logging.info(
