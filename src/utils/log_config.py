@@ -46,12 +46,17 @@ def handle_errors(func):
     return catch_and_log
 
 # @dev: format logging output of list of pdf files in easy to read format
-def pdf_files_logger(pdf_files):
+# todo: needs cleaning up
+def pdf_files_logger(msg, pdf_files):
     if len(pdf_files) == 0:
         logging.info(f'\nThere are no files in the current iteration.\n')
         return
-    for idx, pdf_file in enumerate(pdf_files):
-        logging.info(f'\nNumber of files: {len(pdf_files)} files.\nFile #{idx+1}: {pdf_file}\n')
+    elif len(pdf_files) > 1:
+        for idx, pdf_file in enumerate(pdf_files):
+            logging.info(f'\n{msg}\nNumber of files: {len(pdf_files)} files.\nFile #{idx+1}: {pdf_file}\n')
+    elif len(pdf_files) == 1:
+        for idx, _ in enumerate(pdf_files):
+            logging.info(f'\n{msg}\nNumber of files: {len(pdf_files)} files.\nFile #{idx + 1}: {pdf_files}\n')
 
 # todo: needs fixing...
 # def total_amt_matches_logger(total_amount_matches):

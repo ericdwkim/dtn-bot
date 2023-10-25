@@ -69,7 +69,7 @@ class ExtractionHandler():
         """
 
         pdf_files = [f for f in os.listdir(company_dir) if f.endswith('.pdf')]
-        pdf_files_logger(f'PDF Files in Company Directory: "{company_dir}"\n{pdf_files}')
+        pdf_files_logger(f'PDF Files in Company Directory "{company_dir}"', pdf_files=pdf_files)
         pdf_data_ccm = []
         pdf_data_lrd = []
         total_amount = 0.00
@@ -83,9 +83,9 @@ class ExtractionHandler():
                 doc_type_num_lrd, _ = self.extract_lrd_data(pdf_file)
                 pdf_data_lrd.append((doc_type_num_lrd, self.today, _, os.path.join(company_dir, pdf_file)))
         pdf_data_ccm.sort(key=lambda x: x[0])
-        pdf_files_logger(f'PDF Files - CCM\n{pdf_data_ccm}')
+        pdf_files_logger(f'PDF Files - CCM:\n', pdf_files={pdf_data_ccm})
         pdf_data_lrd.sort(key=lambda x: x[0])
-        pdf_files_logger(f'PDF Files - LRD\n{pdf_data_lrd}')
+        pdf_files_logger(f'PDF Files - LRD:\n', pdf_files={pdf_data_lrd})
 
         return pdf_data_ccm, total_amount, pdf_data_lrd
 
@@ -103,8 +103,6 @@ class ExtractionHandler():
 
 
         if total_amount_matches:
-            logging.critical(f'total_amount_matches: {total_amount_matches[-1]}')
-            logging.critical(f'length total_amount_matches: {len(total_amount_matches[-1])}')
 
             total_target_amt = total_amount_matches[-1]
         else:
