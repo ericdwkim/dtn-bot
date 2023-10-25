@@ -415,6 +415,11 @@ class PdfProcessor:
             if self.page_num >= len(self.pdf_data.pages) - 1:
                 break
         self.cur_page_text = "".join(page_text_strings)
+
+
+
+        # @dev: LEFT OFF HERE; BREAK UP THESE FUNCTIONS INTO SMALLER FUNCS
+        # todo: this block is mainly for logging purposes/ sanity checks; can be wrapped and out of multi page processor
         # print(f'------------cur_page_text--------------------\n')
         # print(self.cur_page_text)
         # print(f'\n--------------------------------')
