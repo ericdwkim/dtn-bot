@@ -56,16 +56,16 @@ class Main:
     def third_flow(self):
 
         try:
-            group_filter_set_to_credit_card = self.flow_manager.data_connect_driver.set_group_filter_to_credit_card()
-            logging.info(f'group_filter_to_credit_card: {group_filter_set_to_credit_card}')
-
-            if not group_filter_set_to_credit_card:
-                logging.error('Could not set group filter to Credit Cards during third_flow')
-            # if group filter set to cc __AND__ this flow is ran independently OR ran sequentially from first flow(?) # TODO: need to re-evaluate for when it is NOT ran independently
-            credit_card_pdf_downloaded = self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
-            if not credit_card_pdf_downloaded:
-                logging.critical(f'Credit cards PDF was not downloaded. Exiting...')
-                return
+            # group_filter_set_to_credit_card = self.flow_manager.data_connect_driver.set_group_filter_to_credit_card()
+            # logging.info(f'group_filter_to_credit_card: {group_filter_set_to_credit_card}')
+            #
+            # if not group_filter_set_to_credit_card:
+            #     logging.error('Could not set group filter to Credit Cards during third_flow')
+            # # if group filter set to cc __AND__ this flow is ran independently OR ran sequentially from first flow(?) # TODO: need to re-evaluate for when it is NOT ran independently
+            # credit_card_pdf_downloaded = self.flow_manager.data_connect_driver.data_connect_page.check_all_then_click_print()
+            # if not credit_card_pdf_downloaded:
+            #     logging.critical(f'Credit cards PDF was not downloaded. Exiting...')
+            #     return
             ccms_processed_and_filed = self.processor.process_pages()
 
             if not ccms_processed_and_filed:
@@ -97,8 +97,9 @@ class Main:
             flow_func()  # Execute flows
 
             if flow_name in ['second_flow', 'third_flow']:
-                original_pdf_deleted = self.processor.rename_and_delete_pdf()
-                logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
+                # original_pdf_deleted = self.processor.rename_and_delete_pdf()
+                # logging.info(f'original_pdf_deleted: {original_pdf_deleted}')
+                logging.info(f'original_pdf_deleted placeholder')
 
             logging.info(
                 f'\n---------------------------\nCommencing Flow: {flow_name}\n---------------------------\n')

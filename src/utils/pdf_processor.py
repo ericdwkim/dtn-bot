@@ -4,8 +4,9 @@ from pathlib import Path
 from src.utils.extraction_handler import ExtractionHandler
 from src.utils.file_handler import FileHandler
 from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
-from src.utils.post_processing import PostProcessor
+from src.utils.post_processor import PostProcessor
 from src.utils.log_config import handle_errors
+from src.utils.multi_page_processor import MultiPageProcessor
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
@@ -26,6 +27,7 @@ class PdfProcessor:
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
+        self.multi_page_processor = MultiPageProcessor()
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
         self.doc_type_short, self.total_target_amt = ('', '')
         self.doc_type_and_num, self.doc_type_pattern = ('', '')
@@ -233,12 +235,14 @@ class PdfProcessor:
                 logging.info(f'doc_type_patterns_are_set: {doc_type_patterns_are_set}')
 
                 if not company_name_is_set and not doc_type_patterns_are_set:
+                    logging.error(f'Company name and doc_type_patterns are not set!')
                     return
                 elif company_name_is_set and doc_type_patterns_are_set:
 
                     if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
-                        if not self.process_multi_page():
-                            raise ValueError(f"Failed processing multi-page PDF at page {self.page_num + 1}.")
+
+                        if not self.multi_page_processor.process_multi_page():
+                            logging.error(f'Could nott process multi page via multi page processor at page: {self.page_num + 1}')
                         continue
 
                     elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' in self.cur_page_text):
@@ -396,6 +400,7 @@ class PdfProcessor:
         else:
             new_file_name = f'{self.doc_type_and_num}-{self.today_str}-{self.total_target_amt}.pdf'
         return new_file_name
+
 
     def process_multi_page(self):
         page_objs = []

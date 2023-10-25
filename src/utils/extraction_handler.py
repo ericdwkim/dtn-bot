@@ -83,9 +83,9 @@ class ExtractionHandler():
                 doc_type_num_lrd, _ = self.extract_lrd_data(pdf_file)
                 pdf_data_lrd.append((doc_type_num_lrd, self.today, _, os.path.join(company_dir, pdf_file)))
         pdf_data_ccm.sort(key=lambda x: x[0])
-        pdf_files_logger(f'PDF Files - CCM:\n', pdf_files={pdf_data_ccm})
+        # pdf_files_logger(f'PDF Files - CCM:\n', pdf_files={pdf_data_ccm})
         pdf_data_lrd.sort(key=lambda x: x[0])
-        pdf_files_logger(f'PDF Files - LRD:\n', pdf_files={pdf_data_lrd})
+        # pdf_files_logger(f'PDF Files - LRD:\n', pdf_files={pdf_data_lrd})
 
         return pdf_data_ccm, total_amount, pdf_data_lrd
 

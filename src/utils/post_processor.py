@@ -95,7 +95,7 @@ class PostProcessor:
             logging.info(f'doc type {doc_type_short} | merged_renamed_and_saved: {merged_renamed_and_saved}')
             return True
 
-        logging.error(f'An error occurred trying to post_process document type: {doc_type_short}. Error Message: {e}')
+        logging.error(f'An error occurred trying to post_process document type: {doc_type_short}.')
         return False
 
     @handle_errors
