@@ -1,9 +1,9 @@
 import os, re, time, pikepdf, shutil, logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from src.utils.extraction_handler import ExtractionHandler
 from src.utils.file_handler import FileHandler
-from src.utils.mappings import doc_type_short_to_doc_type_full_map, doc_type_patterns, company_id_to_company_subdir_map
+from src.utils.mappings import doc_type_patterns, company_id_to_company_subdir_map
 from src.utils.post_processor import PostProcessor
 from src.utils.log_config import handle_errors
 from src.utils.multi_page_processor import MultiPageProcessor
@@ -241,8 +241,8 @@ class PdfProcessor:
 
                     if re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' not in self.cur_page_text):
 
-                        if not self.multi_page_processor.process_multi_page():
-                            logging.error(f'Could nott process multi page via multi page processor at page: {self.page_num + 1}')
+                        if not self.process_multi_page():
+                            logging.error(f'Could not process multi page via multi page processor at page: {self.page_num + 1}')
                         continue
 
                     elif re.search(self.doc_type_pattern, self.cur_page_text, re.IGNORECASE) and ('END MSG' in self.cur_page_text):
@@ -402,7 +402,7 @@ class PdfProcessor:
         return new_file_name
 
 
-    def process_multi_page(self):
+    def collect_page_data(self):
         page_objs = []
         page_text_strings = []
 
@@ -420,46 +420,38 @@ class PdfProcessor:
             if self.page_num >= len(self.pdf_data.pages) - 1:
                 break
         self.cur_page_text = "".join(page_text_strings)
+        return page_objs
 
-
-
-        # @dev: LEFT OFF HERE; BREAK UP THESE FUNCTIONS INTO SMALLER FUNCS
-        # todo: this block is mainly for logging purposes/ sanity checks; can be wrapped and out of multi page processor
-        # print(f'------------cur_page_text--------------------\n')
-        # print(self.cur_page_text)
-        # print(f'\n--------------------------------')
-        logging.info(f'Extracting Document Type and Total Target Amount....')
+    def log_extraction_info(self):
         self.doc_type_short = self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
-        logging.critical(f'self.doctypeshort in process mutli page: {self.doc_type_short}')
+        logging.info(f'Extracting Document Type and Total Target Amount....')
         self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
         logging.info(
-            f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
+            f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}'
+        )
 
-        # Construct new file name instance
-        self.new_file_name = self.get_new_file_name()
-
-        # todo: abstract post processing block into wrapper
-        if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
-
-            if not self.create_and_save_pdf(page_objs, post_processing=True):
-                logging.error(f'Could not create and save multipage w/ post processing required PDF')
-                return False
-
-            # Post processing core logic
-
-            ccms_and_lrds_post_processed = self.post_processor.extract_and_post_process(self.company_dir)
-            if not ccms_and_lrds_post_processed:
-                logging.error(f'ccms_and_lrds_post_processed: {ccms_and_lrds_post_processed}')
-            logging.info(f'Successfully post processed CCMs and LRDs')
-            return True
-
-        # @dev: post processing not needed multi page spanning pdfs
-        elif not self.create_and_save_pdf(page_objs, post_processing=False):
-            logging.error(f'Could not create and save multipage PDF')
+    def save_pdf_for_post_processing(self, page_objs):
+        if not self.create_and_save_pdf(page_objs, post_processing=True):
+            logging.error('Could not create and save multipage w/ post processing required PDF')
             return False
 
-        logging.info('Successfully processed all multi pages in PDF')
+        return self.post_processor.extract_and_post_process(self.company_dir)
+
+    def save_pdf_without_post_processing(self, page_objs):
+        if not self.create_and_save_pdf(page_objs, post_processing=False):
+            logging.error('Could not create and save multipage PDF')
+            return False
         return True
+
+    def process_multi_page(self):
+        page_objs = self.collect_page_data()
+        self.log_extraction_info()
+
+        if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
+            return self.save_pdf_for_post_processing(page_objs)
+        else:
+            return self.save_pdf_without_post_processing(page_objs)
+
 
     def process_single_page(self):
 
