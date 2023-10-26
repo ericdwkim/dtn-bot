@@ -99,7 +99,7 @@ class ExtractionHandler():
         """
 
         total_amount_matches = re.findall(r'-?[\d,]+\.\d+-?', cur_page_text)
-        logging.info(f'total_amount_matches: {total_amount_matches[-3:]}')
+        logging.info(f'The last 3 matches for total amount from current page text: {total_amount_matches[-3:]}')
 
 
         if total_amount_matches:
