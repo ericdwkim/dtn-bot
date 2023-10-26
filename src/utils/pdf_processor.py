@@ -429,15 +429,12 @@ class PdfProcessor:
         logging.info(
             f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}'
         )
-
     def save_pdf_for_post_processing(self, page_objs):
         if not self.create_and_save_pdf(page_objs, post_processing=True):
             logging.error('Could not create and save multipage w/ post processing required PDF')
             return False
         logging.info(f'Successfully pre-processed PDF and is ready for post-processing!')
         return True
-
-        # return self.post_processor.extract_and_post_process(self.company_dir)  # @dev: having this as the return for `save_pdf_for_post_processing` was the main issue
 
     def save_pdf_without_post_processing(self, page_objs):
         if not self.create_and_save_pdf(page_objs, post_processing=False):
@@ -450,59 +447,29 @@ class PdfProcessor:
         self.log_extraction_info()
         self.new_file_name = self.get_new_file_name()
 
-        # @dev: send these files to company_dir to PREP  for post processing after all pre-processig is completed for all files in the current pdf
-        if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
+        # @dev: send these files to company_dir to PREP for post processing after all pre-processig is completed for all files in the current pdf
+        if (self.doc_type_short in ['CCM', 'LRD']) and self.company_name == 'EXXONMOBIL':
             return self.save_pdf_for_post_processing(page_objs)
         else:
             return self.save_pdf_without_post_processing(page_objs)
 
+    def collect_single_page_data(self):
 
-
-
-        # if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
-        #     return self.save_pdf_for_post_processing(page_objs)
-        # else:
-        #     return self.save_pdf_without_post_processing(page_objs)
-
-    # todo: break down single page processor
-    def process_single_page(self):
-
-        # end marker and current instance company name in text
-        if 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages) - 1:
-            page_obj = self.pdf_data.pages[
-                self.page_num]  # single pikepdf page obj --> req'd obj to create and save the page
-
-            self.get_doc_type_short(self.doc_type_and_num)  # set doc_type_short
-            self.total_target_amt = self.extraction_handler.extract_total_target_amt(self.cur_page_text)
-            logging.info(
-                f'Document Type (abbrv): {self.doc_type_short} | Document Type-Number: {self.doc_type_and_num} | Total Target Amount: {self.total_target_amt}')
+        if 'START MSG' and 'END MSG' in self.cur_page_text and self.page_num < len(self.pdf_data.pages) - 1:
+            page_obj = self.pdf_data.pages[self.page_num]
 
             if self.page_num >= len(self.pdf_data.pages) - 1:
-                return  # exit func b/c finished with pdf
-
-            # move page cursor after check; ensures that when last_page_num == len(last_page), it exits and prevents misleading final "error" message that last_page_num + 1 could not be processed
+                return
             self.page_num += 1
-            # fetch file name
-            self.new_file_name = self.get_new_file_name()
+            return page_obj
 
-            # todo: abstract post processing block into wrapper
-            if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
+    def process_single_page(self):
+        page_obj = self.collect_single_page_data()
+        self.log_extraction_info()
+        self.new_file_name = self.get_new_file_name()
 
-                if not self.create_and_save_pdf(page_objs, post_processing=True):
-                    logging.error(f'Could not create and save single page  w/ post processing required PDF')
-                    return False
 
-                # Post processing core logic
-
-                ccms_and_lrds_post_processed = self.post_processor.extract_and_post_process(self.company_dir)
-                if not ccms_and_lrds_post_processed:
-                    logging.error(f'ccms_and_lrds_post_processed: {ccms_and_lrds_post_processed}')
-                logging.info(f'Successfully post processed CCMs and LRDs')
-                return True
-
-            # Create single page pdf and save in correct dir
-            elif not self.create_and_save_pdf(page_obj, post_processing=False):
-                logging.error(f'Could not create and save single page PDF')
-                return False
-            logging.info('Successfully processed all multi pages in PDF')
-            return True
+        if (self.doc_type_short in ['CCM', 'LRD']) and self.company_name == 'EXXONMOBIL':
+            return self.save_pdf_for_post_processing(page_obj)  # save single page and prep for post processing
+        else:
+            return self.save_pdf_without_post_processing(page_obj)
