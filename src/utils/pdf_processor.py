@@ -6,7 +6,6 @@ from src.utils.file_handler import FileHandler
 from src.utils.mappings import doc_type_patterns, company_id_to_company_subdir_map
 from src.utils.post_processor import PostProcessor
 from src.utils.log_config import handle_errors
-from src.utils.multi_page_processor import MultiPageProcessor
 
 class PdfProcessor:
     # ----------------------------------  Class Attributes ----------------------------------
@@ -27,7 +26,6 @@ class PdfProcessor:
         self.pdf_file_path = os.path.join(self.download_dir, 'messages.pdf')
         self.page_num = 0
         self.pdf_data = self.update_pdf_data() # PikePDF instance var
-        self.multi_page_processor = MultiPageProcessor()
         logging.info(f'The PikePDF instance variable `pdf_data`: {self.pdf_data}')
         self.doc_type_short, self.total_target_amt = ('', '')
         self.doc_type_and_num, self.doc_type_pattern = ('', '')
@@ -412,6 +410,7 @@ class PdfProcessor:
 
             cur_page = self.pdf_data.pages[self.page_num]
             page_objs.append(cur_page)
+
             self.cur_page_text = self.extraction_handler.extract_text_from_pdf_page(cur_page)
             page_text_strings.append(self.cur_page_text)
 
@@ -420,6 +419,7 @@ class PdfProcessor:
             if self.page_num >= len(self.pdf_data.pages) - 1:
                 break
         self.cur_page_text = "".join(page_text_strings)
+        logging.info(f'Current multi-page spanning PDF has: {len(page_objs)} pages.')
         return page_objs
 
     def log_extraction_info(self):
@@ -434,8 +434,10 @@ class PdfProcessor:
         if not self.create_and_save_pdf(page_objs, post_processing=True):
             logging.error('Could not create and save multipage w/ post processing required PDF')
             return False
+        logging.info(f'Successfully pre-processed PDF and is ready for post-processing!')
+        return True
 
-        return self.post_processor.extract_and_post_process(self.company_dir)
+        # return self.post_processor.extract_and_post_process(self.company_dir)  # @dev: having this as the return for `save_pdf_for_post_processing` was the main issue
 
     def save_pdf_without_post_processing(self, page_objs):
         if not self.create_and_save_pdf(page_objs, post_processing=False):
@@ -446,13 +448,23 @@ class PdfProcessor:
     def process_multi_page(self):
         page_objs = self.collect_page_data()
         self.log_extraction_info()
+        self.new_file_name = self.get_new_file_name()
 
+        # @dev: send these files to company_dir to PREP  for post processing after all pre-processig is completed for all files in the current pdf
         if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
             return self.save_pdf_for_post_processing(page_objs)
         else:
             return self.save_pdf_without_post_processing(page_objs)
 
 
+
+
+        # if (self.doc_type_short == 'CCM' or self.doc_type_short == 'LRD') and self.company_name == 'EXXONMOBIL':
+        #     return self.save_pdf_for_post_processing(page_objs)
+        # else:
+        #     return self.save_pdf_without_post_processing(page_objs)
+
+    # todo: break down single page processor
     def process_single_page(self):
 
         # end marker and current instance company name in text
